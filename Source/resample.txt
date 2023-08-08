@@ -1,0 +1,50 @@
+void fileConvert(const File& file, const double& dOutSampleRate) {
+	AudioFormatManager formatManager;
+	formatManager.registerBasicFormats();
+	AudioFormatReader* reader = formatManager.createReaderFor(file);
+	if (reader) {
+		if (reader->lengthInSamples > 0) {
+			if (reader->sampleRate != dOutSampleRate) {
+				//find the out file number of samples
+				juce::int64 iSamples = ceil(dOutSampleRate * reader->lengthInSamples / reader->sampleRate);
+
+			AudioSampleBuffer tempBuffer(reader->numChannels, iSamples);
+			AudioSampleBuffer readBuffer(reader->numChannels, reader->lengthInSamples);
+
+			//read the samples from file
+			reader->read(&readBuffer, 0, readBuffer.getNumSamples(), 0, true, true);
+
+			LagrangeInterpolator interpolator;
+			int iResult = 0;
+			for (int i = 0; i < reader->numChannels; i++) {
+				iResult = interpolator.process(reader->sampleRate / dOutSampleRate,
+					readBuffer.getReadPointer(i),
+					tempBuffer.getWritePointer(i),
+					tempBuffer.getNumSamples());
+			}
+
+
+			File sTempFile = File::createTempFile(String("temp_") + file.getFileNameWithoutExtension() + String(".wav"));
+			AudioFormat* audioFormat = formatManager.findFormatForFileExtension(sTempFile.getFileExtension());
+			juce::AudioFormatWriter* pTempWriter = audioFormat->createWriterFor(sTempFile.createOutputStream(),
+				dOutSampleRate,
+				reader->numChannels,
+				reader->bitsPerSample ? reader->bitsPerSample : 24,
+				reader->metadataValues,
+				audioFormat->getQualityOptions().size() - 1);
+			auto res = pTempWriter->writeFromAudioSampleBuffer(tempBuffer, 0, tempBuffer.getNumSamples());
+			pTempWriter->flush();
+			delete pTempWriter;
+
+			jassert(res);
+			delete reader;
+		}
+	}
+	else {
+		delete reader;
+		AlertWindow::showMessageBox(AlertWindow::WarningIcon, "No Audio", "There is no enough audio for playing.");
+	}
+}
+else {
+	AlertWindow::showMessageBox(AlertWindow::WarningIcon, "Corrupt file Audio", "The audio file loaded is corrupted.");
+}
