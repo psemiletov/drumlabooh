@@ -126,9 +126,10 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 //        setSize (paramSliderWidth + paramLabelWidth, juce::jmax (100, paramControlHeight * 2));
 
         addAndMakeVisible (dc);
+        dc.attach_params (this, 0);
 
 
-        setSize (640, 480);
+        setSize (780, 720);
 
 }
 
@@ -287,3 +288,105 @@ CDrumCells::~CDrumCells()
 
 
 }*/
+
+
+
+CDrumCell::CDrumCell ()
+{
+
+    addAndMakeVisible (gr_group);
+    gr_group.setTextLabelPosition (juce::Justification::centredLeft);
+
+    gr_group.setBounds (0, 0, 180, 144);
+
+    addAndMakeVisible (sl_pan);
+    sl_pan.setRange (0.0f, 1.0f, 0.01f);
+    sl_pan.setSliderStyle (juce::Slider::RotaryHorizontalDrag);
+    sl_pan.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+    sl_pan.addListener (this);
+
+    sl_pan.setBounds (8, 16, 104, 120);
+
+    addAndMakeVisible (sl_gain);
+    sl_gain.setRange (-60, 6, 0);
+    sl_gain.setSliderStyle (juce::Slider::LinearVertical);
+    sl_gain.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+    sl_gain.addListener (this);
+
+    sl_gain.setBounds (112, 16, 56, 120);
+
+    setSize (180, 144);
+
+
+    //[Constructor] You can add your own custom stuff here..
+    //[/Constructor]
+}
+
+CDrumCell::~CDrumCell()
+{
+
+}
+
+//==============================================================================
+void CDrumCell::paint (juce::Graphics& g)
+{
+    //[UserPrePaint] Add your own custom painting code here..
+    //[/UserPrePaint]
+
+    g.fillAll (juce::Colour (0xff323e44));
+
+    //[UserPaint] Add your own custom painting code here..
+    //[/UserPaint]
+}
+
+void CDrumCell::resized()
+{
+    //[UserPreResize] Add your own custom resize code here..
+    //[/UserPreResize]
+
+    //[UserResized] Add your own custom resize handling here..
+    //[/UserResized]
+}
+
+void CDrumCell::sliderValueChanged (juce::Slider* sliderThatWasMoved)
+{
+    //[UsersliderValueChanged_Pre]
+    //[/UsersliderValueChanged_Pre]
+
+    if (sliderThatWasMoved == &sl_pan)
+    {
+        //[UserSliderCode_sl_pan] -- add your slider handling code here..
+        //[/UserSliderCode_sl_pan]
+    }
+    else if (sliderThatWasMoved == &sl_gain)
+    {
+        //[UserSliderCode_sl_gain] -- add your slider handling code here..
+        //[/UserSliderCode_sl_gain]
+    }
+
+    //[UsersliderValueChanged_Post]
+    //[/UsersliderValueChanged_Post]
+}
+
+
+void  CDrumCell::attach_params (CAudioProcessorEditor *ed, int cellno)
+{
+
+  if (! ed)
+     std::cout << "!!!!! " << std::endl;
+
+  cell_number = cellno;
+
+  std::string param_name = "gain" + std::to_string (cell_number);
+
+  std::cout << "param_name:" << param_name << std::endl;
+
+
+  att_gain.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_gain));
+
+  param_name = "pan" + std::to_string (cell_number);
+
+  att_pan.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_pan));
+
+}
+

@@ -33,15 +33,13 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class CDrumCell  : public juce::Component,
-                   public juce::Slider::Listener
+class CDrumCellProto  : public juce::Component,
+                        public juce::Slider::Listener
 {
 public:
-
-
     //==============================================================================
-    CDrumCell ();
-    ~CDrumCell() override;
+    CDrumCellProto ();
+    ~CDrumCellProto() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -72,7 +70,7 @@ private:
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CDrumCell)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CDrumCellProto)
 };
 
 //[EndFile] You can add extra defines here...

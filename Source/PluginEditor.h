@@ -11,12 +11,57 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
-#include "drumcell.h"
+//#include "drumcell.h"
 
 
    typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
     typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
+
+class CAudioProcessorEditor;
+
+class CDrumCell  : public juce::Component,
+                        public juce::Slider::Listener
+{
+public:
+    //==============================================================================
+
+
+  juce::GroupComponent gr_group;
+    juce::Slider sl_pan;
+    juce::Slider sl_gain;
+
+
+    CDrumCell ();
+    ~CDrumCell() override;
+
+    //==============================================================================
+    //[UserMethods]     -- You can add your own custom methods in this section.
+
+    int cell_number;
+
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_gain;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_pan;
+
+    void attach_params (CAudioProcessorEditor *ed, int cellno);
+
+    //[/UserMethods]
+
+    void paint (juce::Graphics& g) override;
+    void resized() override;
+    void sliderValueChanged (juce::Slider* sliderThatWasMoved) override;
+
+
+
+    //[UserVariables]   -- You can add your own custom variables in this section.
+    //[/UserVariables]
+
+    //==============================================================================
+
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CDrumCell)
+};
 
 
 /*
@@ -44,7 +89,7 @@ class CAudioProcessorEditor: public juce::AudioProcessorEditor,
 
 {
 
-private:
+public:
     juce::AudioProcessorValueTreeState& valueTreeState;
 
   //  juce::MidiKeyboardState keyboardState;

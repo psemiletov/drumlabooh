@@ -31,6 +31,9 @@ private:
     std::atomic<float>* phaseParameter = nullptr;
     std::atomic<float>* gainParameter  = nullptr;
 
+    std::atomic<float>* gain0  = nullptr;
+    std::atomic<float>* pan0  = nullptr;
+
 
 public:
 

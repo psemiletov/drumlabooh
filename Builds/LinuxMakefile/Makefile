@@ -135,6 +135,7 @@ OBJECTS_LV2_PLUGIN := \
   $(JUCE_OBJDIR)/include_juce_audio_plugin_client_LV2_7d84e0a5.o \
 
 OBJECTS_SHARED_CODE := \
+  $(JUCE_OBJDIR)/topheader_5da714a3.o \
   $(JUCE_OBJDIR)/kits_778ca646.o \
   $(JUCE_OBJDIR)/pugixml_39758d91.o \
   $(JUCE_OBJDIR)/drumcell_5df71871.o \
@@ -235,6 +236,11 @@ $(JUCE_OBJDIR)/include_juce_audio_plugin_client_LV2_7d84e0a5.o: ../../JuceLibrar
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling include_juce_audio_plugin_client_LV2.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_LV2_PLUGIN) $(JUCE_CFLAGS_LV2_PLUGIN) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/topheader_5da714a3.o: ../../Source/topheader.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling topheader.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/kits_778ca646.o: ../../Source/kits.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)

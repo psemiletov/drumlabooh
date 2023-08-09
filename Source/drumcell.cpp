@@ -27,7 +27,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-CDrumCell::CDrumCell ()
+CDrumCellProto::CDrumCellProto ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -68,7 +68,7 @@ CDrumCell::CDrumCell ()
     //[/Constructor]
 }
 
-CDrumCell::~CDrumCell()
+CDrumCellProto::~CDrumCellProto()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
@@ -83,7 +83,7 @@ CDrumCell::~CDrumCell()
 }
 
 //==============================================================================
-void CDrumCell::paint (juce::Graphics& g)
+void CDrumCellProto::paint (juce::Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
@@ -94,7 +94,7 @@ void CDrumCell::paint (juce::Graphics& g)
     //[/UserPaint]
 }
 
-void CDrumCell::resized()
+void CDrumCellProto::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
@@ -103,7 +103,7 @@ void CDrumCell::resized()
     //[/UserResized]
 }
 
-void CDrumCell::sliderValueChanged (juce::Slider* sliderThatWasMoved)
+void CDrumCellProto::sliderValueChanged (juce::Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
@@ -128,14 +128,6 @@ void CDrumCell::sliderValueChanged (juce::Slider* sliderThatWasMoved)
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 //[/MiscUserCode]
 
-void CDrumCell::attach_params()
-{
-
- //   att_gain.reset (new SliderAttachment (valueTreeState, "gain", gainSlider));
-
-}
-
-
 
 //==============================================================================
 #if 0
@@ -146,7 +138,7 @@ void CDrumCell::attach_params()
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="CDrumCell" componentName=""
+<JUCER_COMPONENT documentType="Component" className="CDrumCellProto" componentName=""
                  parentClasses="public juce::Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="180" initialHeight="144">

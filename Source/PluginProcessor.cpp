@@ -11,6 +11,8 @@
 
 extern juce::AudioFormatManager *formatManager;
 
+#define minusInfdB -60
+
 juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParameterLayout()
 {
   juce::AudioProcessorValueTreeState::ParameterLayout layout;
@@ -24,6 +26,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
   layout.add (std::make_unique<juce::AudioParameterFloat> ("gain", "Gain", 0.0f, 1.0f, 0.5f));
 
   layout.add (std::make_unique<juce::AudioParameterBool> ("invertPhase", "Invert Phase", false));
+
+  layout.add (std::make_unique<juce::AudioParameterFloat> ("gain0", "Gain0", minusInfdB, 6, 0));
+  layout.add (std::make_unique<juce::AudioParameterFloat> ("pan0", "Gain0", minusInfdB, 6, 0));
 
   return layout;
 }
@@ -48,6 +53,8 @@ parameters (*this, 0, "Drumpecker", createParameterLayout())
 
   phaseParameter = parameters.getRawParameterValue ("invertPhase");
   gainParameter  = parameters.getRawParameterValue ("gain");
+  gain0  = parameters.getRawParameterValue ("gain0");
+  pan0  = parameters.getRawParameterValue ("pan0");
 
 }
 
