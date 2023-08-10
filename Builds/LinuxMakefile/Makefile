@@ -39,7 +39,7 @@ ifeq ($(CONFIG),Debug)
     TARGET_ARCH := 
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) "-DLINUX=1" "-DDEBUG=1" "-D_DEBUG=1" "-DJUCE_DISPLAY_SPLASH_SCREEN=0" "-DJUCE_USE_DARK_SPLASH_SCREEN=1" "-DJUCE_PROJUCER_VERSION=0x70005" "-DJUCE_MODULE_AVAILABLE_juce_audio_basics=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_devices=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_formats=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_processors=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_utils=1" "-DJUCE_MODULE_AVAILABLE_juce_core=1" "-DJUCE_MODULE_AVAILABLE_juce_data_structures=1" "-DJUCE_MODULE_AVAILABLE_juce_events=1" "-DJUCE_MODULE_AVAILABLE_juce_graphics=1" "-DJUCE_MODULE_AVAILABLE_juce_gui_basics=1" "-DJUCE_MODULE_AVAILABLE_juce_gui_extra=1" "-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1" "-DJUCE_WASAPI=0" "-DJUCE_DIRECTSOUND=0" "-DJUCE_BELA=0" "-DJUCE_USE_ANDROID_OBOE=0" "-DJUCE_USE_OBOE_STABILIZED_CALLBACK=0" "-DJUCE_USE_ANDROID_OPENSLES=0" "-DJUCE_USE_MP3AUDIOFORMAT=1" "-DJUCE_USE_LAME_AUDIO_FORMAT=1" "-DJUCE_VST3_CAN_REPLACE_VST2=0" "-DJUCE_INCLUDE_ZLIB_CODE=1" "-DJUCE_USE_CURL=0" "-DJUCE_LOAD_CURL_SYMBOLS_LAZILY=0" "-DJUCE_STRICT_REFCOUNTEDPOINTER=1" "-DJUCE_WIN_PER_MONITOR_DPI_AWARE=0" "-DJUCE_WEB_BROWSER=0" "-DJUCE_USE_WIN_WEBVIEW2=0" "-DJucePlugin_Build_VST=0" "-DJucePlugin_Build_VST3=1" "-DJucePlugin_Build_AU=0" "-DJucePlugin_Build_AUv3=0" "-DJucePlugin_Build_AAX=0" "-DJucePlugin_Build_Standalone=1" "-DJucePlugin_Build_Unity=0" "-DJucePlugin_Build_LV2=1" "-DJucePlugin_Enable_IAA=0" "-DJucePlugin_Enable_ARA=0" "-DJucePlugin_Name=\"Drumpecker\"" "-DJucePlugin_Desc=\"Drumpecker\"" "-DJucePlugin_Manufacturer=\"Peter Semiletov\"" "-DJucePlugin_ManufacturerWebsite=\"https://psemiletov.github.io\"" "-DJucePlugin_ManufacturerEmail=\"peter.semiletov@gmail.com\"" "-DJucePlugin_ManufacturerCode=0x4d616e75" "-DJucePlugin_PluginCode=0x5279766a" "-DJucePlugin_IsSynth=1" "-DJucePlugin_WantsMidiInput=1" "-DJucePlugin_ProducesMidiOutput=0" "-DJucePlugin_IsMidiEffect=0" "-DJucePlugin_EditorRequiresKeyboardFocus=0" "-DJucePlugin_Version=1.0.0" "-DJucePlugin_VersionCode=0x10000" "-DJucePlugin_VersionString=\"1.0.0\"" "-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode" "-DJucePlugin_VSTCategory=kPlugCategSynth" "-DJucePlugin_Vst3Category=\"Instrument|Synth\"" "-DJucePlugin_AUMainType='aumu'" "-DJucePlugin_AUSubType=JucePlugin_PluginCode" "-DJucePlugin_AUExportPrefix=DrumpeckerAU" "-DJucePlugin_AUExportPrefixQuoted=\"DrumpeckerAU\"" "-DJucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode" "-DJucePlugin_CFBundleIdentifier=com.PeterSemiletov.Drumpecker" "-DJucePlugin_AAXIdentifier=com.PeterSemiletov.Drumpecker" "-DJucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode" "-DJucePlugin_AAXProductId=JucePlugin_PluginCode" "-DJucePlugin_AAXCategory=2048" "-DJucePlugin_AAXDisableBypass=0" "-DJucePlugin_AAXDisableMultiMono=0" "-DJucePlugin_IAAType=0x61757269" "-DJucePlugin_IAASubType=JucePlugin_PluginCode" "-DJucePlugin_IAAName=\"Peter Semiletov: Drumpecker\"" "-DJucePlugin_VSTNumMidiInputs=16" "-DJucePlugin_VSTNumMidiOutputs=16" "-DJucePlugin_ARAContentTypes=0" "-DJucePlugin_ARATransformationFlags=0" "-DJucePlugin_ARAFactoryID=\"com.PeterSemiletov.Drumpecker.factory\"" "-DJucePlugin_ARADocumentArchiveID=\"com.PeterSemiletov.Drumpecker.aradocumentarchive.1.0.0\"" "-DJucePlugin_ARACompatibleArchiveIDs=\"\"" "-DJUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone" "-DJUCER_LINUX_MAKE_6D53C8B4=1" "-DJUCE_APP_VERSION=1.0.0" "-DJUCE_APP_VERSION_HEX=0x10000" $(shell $(PKG_CONFIG) --cflags alsa freetype2 zlib libjpeg libpng flac vorbis vorbisfile vorbisenc ogg jack) -pthread -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/lilv -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/sratom -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/sord/src -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/sord -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/serd -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/lv2 -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/ -I/usr/share/juce/modules/juce_audio_processors/format_types/VST3_SDK -I../../JuceLibraryCode -I../../JuceLibraryCode/modules -I/usr/share/juce/modules $(CPPFLAGS)
+  JUCE_CPPFLAGS := $(DEPFLAGS) "-DLINUX=1" "-DDEBUG=1" "-D_DEBUG=1" "-DJUCE_DISPLAY_SPLASH_SCREEN=0" "-DJUCE_USE_DARK_SPLASH_SCREEN=1" "-DJUCE_PROJUCER_VERSION=0x70006" "-DJUCE_MODULE_AVAILABLE_juce_audio_basics=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_devices=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_formats=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_processors=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_utils=1" "-DJUCE_MODULE_AVAILABLE_juce_core=1" "-DJUCE_MODULE_AVAILABLE_juce_data_structures=1" "-DJUCE_MODULE_AVAILABLE_juce_events=1" "-DJUCE_MODULE_AVAILABLE_juce_graphics=1" "-DJUCE_MODULE_AVAILABLE_juce_gui_basics=1" "-DJUCE_MODULE_AVAILABLE_juce_gui_extra=1" "-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1" "-DJUCE_WASAPI=0" "-DJUCE_DIRECTSOUND=0" "-DJUCE_BELA=0" "-DJUCE_USE_ANDROID_OBOE=0" "-DJUCE_USE_OBOE_STABILIZED_CALLBACK=0" "-DJUCE_USE_ANDROID_OPENSLES=0" "-DJUCE_USE_MP3AUDIOFORMAT=1" "-DJUCE_USE_LAME_AUDIO_FORMAT=1" "-DJUCE_VST3_CAN_REPLACE_VST2=0" "-DJUCE_INCLUDE_ZLIB_CODE=1" "-DJUCE_USE_CURL=0" "-DJUCE_LOAD_CURL_SYMBOLS_LAZILY=0" "-DJUCE_STRICT_REFCOUNTEDPOINTER=1" "-DJUCE_WIN_PER_MONITOR_DPI_AWARE=0" "-DJUCE_WEB_BROWSER=0" "-DJUCE_USE_WIN_WEBVIEW2=0" "-DJucePlugin_Build_VST=0" "-DJucePlugin_Build_VST3=1" "-DJucePlugin_Build_AU=0" "-DJucePlugin_Build_AUv3=0" "-DJucePlugin_Build_AAX=0" "-DJucePlugin_Build_Standalone=1" "-DJucePlugin_Build_Unity=0" "-DJucePlugin_Build_LV2=1" "-DJucePlugin_Enable_IAA=0" "-DJucePlugin_Enable_ARA=0" "-DJucePlugin_Name=\"Drumpecker\"" "-DJucePlugin_Desc=\"Drumpecker\"" "-DJucePlugin_Manufacturer=\"Peter Semiletov\"" "-DJucePlugin_ManufacturerWebsite=\"https://psemiletov.github.io\"" "-DJucePlugin_ManufacturerEmail=\"peter.semiletov@gmail.com\"" "-DJucePlugin_ManufacturerCode=0x4d616e75" "-DJucePlugin_PluginCode=0x5279766a" "-DJucePlugin_IsSynth=1" "-DJucePlugin_WantsMidiInput=1" "-DJucePlugin_ProducesMidiOutput=0" "-DJucePlugin_IsMidiEffect=0" "-DJucePlugin_EditorRequiresKeyboardFocus=0" "-DJucePlugin_Version=1.0.0" "-DJucePlugin_VersionCode=0x10000" "-DJucePlugin_VersionString=\"1.0.0\"" "-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode" "-DJucePlugin_VSTCategory=kPlugCategSynth" "-DJucePlugin_Vst3Category=\"Instrument|Synth\"" "-DJucePlugin_AUMainType='aumu'" "-DJucePlugin_AUSubType=JucePlugin_PluginCode" "-DJucePlugin_AUExportPrefix=DrumpeckerAU" "-DJucePlugin_AUExportPrefixQuoted=\"DrumpeckerAU\"" "-DJucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode" "-DJucePlugin_CFBundleIdentifier=com.PeterSemiletov.Drumpecker" "-DJucePlugin_AAXIdentifier=com.PeterSemiletov.Drumpecker" "-DJucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode" "-DJucePlugin_AAXProductId=JucePlugin_PluginCode" "-DJucePlugin_AAXCategory=2048" "-DJucePlugin_AAXDisableBypass=0" "-DJucePlugin_AAXDisableMultiMono=0" "-DJucePlugin_IAAType=0x61757269" "-DJucePlugin_IAASubType=JucePlugin_PluginCode" "-DJucePlugin_IAAName=\"Peter Semiletov: Drumpecker\"" "-DJucePlugin_VSTNumMidiInputs=16" "-DJucePlugin_VSTNumMidiOutputs=16" "-DJucePlugin_ARAContentTypes=0" "-DJucePlugin_ARATransformationFlags=0" "-DJucePlugin_ARAFactoryID=\"com.PeterSemiletov.Drumpecker.factory\"" "-DJucePlugin_ARADocumentArchiveID=\"com.PeterSemiletov.Drumpecker.aradocumentarchive.1.0.0\"" "-DJucePlugin_ARACompatibleArchiveIDs=\"\"" "-DJUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone" "-DJUCER_LINUX_MAKE_6D53C8B4=1" "-DJUCE_APP_VERSION=1.0.0" "-DJUCE_APP_VERSION_HEX=0x10000" $(shell $(PKG_CONFIG) --cflags alsa freetype2 zlib libjpeg libpng flac vorbis vorbisfile vorbisenc ogg jack) -pthread -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/lilv -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/sratom -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/sord/src -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/sord -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/serd -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/lv2 -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/ -I/usr/share/juce/modules/juce_audio_processors/format_types/VST3_SDK -I../../JuceLibraryCode -I../../JuceLibraryCode/modules -I/usr/share/juce/modules $(CPPFLAGS)
 
   JUCE_CPPFLAGS_VST3 := 
   JUCE_CFLAGS_VST3 := -fPIC -fvisibility=hidden
@@ -68,6 +68,9 @@ ifeq ($(CONFIG),Debug)
 
   JUCE_CPPFLAGS_LV2_MANIFEST_HELPER := 
   JUCE_TARGET_LV2_MANIFEST_HELPER := juce_lv2_helper
+
+  JUCE_CPPFLAGS_VST3_MANIFEST_HELPER := 
+  JUCE_TARGET_VST3_MANIFEST_HELPER := juce_vst3_helper
 
   JUCE_CFLAGS += $(JUCE_CPPFLAGS) $(TARGET_ARCH) -fPIC -g -ggdb -O0 $(CFLAGS)
   JUCE_CXXFLAGS += $(JUCE_CFLAGS) -std=c++17 $(CXXFLAGS)
@@ -86,7 +89,7 @@ ifeq ($(CONFIG),Release)
     TARGET_ARCH := 
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) "-DLINUX=1" "-DNDEBUG=1" "-DJUCE_DISPLAY_SPLASH_SCREEN=0" "-DJUCE_USE_DARK_SPLASH_SCREEN=1" "-DJUCE_PROJUCER_VERSION=0x70005" "-DJUCE_MODULE_AVAILABLE_juce_audio_basics=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_devices=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_formats=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_processors=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_utils=1" "-DJUCE_MODULE_AVAILABLE_juce_core=1" "-DJUCE_MODULE_AVAILABLE_juce_data_structures=1" "-DJUCE_MODULE_AVAILABLE_juce_events=1" "-DJUCE_MODULE_AVAILABLE_juce_graphics=1" "-DJUCE_MODULE_AVAILABLE_juce_gui_basics=1" "-DJUCE_MODULE_AVAILABLE_juce_gui_extra=1" "-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1" "-DJUCE_WASAPI=0" "-DJUCE_DIRECTSOUND=0" "-DJUCE_BELA=0" "-DJUCE_USE_ANDROID_OBOE=0" "-DJUCE_USE_OBOE_STABILIZED_CALLBACK=0" "-DJUCE_USE_ANDROID_OPENSLES=0" "-DJUCE_USE_MP3AUDIOFORMAT=1" "-DJUCE_USE_LAME_AUDIO_FORMAT=1" "-DJUCE_VST3_CAN_REPLACE_VST2=0" "-DJUCE_INCLUDE_ZLIB_CODE=1" "-DJUCE_USE_CURL=0" "-DJUCE_LOAD_CURL_SYMBOLS_LAZILY=0" "-DJUCE_STRICT_REFCOUNTEDPOINTER=1" "-DJUCE_WIN_PER_MONITOR_DPI_AWARE=0" "-DJUCE_WEB_BROWSER=0" "-DJUCE_USE_WIN_WEBVIEW2=0" "-DJucePlugin_Build_VST=0" "-DJucePlugin_Build_VST3=1" "-DJucePlugin_Build_AU=0" "-DJucePlugin_Build_AUv3=0" "-DJucePlugin_Build_AAX=0" "-DJucePlugin_Build_Standalone=1" "-DJucePlugin_Build_Unity=0" "-DJucePlugin_Build_LV2=1" "-DJucePlugin_Enable_IAA=0" "-DJucePlugin_Enable_ARA=0" "-DJucePlugin_Name=\"Drumpecker\"" "-DJucePlugin_Desc=\"Drumpecker\"" "-DJucePlugin_Manufacturer=\"Peter Semiletov\"" "-DJucePlugin_ManufacturerWebsite=\"https://psemiletov.github.io\"" "-DJucePlugin_ManufacturerEmail=\"peter.semiletov@gmail.com\"" "-DJucePlugin_ManufacturerCode=0x4d616e75" "-DJucePlugin_PluginCode=0x5279766a" "-DJucePlugin_IsSynth=1" "-DJucePlugin_WantsMidiInput=1" "-DJucePlugin_ProducesMidiOutput=0" "-DJucePlugin_IsMidiEffect=0" "-DJucePlugin_EditorRequiresKeyboardFocus=0" "-DJucePlugin_Version=1.0.0" "-DJucePlugin_VersionCode=0x10000" "-DJucePlugin_VersionString=\"1.0.0\"" "-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode" "-DJucePlugin_VSTCategory=kPlugCategSynth" "-DJucePlugin_Vst3Category=\"Instrument|Synth\"" "-DJucePlugin_AUMainType='aumu'" "-DJucePlugin_AUSubType=JucePlugin_PluginCode" "-DJucePlugin_AUExportPrefix=DrumpeckerAU" "-DJucePlugin_AUExportPrefixQuoted=\"DrumpeckerAU\"" "-DJucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode" "-DJucePlugin_CFBundleIdentifier=com.PeterSemiletov.Drumpecker" "-DJucePlugin_AAXIdentifier=com.PeterSemiletov.Drumpecker" "-DJucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode" "-DJucePlugin_AAXProductId=JucePlugin_PluginCode" "-DJucePlugin_AAXCategory=2048" "-DJucePlugin_AAXDisableBypass=0" "-DJucePlugin_AAXDisableMultiMono=0" "-DJucePlugin_IAAType=0x61757269" "-DJucePlugin_IAASubType=JucePlugin_PluginCode" "-DJucePlugin_IAAName=\"Peter Semiletov: Drumpecker\"" "-DJucePlugin_VSTNumMidiInputs=16" "-DJucePlugin_VSTNumMidiOutputs=16" "-DJucePlugin_ARAContentTypes=0" "-DJucePlugin_ARATransformationFlags=0" "-DJucePlugin_ARAFactoryID=\"com.PeterSemiletov.Drumpecker.factory\"" "-DJucePlugin_ARADocumentArchiveID=\"com.PeterSemiletov.Drumpecker.aradocumentarchive.1.0.0\"" "-DJucePlugin_ARACompatibleArchiveIDs=\"\"" "-DJUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone" "-DJUCER_LINUX_MAKE_6D53C8B4=1" "-DJUCE_APP_VERSION=1.0.0" "-DJUCE_APP_VERSION_HEX=0x10000" $(shell $(PKG_CONFIG) --cflags alsa freetype2 zlib libjpeg libpng flac vorbis vorbisfile vorbisenc ogg jack) -pthread -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/lilv -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/sratom -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/sord/src -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/sord -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/serd -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/lv2 -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/ -I/usr/share/juce/modules/juce_audio_processors/format_types/VST3_SDK -I../../JuceLibraryCode -I../../JuceLibraryCode/modules -I/usr/share/juce/modules $(CPPFLAGS)
+  JUCE_CPPFLAGS := $(DEPFLAGS) "-DLINUX=1" "-DNDEBUG=1" "-DJUCE_DISPLAY_SPLASH_SCREEN=0" "-DJUCE_USE_DARK_SPLASH_SCREEN=1" "-DJUCE_PROJUCER_VERSION=0x70006" "-DJUCE_MODULE_AVAILABLE_juce_audio_basics=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_devices=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_formats=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_processors=1" "-DJUCE_MODULE_AVAILABLE_juce_audio_utils=1" "-DJUCE_MODULE_AVAILABLE_juce_core=1" "-DJUCE_MODULE_AVAILABLE_juce_data_structures=1" "-DJUCE_MODULE_AVAILABLE_juce_events=1" "-DJUCE_MODULE_AVAILABLE_juce_graphics=1" "-DJUCE_MODULE_AVAILABLE_juce_gui_basics=1" "-DJUCE_MODULE_AVAILABLE_juce_gui_extra=1" "-DJUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1" "-DJUCE_WASAPI=0" "-DJUCE_DIRECTSOUND=0" "-DJUCE_BELA=0" "-DJUCE_USE_ANDROID_OBOE=0" "-DJUCE_USE_OBOE_STABILIZED_CALLBACK=0" "-DJUCE_USE_ANDROID_OPENSLES=0" "-DJUCE_USE_MP3AUDIOFORMAT=1" "-DJUCE_USE_LAME_AUDIO_FORMAT=1" "-DJUCE_VST3_CAN_REPLACE_VST2=0" "-DJUCE_INCLUDE_ZLIB_CODE=1" "-DJUCE_USE_CURL=0" "-DJUCE_LOAD_CURL_SYMBOLS_LAZILY=0" "-DJUCE_STRICT_REFCOUNTEDPOINTER=1" "-DJUCE_WIN_PER_MONITOR_DPI_AWARE=0" "-DJUCE_WEB_BROWSER=0" "-DJUCE_USE_WIN_WEBVIEW2=0" "-DJucePlugin_Build_VST=0" "-DJucePlugin_Build_VST3=1" "-DJucePlugin_Build_AU=0" "-DJucePlugin_Build_AUv3=0" "-DJucePlugin_Build_AAX=0" "-DJucePlugin_Build_Standalone=1" "-DJucePlugin_Build_Unity=0" "-DJucePlugin_Build_LV2=1" "-DJucePlugin_Enable_IAA=0" "-DJucePlugin_Enable_ARA=0" "-DJucePlugin_Name=\"Drumpecker\"" "-DJucePlugin_Desc=\"Drumpecker\"" "-DJucePlugin_Manufacturer=\"Peter Semiletov\"" "-DJucePlugin_ManufacturerWebsite=\"https://psemiletov.github.io\"" "-DJucePlugin_ManufacturerEmail=\"peter.semiletov@gmail.com\"" "-DJucePlugin_ManufacturerCode=0x4d616e75" "-DJucePlugin_PluginCode=0x5279766a" "-DJucePlugin_IsSynth=1" "-DJucePlugin_WantsMidiInput=1" "-DJucePlugin_ProducesMidiOutput=0" "-DJucePlugin_IsMidiEffect=0" "-DJucePlugin_EditorRequiresKeyboardFocus=0" "-DJucePlugin_Version=1.0.0" "-DJucePlugin_VersionCode=0x10000" "-DJucePlugin_VersionString=\"1.0.0\"" "-DJucePlugin_VSTUniqueID=JucePlugin_PluginCode" "-DJucePlugin_VSTCategory=kPlugCategSynth" "-DJucePlugin_Vst3Category=\"Instrument|Synth\"" "-DJucePlugin_AUMainType='aumu'" "-DJucePlugin_AUSubType=JucePlugin_PluginCode" "-DJucePlugin_AUExportPrefix=DrumpeckerAU" "-DJucePlugin_AUExportPrefixQuoted=\"DrumpeckerAU\"" "-DJucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode" "-DJucePlugin_CFBundleIdentifier=com.PeterSemiletov.Drumpecker" "-DJucePlugin_AAXIdentifier=com.PeterSemiletov.Drumpecker" "-DJucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode" "-DJucePlugin_AAXProductId=JucePlugin_PluginCode" "-DJucePlugin_AAXCategory=2048" "-DJucePlugin_AAXDisableBypass=0" "-DJucePlugin_AAXDisableMultiMono=0" "-DJucePlugin_IAAType=0x61757269" "-DJucePlugin_IAASubType=JucePlugin_PluginCode" "-DJucePlugin_IAAName=\"Peter Semiletov: Drumpecker\"" "-DJucePlugin_VSTNumMidiInputs=16" "-DJucePlugin_VSTNumMidiOutputs=16" "-DJucePlugin_ARAContentTypes=0" "-DJucePlugin_ARATransformationFlags=0" "-DJucePlugin_ARAFactoryID=\"com.PeterSemiletov.Drumpecker.factory\"" "-DJucePlugin_ARADocumentArchiveID=\"com.PeterSemiletov.Drumpecker.aradocumentarchive.1.0.0\"" "-DJucePlugin_ARACompatibleArchiveIDs=\"\"" "-DJUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone" "-DJUCER_LINUX_MAKE_6D53C8B4=1" "-DJUCE_APP_VERSION=1.0.0" "-DJUCE_APP_VERSION_HEX=0x10000" $(shell $(PKG_CONFIG) --cflags alsa freetype2 zlib libjpeg libpng flac vorbis vorbisfile vorbisenc ogg jack) -pthread -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/lilv -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/sratom -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/sord/src -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/sord -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/serd -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/lv2 -I/usr/share/juce/modules/juce_audio_processors/format_types/LV2_SDK/ -I/usr/share/juce/modules/juce_audio_processors/format_types/VST3_SDK -I../../JuceLibraryCode -I../../JuceLibraryCode/modules -I/usr/share/juce/modules $(CPPFLAGS)
 
   JUCE_CPPFLAGS_VST3 := 
   JUCE_CFLAGS_VST3 := -fPIC -fvisibility=hidden
@@ -115,6 +118,9 @@ ifeq ($(CONFIG),Release)
 
   JUCE_CPPFLAGS_LV2_MANIFEST_HELPER := 
   JUCE_TARGET_LV2_MANIFEST_HELPER := juce_lv2_helper
+
+  JUCE_CPPFLAGS_VST3_MANIFEST_HELPER := 
+  JUCE_TARGET_VST3_MANIFEST_HELPER := juce_vst3_helper
 
   JUCE_CFLAGS += $(JUCE_CPPFLAGS) $(TARGET_ARCH) -fPIC -O3 $(CFLAGS)
   JUCE_CXXFLAGS += $(JUCE_CFLAGS) -std=c++17 $(CXXFLAGS)
@@ -147,7 +153,6 @@ OBJECTS_SHARED_CODE := \
   $(JUCE_OBJDIR)/include_juce_audio_devices_63111d02.o \
   $(JUCE_OBJDIR)/include_juce_audio_formats_15f82001.o \
   $(JUCE_OBJDIR)/include_juce_audio_plugin_client_ARA_31a052ed.o \
-  $(JUCE_OBJDIR)/include_juce_audio_plugin_client_utils_e32edaee.o \
   $(JUCE_OBJDIR)/include_juce_audio_processors_10c03666.o \
   $(JUCE_OBJDIR)/include_juce_audio_processors_ara_2a4c6ef7.o \
   $(JUCE_OBJDIR)/include_juce_audio_processors_lv2_libs_12bdca08.o \
@@ -160,19 +165,23 @@ OBJECTS_SHARED_CODE := \
   $(JUCE_OBJDIR)/include_juce_gui_extra_6dee1c1a.o \
 
 OBJECTS_LV2_MANIFEST_HELPER := \
-  $(JUCE_OBJDIR)/juce_LV2TurtleDumpProgram_f9409b5.o \
+  $(JUCE_OBJDIR)/juce_LV2ManifestHelper_ddbf2086.o \
 
-.PHONY: clean all strip VST3 Standalone LV2 LV2_MANIFEST_HELPER
+OBJECTS_VST3_MANIFEST_HELPER := \
+  $(JUCE_OBJDIR)/juce_VST3ManifestHelper_32018e4.o \
 
-all : VST3 Standalone LV2 LV2_MANIFEST_HELPER
+.PHONY: clean all strip VST3 Standalone LV2 LV2_MANIFEST_HELPER VST3_MANIFEST_HELPER
+
+all : VST3 Standalone LV2 LV2_MANIFEST_HELPER VST3_MANIFEST_HELPER
 
 VST3 : $(JUCE_OUTDIR)/$(JUCE_TARGET_VST3)
 Standalone : $(JUCE_OUTDIR)/$(JUCE_TARGET_STANDALONE_PLUGIN)
 LV2 : $(JUCE_OUTDIR)/$(JUCE_TARGET_LV2_PLUGIN)
 LV2_MANIFEST_HELPER : $(JUCE_OUTDIR)/$(JUCE_TARGET_LV2_MANIFEST_HELPER)
+VST3_MANIFEST_HELPER : $(JUCE_OUTDIR)/$(JUCE_TARGET_VST3_MANIFEST_HELPER)
 
 
-$(JUCE_OUTDIR)/$(JUCE_TARGET_VST3) : $(OBJECTS_VST3) $(RESOURCES) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE)
+$(JUCE_OUTDIR)/$(JUCE_TARGET_VST3) : $(OBJECTS_VST3) $(JUCE_OBJDIR)/execinfo.cmd $(RESOURCES) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) $(JUCE_OUTDIR)/$(JUCE_TARGET_VST3_MANIFEST_HELPER)
 	@command -v $(PKG_CONFIG) >/dev/null 2>&1 || { echo >&2 "pkg-config not installed. Please, install it."; exit 1; }
 	@$(PKG_CONFIG) --print-errors alsa freetype2 zlib libjpeg libpng flac vorbis vorbisfile vorbisenc ogg jack
 	@echo Linking "Drumpecker - VST3"
@@ -180,19 +189,22 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_VST3) : $(OBJECTS_VST3) $(RESOURCES) $(JUCE_OUTDIR)
 	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)/$(JUCE_VST3DIR)/$(JUCE_VST3SUBDIR)
-	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_VST3) $(OBJECTS_VST3) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) $(JUCE_LDFLAGS) $(JUCE_LDFLAGS_VST3) $(RESOURCES) $(TARGET_ARCH)
+	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_VST3) $(OBJECTS_VST3) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) $(JUCE_LDFLAGS) $(shell cat $(JUCE_OBJDIR)/execinfo.cmd) $(JUCE_LDFLAGS_VST3) $(RESOURCES) $(TARGET_ARCH)
+	-$(V_AT)mkdir -p $(JUCE_OUTDIR)/$(JUCE_VST3DIR)/Contents/Resources
+	-$(V_AT)rm -f $(JUCE_OUTDIR)/$(JUCE_VST3DIR)/Contents/moduleinfo.json
+	$(V_AT) $(JUCE_OUTDIR)/$(JUCE_TARGET_VST3_MANIFEST_HELPER) -create -version "1.0.0" -path $(JUCE_OUTDIR)/$(JUCE_VST3DIR) -output $(JUCE_OUTDIR)/$(JUCE_VST3DIR)/Contents/Resources/moduleinfo.json
 	-$(V_AT)[ ! "$(JUCE_VST3DESTDIR)" ] || (mkdir -p $(JUCE_VST3DESTDIR) && cp -R $(JUCE_COPYCMD_VST3))
 
-$(JUCE_OUTDIR)/$(JUCE_TARGET_STANDALONE_PLUGIN) : $(OBJECTS_STANDALONE_PLUGIN) $(RESOURCES) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE)
+$(JUCE_OUTDIR)/$(JUCE_TARGET_STANDALONE_PLUGIN) : $(OBJECTS_STANDALONE_PLUGIN) $(JUCE_OBJDIR)/execinfo.cmd $(RESOURCES) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE)
 	@command -v $(PKG_CONFIG) >/dev/null 2>&1 || { echo >&2 "pkg-config not installed. Please, install it."; exit 1; }
 	@$(PKG_CONFIG) --print-errors alsa freetype2 zlib libjpeg libpng flac vorbis vorbisfile vorbisenc ogg jack
 	@echo Linking "Drumpecker - Standalone Plugin"
 	-$(V_AT)mkdir -p $(JUCE_BINDIR)
 	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
-	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_STANDALONE_PLUGIN) $(OBJECTS_STANDALONE_PLUGIN) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) $(JUCE_LDFLAGS) $(JUCE_LDFLAGS_STANDALONE_PLUGIN) $(RESOURCES) $(TARGET_ARCH)
+	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_STANDALONE_PLUGIN) $(OBJECTS_STANDALONE_PLUGIN) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) $(JUCE_LDFLAGS) $(shell cat $(JUCE_OBJDIR)/execinfo.cmd) $(JUCE_LDFLAGS_STANDALONE_PLUGIN) $(RESOURCES) $(TARGET_ARCH)
 
-$(JUCE_OUTDIR)/$(JUCE_TARGET_LV2_PLUGIN) : $(OBJECTS_LV2_PLUGIN) $(RESOURCES) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) $(JUCE_OUTDIR)/$(JUCE_TARGET_LV2_MANIFEST_HELPER)
+$(JUCE_OUTDIR)/$(JUCE_TARGET_LV2_PLUGIN) : $(OBJECTS_LV2_PLUGIN) $(JUCE_OBJDIR)/execinfo.cmd $(RESOURCES) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) $(JUCE_OUTDIR)/$(JUCE_TARGET_LV2_MANIFEST_HELPER)
 	@command -v $(PKG_CONFIG) >/dev/null 2>&1 || { echo >&2 "pkg-config not installed. Please, install it."; exit 1; }
 	@$(PKG_CONFIG) --print-errors alsa freetype2 zlib libjpeg libpng flac vorbis vorbisfile vorbisenc ogg jack
 	@echo Linking "Drumpecker - LV2 Plugin"
@@ -200,11 +212,11 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_LV2_PLUGIN) : $(OBJECTS_LV2_PLUGIN) $(RESOURCES) $(
 	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)/$(JUCE_LV2DIR)
-	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_LV2_PLUGIN) $(OBJECTS_LV2_PLUGIN) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) $(JUCE_LDFLAGS) $(JUCE_LDFLAGS_LV2_PLUGIN) $(RESOURCES) $(TARGET_ARCH)
+	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_LV2_PLUGIN) $(OBJECTS_LV2_PLUGIN) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) $(JUCE_LDFLAGS) $(shell cat $(JUCE_OBJDIR)/execinfo.cmd) $(JUCE_LDFLAGS_LV2_PLUGIN) $(RESOURCES) $(TARGET_ARCH)
 	$(V_AT) $(JUCE_OUTDIR)/$(JUCE_TARGET_LV2_MANIFEST_HELPER) $(JUCE_LV2_FULL_PATH)
 	-$(V_AT)[ ! "$(JUCE_LV2DESTDIR)" ] || (mkdir -p $(JUCE_LV2DESTDIR) && cp -R $(JUCE_COPYCMD_LV2_PLUGIN))
 
-$(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) : $(OBJECTS_SHARED_CODE) $(RESOURCES)
+$(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) : $(OBJECTS_SHARED_CODE) $(JUCE_OBJDIR)/execinfo.cmd $(RESOURCES)
 	@command -v $(PKG_CONFIG) >/dev/null 2>&1 || { echo >&2 "pkg-config not installed. Please, install it."; exit 1; }
 	@$(PKG_CONFIG) --print-errors alsa freetype2 zlib libjpeg libpng flac vorbis vorbisfile vorbisenc ogg jack
 	@echo Linking "Drumpecker - Shared Code"
@@ -213,149 +225,163 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) : $(OBJECTS_SHARED_CODE) $(RESOURCES)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	$(V_AT)$(AR) -rcs $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) $(OBJECTS_SHARED_CODE)
 
-$(JUCE_OUTDIR)/$(JUCE_TARGET_LV2_MANIFEST_HELPER) : $(OBJECTS_LV2_MANIFEST_HELPER) $(RESOURCES) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE)
+$(JUCE_OUTDIR)/$(JUCE_TARGET_LV2_MANIFEST_HELPER) : $(OBJECTS_LV2_MANIFEST_HELPER) $(JUCE_OBJDIR)/execinfo.cmd $(RESOURCES) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE)
 	@command -v $(PKG_CONFIG) >/dev/null 2>&1 || { echo >&2 "pkg-config not installed. Please, install it."; exit 1; }
 	@$(PKG_CONFIG) --print-errors alsa freetype2 zlib libjpeg libpng flac vorbis vorbisfile vorbisenc ogg jack
 	@echo Linking "Drumpecker - LV2 Manifest Helper"
 	-$(V_AT)mkdir -p $(JUCE_BINDIR)
 	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
-	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_LV2_MANIFEST_HELPER) $(OBJECTS_LV2_MANIFEST_HELPER) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) $(JUCE_LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
+	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_LV2_MANIFEST_HELPER) $(OBJECTS_LV2_MANIFEST_HELPER) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) $(JUCE_LDFLAGS) $(shell cat $(JUCE_OBJDIR)/execinfo.cmd) $(RESOURCES) $(TARGET_ARCH)
+
+$(JUCE_OUTDIR)/$(JUCE_TARGET_VST3_MANIFEST_HELPER) : $(OBJECTS_VST3_MANIFEST_HELPER) $(JUCE_OBJDIR)/execinfo.cmd $(RESOURCES) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE)
+	@command -v $(PKG_CONFIG) >/dev/null 2>&1 || { echo >&2 "pkg-config not installed. Please, install it."; exit 1; }
+	@$(PKG_CONFIG) --print-errors alsa freetype2 zlib libjpeg libpng flac vorbis vorbisfile vorbisenc ogg jack
+	@echo Linking "Drumpecker - VST3 Manifest Helper"
+	-$(V_AT)mkdir -p $(JUCE_BINDIR)
+	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
+	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
+	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_VST3_MANIFEST_HELPER) $(OBJECTS_VST3_MANIFEST_HELPER) $(JUCE_OUTDIR)/$(JUCE_TARGET_SHARED_CODE) $(JUCE_LDFLAGS) $(shell cat $(JUCE_OBJDIR)/execinfo.cmd) $(RESOURCES) $(TARGET_ARCH)
 
 $(JUCE_OBJDIR)/include_juce_audio_plugin_client_VST3_dd633589.o: ../../JuceLibraryCode/include_juce_audio_plugin_client_VST3.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_audio_plugin_client_VST3.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_VST3) $(JUCE_CFLAGS_VST3) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_audio_plugin_client_Standalone_1a871192.o: ../../JuceLibraryCode/include_juce_audio_plugin_client_Standalone.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_audio_plugin_client_Standalone.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_STANDALONE_PLUGIN) $(JUCE_CFLAGS_STANDALONE_PLUGIN) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_audio_plugin_client_LV2_7d84e0a5.o: ../../JuceLibraryCode/include_juce_audio_plugin_client_LV2.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_audio_plugin_client_LV2.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_LV2_PLUGIN) $(JUCE_CFLAGS_LV2_PLUGIN) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/topheader_5da714a3.o: ../../Source/topheader.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling topheader.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/kits_778ca646.o: ../../Source/kits.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling kits.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/pugixml_39758d91.o: ../../Source/pugixml.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling pugixml.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/drumcell_5df71871.o: ../../Source/drumcell.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling drumcell.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/utl_ab3095ae.o: ../../Source/utl.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling utl.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/dsp_266a2bc2.o: ../../Source/dsp.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling dsp.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/PluginProcessor_a059e380.o: ../../Source/PluginProcessor.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling PluginProcessor.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/PluginEditor_94d4fb09.o: ../../Source/PluginEditor.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling PluginEditor.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_audio_basics_8a4e984a.o: ../../JuceLibraryCode/include_juce_audio_basics.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_audio_basics.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_audio_devices_63111d02.o: ../../JuceLibraryCode/include_juce_audio_devices.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_audio_devices.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_audio_formats_15f82001.o: ../../JuceLibraryCode/include_juce_audio_formats.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_audio_formats.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_audio_plugin_client_ARA_31a052ed.o: ../../JuceLibraryCode/include_juce_audio_plugin_client_ARA.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_audio_plugin_client_ARA.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
-$(JUCE_OBJDIR)/include_juce_audio_plugin_client_utils_e32edaee.o: ../../JuceLibraryCode/include_juce_audio_plugin_client_utils.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling include_juce_audio_plugin_client_utils.cpp"
-	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
-
 $(JUCE_OBJDIR)/include_juce_audio_processors_10c03666.o: ../../JuceLibraryCode/include_juce_audio_processors.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_audio_processors.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_audio_processors_ara_2a4c6ef7.o: ../../JuceLibraryCode/include_juce_audio_processors_ara.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_audio_processors_ara.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_audio_processors_lv2_libs_12bdca08.o: ../../JuceLibraryCode/include_juce_audio_processors_lv2_libs.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_audio_processors_lv2_libs.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_audio_utils_9f9fb2d6.o: ../../JuceLibraryCode/include_juce_audio_utils.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_audio_utils.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_core_f26d17db.o: ../../JuceLibraryCode/include_juce_core.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_core.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_data_structures_7471b1e3.o: ../../JuceLibraryCode/include_juce_data_structures.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_data_structures.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_events_fd7d695.o: ../../JuceLibraryCode/include_juce_events.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_events.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_graphics_f817e147.o: ../../JuceLibraryCode/include_juce_graphics.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_graphics.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_gui_basics_e3f79785.o: ../../JuceLibraryCode/include_juce_gui_basics.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_gui_basics.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_gui_extra_6dee1c1a.o: ../../JuceLibraryCode/include_juce_gui_extra.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_gui_extra.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
-$(JUCE_OBJDIR)/juce_LV2TurtleDumpProgram_f9409b5.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/LV2/juce_LV2TurtleDumpProgram.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling juce_LV2TurtleDumpProgram.cpp"
+$(JUCE_OBJDIR)/juce_LV2ManifestHelper_ddbf2086.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/LV2/juce_LV2ManifestHelper.cpp
+	-$(V_AT)mkdir -p $(@D)
+	@echo "Compiling juce_LV2ManifestHelper.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_LV2_MANIFEST_HELPER) $(JUCE_CFLAGS_LV2_MANIFEST_HELPER) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/juce_VST3ManifestHelper_32018e4.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/VST3/juce_VST3ManifestHelper.cpp
+	-$(V_AT)mkdir -p $(@D)
+	@echo "Compiling juce_VST3ManifestHelper.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_VST3_MANIFEST_HELPER) $(JUCE_CFLAGS_VST3_MANIFEST_HELPER) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/execinfo.cmd:
+	-$(V_AT)mkdir -p $(@D)
+	-@if [ -z "$(V_AT)" ]; then echo "Checking if we need to link libexecinfo"; fi
+	$(V_AT)printf "int main() { return 0; }" | $(CXX) -x c++ -o $(@D)/execinfo.x -lexecinfo - >/dev/null 2>&1 && printf -- "-lexecinfo" > "$@" || touch "$@"
 
 clean:
 	@echo Cleaning Drumpecker
@@ -370,3 +396,4 @@ strip:
 -include $(OBJECTS_LV2_PLUGIN:%.o=%.d)
 -include $(OBJECTS_SHARED_CODE:%.o=%.d)
 -include $(OBJECTS_LV2_MANIFEST_HELPER:%.o=%.d)
+-include $(OBJECTS_VST3_MANIFEST_HELPER:%.o=%.d)

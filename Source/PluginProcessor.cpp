@@ -28,7 +28,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
   layout.add (std::make_unique<juce::AudioParameterBool> ("invertPhase", "Invert Phase", false));
 
   layout.add (std::make_unique<juce::AudioParameterFloat> ("gain0", "Gain0", minusInfdB, 6, 0));
-  layout.add (std::make_unique<juce::AudioParameterFloat> ("pan0", "Gain0", minusInfdB, 6, 0));
+  layout.add (std::make_unique<juce::AudioParameterFloat> ("pan0", "Pan0", 0.0f, 1.0f, 0.5f));
 
   return layout;
 }

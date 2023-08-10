@@ -308,7 +308,7 @@ CDrumCell::CDrumCell ()
     sl_pan.setBounds (8, 16, 104, 120);
 
     addAndMakeVisible (sl_gain);
-    sl_gain.setRange (-60, 6, 0);
+    sl_gain.setRange (-60, 6, 1);
     sl_gain.setSliderStyle (juce::Slider::LinearVertical);
     sl_gain.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
     sl_gain.addListener (this);
