@@ -9,6 +9,9 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#include "utl.h"
+
+
 extern juce::AudioFormatManager *formatManager;
 
 #define minusInfdB -60
@@ -64,7 +67,7 @@ parameters (*this, 0, "Drumpecker", createParameterLayout())
 
   drumkit = 0;
 
-  drumkit_name = "";
+  drumkit_path = "";
 
 
 
@@ -185,6 +188,7 @@ void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
       std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
 
+     load_kit (drumkit_path);
    // scanner.scan();
 
 }
@@ -292,7 +296,7 @@ juce::AudioProcessorEditor* CAudioProcessor::createEditor()
 //==============================================================================
 void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    save_string_keyval ("drumkit_name", drumkit_name);
+    save_string_keyval ("drumkit_path", drumkit_path);
 
 
         auto state = parameters.copyState();
@@ -313,9 +317,9 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
                 parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
 
 
-             drumkit_name = load_string_keyval ("drumkit_name");
+             drumkit_path = load_string_keyval ("drumkit_path");
 
-  std::cout << ">>>>>>>>>>>>drumkit_name: " << drumkit_name  << std::endl;
+     std::cout << ">>>>>>>>>>>>drumkit_path: " << drumkit_path  << std::endl;
 
 }
 
@@ -334,7 +338,7 @@ void CAudioProcessor::save_string_keyval (const std::string &key, const std::str
 
 std::string CAudioProcessor::load_string_keyval (const std::string &key)
 {
-  std::cout << "CAudioProcessor::load_string_keyval : " << key << std::endl;
+  //std::cout << "CAudioProcessor::load_string_keyval : " << key << std::endl;
 
   juce::Identifier keyid (key.c_str());
 
@@ -349,12 +353,29 @@ std::string CAudioProcessor::load_string_keyval (const std::string &key)
 
   auto text = addons.getProperty (keyid, juce::String()).toString();
 
-
-
   std::cout << "TEXT: " << text << std::endl;
 
   return text.toStdString();
 }
+
+
+
+bool CAudioProcessor::load_kit (const std::string &fullpath)
+{
+//STOP PLAY
+
+//THEN
+/*
+   if (drumkit)
+      delete drumkit;
+
+    drumkit = new CDrumKit (fullpath);
+*/
+//SIGNAL TO
+
+ return true;
+}
+
 
 //==============================================================================
 // This creates new instances of the plugin..

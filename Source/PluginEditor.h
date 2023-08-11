@@ -52,6 +52,8 @@ public:
 
     //[/UserMethods]
 
+    void set_name (const std::string &n);
+
     void paint (juce::Graphics& g) override;
     void resized() override;
     void sliderValueChanged (juce::Slider* sliderThatWasMoved) override;
@@ -132,6 +134,7 @@ public:
 
     void buttonClicked (juce::Button* button) override;
 
+    void load_kit (const std::string &kitpath);
     void kit_changed();
 
 

@@ -184,6 +184,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
             }
 
 
+        load_kit (audioProcessor.drumkit_path);
+
         drumlines_viewer.setViewedComponent (&drumlines_container, false);
         drumlines_viewer.setScrollBarsShown	(true, false);
         drumlines_viewer.setSize (drumlines[0].getWidth() + 24, 480);
@@ -284,7 +286,7 @@ void CAudioProcessorEditor::buttonClicked (juce::Button* button)
 
      std::cout << "SAVE"  << std::endl;
 
-     audioProcessor.drumkit_name = "BUUUUUU";
+    // audioProcessor.drumkit_name = "BUUUUUU";
   //   audioProcessor.save_string_keyval ("drumkit_name", audioProcessor.drumkit_name);
 /*
      std::cout << "LOAD"  << std::endl;
@@ -387,7 +389,7 @@ void CAudioProcessorEditor::comboBoxChanged(juce::ComboBox *comboBox)
       std::string full = kits_scanner.map_kits[kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1]];
       std::cout << "FULL: " << full << std::endl;
 
-      audioProcessor.drumkit_name = full;
+      audioProcessor.drumkit_path = full;
 
 
 
@@ -524,7 +526,7 @@ void CDrumLine::sliderValueChanged (juce::Slider* sliderThatWasMoved)
 }
 
 
-void  CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
+void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
 {
 
   //if (! ed)
@@ -542,5 +544,29 @@ void  CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
   param_name = "pan" + std::to_string (cell_number);
 
   att_pan.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_pan));
+
+}
+
+
+void CDrumLine::set_name (const std::string &n)
+{
+  label.setText (n.c_str(), juce::dontSendNotification);
+
+}
+
+
+void CAudioProcessorEditor::load_kit (const std::string &kitpath)
+{
+  //STOP PLAY
+
+  //THEN
+  //make all drum labels empyy
+
+   for (size_t i = 0; i < 36; i++)
+       {
+        drumlines[i].set_name ("EMPTY CELL");
+       }
+
+
 
 }

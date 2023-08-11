@@ -20,8 +20,6 @@ class CAudioProcessor  : public juce::AudioProcessor
                              , public juce::AudioProcessorARAExtension
                             #endif
 
-
-
 {
 public:
 
@@ -37,14 +35,12 @@ public:
     std::atomic<float>* pans[36];
     std::atomic<float>* gains[36];
 
-    std::string drumkit_name;
+    std::string drumkit_path; //full path!
 
 
 public:
 
  //   juce::AudioParameterInt* p_panner;
-
-
 
 
     CHydrogenKitsScanner scanner;
@@ -56,10 +52,10 @@ public:
 
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
+    bool load_kit (const std::string &fullpath);
 
     void save_string_keyval (const std::string &key, const std::string &val);
     std::string load_string_keyval (const std::string &key);
-
 
 
 
