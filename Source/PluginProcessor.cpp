@@ -67,9 +67,6 @@ parameters (*this, 0, "Drumpecker", createParameterLayout())
   drumkit_name = "";
 
 
-//  drumkit_name = load_string_keyval ("drumkit_name");
-
-//  std::cout << "drumkit_name: " << drumkit_name  << std::endl;
 
 
   //auto addons = treeState.state.getOrCreateChildWithName ("addons", nullptr);
@@ -295,9 +292,15 @@ juce::AudioProcessorEditor* CAudioProcessor::createEditor()
 //==============================================================================
 void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
+    save_string_keyval ("drumkit_name", drumkit_name);
+
+
         auto state = parameters.copyState();
         std::unique_ptr<juce::XmlElement> xml (state.createXml());
         copyXmlToBinary (*xml, destData);
+
+
+
 }
 
 
@@ -308,6 +311,12 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
         if (xmlState.get() != nullptr)
             if (xmlState->hasTagName (parameters.state.getType()))
                 parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
+
+
+             drumkit_name = load_string_keyval ("drumkit_name");
+
+  std::cout << ">>>>>>>>>>>>drumkit_name: " << drumkit_name  << std::endl;
+
 }
 
 

@@ -253,15 +253,15 @@ void CAudioProcessorEditor::buttonClicked (juce::Button* button)
 
      std::cout << "SAVE"  << std::endl;
 
-     audioProcessor.drumkit_name = "YYYYYAAAAY";
+     audioProcessor.drumkit_name = "BUUUUUU";
      audioProcessor.save_string_keyval ("drumkit_name", audioProcessor.drumkit_name);
-
+/*
      std::cout << "LOAD"  << std::endl;
 
      audioProcessor.drumkit_name = audioProcessor.load_string_keyval ("drumkit_name");
 
      std::cout << "drumkit_name: " << audioProcessor.drumkit_name  << std::endl;
-
+*/
 
       // std::cout << "save drumkit_name: " << drumkit_name << std::endl;
 
