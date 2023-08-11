@@ -185,7 +185,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 /////////////*******************8
 
-//        load_kit (audioProcessor.drumkit_path);
+        load_kit (audioProcessor.drumkit_path);
 
         /////////////////************8
 
@@ -399,6 +399,10 @@ void CAudioProcessorEditor::comboBoxChanged(juce::ComboBox *comboBox)
 
       audioProcessor.drumkit_path = full;
 
+      audioProcessor.load_kit (full);
+
+      //update GUI
+      load_kit (full);
 
 
 

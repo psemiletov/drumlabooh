@@ -66,6 +66,7 @@ parameters (*this, 0, "Drumpecker", createParameterLayout())
 {
 
   drumkit = 0;
+  session_samplerate = 0;
 
   drumkit_path = "";
 
@@ -188,8 +189,9 @@ void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
       std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
 
+     session_samplerate = (int) sampleRate;
+
      load_kit (drumkit_path);
-   // scanner.scan();
 
 }
 
@@ -362,16 +364,26 @@ std::string CAudioProcessor::load_string_keyval (const std::string &key)
 
 bool CAudioProcessor::load_kit (const std::string &fullpath)
 {
+
+  std::cout << "CAudioProcessor::load_kit - 1" << std::endl;
 //STOP PLAY
 
+  suspendProcessing (true);
+
 //THEN
-/*
+
    if (drumkit)
       delete drumkit;
 
-    drumkit = new CDrumKit (fullpath);
-*/
+    drumkit = new CHydrogenKit;
+    drumkit->load (fullpath, session_samplerate);
+
 //SIGNAL TO
+
+ suspendProcessing (false);
+
+ std::cout << "CAudioProcessor::load_kit - 2" << std::endl;
+
 
  return true;
 }

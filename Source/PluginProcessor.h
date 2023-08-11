@@ -26,6 +26,8 @@ public:
     juce::AudioProcessorValueTreeState parameters;
     float previousGain; // [1]
 
+    //int session_rate;
+
     //std::atomic<float>* phaseParameter = nullptr;
     //std::atomic<float>* gainParameter  = nullptr;
 
@@ -45,6 +47,8 @@ public:
 
     CHydrogenKitsScanner scanner;
     CHydrogenKit *drumkit;
+
+    int session_samplerate; //sess rate
 
     //==============================================================================
     CAudioProcessor();
