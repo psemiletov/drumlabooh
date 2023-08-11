@@ -75,8 +75,17 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
           valueTreeState (vts)
 {
 
+  kits_scanner.scan();
+
+  for (size_t i = 0; i < kits_scanner.v_kits_names.size(); i++)
+  {
+    //  std::cout << kits_scanner.v_kits_names[i] << std::endl;
+    //  std::cout << "i:" << i << std::endl;
+
+      cmb_drumkit_selector.addItem (kits_scanner.v_kits_names[i], i + 1);
 
 
+  }
  // addAndMakeVisible (top_header);
    // top_header.setTopLeftPosition(1, 1);
 /*
@@ -85,10 +94,27 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   std::cout << "!!!!!!!!!!!!!!!!!!!!!! " << text << std::endl;
 */
 
-    addAndMakeVisible (bt_test);
-     bt_test.setButtonText ("Test");
+    int yoffs = 0;
+    int xoffs = 0;
 
-       bt_test.addListener (this);
+
+    cmb_drumkit_selector.setTextWhenNothingSelected ("CLICK HERE TO SELECT THE DRUMKIT");
+    cmb_drumkit_selector.setTextWhenNoChoicesAvailable ("NO DRUMKITS FOUND");
+    cmb_drumkit_selector.setScrollWheelEnabled (true);
+
+    addAndMakeVisible (cmb_drumkit_selector);
+
+    //cmb_drumkit_selector.onChange = [this] { kit_changed(); };
+    cmb_drumkit_selector.addListener (this);
+
+    cmb_drumkit_selector.setTopLeftPosition (0, 0);
+    cmb_drumkit_selector.setSize (780, 48);
+
+    yoffs += cmb_drumkit_selector.getHeight();
+
+    addAndMakeVisible (bt_test);
+    bt_test.setButtonText ("Test");
+    bt_test.addListener (this);
 /*
     // these define the parameters of our slider object
     midiVolume.setSliderStyle (juce::Slider::LinearBarVertical);
@@ -121,6 +147,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
         cmb_panner_mode.setBounds (50, 50, 100, 50);
 
 */
+/*
         gainLabel.setText ("Gain", juce::dontSendNotification);
         addAndMakeVisible (gainLabel);
 
@@ -135,7 +162,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
         invertButton.setButtonText ("Invert Phase");
         addAndMakeVisible (invertButton);
         invertAttachment.reset (new ButtonAttachment (valueTreeState, "invertPhase", invertButton));
-
+*/
 //        setSize (paramSliderWidth + paramLabelWidth, juce::jmax (100, paramControlHeight * 2));
 
 
@@ -155,19 +182,20 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
         drumlines_viewer.setViewedComponent (&drumlines_container, false);
-
         drumlines_viewer.setScrollBarsShown	(true, false);
-
         drumlines_viewer.setSize (drumlines[0].getWidth() + 24, 480);
         drumlines_viewer.setScrollBarThickness (24);
 
+        drumlines_viewer.setTopLeftPosition (0, yoffs + YFILLER);
 
         addAndMakeVisible (drumlines_viewer);
+
 
         setSize (780, 720);
 
 
-         bt_test.setBounds (drumlines[0].getWidth() + 36, 100, 50, 50);
+
+        bt_test.setBounds (drumlines[0].getWidth() + 36, 100, 50, 50);
 
 
 }
@@ -254,7 +282,7 @@ void CAudioProcessorEditor::buttonClicked (juce::Button* button)
      std::cout << "SAVE"  << std::endl;
 
      audioProcessor.drumkit_name = "BUUUUUU";
-     audioProcessor.save_string_keyval ("drumkit_name", audioProcessor.drumkit_name);
+  //   audioProcessor.save_string_keyval ("drumkit_name", audioProcessor.drumkit_name);
 /*
      std::cout << "LOAD"  << std::endl;
 
@@ -323,141 +351,44 @@ void CAudioProcessorEditor::buttonClicked (juce::Button* button)
   }
   }
 
-/*
-CDrumCells::CDrumCells()
-{
-  cellholder.setBounds (1, 1, 720, 720);
-  setViewedComponent (&cellholder);
-
-  size_t i = 0;
-
-  for (size_t row = 0; row < 6; row++)
-  for (size_t col = 0; col < 6; col++)
-
-      {
-       CDrumCell *dc = new CDrumCell (i);
-       drumscells[i++] = dc;
-
-      }
-
-}
-
-CDrumCells::~CDrumCells()
-{
-  for (size_t i = 0; i < 36; iow++)
-      delete drumscells[i];
-
-
-}*/
 
 
 
-CDrumCell::CDrumCell ()
-{
 
-    addChildComponent (gr_group);
-    //gr_group.setTextLabelPosition (juce::Justification::centredLeft);
-
-
-    addAndMakeVisible (sl_pan);
-    sl_pan.setRange (0.0f, 1.0f, 0.01f);
-    sl_pan.setSliderStyle (juce::Slider::RotaryHorizontalDrag);
-    sl_pan.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
-    sl_pan.addListener (this);
-
-    sl_pan.setBounds (8, 16, 104, 120);
-
-    addAndMakeVisible (sl_gain);
-    sl_gain.setRange (-60, 6, 1);
-    sl_gain.setSliderStyle (juce::Slider::LinearVertical);
-    sl_gain.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
-    sl_gain.addListener (this);
-
-    sl_gain.setBounds (112, 16, 56, 120);
-
-    gr_group.setVisible (true);
-    gr_group.setBounds (0, 0, 180, 144);
-
-
-    setSize (180, 144);
-
-
-    //[Constructor] You can add your own custom stuff here..
-    //[/Constructor]
-}
-
-CDrumCell::~CDrumCell()
-{
-
-}
-
-//==============================================================================
-void CDrumCell::paint (juce::Graphics& g)
-{
-    //[UserPrePaint] Add your own custom painting code here..
-    //[/UserPrePaint]
-
-    g.fillAll (juce::Colour (0xff323e44));
-
-    //[UserPaint] Add your own custom painting code here..
-    //[/UserPaint]
-}
-
-void CDrumCell::resized()
-{
-    //[UserPreResize] Add your own custom resize code here..
-    //[/UserPreResize]
-
-    //[UserResized] Add your own custom resize handling here..
-    //[/UserResized]
-}
-
-void CDrumCell::sliderValueChanged (juce::Slider* sliderThatWasMoved)
-{
-    //[UsersliderValueChanged_Pre]
-    //[/UsersliderValueChanged_Pre]
-
-    if (sliderThatWasMoved == &sl_pan)
+void CAudioProcessorEditor::kit_changed()
     {
+        //(cmb_drumkit_selector.getSelectedId()
+      std::cout << cmb_drumkit_selector.getSelectedId() - 1<< std::endl;
+
+    }
+
+
+
+
+void CAudioProcessorEditor::comboBoxChanged(juce::ComboBox *comboBox)
+{
+
+        std::cout << "CAudioProcessorEditor::comboBoxChanged" << std::endl;
+
+
+   if (comboBox == &cmb_drumkit_selector)
+    {
+
+      std::cout << cmb_drumkit_selector.getSelectedId() - 1<< std::endl;
+
+
+
+//      juce::String sk = cmb_drumkit_selector::getItemText(cmb_drumkit_selector.getSelectedId());
+
+     std::cout << kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1] << std::endl;
+
+
         //[UserSliderCode_sl_pan] -- add your slider handling code here..
         //[/UserSliderCode_sl_pan]
     }
-    else if (sliderThatWasMoved == &sl_gain)
-    {
-        //[UserSliderCode_sl_gain] -- add your slider handling code here..
-        //[/UserSliderCode_sl_gain]
-    }
 
-    //[UsersliderValueChanged_Post]
-    //[/UsersliderValueChanged_Post]
-}
-
-
-void  CDrumCell::attach_params (CAudioProcessorEditor *ed, int cellno)
-{
-
-  if (! ed)
-     std::cout << "!!!!! " << std::endl;
-
-  cell_number = cellno;
-
-  std::string param_name = "gain" + std::to_string (cell_number);
-
-  std::cout << "param_name:" << param_name << std::endl;
-
-
-  att_gain.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_gain));
-
-  param_name = "pan" + std::to_string (cell_number);
-
-  att_pan.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_pan));
 
 }
-
-
-
-
-//////////
 
 
 
@@ -595,6 +526,3 @@ void  CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
   att_pan.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_pan));
 
 }
-
-
-
