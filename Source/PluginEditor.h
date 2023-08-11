@@ -77,7 +77,8 @@ public:
     //==============================================================================
 
 
-  juce::GroupComponent gr_group;
+    juce::GroupComponent gr_group;
+
     juce::Slider sl_pan;
     juce::Slider sl_gain;
 
@@ -150,8 +151,8 @@ public:
 
     juce::Label gainLabel;
     juce::Slider gainSlider;
-    std::unique_ptr<SliderAttachment> gainAttachment;
 
+    std::unique_ptr<SliderAttachment> gainAttachment;
     juce::ToggleButton invertButton;
     std::unique_ptr<ButtonAttachment> invertAttachment;
 
@@ -178,10 +179,14 @@ public:
     juce::Font f_default_font { 12.0f };
     juce::ComboBox cmb_panner_mode;
 
-     juce::Slider midiVolume;
+    juce::Slider midiVolume;
 
     juce::TextButton bt_test;
     juce::Label timeLabel;
+
+
+   // void save_string_keyval (const std::string &key, const std::string &val);
+ //   std::string load_string_keyval (const std::string &key);
 
     void buttonClicked (juce::Button* button) override;
 

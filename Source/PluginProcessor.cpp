@@ -64,8 +64,21 @@ parameters (*this, 0, "Drumpecker", createParameterLayout())
 
   drumkit = 0;
 
-  phaseParameter = parameters.getRawParameterValue ("invertPhase");
-  gainParameter  = parameters.getRawParameterValue ("gain");
+  drumkit_name = "";
+
+
+//  drumkit_name = load_string_keyval ("drumkit_name");
+
+//  std::cout << "drumkit_name: " << drumkit_name  << std::endl;
+
+
+  //auto addons = treeState.state.getOrCreateChildWithName ("addons", nullptr);
+  //auto text = addons.getProperty ("drumkit_name", juce::String()).toString();
+
+  //std::cout << text << std::endl;
+
+  //phaseParameter = parameters.getRawParameterValue ("invertPhase");
+  //gainParameter  = parameters.getRawParameterValue ("gain");
 //  gain0  = parameters.getRawParameterValue ("gain0");
 //  pan0  = parameters.getRawParameterValue ("pan0");
 
@@ -84,6 +97,10 @@ parameters (*this, 0, "Drumpecker", createParameterLayout())
 
 CAudioProcessor::~CAudioProcessor()
 {
+ // std::cout << "save drumkit_name: " << drumkit_name << std::endl;
+
+   //save_string_keyval ("drumkit_name", drumkit_name);
+
    if (drumkit)
        delete drumkit;
 
@@ -293,10 +310,48 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
                 parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
 }
 
+
+
+void CAudioProcessor::save_string_keyval (const std::string &key, const std::string &val)
+{
+  auto addons = parameters.state.getOrCreateChildWithName ("addons", nullptr);
+  addons.setProperty (key.c_str(), val.c_str(), nullptr);
+
+//  addons.setProperty ("drumkit_name", "val.c_str()", nullptr);
+
+
+}
+
+
+std::string CAudioProcessor::load_string_keyval (const std::string &key)
+{
+  std::cout << "CAudioProcessor::load_string_keyval : " << key << std::endl;
+
+  juce::Identifier keyid (key.c_str());
+
+  auto addons = parameters.state.getOrCreateChildWithName ("addons", nullptr);
+  //ret ValueTree
+
+  //auto addons = parameters.state.getOrCreateChildWithName ("addons", nullptr);
+
+  //auto text = addons.getProperty (key.c_str(), juce::String()).toString();
+
+  //auto text = addons.getProperty ("drumkit_name", juce::String()).toString();
+
+  auto text = addons.getProperty (keyid, juce::String()).toString();
+
+
+
+  std::cout << "TEXT: " << text << std::endl;
+
+  return text.toStdString();
+}
+
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new CAudioProcessor();
 }
+
 

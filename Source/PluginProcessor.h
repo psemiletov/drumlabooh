@@ -23,13 +23,13 @@ class CAudioProcessor  : public juce::AudioProcessor
 
 
 {
-private:
+public:
 
     juce::AudioProcessorValueTreeState parameters;
     float previousGain; // [1]
 
-    std::atomic<float>* phaseParameter = nullptr;
-    std::atomic<float>* gainParameter  = nullptr;
+    //std::atomic<float>* phaseParameter = nullptr;
+    //std::atomic<float>* gainParameter  = nullptr;
 
  //  std::atomic<float>* gain0  = nullptr;
   //  std::atomic<float>* pan0  = nullptr;
@@ -37,11 +37,12 @@ private:
     std::atomic<float>* pans[36];
     std::atomic<float>* gains[36];
 
+    std::string drumkit_name;
 
 
 public:
 
-    juce::AudioParameterInt* p_panner;
+ //   juce::AudioParameterInt* p_panner;
 
 
 
@@ -51,11 +52,16 @@ public:
 
     //==============================================================================
     CAudioProcessor();
-
-
     ~CAudioProcessor() override;
 
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
+
+    void save_string_keyval (const std::string &key, const std::string &val);
+    std::string load_string_keyval (const std::string &key);
+
+
+
 
 
     //==============================================================================

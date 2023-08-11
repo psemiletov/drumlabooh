@@ -79,10 +79,11 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
  // addAndMakeVisible (top_header);
    // top_header.setTopLeftPosition(1, 1);
-
-
-
-
+/*
+  auto addons = valueTreeState.state.getOrCreateChildWithName ("addons", nullptr);
+  auto text = addons.getProperty ("text", juce::String()).toString();
+  std::cout << "!!!!!!!!!!!!!!!!!!!!!! " << text << std::endl;
+*/
 
     addAndMakeVisible (bt_test);
      bt_test.setButtonText ("Test");
@@ -138,7 +139,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 //        setSize (paramSliderWidth + paramLabelWidth, juce::jmax (100, paramControlHeight * 2));
 
 
-        drumlines_container.setSize (780, 720);
+        drumlines_container.setSize (780, drumlines[0].getHeight() * 36);
       //  drumlines_container.addAndMakeVisible (dl);
 
      //   dl.setTopLeftPosition(1, 1);
@@ -154,10 +155,20 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
         drumlines_viewer.setViewedComponent (&drumlines_container, false);
-        drumlines_viewer.setSize (780, 480);
+
+        drumlines_viewer.setScrollBarsShown	(true, false);
+
+        drumlines_viewer.setSize (drumlines[0].getWidth() + 24, 480);
+        drumlines_viewer.setScrollBarThickness (24);
+
+
         addAndMakeVisible (drumlines_viewer);
 
         setSize (780, 720);
+
+
+         bt_test.setBounds (drumlines[0].getWidth() + 36, 100, 50, 50);
+
 
 }
 
@@ -199,12 +210,12 @@ void CAudioProcessorEditor::resized()
     //midiVolume.setBounds (40, 30, 20, getHeight() - 60);
 
 
-  bt_test.setBounds (1, 100, 50, 50);
-  invertButton.setBounds (1, 160, 70, 70);
+
+//  invertButton.setBounds (1, 160, 70, 70);
 
   //auto r = getLocalBounds();
 
-  juce::Rectangle <int> r (1, 1, KNOB_WIDTH, KNOB_HEIGHT);
+//  juce::Rectangle <int> r (1, 1, KNOB_WIDTH, KNOB_HEIGHT);
 /*
         auto gainRect = r.removeFromTop (paramControlHeight);
         gainLabel .setBounds (gainRect.removeFromLeft (paramLabelWidth));
@@ -215,10 +226,10 @@ void CAudioProcessorEditor::resized()
 
 
 
-    gainLabel.setBounds (1, 1, 70, 80);
+  //  gainLabel.setBounds (1, 1, 70, 80);
 
     //r.translate (50, 0);
-    gainSlider.setBounds (73, 1, 100, 100);
+//    gainSlider.setBounds (73, 1, 100, 100);
 
 
 
@@ -236,6 +247,29 @@ void CAudioProcessorEditor::buttonClicked (juce::Button* button)
     {
      std::cout << "NewProjectAudioProcessorEditor::buttonClicked " << std::endl;
 
+       // auto addons = valueTreeState.state.getOrCreateChildWithName ("addons", nullptr);
+        //addons.setProperty ("text", "Lorem Ipsum", nullptr);
+
+
+     std::cout << "SAVE"  << std::endl;
+
+     audioProcessor.drumkit_name = "YYYYYAAAAY";
+     audioProcessor.save_string_keyval ("drumkit_name", audioProcessor.drumkit_name);
+
+     std::cout << "LOAD"  << std::endl;
+
+     audioProcessor.drumkit_name = audioProcessor.load_string_keyval ("drumkit_name");
+
+     std::cout << "drumkit_name: " << audioProcessor.drumkit_name  << std::endl;
+
+
+      // std::cout << "save drumkit_name: " << drumkit_name << std::endl;
+
+
+
+
+
+//     audioProcessor.save_string_keyval ("drumkit_name", "YAYAYAY");
 
    //   CDrumLayer l ("/home/rox/.hydrogen/data/drumkits/acustica_percussoes/01_ganza_forte_44100.flac", 44100);
 
@@ -561,4 +595,6 @@ void  CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
   att_pan.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_pan));
 
 }
+
+
 
