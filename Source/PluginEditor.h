@@ -39,6 +39,7 @@ public:
     CDrumLine ();
     ~CDrumLine() override;
 
+
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 
@@ -155,8 +156,11 @@ public:
     std::unique_ptr<ButtonAttachment> invertAttachment;
 
 
-    CDrumCell dc;
+    //CDrumCell dc;
     CDrumLine dl;
+
+    CDrumLine drumlines [36];
+
 
 public:
     //NewProjectAudioProcessorEditor (NewProjectAudioProcessor&);

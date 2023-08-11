@@ -15,6 +15,13 @@ extern juce::AudioFormatManager *formatManager;
 
 juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParameterLayout()
 {
+
+  for (size_t i = 0; i < 36; i++)
+     {
+      pans[i] = nullptr;
+      gains[i] = nullptr;
+     }
+
   juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
   layout.add (std::make_unique<juce::AudioParameterInt> ("panmode",            // parameterID
@@ -27,8 +34,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
   layout.add (std::make_unique<juce::AudioParameterBool> ("invertPhase", "Invert Phase", false));
 
-  layout.add (std::make_unique<juce::AudioParameterFloat> ("gain0", "Gain0", minusInfdB, 6, 0));
-  layout.add (std::make_unique<juce::AudioParameterFloat> ("pan0", "Pan0", 0.0f, 1.0f, 0.5f));
+  //layout.add (std::make_unique<juce::AudioParameterFloat> ("gain0", "Gain0", minusInfdB, 6, 0));
+  //layout.add (std::make_unique<juce::AudioParameterFloat> ("pan0", "Pan0", 0.0f, 1.0f, 0.5f));
+
+  for (size_t i = 0; i < 36; i++)
+      {
+       layout.add (std::make_unique<juce::AudioParameterFloat> ("gain" + std::to_string(i), "gain" + std::to_string(i), minusInfdB, 6, 0));
+       layout.add (std::make_unique<juce::AudioParameterFloat> ("pan" + std::to_string(i), "pan" + std::to_string(i), 0.0f, 1.0f, 0.5f));
+      }
 
   return layout;
 }
@@ -53,8 +66,19 @@ parameters (*this, 0, "Drumpecker", createParameterLayout())
 
   phaseParameter = parameters.getRawParameterValue ("invertPhase");
   gainParameter  = parameters.getRawParameterValue ("gain");
-  gain0  = parameters.getRawParameterValue ("gain0");
-  pan0  = parameters.getRawParameterValue ("pan0");
+//  gain0  = parameters.getRawParameterValue ("gain0");
+//  pan0  = parameters.getRawParameterValue ("pan0");
+
+ // gains[0]  = parameters.getRawParameterValue ("gain0");
+ // pans[0]  = parameters.getRawParameterValue ("pan0");
+
+  for (size_t i = 0; i < 36; i++)
+      {
+       gains[i]  = parameters.getRawParameterValue ("gain" + std::to_string(i));
+       pans[i]  = parameters.getRawParameterValue ("pan" + std::to_string(i));
+
+      }
+
 
 }
 

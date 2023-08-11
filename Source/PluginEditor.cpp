@@ -139,11 +139,18 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
         drumlines_container.setSize (780, 720);
-        drumlines_container.addAndMakeVisible (dl);
+      //  drumlines_container.addAndMakeVisible (dl);
 
-        dl.setTopLeftPosition(1, 1);
-        dl.attach_params (this, 0);
+     //   dl.setTopLeftPosition(1, 1);
+     //   dl.attach_params (this, 0);
 
+
+        for (size_t i = 0; i < 36; i++)
+            {
+             drumlines[i].setTopLeftPosition (0, i * drumlines[i].getHeight());
+             drumlines_container.addAndMakeVisible (drumlines[i]);
+             drumlines[i].attach_params (this, i);
+            }
 
 
         drumlines_viewer.setViewedComponent (&drumlines_container, false);
@@ -544,7 +551,7 @@ void  CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
 
   std::string param_name = "gain" + std::to_string (cell_number);
 
-  std::cout << "param_name:" << param_name << std::endl;
+ // std::cout << "param_name:" << param_name << std::endl;
 
 
   att_gain.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_gain));
