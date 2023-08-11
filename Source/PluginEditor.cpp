@@ -10,9 +10,12 @@
 #include "PluginEditor.h"
 
 
+
+
 #include "kits.h"
 
-
+#define XFILLER 4
+#define YFILLER 16
 
 
 //#define TESTKIT "/home/rox/sfz-kits/Vintage Kit/Vintage Kit.sfz"
@@ -72,6 +75,15 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
           valueTreeState (vts)
 {
 
+
+
+ // addAndMakeVisible (top_header);
+   // top_header.setTopLeftPosition(1, 1);
+
+
+
+
+
     addAndMakeVisible (bt_test);
      bt_test.setButtonText ("Test");
 
@@ -125,9 +137,18 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 //        setSize (paramSliderWidth + paramLabelWidth, juce::jmax (100, paramControlHeight * 2));
 
-        addAndMakeVisible (dc);
-        dc.attach_params (this, 0);
 
+        drumlines_container.setSize (780, 720);
+        drumlines_container.addAndMakeVisible (dl);
+
+        dl.setTopLeftPosition(1, 1);
+        dl.attach_params (this, 0);
+
+
+
+        drumlines_viewer.setViewedComponent (&drumlines_container, false);
+        drumlines_viewer.setSize (780, 480);
+        addAndMakeVisible (drumlines_viewer);
 
         setSize (780, 720);
 
@@ -192,7 +213,6 @@ void CAudioProcessorEditor::resized()
     //r.translate (50, 0);
     gainSlider.setBounds (73, 1, 100, 100);
 
-    dc.setTopLeftPosition(1, 200);
 
 
         //gainSlider.setBounds (gainRect);
@@ -294,10 +314,9 @@ CDrumCells::~CDrumCells()
 CDrumCell::CDrumCell ()
 {
 
-    addAndMakeVisible (gr_group);
-    gr_group.setTextLabelPosition (juce::Justification::centredLeft);
+    addChildComponent (gr_group);
+    //gr_group.setTextLabelPosition (juce::Justification::centredLeft);
 
-    gr_group.setBounds (0, 0, 180, 144);
 
     addAndMakeVisible (sl_pan);
     sl_pan.setRange (0.0f, 1.0f, 0.01f);
@@ -314,6 +333,10 @@ CDrumCell::CDrumCell ()
     sl_gain.addListener (this);
 
     sl_gain.setBounds (112, 16, 56, 120);
+
+    gr_group.setVisible (true);
+    gr_group.setBounds (0, 0, 180, 144);
+
 
     setSize (180, 144);
 
@@ -374,6 +397,148 @@ void  CDrumCell::attach_params (CAudioProcessorEditor *ed, int cellno)
 
   if (! ed)
      std::cout << "!!!!! " << std::endl;
+
+  cell_number = cellno;
+
+  std::string param_name = "gain" + std::to_string (cell_number);
+
+  std::cout << "param_name:" << param_name << std::endl;
+
+
+  att_gain.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_gain));
+
+  param_name = "pan" + std::to_string (cell_number);
+
+  att_pan.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_pan));
+
+}
+
+
+
+
+//////////
+
+
+
+
+CDrumLine::CDrumLine ()
+{
+
+    addChildComponent (gr_group);
+  //  gr_group.setTextLabelPosition (juce::Justification::centredLeft);
+
+//    gr_group.setBounds (0, 0, 180, 144);
+
+    int xoffs = 0;
+    //int yoffs = 4;
+
+    addAndMakeVisible (label);
+    label.setTopLeftPosition (xoffs, YFILLER);
+    label.setSize (160, 32);
+
+    label.setText ("TEST", juce::dontSendNotification);
+
+    xoffs += label.getWidth();
+    xoffs += XFILLER;
+
+    addAndMakeVisible (sl_pan);
+    sl_pan.setTopLeftPosition (xoffs, YFILLER);
+    sl_pan.setSize (104, 32);
+    sl_pan.setRange (0.0f, 1.0f, 0.01f);
+
+    sl_pan.setSliderStyle (juce::Slider::LinearHorizontal);
+    sl_pan.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+    sl_pan.setTooltip ("Pan\n");
+
+    sl_pan.addListener (this);
+
+
+    xoffs += sl_pan.getWidth();
+    xoffs += XFILLER;
+
+
+    addAndMakeVisible (sl_gain);
+
+    sl_gain.setTopLeftPosition (xoffs, YFILLER);
+    sl_gain.setSize (104, 32);
+
+    sl_gain.setRange (-60, 6, 1);
+    sl_gain.setSliderStyle (juce::Slider::LinearHorizontal);
+    sl_gain.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+    sl_gain.addListener (this);
+    sl_pan.setTooltip ("Gain\n");
+
+
+    xoffs += sl_gain.getWidth();
+    xoffs += XFILLER;
+
+
+ //   setSize (32, label.getWidth() + FILLER + sl_pan.getWidth() + FILLER + sl_gain.getWidth());
+
+
+     gr_group.setVisible (true);
+     gr_group.setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
+
+     setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
+
+
+
+    //[Constructor] You can add your own custom stuff here..
+    //[/Constructor]
+}
+
+CDrumLine::~CDrumLine()
+{
+
+}
+
+//==============================================================================
+void CDrumLine::paint (juce::Graphics& g)
+{
+    //[UserPrePaint] Add your own custom painting code here..
+    //[/UserPrePaint]
+
+    g.fillAll (juce::Colour (0xff323e44));
+
+    //[UserPaint] Add your own custom painting code here..
+    //[/UserPaint]
+}
+
+void CDrumLine::resized()
+{
+    //[UserPreResize] Add your own custom resize code here..
+    //[/UserPreResize]
+
+    //[UserResized] Add your own custom resize handling here..
+    //[/UserResized]
+}
+
+void CDrumLine::sliderValueChanged (juce::Slider* sliderThatWasMoved)
+{
+    //[UsersliderValueChanged_Pre]
+    //[/UsersliderValueChanged_Pre]
+
+    if (sliderThatWasMoved == &sl_pan)
+    {
+        //[UserSliderCode_sl_pan] -- add your slider handling code here..
+        //[/UserSliderCode_sl_pan]
+    }
+    else if (sliderThatWasMoved == &sl_gain)
+    {
+        //[UserSliderCode_sl_gain] -- add your slider handling code here..
+        //[/UserSliderCode_sl_gain]
+    }
+
+    //[UsersliderValueChanged_Post]
+    //[/UsersliderValueChanged_Post]
+}
+
+
+void  CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
+{
+
+  //if (! ed)
+    // std::cout << "!!!!! " << std::endl;
 
   cell_number = cellno;
 

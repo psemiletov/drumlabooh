@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 7.0.5
+  Created with Projucer version: 7.0.6
 
   ------------------------------------------------------------------------------
 
@@ -47,6 +47,9 @@ public:
     void paint (juce::Graphics& g) override;
     void resized() override;
 
+    // Binary resources:
+    static const char* toplogo_png;
+    static const int toplogo_pngSize;
 
 
 private:
@@ -54,6 +57,7 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    juce::Image cachedImage_toplogo_png_1;
 
 
     //==============================================================================

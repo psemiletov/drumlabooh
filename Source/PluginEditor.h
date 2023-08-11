@@ -11,6 +11,8 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
+#include "topheader.h"
+
 //#include "drumcell.h"
 
 
@@ -19,6 +21,53 @@
 
 
 class CAudioProcessorEditor;
+
+
+class CDrumLine  : public juce::Component,
+                        public juce::Slider::Listener
+{
+public:
+    //==============================================================================
+
+
+    juce::GroupComponent gr_group;
+    juce::Slider sl_pan;
+    juce::Slider sl_gain;
+
+    juce::Label label;
+
+    CDrumLine ();
+    ~CDrumLine() override;
+
+    //==============================================================================
+    //[UserMethods]     -- You can add your own custom methods in this section.
+
+    int cell_number;
+
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_gain;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_pan;
+
+    void attach_params (CAudioProcessorEditor *ed, int cellno);
+
+    //[/UserMethods]
+
+    void paint (juce::Graphics& g) override;
+    void resized() override;
+    void sliderValueChanged (juce::Slider* sliderThatWasMoved) override;
+
+
+
+    //[UserVariables]   -- You can add your own custom variables in this section.
+    //[/UserVariables]
+
+    //==============================================================================
+
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CDrumLine)
+};
+
+
 
 class CDrumCell  : public juce::Component,
                         public juce::Slider::Listener
@@ -30,6 +79,7 @@ public:
   juce::GroupComponent gr_group;
     juce::Slider sl_pan;
     juce::Slider sl_gain;
+
 
 
     CDrumCell ();
@@ -94,6 +144,9 @@ public:
 
   //  juce::MidiKeyboardState keyboardState;
 
+
+     //    CTopHeader top_header;
+
     juce::Label gainLabel;
     juce::Slider gainSlider;
     std::unique_ptr<SliderAttachment> gainAttachment;
@@ -103,6 +156,7 @@ public:
 
 
     CDrumCell dc;
+    CDrumLine dl;
 
 public:
     //NewProjectAudioProcessorEditor (NewProjectAudioProcessor&);
@@ -112,6 +166,9 @@ public:
 
 
     //==============================================================================
+
+    juce::Component drumlines_container;
+    juce::Viewport drumlines_viewer;
 
     juce::Label l_panner_mode { {}, "Panner mode" };
     juce::Font f_default_font { 12.0f };
