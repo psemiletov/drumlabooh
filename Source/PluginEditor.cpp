@@ -83,9 +83,12 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
     //  std::cout << "i:" << i << std::endl;
 
       cmb_drumkit_selector.addItem (kits_scanner.v_kits_names[i], i + 1);
-
-
   }
+
+
+
+  //kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1];
+
  // addAndMakeVisible (top_header);
    // top_header.setTopLeftPosition(1, 1);
 /*
@@ -376,11 +379,26 @@ void CAudioProcessorEditor::comboBoxChanged(juce::ComboBox *comboBox)
 
       std::cout << cmb_drumkit_selector.getSelectedId() - 1<< std::endl;
 
+      int id = cmb_drumkit_selector.getSelectedId();
+      if (id == 0)
+         return;
+
+
+      std::string full = kits_scanner.map_kits[kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1]];
+      std::cout << "FULL: " << full << std::endl;
+
+      audioProcessor.drumkit_name = full;
+
+
+
+
+      //audioProcessor.drumkit_name = kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1];
+
 
 
 //      juce::String sk = cmb_drumkit_selector::getItemText(cmb_drumkit_selector.getSelectedId());
 
-     std::cout << kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1] << std::endl;
+      //std::cout << kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1] << std::endl;
 
 
         //[UserSliderCode_sl_pan] -- add your slider handling code here..
@@ -408,7 +426,7 @@ CDrumLine::CDrumLine ()
     label.setTopLeftPosition (xoffs, YFILLER);
     label.setSize (160, 32);
 
-    label.setText ("TEST", juce::dontSendNotification);
+    label.setText ("EMPTY CELL", juce::dontSendNotification);
 
     xoffs += label.getWidth();
     xoffs += XFILLER;

@@ -832,7 +832,7 @@ void CHydrogenKitsScanner::scan()
            kit->load (fname.c_str(), 44100);
            v_scanned_kits.push_back (kit);
 //           v_kits_names.push_back (kit->kit_name);
-          // m_kits.insert (pair<string,string> (kit->kit_name, fname));
+           map_kits.insert (pair<string,string> (kit->kit_name, fname));
           }
 
       }
