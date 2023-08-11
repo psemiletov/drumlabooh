@@ -125,26 +125,6 @@ public:
   void print_stats();
 };
 
-/*
-class CHydrogenKits
-{
-public:
-
-  std::vector <std::string> v_kits_dirs;
-  std::vector <std::string> v_kits_names;
-
-  std::map <std::string, std::string> m_kits; //var=value i.e. name = full path
-
-  CHydrogenKits();
-  ~CHydrogenKits();
-
-  std::string get_kit_name (const std::string full_path); //get kit name for full path
-
-  void scan();
-  void print();
-
-};
-*/
 
 class CHydrogenKitsScanner
 {

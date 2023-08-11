@@ -78,12 +78,12 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   kits_scanner.scan();
 
   for (size_t i = 0; i < kits_scanner.v_kits_names.size(); i++)
-  {
+     {
     //  std::cout << kits_scanner.v_kits_names[i] << std::endl;
     //  std::cout << "i:" << i << std::endl;
 
       cmb_drumkit_selector.addItem (kits_scanner.v_kits_names[i], i + 1);
-  }
+    }
 
 
 
@@ -183,8 +183,14 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
              drumlines[i].attach_params (this, i);
             }
 
+/////////////*******************8
 
-        load_kit (audioProcessor.drumkit_path);
+//        load_kit (audioProcessor.drumkit_path);
+
+        /////////////////************8
+
+
+
 
         drumlines_viewer.setViewedComponent (&drumlines_container, false);
         drumlines_viewer.setScrollBarsShown	(true, false);
@@ -280,11 +286,13 @@ void CAudioProcessorEditor::buttonClicked (juce::Button* button)
     {
      std::cout << "NewProjectAudioProcessorEditor::buttonClicked " << std::endl;
 
+             load_kit (audioProcessor.drumkit_path);
+
        // auto addons = valueTreeState.state.getOrCreateChildWithName ("addons", nullptr);
         //addons.setProperty ("text", "Lorem Ipsum", nullptr);
 
 
-     std::cout << "SAVE"  << std::endl;
+//     std::cout << "SAVE"  << std::endl;
 
     // audioProcessor.drumkit_name = "BUUUUUU";
   //   audioProcessor.save_string_keyval ("drumkit_name", audioProcessor.drumkit_name);
@@ -567,6 +575,27 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
         drumlines[i].set_name ("EMPTY CELL");
        }
 
+  if (kits_scanner.v_scanned_kits.size() == 0)
+      return;
+
+
+  //find kit at v_scanned_kits
+
+  CHydrogenKit *k = 0;
+
+  for (size_t i = 0; i < kits_scanner.v_scanned_kits.size() ; i++)
+      {
+       if (kits_scanner.v_scanned_kits[i]->kit_filename == kitpath)
+          k = kits_scanner.v_scanned_kits[i];
+      }
+
+   if (! k)
+      return;
+
+  for (size_t i = 0; i < k->v_samples.size(); i++)
+       {
+        drumlines[i].set_name (k->v_samples[i]->name);
+       }
 
 
 }
