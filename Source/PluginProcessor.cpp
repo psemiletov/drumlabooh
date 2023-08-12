@@ -10,6 +10,7 @@
 #include "PluginEditor.h"
 
 #include "utl.h"
+#include "dsp.h"
 
 
 extern juce::AudioFormatManager *formatManager;
@@ -582,8 +583,18 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  float fl = l->channel_data[0][l->sample_offset];
                  float fr = l->channel_data[0][l->sample_offset];
 
+                 float gain = db2lin(*(gains[drum_sample_index]));
 
-                 float gain = db2lin(*(gains[i]));
+                 float pan_right = 0;
+                 float pan_left = 0;
+
+                 float pan = *(pans[drum_sample_index]);
+
+                 pan_linear6 (pan_left, pan_right, pan);
+
+                 float coef_right = pan_right * gain * s->velocity;
+                 float coef_left = pan_left * gain * s->velocity;
+
 
                  /*
 
@@ -612,8 +623,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                   */
 
 
-                 channel_data[0][out_buf_offs] += fl;
-                 channel_data[1][out_buf_offs] += fl;
+                 channel_data[0][out_buf_offs] += fl * coef_left;
+                 channel_data[1][out_buf_offs] += fl * coef_right;
 
                 }
 
