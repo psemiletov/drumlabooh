@@ -79,6 +79,8 @@ CAudioProcessor::CAudioProcessor()
 parameters (*this, 0, "Drumpecker", createParameterLayout())
 {
 
+   init_db();
+
   drumkit = 0;
   session_samplerate = 0;
 
@@ -438,6 +440,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
           // std::cout << metadata.getMessage().getDescription() << std::endl;
 
         juce::MidiMessage msg = metadata.getMessage();
+
         bool isNoteOn = msg.isNoteOn();
         bool isNoteOff = msg.isNoteOff();
         float velocity = msg.getFloatVelocity ();
@@ -500,9 +503,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
 
 
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+ //   juce::ScopedNoDenormals noDenormals;
+//    auto totalNumInputChannels  = getTotalNumInputChannels();
+    //auto totalNumOutputChannels = getTotalNumOutputChannels();
 
    //  std::cout << "buffer.getNumSamples():" << buffer.getNumSamples() << std::endl;
 
@@ -534,8 +537,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
         //std::cout << "out_buf_length: " << out_buf_length << std::endl;
 
 
-        //for each sample out_buf_offs
-        for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
+   //for each sample out_buf_offs
+    for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
         //for each drum instrument
         for (int drum_sample_index = 0; drum_sample_index < drumkit->v_samples.size(); drum_sample_index++)
             {
@@ -579,9 +582,38 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  float fl = l->channel_data[0][l->sample_offset];
                  float fr = l->channel_data[0][l->sample_offset];
 
-                 //channelData[out_buf_offs] += f;
-                 channel_data[0][out_buf_offs] = fl;
-                 channel_data[1][out_buf_offs] = fl;
+
+                 float gain = db2lin(*(gains[i]));
+
+                 /*
+
+
+               float pan_right = 0;
+               float pan_left = 0;
+
+               float pan = *drumrox->pans[i];
+
+               if (drumrox->panlaw == PANLAW_LINEAR6)
+                  pan_linear6 (pan_left, pan_right, pan);
+
+               if (drumrox->panlaw == PANLAW_LINEAR0)
+                  pan_linear0 (pan_left, pan_right, pan);
+
+               if (drumrox->panlaw == PANLAW_SQRT)
+                   pan_sqrt (pan_left, pan_right, pan);
+
+               if (drumrox->panlaw == PANLAW_SINCOS)
+                  pan_sincos (pan_left, pan_right, pan);
+
+
+               coef_right = pan_right * gain * current_sample->velocity;
+               coef_left = pan_left * gain * current_sample->velocity;
+
+                  */
+
+
+                 channel_data[0][out_buf_offs] += fl;
+                 channel_data[1][out_buf_offs] += fl;
 
                 }
 
@@ -591,8 +623,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  float fl = l->channel_data[0][l->sample_offset];
                  float fr = l->channel_data[1][l->sample_offset];
 
-                 channel_data[0][out_buf_offs] = fl;
-                 channel_data[1][out_buf_offs] = fr;
+                 channel_data[0][out_buf_offs] += fl;
+                 channel_data[1][out_buf_offs] += fr;
                 }
 
              }
