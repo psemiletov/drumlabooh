@@ -65,13 +65,10 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
       samplerate = reader->sampleRate ;
       lengthInSamples = reader->lengthInSamples;
 
-    //frames = info.frames;
- // samples_count = info.channels * info.frames;
-     channels = reader->numChannels;
+      channels = reader->numChannels;
      }
 
   //std::cout << "4" << std::endl;
-
 
   return buffer;
 }
@@ -135,13 +132,19 @@ void CDrumLayer::load (const std::string &fname)
 {
   audio_buffer = load_whole_sample_resampled (fname, session_samplerate);
   file_name = fname;
-
+/*
   if (channels > 0)
     channel_data [0] = audio_buffer->getWritePointer (0);
 
   if (channels > 1)
     channel_data [1] = audio_buffer->getWritePointer (1);
+*/
 
+  if (channels > 0)
+    channel_data [0] = audio_buffer->getReadPointer (0);
+
+  if (channels > 1)
+    channel_data [1] = audio_buffer->getReadPointer (1);
 
 }
 
@@ -151,7 +154,6 @@ CDrumLayer::CDrumLayer (CDrumSample *s)
   drum_sample = s;
   session_samplerate = drum_sample->session_samplerate;
   sample_offset = 0;
-  //dataoffset = 0;
   audio_buffer = 0;
 }
 
@@ -177,7 +179,7 @@ CDrumSample::CDrumSample (int sample_rate)
 {
   session_samplerate = sample_rate;
   current_layer = 0;
-  velocity = 0.0;
+  velocity = 0.0f;
   hihat_open = false;
   hihat_close = false;
   active = false;

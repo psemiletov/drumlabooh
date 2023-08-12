@@ -382,9 +382,32 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
              //mix
 
+             //std::cout << "mix start" << std::endl;
+
              l->sample_offset++;
 
-          //   float f = l->channel_data[channel][l->sample_offset];
+
+             if (l->channels == 1)
+                {
+                 float f = l->channel_data[0][l->sample_offset];
+
+                 channelData[out_buf_offs] += f;
+
+
+                }
+
+             if (l->channels == 2)
+                {
+
+
+                }
+
+
+
+             //float f = l->channel_data[0][l->sample_offset];
+
+             //l->sample_offset++;
+
 
             // channelData[out_buf_offs] = f;
 

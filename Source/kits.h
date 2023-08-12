@@ -44,7 +44,7 @@ public:
 
 
   juce::AudioBuffer<float> *audio_buffer;
-  float *channel_data [2];
+  const float *channel_data [2];
 
   //uint32_t offset;
   //int dataoffset;
