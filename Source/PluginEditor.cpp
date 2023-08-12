@@ -394,12 +394,18 @@ CDrumLine::CDrumLine ()
 
 //    gr_group.setBounds (0, 0, 180, 144);
 
-    int xoffs = 0;
+    int xoffs = XFILLER * 2;
     //int yoffs = 4;
 
     addAndMakeVisible (label);
     label.setTopLeftPosition (xoffs, YFILLER);
     label.setSize (160, 32);
+
+    label.setColour (juce::Label::textColourId, juce::Colours::black);
+    label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
+    label.setFont (f_samplename_font);
+
+    label.setEditable (true);
 
     label.setText ("EMPTY CELL", juce::dontSendNotification);
 

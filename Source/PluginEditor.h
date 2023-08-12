@@ -29,6 +29,7 @@ class CDrumLine  : public juce::Component,
 public:
     //==============================================================================
 
+     juce::Font f_samplename_font { 14.0f, juce::Font::bold};
 
     juce::GroupComponent gr_group;
     juce::Slider sl_pan;
@@ -117,7 +118,6 @@ public:
     juce::Viewport drumlines_viewer;
 
     juce::Label l_panner_mode { {}, "Panner mode" };
-    juce::Font f_default_font { 12.0f };
     juce::ComboBox cmb_panner_mode;
 
     juce::Slider midiVolume;
