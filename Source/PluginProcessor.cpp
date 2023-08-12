@@ -474,6 +474,12 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
              if (! s)
                 continue;
 
+
+             std::cout << "s->v_layers[0]->lengthInSamples: " << s->v_layers[0]->lengthInSamples << std::endl;
+             std::cout << "s->v_layers[0]->channels: " << s->v_layers[0]->channels << std::endl;
+             //std::cout << "s->v_layers[0]->lengthInSamples: " << s->v_layers[0]->lengthInSamples << std::endl;
+
+
              s->trigger_sample (velocity);
 
              //also untrigger open hihat if closed hihat triggering

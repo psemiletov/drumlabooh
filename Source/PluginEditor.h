@@ -76,6 +76,11 @@ class CAudioProcessorEditor: public juce::AudioProcessorEditor,
                              public juce::ComboBox::Listener
 
 {
+private:
+    // This reference is provided as a quick way for your editor to
+    // access the processor object that created it.
+    CAudioProcessor& audioProcessor;
+
 
 public:
 
@@ -84,9 +89,6 @@ public:
     juce::AudioProcessorValueTreeState& valueTreeState;
 
   //  juce::MidiKeyboardState keyboardState;
-
-
-     //    CTopHeader top_header;
 
     juce::Label gainLabel;
     juce::Slider gainSlider;
@@ -154,11 +156,6 @@ public:
     }
 */
 
-
-private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
-    CAudioProcessor& audioProcessor;
 
      JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CAudioProcessorEditor)
 };

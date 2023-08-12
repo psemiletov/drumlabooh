@@ -43,14 +43,6 @@
 #define BETWEEN 3
 
 
-    enum
-    {
-        paramControlHeight = 40,
-        paramLabelWidth    = 80,
-        paramSliderWidth   = 300
-    };
-
-
 
 void CAudioProcessorEditor::panner_modeMenuChanged()
 {
@@ -243,39 +235,6 @@ void CAudioProcessorEditor::paint (juce::Graphics& g)
 
 void CAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
-     // sets the position and size of the slider with arguments (x, y, width, height)
-    //midiVolume.setBounds (40, 30, 20, getHeight() - 60);
-
-
-
-//  invertButton.setBounds (1, 160, 70, 70);
-
-  //auto r = getLocalBounds();
-
-//  juce::Rectangle <int> r (1, 1, KNOB_WIDTH, KNOB_HEIGHT);
-/*
-        auto gainRect = r.removeFromTop (paramControlHeight);
-        gainLabel .setBounds (gainRect.removeFromLeft (paramLabelWidth));
-        gainSlider.setBounds (gainRect);
-
-        invertButton.setBounds (r.removeFromTop (paramControlHeight));
-*/
-
-
-
-  //  gainLabel.setBounds (1, 1, 70, 80);
-
-    //r.translate (50, 0);
-//    gainSlider.setBounds (73, 1, 100, 100);
-
-
-
-        //gainSlider.setBounds (gainRect);
-
-//    r.translate (50, 00);
-
 
 }
 
@@ -286,7 +245,9 @@ void CAudioProcessorEditor::buttonClicked (juce::Button* button)
     {
      std::cout << "NewProjectAudioProcessorEditor::buttonClicked " << std::endl;
 
-             load_kit (audioProcessor.drumkit_path);
+    //         load_kit (audioProcessor.drumkit_path);
+
+     audioProcessor.drumkit->print_stats();
 
        // auto addons = valueTreeState.state.getOrCreateChildWithName ("addons", nullptr);
         //addons.setProperty ("text", "Lorem Ipsum", nullptr);
