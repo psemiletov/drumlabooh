@@ -71,7 +71,8 @@ public:
   int current_layer;
   int midiOutNote;
   int session_samplerate; //session srate, taken from the upper object
-  char active;
+
+  bool active;
   float velocity;
 
   //bool hihat;

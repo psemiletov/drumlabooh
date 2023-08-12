@@ -33,7 +33,21 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                          3,              // maximum value
                                                          0)); //default
 
+
+  layout.add (std::make_unique<juce::AudioParameterInt> ("first_note_number",            // parameterID
+                                                         "first_note_number",            // parameter name
+                                                         0,              // minimum value
+                                                         127,              // maximum value
+                                                         36)); //default
+
+
+
+
   layout.add (std::make_unique<juce::AudioParameterFloat> ("gain", "Gain", 0.0f, 1.0f, 0.5f));
+// layout.add (std::make_unique<juce::AudioParameterInt> ("gain", "Gain", 0.0f, 1.0f, 0.5f));
+
+
+  //first_note_number
 
   layout.add (std::make_unique<juce::AudioParameterBool> ("invertPhase", "Invert Phase", false));
 
@@ -92,6 +106,9 @@ parameters (*this, 0, "Drumpecker", createParameterLayout())
        pans[i]  = parameters.getRawParameterValue ("pan" + std::to_string(i));
 
       }
+
+  first_note_number  = parameters.getRawParameterValue ("first_note_number");
+  std::cout << "first_note_number:" << *first_note_number << std::endl;
 
 
 }
@@ -233,12 +250,11 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
 
-      for (const juce::MidiMessageMetadata metadata : midiMessages)
+  for (const juce::MidiMessageMetadata metadata : midiMessages)
       {
         //  if (metadata.numBytes == 3)
             //Logger::writeToLog (metadata.getMessage().getDescription());
           // std::cout << metadata.getMessage().getDescription() << std::endl;
-
 
         juce::MidiMessage msg = metadata.getMessage();
         bool isNoteOn = msg.isNoteOn();
@@ -248,10 +264,20 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
         int note_number = msg.getNoteNumber(); //36 starting note
 
         if (isNoteOn )
-        {
-        std::cout << "note_number: " << note_number << std::endl;
-        std::cout << "velocity: " << velocity << std::endl;
-        }
+           {
+            std::cout << "note_number: " << note_number << std::endl;
+            std::cout << "velocity: " << velocity << std::endl;
+
+
+            if (! drumkit)
+               return;
+
+            if (drumkit->v_samples.size() == 0)
+               return;
+
+
+
+          }
 
       }
 

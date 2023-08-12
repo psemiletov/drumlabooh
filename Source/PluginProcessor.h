@@ -37,6 +37,8 @@ public:
     std::atomic<float>* pans[36];
     std::atomic<float>* gains[36];
 
+    std::atomic<float>* first_note_number  = nullptr;
+
     std::string drumkit_path; //full path!
 
 
@@ -49,6 +51,7 @@ public:
     CHydrogenKit *drumkit;
 
     int session_samplerate; //sess rate
+    //int first_note_number;
 
     //==============================================================================
     CAudioProcessor();

@@ -172,6 +172,7 @@ CDrumSample::CDrumSample (int sample_rate)
   velocity = 0.0;
   hihat_open = false;
   hihat_close = false;
+  active = false;
 }
 
 
