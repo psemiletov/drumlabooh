@@ -399,6 +399,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
              if (l->channels == 2)
                 {
 
+                 float f = l->channel_data[channel][l->sample_offset];
+
+                 channelData[out_buf_offs] += f;
 
                 }
 
