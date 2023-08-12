@@ -276,7 +276,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
 
              int nn = note_number - *first_note_number;
-             if (nn < 0 || n > drumkit->v_samples.size())
+             if (nn < 0 || nn > drumkit->v_samples.size() - 1)
                 {
                  std::cout << "nn <> drumkit->v_samples.size(), nn is " << nn << std::endl;
                  continue;
