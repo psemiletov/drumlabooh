@@ -884,7 +884,7 @@ void CDrumSample::trigger_sample (float vel)
   velocity = vel;
   current_layer = map_velo_to_layer_number (velocity);
 
-  std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
+ // std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
 
 /*
   if (data)

@@ -265,9 +265,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
         if (isNoteOn )
            {
-            std::cout << "note_number: " << note_number << std::endl;
-            std::cout << "velocity: " << velocity << std::endl;
-
+            //std::cout << "note_number: " << note_number << std::endl;
+            //std::cout << "velocity: " << velocity << std::endl;
 
             if (! drumkit)
                return;
@@ -276,7 +275,17 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                return;
 
 
-             CDrumSample *s = drumkit->v_samples [note_number - *first_note_number];
+             int nn = note_number - *first_note_number;
+             if (nn < 0 || n > drumkit->v_samples.size())
+                {
+                 std::cout << "nn <> drumkit->v_samples.size(), nn is " << nn << std::endl;
+                 continue;
+                }
+
+               std::cout << "GO ON with n: " << nn << std::endl;
+
+
+             CDrumSample *s = drumkit->v_samples [nn];
              if (! s)
                 continue;
 
@@ -292,8 +301,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      if (s2->hihat_open)
                          s2->untrigger_sample();
                    }
-              }
-          }
+               }
+           }
 
       }
 //     std::cout << "AAA" << std::endl;
@@ -312,8 +321,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     // This is here to avoid people getting screaming feedback
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+
+    //for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+      //  buffer.clear (i, 0, buffer.getNumSamples());
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
@@ -325,7 +335,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
         {
       //  auto* channelData = buffer.getWritePointer (channel);
 
-         std::cout << "channel: " << channel << std::endl;
+         //std::cout << "channel: " << channel << std::endl;
 
 
 
@@ -334,7 +344,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
         // ..do something to the data...
         int out_buf_length = buffer.getNumSamples();
 
-        std::cout << "out_buf_length: " << out_buf_length << std::endl;
+        //std::cout << "out_buf_length: " << out_buf_length << std::endl;
 
 
         //for each sample out_buf_offs
@@ -372,9 +382,11 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
              //mix
 
-             float f = l->channel_data[channel][l->sample_offset++];
+             l->sample_offset++;
 
-             channelData[out_buf_offs] = f;
+          //   float f = l->channel_data[channel][l->sample_offset];
+
+            // channelData[out_buf_offs] = f;
 
              //std::cout << "mix end" << std::endl;
 
