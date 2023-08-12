@@ -276,7 +276,23 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                return;
 
 
+             CDrumSample *s = drumkit->v_samples [note_number - *first_note_number];
+             if (! s)
+                continue;
 
+             s->trigger_sample (velocity);
+
+             //also untrigger open hihat if closed hihat triggering
+             // so find the open hihat
+            if (s->hihat_close)
+               {
+                for (size_t i = 0; i < drumkit->v_samples.size(); i++)
+                    {
+                     CDrumSample *s2 = drumkit->v_samples[i]; //point to the sample
+                     if (s2->hihat_open)
+                         s2->untrigger_sample();
+                   }
+              }
           }
 
       }

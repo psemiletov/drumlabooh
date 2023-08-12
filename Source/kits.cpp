@@ -142,8 +142,8 @@ CDrumLayer::CDrumLayer (CDrumSample *s)
 {
   drum_sample = s;
   session_samplerate = drum_sample->session_samplerate;
-  offset = 0;
-  dataoffset = 0;
+  sample_offset = 0;
+  //dataoffset = 0;
   audio_buffer = 0;
 }
 
@@ -852,4 +852,36 @@ void CHydrogenKitsScanner::print()
       v_scanned_kits[i]->print_stats();
       std::cout << v_scanned_kits[i]->kit_name << std::endl;
      }
+}
+
+
+
+
+void CDrumSample::untrigger_sample()
+{
+  active = false;
+  current_layer = 0;
+  v_layers[current_layer]->sample_offset = 0;
+}
+
+
+void CDrumSample::trigger_sample (float vel)
+{
+
+  velocity = vel;
+  current_layer = map_velo_to_layer_number (velocity);
+
+  std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
+
+/*
+  if (data)
+         {
+          lv2_atom_forge_frame_time (&drumrox->forge, 0);
+          build_midi_info_message (drumrox, data);
+         }
+*/
+  active = true;
+  v_layers[current_layer]->sample_offset = 0;
+
+
 }

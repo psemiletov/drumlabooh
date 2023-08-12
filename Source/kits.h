@@ -38,16 +38,15 @@ public:
 
  // int frames; //eq to lengthInSamples
 
+
   int lengthInSamples;
+  int sample_offset; //to play inc until < lengthInSamples
 
- //uint32_t samples_count;  //data size in samples (info.frames * info.channels)
-
-  //float* data; //interleaved sample data from the file
 
   juce::AudioBuffer<float> *audio_buffer;
 
-  uint32_t offset;
-  int dataoffset;
+  //uint32_t offset;
+  //int dataoffset;
 
   CDrumLayer (CDrumSample *s); //sample_rate is uplink (session) samplerate
   ~CDrumLayer();
@@ -62,9 +61,15 @@ public:
 };
 
 
+//class CHydrogenKit;
+
 class CDrumSample
 {
 public:
+
+
+  //CHydrogenKit *kit; //uplink
+
 
   std::string name;
   int id;
@@ -90,6 +95,11 @@ public:
 
   void print();
   void print_stats();
+
+  void untrigger_sample();
+  void trigger_sample (float vel);
+
+
 };
 
 
