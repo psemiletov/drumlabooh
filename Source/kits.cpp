@@ -872,9 +872,11 @@ void CDrumSample::untrigger_sample()
   std::cout << "CDrumSample::UNtrigger_sample" << std::endl;
 
   active = false;
-  v_layers[current_layer]->sample_offset = 0;
-  current_layer = 0;
 
+  for (size_t i = 0; i < v_layers.size(); i++)
+      v_layers[i]->sample_offset = 0;
+
+  current_layer = 0;
 }
 
 
@@ -882,6 +884,7 @@ void CDrumSample::trigger_sample (float vel)
 {
   std::cout << "CDrumSample::trigger_sample: " << name << std::endl;
 
+  v_layers[current_layer]->sample_offset = 0;
 
   velocity = vel;
   current_layer = map_velo_to_layer_number (velocity);
@@ -897,6 +900,5 @@ void CDrumSample::trigger_sample (float vel)
 */
   active = true;
   v_layers[current_layer]->sample_offset = 0;
-
 
 }
