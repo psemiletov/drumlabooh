@@ -296,10 +296,15 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
           }
 
       }
+//     std::cout << "AAA" << std::endl;
+
 
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
+
+   //  std::cout << "buffer.getNumSamples():" << buffer.getNumSamples() << std::endl;
+
 
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
@@ -316,11 +321,72 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
+    for (int channel = 0; channel < totalNumOutputChannels; ++channel)
+        {
+      //  auto* channelData = buffer.getWritePointer (channel);
+
+         std::cout << "channel: " << channel << std::endl;
+
+
+
+        float* channelData = buffer.getWritePointer (channel);
 
         // ..do something to the data...
+        int out_buf_length = buffer.getNumSamples();
+
+        std::cout << "out_buf_length: " << out_buf_length << std::endl;
+
+
+        //for each sample out_buf_offs
+        for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
+        //for arch drum instrument
+        for (int drum_sample_index = 0; drum_sample_index < drumkit->v_samples.size(); drum_sample_index++)
+            {
+             CDrumSample *s = drumkit->v_samples [drum_sample_index];
+             if (! s)
+                {
+                 std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
+                 break;
+                }
+
+            // std::cout << s->name << std::endl;
+
+             if (! s->active)
+                continue;
+
+             CDrumLayer *l = s->v_layers[s->current_layer];
+
+             if (! l)
+                {
+                 std::cout << "!l at s->current_layer:" << s->current_layer << std::endl;
+                 break;
+                }
+
+             if (l->sample_offset == l->lengthInSamples)
+                {
+                 s->untrigger_sample();
+                 continue;
+                }
+
+             //std::cout << "mix start" << std::endl;
+
+             //mix
+
+             float f = l->channel_data[channel][l->sample_offset++];
+
+             channelData[out_buf_offs] = f;
+
+             //std::cout << "mix end" << std::endl;
+
+
+             //float f = l->audio_buffer->getReadPointer (channel, 0);
+
+             //channelData[sample_offs] += l->audio_buffer->getReadPointer (channel, 0)[l->sample_offset++];
+
+
+            }
+
+
     }
 }
 

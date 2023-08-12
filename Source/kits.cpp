@@ -32,19 +32,19 @@ juce::AudioFormatManager *formatManager;
 
 juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fname)
 {
-  std::cout << "1" << std::endl;
+//  std::cout << "1" << std::endl;
 
 
   juce::File fl (fname);
 
   juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float>;
 
-  std::cout << "2" << std::endl;
+  //std::cout << "2" << std::endl;
 
 
   std::unique_ptr<juce::AudioFormatReader> reader (formatManager->createReaderFor (fl)); // [2]
 
-  std::cout << "3" << std::endl;
+  //std::cout << "3" << std::endl;
 
 
   if (reader.get() != nullptr)
@@ -70,7 +70,7 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
      channels = reader->numChannels;
      }
 
-  std::cout << "4" << std::endl;
+  //std::cout << "4" << std::endl;
 
 
   return buffer;
@@ -135,6 +135,14 @@ void CDrumLayer::load (const std::string &fname)
 {
   audio_buffer = load_whole_sample_resampled (fname, session_samplerate);
   file_name = fname;
+
+  if (channels > 0)
+    channel_data [0] = audio_buffer->getWritePointer (0);
+
+  if (channels > 1)
+    channel_data [1] = audio_buffer->getWritePointer (1);
+
+
 }
 
 
@@ -859,14 +867,19 @@ void CHydrogenKitsScanner::print()
 
 void CDrumSample::untrigger_sample()
 {
+  std::cout << "CDrumSample::UNtrigger_sample" << std::endl;
+
   active = false;
-  current_layer = 0;
   v_layers[current_layer]->sample_offset = 0;
+  current_layer = 0;
+
 }
 
 
 void CDrumSample::trigger_sample (float vel)
 {
+  std::cout << "CDrumSample::trigger_sample: " << name << std::endl;
+
 
   velocity = vel;
   current_layer = map_velo_to_layer_number (velocity);
