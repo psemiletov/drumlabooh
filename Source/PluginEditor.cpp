@@ -17,6 +17,9 @@
 #define XFILLER 4
 #define YFILLER 16
 
+#define WINDOW_HEIGHT 580
+#define WINDOW_WIDTH 780
+
 
 //#define TESTKIT "/home/rox/sfz-kits/Vintage Kit/Vintage Kit.sfz"
 
@@ -55,8 +58,15 @@ void CAudioProcessorEditor::panner_modeMenuChanged()
         }
 
         textLabel.setFont (textFont);*/
+       //*audioProcessor.panner_mode = (float) cmb_pan_mode.getSelectedId();
+       std::cout << "cmb_panner_mode.getSelectedId(): " <<  cmb_pan_mode.getSelectedId() << std::endl;
+       std::cout << "cmb_panner_mode.getSelectedItemIndex(): " <<  cmb_pan_mode.getSelectedItemIndex() << std::endl;
 
-      std::cout << "cmb_panner_mode: " <<  cmb_panner_mode.getSelectedId() << std::endl;
+       //std::cout << "*audioProcessor.pan_mode: " <<  *audioProcessor.panner_mode << std::endl;
+
+
+
+
 
 }
 
@@ -161,6 +171,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 //        setSize (paramSliderWidth + paramLabelWidth, juce::jmax (100, paramControlHeight * 2));
 
 
+
+
+
         drumlines_container.setSize (780, drumlines[0].getHeight() * 36);
       //  drumlines_container.addAndMakeVisible (dl);
 
@@ -194,12 +207,27 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
         addAndMakeVisible (drumlines_viewer);
 
 
-        setSize (780, 720);
+        addAndMakeVisible (cmb_pan_mode);
+      //  cmb_pan_mode.onChange = [this] { panner_modeMenuChanged(); };
 
 
+        cmb_pan_mode.setSize (180, 48);
+        cmb_pan_mode.setTopLeftPosition (drumlines_viewer.getWidth() + XFILLER, 100);//getHeight() - cmb_pan_mode.getHeight());
 
-        bt_test.setBounds (drumlines[0].getWidth() + 36, 100, 50, 50);
+        cmb_pan_mode.addItem ("One", 1);
+        cmb_pan_mode.addItem ("Two", 2);
+        cmb_pan_mode.addItem ("Three", 3);
+        cmb_pan_mode.addItem ("Four", 4);
 
+        att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
+
+        //cmb_pan_mode.setSelectedItemIndex ((int)*audioProcessor.pan_mode, juce::dontSendNotification);
+    //    cmb_pan_mode.setSelectedId ((int)*audioProcessor.pan_mode);
+
+        setSize (WINDOW_WIDTH, WINDOW_HEIGHT);
+
+
+        bt_test.setBounds (drumlines[0].getWidth() + 36, 200, 50, 50);
 
 }
 
@@ -245,9 +273,17 @@ void CAudioProcessorEditor::buttonClicked (juce::Button* button)
     {
      std::cout << "NewProjectAudioProcessorEditor::buttonClicked " << std::endl;
 
+      //    audioProcessor.val_panner_mode .setValue (4);
+
+    // *audioProcessor.panner_mode = 1.0f;
+     //*audioProcessor.panner_mode = 4;
+   //  std::cout << "*audioProcessor.panner_mode: "  << *audioProcessor.panner_mode << std::endl;
+
     //         load_kit (audioProcessor.drumkit_path);
 
-     audioProcessor.drumkit->print_stats();
+  //   audioProcessor.drumkit->print_stats();
+
+
 
        // auto addons = valueTreeState.state.getOrCreateChildWithName ("addons", nullptr);
         //addons.setProperty ("text", "Lorem Ipsum", nullptr);
@@ -342,7 +378,7 @@ void CAudioProcessorEditor::kit_changed()
 void CAudioProcessorEditor::comboBoxChanged(juce::ComboBox *comboBox)
 {
 
-        std::cout << "CAudioProcessorEditor::comboBoxChanged" << std::endl;
+    std::cout << "CAudioProcessorEditor::comboBoxChanged" << std::endl;
 
 
    if (comboBox == &cmb_drumkit_selector)

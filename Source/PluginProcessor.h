@@ -24,20 +24,19 @@ class CAudioProcessor  : public juce::AudioProcessor
 public:
 
     juce::AudioProcessorValueTreeState parameters;
-    float previousGain; // [1]
-
-    //int session_rate;
 
     //std::atomic<float>* phaseParameter = nullptr;
     //std::atomic<float>* gainParameter  = nullptr;
-
  //  std::atomic<float>* gain0  = nullptr;
   //  std::atomic<float>* pan0  = nullptr;
 
     std::atomic<float>* pans[36];
     std::atomic<float>* gains[36];
 
-    std::atomic<float>* first_note_number  = nullptr;
+    std::atomic<float>* first_note_number = nullptr;
+    std::atomic<float>* panner_mode = nullptr;
+
+    juce::Value val_panner_mode;
 
     std::string drumkit_path; //full path!
 
@@ -46,12 +45,10 @@ public:
 
  //   juce::AudioParameterInt* p_panner;
 
-
     CHydrogenKitsScanner scanner;
     CHydrogenKit *drumkit;
 
     int session_samplerate; //sess rate
-    //int first_note_number;
 
     //==============================================================================
     CAudioProcessor();
@@ -63,8 +60,6 @@ public:
 
     void save_string_keyval (const std::string &key, const std::string &val);
     std::string load_string_keyval (const std::string &key);
-
-
 
 
     //==============================================================================

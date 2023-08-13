@@ -17,38 +17,34 @@ extern juce::AudioFormatManager *formatManager;
 
 #define minusInfdB -60
 
+
 juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParameterLayout()
 {
-
-  for (size_t i = 0; i < 36; i++)
-     {
-      pans[i] = nullptr;
-      gains[i] = nullptr;
-     }
-
   juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-  layout.add (std::make_unique<juce::AudioParameterInt> ("panmode",            // parameterID
-                                                         "Pan mode",            // parameter name
-                                                         0,              // minimum value
-                                                         3,              // maximum value
-                                                         0)); //default
+  for (size_t i = 0; i < 36; i++)
+      {
+       pans[i] = nullptr;
+       gains[i] = nullptr;
+      }
 
 
-  layout.add (std::make_unique<juce::AudioParameterInt> ("first_note_number",            // parameterID
-                                                         "first_note_number",            // parameter name
-                                                         0,              // minimum value
-                                                         127,              // maximum value
-                                                         36)); //default
+  layout.add (std::make_unique<juce::AudioParameterFloat> ("panner_mode",            // parameterID
+                                                           "panner_mode",            // parameter name
+                                                            1.0f,              // minimum value
+                                                            4.0f,              // maximum value
+                                                            4.0f)); //default
 
 
+  layout.add (std::make_unique<juce::AudioParameterFloat> ("first_note_number",            // parameterID
+                                                           "first_note_number",            // parameter name
+                                                            0.0f,              // minimum value
+                                                            127.0f,              // maximum value
+                                                            36.0f)); //default
 
 
   layout.add (std::make_unique<juce::AudioParameterFloat> ("gain", "Gain", 0.0f, 1.0f, 0.5f));
-// layout.add (std::make_unique<juce::AudioParameterInt> ("gain", "Gain", 0.0f, 1.0f, 0.5f));
 
-
-  //first_note_number
 
   layout.add (std::make_unique<juce::AudioParameterBool> ("invertPhase", "Invert Phase", false));
 
@@ -80,14 +76,11 @@ CAudioProcessor::CAudioProcessor()
 parameters (*this, 0, "Drumpecker", createParameterLayout())
 {
 
-   init_db();
+  init_db();
 
   drumkit = 0;
   session_samplerate = 0;
-
   drumkit_path = "";
-
-
 
 
   //auto addons = treeState.state.getOrCreateChildWithName ("addons", nullptr);
@@ -107,8 +100,18 @@ parameters (*this, 0, "Drumpecker", createParameterLayout())
       {
        gains[i]  = parameters.getRawParameterValue ("gain" + std::to_string(i));
        pans[i]  = parameters.getRawParameterValue ("pan" + std::to_string(i));
-
       }
+
+
+//  val_panner_mode = parameters.getParameterAsValue ("panner_mode");
+  panner_mode = parameters.getRawParameterValue ("panner_mode");
+
+  std::cout << "panner_mode:" << *panner_mode << std::endl;
+
+  //*panner_mode = 4;
+
+//  std::cout << "panner_mode:" << *panner_mode << std::endl;
+
 
   first_note_number  = parameters.getRawParameterValue ("first_note_number");
   std::cout << "first_note_number:" << *first_note_number << std::endl;
@@ -209,6 +212,9 @@ void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
       std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
 
+      std::cout << "*audioProcessor.panner_mode: "  << *panner_mode << std::endl;
+
+
      session_samplerate = (int) sampleRate;
 
      load_kit (drumkit_path);
@@ -248,187 +254,6 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
   #endif
 }
 #endif
-
-/*
-void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
-{
-
-  for (const juce::MidiMessageMetadata metadata : midiMessages)
-      {
-        //  if (metadata.numBytes == 3)
-            //Logger::writeToLog (metadata.getMessage().getDescription());
-          // std::cout << metadata.getMessage().getDescription() << std::endl;
-
-        juce::MidiMessage msg = metadata.getMessage();
-        bool isNoteOn = msg.isNoteOn();
-        bool isNoteOff = msg.isNoteOff();
-        float velocity = msg.getFloatVelocity ();
-
-        int note_number = msg.getNoteNumber(); //36 starting note
-
-        if (isNoteOn )
-           {
-            //std::cout << "note_number: " << note_number << std::endl;
-            //std::cout << "velocity: " << velocity << std::endl;
-
-            if (! drumkit)
-               return;
-
-            if (drumkit->v_samples.size() == 0)
-               return;
-
-
-             int nn = note_number - *first_note_number;
-             if (nn < 0 || nn > drumkit->v_samples.size() - 1)
-                {
-                 std::cout << "nn <> drumkit->v_samples.size(), nn is " << nn << std::endl;
-                 continue;
-                }
-
-               std::cout << "GO ON with n: " << nn << std::endl;
-
-
-             CDrumSample *s = drumkit->v_samples [nn];
-             if (! s)
-                continue;
-
-             s->trigger_sample (velocity);
-
-             //also untrigger open hihat if closed hihat triggering
-             // so find the open hihat
-            if (s->hihat_close)
-               {
-                for (size_t i = 0; i < drumkit->v_samples.size(); i++)
-                    {
-                     CDrumSample *s2 = drumkit->v_samples[i]; //point to the sample
-                     if (s2->hihat_open)
-                         s2->untrigger_sample();
-                   }
-               }
-           }
-
-      }
-//     std::cout << "AAA" << std::endl;
-
-
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
-
-   //  std::cout << "buffer.getNumSamples():" << buffer.getNumSamples() << std::endl;
-
-
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-
-    //for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-      //  buffer.clear (i, 0, buffer.getNumSamples());
-
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumOutputChannels; ++channel)
-        {
-      //  auto* channelData = buffer.getWritePointer (channel);
-
-         //std::cout << "channel: " << channel << std::endl;
-
-        float* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
-        int out_buf_length = buffer.getNumSamples();
-
-        //std::cout << "out_buf_length: " << out_buf_length << std::endl;
-
-
-        //for each sample out_buf_offs
-        for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
-        //for arch drum instrument
-        for (int drum_sample_index = 0; drum_sample_index < drumkit->v_samples.size(); drum_sample_index++)
-            {
-             CDrumSample *s = drumkit->v_samples [drum_sample_index];
-             if (! s)
-                {
-                 std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
-                 break;
-                }
-
-            // std::cout << s->name << std::endl;
-
-             if (! s->active)
-                continue;
-
-             CDrumLayer *l = s->v_layers[s->current_layer];
-
-             if (! l)
-                {
-                 std::cout << "!l at s->current_layer:" << s->current_layer << std::endl;
-                 break;
-                }
-
-             if (l->sample_offset == l->lengthInSamples)
-                {
-                 s->untrigger_sample();
-                 continue;
-                }
-
-             //std::cout << "mix start" << std::endl;
-
-             //mix
-
-             //std::cout << "mix start" << std::endl;
-
-             l->sample_offset++;
-
-
-             if (l->channels == 1)
-                {
-                 float f = l->channel_data[0][l->sample_offset];
-
-                 channelData[out_buf_offs] += f;
-
-
-                }
-
-             if (l->channels == 2)
-                {
-
-                 float f = l->channel_data[channel][l->sample_offset];
-
-                 channelData[out_buf_offs] += f;
-
-                }
-
-
-
-             //float f = l->channel_data[0][l->sample_offset];
-
-             //l->sample_offset++;
-
-
-            // channelData[out_buf_offs] = f;
-
-             //std::cout << "mix end" << std::endl;
-
-
-             //float f = l->audio_buffer->getReadPointer (channel, 0);
-
-             //channelData[sample_offs] += l->audio_buffer->getReadPointer (channel, 0)[l->sample_offset++];
-
-
-            }
-
-
-    }
-}
-*/
 
 
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)

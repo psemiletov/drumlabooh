@@ -49,6 +49,7 @@ public:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_gain;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_pan;
 
+
     void attach_params (CAudioProcessorEditor *ed, int cellno);
 
     //[/UserMethods]
@@ -89,6 +90,11 @@ public:
 
     juce::AudioProcessorValueTreeState& valueTreeState;
 
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_pan_mode;
+    juce::Label l_pan_mode { {}, "Pan mode" };
+    juce::ComboBox cmb_pan_mode;
+
+
   //  juce::MidiKeyboardState keyboardState;
 
     juce::Label gainLabel;
@@ -117,8 +123,8 @@ public:
     juce::Component drumlines_container;
     juce::Viewport drumlines_viewer;
 
-    juce::Label l_panner_mode { {}, "Panner mode" };
-    juce::ComboBox cmb_panner_mode;
+    //juce::Label l_panner_mode { {}, "Panner mode" };
+    //juce::ComboBox cmb_panner_mode;
 
     juce::Slider midiVolume;
 
