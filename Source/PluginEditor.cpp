@@ -79,7 +79,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 */
 
     int yoffs = 0;
-    int xoffs = 0;
+    int xoffs = XFILLER;
 
 
     cmb_drumkit_selector.setTextWhenNothingSelected ("CLICK HERE TO SELECT THE DRUMKIT");
@@ -93,7 +93,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
     //cmb_drumkit_selector.setHeight (780, 48);
     //cmb_drumkit_selector.setSize (780, 48);
 
-    cmb_drumkit_selector.setTopLeftPosition (0, 0);
+    cmb_drumkit_selector.setTopLeftPosition (xoffs, 0);
 
     yoffs += 48;//cmb_drumkit_selector.getHeight();
 
@@ -142,21 +142,31 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
 
+        addAndMakeVisible (drumlines_group);
 
         drumlines_viewer.setViewedComponent (&drumlines_container, false);
         drumlines_viewer.setScrollBarsShown	(true, false);
         drumlines_viewer.setSize (drumlines_container.getWidth() + (XFILLER * 5), 480);
         drumlines_viewer.setScrollBarThickness (24);
 
-        drumlines_viewer.setTopLeftPosition (0, yoffs + YFILLER);
 
-        cmb_drumkit_selector.setSize (drumlines_viewer.getWidth(), 48);
+        drumlines_group.setTopLeftPosition (xoffs, yoffs);
+        drumlines_group.setSize (drumlines_viewer.getWidth() + (XFILLER * 3), 480 + (YFILLER * 2));
+
+        xoffs += XFILLER;
+        yoffs += YFILLER;
+
+        drumlines_viewer.setTopLeftPosition (xoffs, yoffs);
+
+        cmb_drumkit_selector.setSize (drumlines_group.getWidth(), 48);
+
+
+
 
 
         addAndMakeVisible (drumlines_viewer);
 
 /////////////////
-
 
 
 
