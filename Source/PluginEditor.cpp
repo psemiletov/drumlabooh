@@ -11,7 +11,6 @@
 
 
 
-
 #include "kits.h"
 
 #define XFILLER 4
@@ -49,29 +48,11 @@
 
 void CAudioProcessorEditor::panner_modeMenuChanged()
 {
-        /*switch (cmb_panner_mode.getSelectedId())
-        {
-            case 1: textFont.setStyleFlags (juce::Font::plain);  break;
-            case 2: textFont.setStyleFlags (juce::Font::bold);   break;
-            case 3: textFont.setStyleFlags (juce::Font::italic); break;
-            default: break;
-        }
-
-        textLabel.setFont (textFont);*/
-       //*audioProcessor.panner_mode = (float) cmb_pan_mode.getSelectedId();
        std::cout << "cmb_panner_mode.getSelectedId(): " <<  cmb_pan_mode.getSelectedId() << std::endl;
        std::cout << "cmb_panner_mode.getSelectedItemIndex(): " <<  cmb_pan_mode.getSelectedItemIndex() << std::endl;
-
-       //std::cout << "*audioProcessor.pan_mode: " <<  *audioProcessor.panner_mode << std::endl;
-
-
-
-
-
 }
 
-//NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioProcessor& p)
-  //  : AudioProcessorEditor (&p), audioProcessor (p)
+
 CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts)
 : AudioProcessorEditor (&parent), audioProcessor (parent),
           valueTreeState (vts)
@@ -88,10 +69,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
     }
 
 
-
   //kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1];
 
- // addAndMakeVisible (top_header);
    // top_header.setTopLeftPosition(1, 1);
 /*
   auto addons = valueTreeState.state.getOrCreateChildWithName ("addons", nullptr);
@@ -111,47 +90,17 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
     //cmb_drumkit_selector.onChange = [this] { kit_changed(); };
     cmb_drumkit_selector.addListener (this);
+    //cmb_drumkit_selector.setHeight (780, 48);
+    //cmb_drumkit_selector.setSize (780, 48);
 
     cmb_drumkit_selector.setTopLeftPosition (0, 0);
-    cmb_drumkit_selector.setSize (780, 48);
 
-    yoffs += cmb_drumkit_selector.getHeight();
+    yoffs += 48;//cmb_drumkit_selector.getHeight();
 
     addAndMakeVisible (bt_test);
     bt_test.setButtonText ("Test");
     bt_test.addListener (this);
-/*
-    // these define the parameters of our slider object
-    midiVolume.setSliderStyle (juce::Slider::LinearBarVertical);
-    midiVolume.setRange (0.0, 127.0, 1.0);
-    midiVolume.setTextBoxStyle (juce::Slider::NoTextBox, false, 90, 0);
-    midiVolume.setPopupDisplayEnabled (true, false, this);
-    midiVolume.setTextValueSuffix (" Volume");
-    midiVolume.setValue(1.0);
 
-    // this function adds the slider to the editor
-    addAndMakeVisible (&midiVolume);
-*/
-
-
-   //addAndMakeVisible (l_panner_mode);
-//  l_panner_mode.setFont (f_default_font);
-/*
-    addAndMakeVisible (cmb_panner_mode);
-        cmb_panner_mode.addItem ("Plain",  1);
-        cmb_panner_mode.addItem ("Bold",   2);
-        cmb_panner_mode.addItem ("Italic", 3);
-
-        cmb_panner_mode.onChange = [this] { panner_modeMenuChanged(); };
-        //cmb_panner_mode.setSelectedId (1);
-
-        //setSize (400, 200);
-
-        l_panner_mode.setBounds (1, 50, 50, 50);
-
-        cmb_panner_mode.setBounds (50, 50, 100, 50);
-
-*/
 /*
         gainLabel.setText ("Gain", juce::dontSendNotification);
         addAndMakeVisible (gainLabel);
@@ -173,12 +122,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
 
+//        drumlines_container.setSize (780, drumlines[0].getHeight() * 36);
 
-        drumlines_container.setSize (780, drumlines[0].getHeight() * 36);
-      //  drumlines_container.addAndMakeVisible (dl);
-
-     //   dl.setTopLeftPosition(1, 1);
-     //   dl.attach_params (this, 0);
+        drumlines_container.setSize (drumlines[0].getWidth() + XFILLER, drumlines[0].getHeight() * 36);
 
 
         for (size_t i = 0; i < 36; i++)
@@ -199,25 +145,45 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
         drumlines_viewer.setViewedComponent (&drumlines_container, false);
         drumlines_viewer.setScrollBarsShown	(true, false);
-        drumlines_viewer.setSize (drumlines[0].getWidth() + 24, 480);
+        drumlines_viewer.setSize (drumlines_container.getWidth() + (XFILLER * 5), 480);
         drumlines_viewer.setScrollBarThickness (24);
 
         drumlines_viewer.setTopLeftPosition (0, yoffs + YFILLER);
 
+        cmb_drumkit_selector.setSize (drumlines_viewer.getWidth(), 48);
+
+
         addAndMakeVisible (drumlines_viewer);
 
+/////////////////
+
+
+
+
+
+       juce::Label l_drumkit_name;
+       juce::TextButton bt_drumkit_info;
+
+
+/////////////////
+
+        addAndMakeVisible (l_pan_mode);
+        l_pan_mode.setTopLeftPosition (drumlines_viewer.getWidth() + XFILLER, 450);//getHeight() - cmb_pan_mode.getHeight());
+        l_pan_mode.setSize (100, 48);
 
         addAndMakeVisible (cmb_pan_mode);
       //  cmb_pan_mode.onChange = [this] { panner_modeMenuChanged(); };
 
 
-        cmb_pan_mode.setSize (180, 48);
-        cmb_pan_mode.setTopLeftPosition (drumlines_viewer.getWidth() + XFILLER, 100);//getHeight() - cmb_pan_mode.getHeight());
 
-        cmb_pan_mode.addItem ("One", 1);
-        cmb_pan_mode.addItem ("Two", 2);
-        cmb_pan_mode.addItem ("Three", 3);
-        cmb_pan_mode.addItem ("Four", 4);
+        cmb_pan_mode.setSize (180, 48);
+        cmb_pan_mode.setTopLeftPosition (l_pan_mode.getX() + l_pan_mode.getWidth() + XFILLER, l_pan_mode.getY());//getHeight() - cmb_pan_mode.getHeight());
+
+        cmb_pan_mode.addItem ("sin/cos panner, law: -3 dB", 1);
+        cmb_pan_mode.addItem ("square root panner, law: -3 dB", 2);
+        cmb_pan_mode.addItem ("linear panner, law: 0 dB", 3);
+        cmb_pan_mode.addItem ("linear panner, law: -6 dB", 4);
+
 
         att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
 

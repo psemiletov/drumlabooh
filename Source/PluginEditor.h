@@ -11,7 +11,6 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
-#include "topheader.h"
 
 //#include "drumcell.h"
 
@@ -105,37 +104,32 @@ public:
     std::unique_ptr<ButtonAttachment> invertAttachment;
 
 
-    //CDrumCell dc;
-    //CDrumLine dl;
-
-    CDrumLine drumlines [36];
-
-
-public:
-    //NewProjectAudioProcessorEditor (NewProjectAudioProcessor&);
-    CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts);
-    ~CAudioProcessorEditor() override;
-
-
-
-    //==============================================================================
-
+    juce::GroupComponent drumlines_group;
     juce::Component drumlines_container;
     juce::Viewport drumlines_viewer;
 
-    //juce::Label l_panner_mode { {}, "Panner mode" };
-    //juce::ComboBox cmb_panner_mode;
-
-    juce::Slider midiVolume;
 
     juce::TextButton bt_test;
-    juce::Label timeLabel;
+
+    juce::Label l_drumkit_name;
+    juce::TextButton bt_drumkit_info;
+
 
 
     juce::Label l_drumkit_selector { {}, "Drumkit selector" };
     //juce::Font f_default_font { 12.0f };
     juce::ComboBox cmb_drumkit_selector;
 
+
+
+    CDrumLine drumlines [36];
+
+
+    CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts);
+    ~CAudioProcessorEditor() override;
+
+
+    //==============================================================================
 
    // void save_string_keyval (const std::string &key, const std::string &val);
  //   std::string load_string_keyval (const std::string &key);
@@ -146,7 +140,7 @@ public:
     void kit_changed();
 
 
-  void paint (juce::Graphics&) override;
+    void paint (juce::Graphics&) override;
     void resized() override;
 
     void panner_modeMenuChanged();

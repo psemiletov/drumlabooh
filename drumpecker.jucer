@@ -7,14 +7,14 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="c7am2v" name="Drumpecker">
     <GROUP id="{93AFE34A-6878-9C80-E478-6BACC2539A49}" name="Source">
-      <FILE id="HRgHSL" name="topheader.cpp" compile="1" resource="0" file="Source/topheader.cpp"/>
+      <FILE id="HRgHSL" name="topheader.cpp" compile="0" resource="0" file="Source/topheader.cpp"/>
       <FILE id="zoF7xg" name="topheader.h" compile="0" resource="0" file="Source/topheader.h"/>
       <FILE id="oiWVWN" name="dsp.h" compile="0" resource="0" file="Source/dsp.h"/>
       <FILE id="DRkUbv" name="kits.cpp" compile="1" resource="0" file="Source/kits.cpp"/>
       <FILE id="LUoXwj" name="kits.h" compile="0" resource="0" file="Source/kits.h"/>
       <FILE id="Kqw7n5" name="pugiconfig.hpp" compile="0" resource="0" file="Source/pugiconfig.hpp"/>
-      <FILE id="s5Y3m4" name="pugixml.cpp" compile="1" resource="0" file="Source/pugixml.cpp"/>
-      <FILE id="uYJJ1N" name="drumcell.cpp" compile="1" resource="0" file="Source/drumcell.cpp"/>
+      <FILE id="s5Y3m4" name="pugixml.cpp" compile="0" resource="0" file="Source/pugixml.cpp"/>
+      <FILE id="uYJJ1N" name="drumcell.cpp" compile="0" resource="0" file="Source/drumcell.cpp"/>
       <FILE id="nAZwfd" name="drumcell.h" compile="0" resource="0" file="Source/drumcell.h"/>
       <FILE id="Kd0EAh" name="pugixml.hpp" compile="0" resource="0" file="Source/pugixml.hpp"/>
       <FILE id="dg2VS3" name="utl.cpp" compile="1" resource="0" file="Source/utl.cpp"/>
