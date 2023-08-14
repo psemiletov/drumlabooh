@@ -213,10 +213,15 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
      //   testSlider.setNormalisableRange	(rr);
 
 
-        testSlider.setRange ( -96, 12, 1);
+        testSlider.setRange ( -96, 12, 0.1);
               testSlider.setSkewFactor (4);
 
-        testSlider.setSliderStyle(juce:: Slider::SliderStyle::RotaryVerticalDrag);
+//        testSlider.setSliderStyle(juce:: Slider::SliderStyle::RotaryVerticalDrag);
+          testSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+
+//            setSliderStyle (juce::Slider::LinearHorizontal);
+
+
       //  testSlider.setSkewFactorFromMidPoint (50);
 
         testSlider.setBounds (bt_test.getWidth() + bt_test.getX(), bt_test.getY(), 150, 150);
@@ -446,7 +451,11 @@ CDrumLine::CDrumLine ()
     sl_pan.setSize (104, 32);
     sl_pan.setRange (0.0f, 1.0f, 0.01f);
 
+
+    //juce:: Slider::SliderStyle::RotaryVerticalDrag
     sl_pan.setSliderStyle (juce::Slider::LinearHorizontal);
+    sl_pan.setRange (-96, 12, 1);
+
     sl_pan.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
     sl_pan.setTooltip ("Pan\n");
 
@@ -465,9 +474,12 @@ CDrumLine::CDrumLine ()
     sl_gain.setSliderStyle (juce::Slider::LinearHorizontal);
     sl_gain.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
 
-    sl_gain.setRange (-60, 6, 1);
+//    sl_gain.setRange (-60, 6, 1);
 
-    //sl_gain.setSkewFactor (0.f);
+    sl_gain.setRange (-96, 12, 1);
+
+
+    sl_gain.setSkewFactor (4);
     //sl_gain.setRange (-60.f, 6.f);
 
     //sl_gain.setSkewFactor	(1,true);
@@ -487,18 +499,11 @@ CDrumLine::CDrumLine ()
     xoffs += XFILLER;
 
 
- //   setSize (32, label.getWidth() + FILLER + sl_pan.getWidth() + FILLER + sl_gain.getWidth());
 
+    gr_group.setVisible (true);
+    gr_group.setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
 
-     gr_group.setVisible (true);
-     gr_group.setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
-
-     setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
-
-
-
-    //[Constructor] You can add your own custom stuff here..
-    //[/Constructor]
+    setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
 }
 
 CDrumLine::~CDrumLine()

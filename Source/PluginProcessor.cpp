@@ -54,8 +54,23 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
   for (size_t i = 0; i < 36; i++)
       {
         //juce::NormalisableRange<float>(-60.f, 6.f, 1.f, 0.0f)
+/*
+          std::make_unique <juce::AudioParameterFloat> parameter_gain ("gain" + std::to_string(i), // parameter ID
+                                                                      "gain" + std::to_string(i), // parameter name
+                                                                       juce::NormalisableRange<float> (-96, 12, 1, 4), // parameter range
+                                                                       0);
 
-       layout.add (std::make_unique<juce::AudioParameterFloat> ("gain" + std::to_string(i), "gain" + std::to_string(i), minusInfdB, 6, 0));
+*/
+          // layout.add (parameter_gain);
+
+           layout.add (std::make_unique <juce::AudioParameterFloat> ("gain" + std::to_string(i), // parameter ID
+                                                                      "gain" + std::to_string(i), // parameter name
+                                                                       juce::NormalisableRange<float> (-96, 12, 1, 4), // parameter range
+                                                                       0));
+
+
+//        layout.add (std::make_unique<juce::AudioParameterFloat> ("gain" + std::to_string(i), "gain" + std::to_string(i), -96, 12, 0));
+//       layout.add (std::make_unique<juce::AudioParameterFloat> ("gain" + std::to_string(i), "gain" + std::to_string(i), minusInfdB, 6, 0));
        layout.add (std::make_unique<juce::AudioParameterFloat> ("pan" + std::to_string(i), "pan" + std::to_string(i), 0.0f, 1.0f, 0.5f));
       }
 
