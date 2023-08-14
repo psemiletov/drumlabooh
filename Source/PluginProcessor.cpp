@@ -62,10 +62,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
 */
           // layout.add (parameter_gain);
-
+/* GOOD
            layout.add (std::make_unique <juce::AudioParameterFloat> ("gain" + std::to_string(i), // parameter ID
                                                                       "gain" + std::to_string(i), // parameter name
-                                                                       juce::NormalisableRange<float> (-96, 12, 1, 4), // parameter range
+                                                                       juce::NormalisableRange<float> (-96, 6, 0.1, 4), // parameter range
+                                                                       0));
+*/
+
+        layout.add (std::make_unique <juce::AudioParameterFloat> ("gain" + std::to_string(i), // parameter ID
+                                                                      "gain" + std::to_string(i), // parameter name
+                                                                       juce::NormalisableRange<float> (-96, 6, 0.1, 5), // parameter range
                                                                        0));
 
 
