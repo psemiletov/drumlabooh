@@ -205,6 +205,23 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
         bt_test.setBounds (drumlines[0].getWidth() + 36, 200, 50, 50);
 
+
+        addAndMakeVisible (testSlider);
+
+      //  juce::NormalisableRange< double > rr (1, 100, 1, 70, false);
+
+     //   testSlider.setNormalisableRange	(rr);
+
+
+        testSlider.setRange ( -96, 12, 1);
+              testSlider.setSkewFactor (4);
+
+        testSlider.setSliderStyle(juce:: Slider::SliderStyle::RotaryVerticalDrag);
+      //  testSlider.setSkewFactorFromMidPoint (50);
+
+        testSlider.setBounds (bt_test.getWidth() + bt_test.getX(), bt_test.getY(), 150, 150);
+
+
 }
 
 CAudioProcessorEditor::~CAudioProcessorEditor()
@@ -445,10 +462,24 @@ CDrumLine::CDrumLine ()
     sl_gain.setTopLeftPosition (xoffs, YFILLER);
     sl_gain.setSize (104, 32);
 
-    sl_gain.setRange (-60, 6, 1);
     sl_gain.setSliderStyle (juce::Slider::LinearHorizontal);
     sl_gain.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+
+    sl_gain.setRange (-60, 6, 1);
+
+    //sl_gain.setSkewFactor (0.f);
+    //sl_gain.setRange (-60.f, 6.f);
+
+    //sl_gain.setSkewFactor	(1,true);
+
+    //sl_gain.setSkewFactorFromMidPoint (0);
+
+
+
     sl_gain.addListener (this);
+
+
+
     sl_pan.setTooltip ("Gain\n");
 
 
@@ -519,23 +550,15 @@ void CDrumLine::sliderValueChanged (juce::Slider* sliderThatWasMoved)
 
 void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
 {
-
-  //if (! ed)
-    // std::cout << "!!!!! " << std::endl;
-
   cell_number = cellno;
 
   std::string param_name = "gain" + std::to_string (cell_number);
-
- // std::cout << "param_name:" << param_name << std::endl;
-
 
   att_gain.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_gain));
 
   param_name = "pan" + std::to_string (cell_number);
 
   att_pan.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_pan));
-
 }
 
 

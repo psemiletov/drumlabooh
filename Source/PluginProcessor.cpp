@@ -43,16 +43,18 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                             36.0f)); //default
 
 
-  layout.add (std::make_unique<juce::AudioParameterFloat> ("gain", "Gain", 0.0f, 1.0f, 0.5f));
+  //layout.add (std::make_unique<juce::AudioParameterFloat> ("gain", "Gain", 0.0f, 1.0f, 0.5f));
 
 
-  layout.add (std::make_unique<juce::AudioParameterBool> ("invertPhase", "Invert Phase", false));
+  //layout.add (std::make_unique<juce::AudioParameterBool> ("invertPhase", "Invert Phase", false));
 
   //layout.add (std::make_unique<juce::AudioParameterFloat> ("gain0", "Gain0", minusInfdB, 6, 0));
   //layout.add (std::make_unique<juce::AudioParameterFloat> ("pan0", "Pan0", 0.0f, 1.0f, 0.5f));
 
   for (size_t i = 0; i < 36; i++)
       {
+        //juce::NormalisableRange<float>(-60.f, 6.f, 1.f, 0.0f)
+
        layout.add (std::make_unique<juce::AudioParameterFloat> ("gain" + std::to_string(i), "gain" + std::to_string(i), minusInfdB, 6, 0));
        layout.add (std::make_unique<juce::AudioParameterFloat> ("pan" + std::to_string(i), "pan" + std::to_string(i), 0.0f, 1.0f, 0.5f));
       }
@@ -115,15 +117,11 @@ parameters (*this, 0, "Drumpecker", createParameterLayout())
 
   first_note_number  = parameters.getRawParameterValue ("first_note_number");
   std::cout << "first_note_number:" << *first_note_number << std::endl;
-
-
 }
+
 
 CAudioProcessor::~CAudioProcessor()
 {
- // std::cout << "save drumkit_name: " << drumkit_name << std::endl;
-
-   //save_string_keyval ("drumkit_name", drumkit_name);
 
    if (drumkit)
        delete drumkit;
@@ -349,8 +347,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
 
-    for (int i = 0; i < num_channels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+    //for (int i = 0; i < num_channels; ++i)
+     for (int i = 0; i < 2; ++i)
+         buffer.clear (i, 0, buffer.getNumSamples());
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
@@ -421,38 +420,21 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
                  float pan = *(pans[drum_sample_index]);
 
-                 pan_linear6 (pan_left, pan_right, pan);
+                 if (*panner_mode == 1)
+                      pan_sincos (pan_left, pan_right, pan);
+                 else
+                 if (*panner_mode == 2)
+                     pan_sqrt (pan_left, pan_right, pan);
+                 else
+                 if (*panner_mode == 3)
+                     pan_linear0 (pan_left, pan_right, pan);
+                 else
+                 if (*panner_mode == 4)
+                     pan_linear6 (pan_left, pan_right, pan);
+
 
                  float coef_right = pan_right * gain * s->velocity;
                  float coef_left = pan_left * gain * s->velocity;
-
-
-                 /*
-
-
-               float pan_right = 0;
-               float pan_left = 0;
-
-               float pan = *drumrox->pans[i];
-
-               if (drumrox->panlaw == PANLAW_LINEAR6)
-                  pan_linear6 (pan_left, pan_right, pan);
-
-               if (drumrox->panlaw == PANLAW_LINEAR0)
-                  pan_linear0 (pan_left, pan_right, pan);
-
-               if (drumrox->panlaw == PANLAW_SQRT)
-                   pan_sqrt (pan_left, pan_right, pan);
-
-               if (drumrox->panlaw == PANLAW_SINCOS)
-                  pan_sincos (pan_left, pan_right, pan);
-
-
-               coef_right = pan_right * gain * current_sample->velocity;
-               coef_left = pan_left * gain * current_sample->velocity;
-
-                  */
-
 
                  channel_data[0][out_buf_offs] += fl * coef_left;
                  channel_data[1][out_buf_offs] += fl * coef_right;
@@ -465,8 +447,32 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  float fl = l->channel_data[0][l->sample_offset];
                  float fr = l->channel_data[1][l->sample_offset];
 
-                 channel_data[0][out_buf_offs] += fl;
-                 channel_data[1][out_buf_offs] += fr;
+                 float gain = db2lin(*(gains[drum_sample_index]));
+
+                 float pan_right = 0;
+                 float pan_left = 0;
+
+                 float pan = *(pans[drum_sample_index]);
+
+                 if (*panner_mode == 1)
+                      pan_sincos (pan_left, pan_right, pan);
+                 else
+                 if (*panner_mode == 2)
+                     pan_sqrt (pan_left, pan_right, pan);
+                 else
+                 if (*panner_mode == 3)
+                     pan_linear0 (pan_left, pan_right, pan);
+                 else
+                 if (*panner_mode == 4)
+                     pan_linear6 (pan_left, pan_right, pan);
+
+
+                 float coef_right = pan_right * gain * s->velocity;
+                 float coef_left = pan_left * gain * s->velocity;
+
+                 channel_data[0][out_buf_offs] += fl * coef_left;
+                 channel_data[1][out_buf_offs] += fr * coef_right;
+
                 }
 
              }
