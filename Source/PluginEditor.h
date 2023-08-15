@@ -29,6 +29,8 @@ public:
 
     juce::Font f_samplename_font { 14.0f, juce::Font::bold};
 
+
+
     juce::GroupComponent gr_group;
     juce::Slider sl_pan;
     juce::Slider sl_gain;
@@ -77,6 +79,8 @@ public:
     juce::Label l_pan_mode { {}, "Pan mode" };
     juce::ComboBox cmb_pan_mode;
 
+    juce::GroupComponent gr_kitinfo;
+    juce::Label l_kitinfo;
 
   //  juce::MidiKeyboardState keyboardState;
 
@@ -89,6 +93,10 @@ public:
     std::unique_ptr<SliderAttachment> gainAttachment;
     juce::ToggleButton invertButton;
     std::unique_ptr<ButtonAttachment> invertAttachment;
+
+
+    juce::Font f_kitname_font { 20.0f, juce::Font::bold};
+    juce::ImageComponent kit_image;
 
 
     juce::GroupComponent drumlines_group;
@@ -104,7 +112,6 @@ public:
 
 
     juce::Label l_drumkit_selector { {}, "Drumkit selector" };
-    //juce::Font f_default_font { 12.0f };
     juce::ComboBox cmb_drumkit_selector;
 
 

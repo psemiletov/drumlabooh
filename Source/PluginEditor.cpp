@@ -12,6 +12,7 @@
 
 
 #include "kits.h"
+#include "utl.h"
 
 #define XFILLER 4
 #define YFILLER 16
@@ -43,6 +44,213 @@
 #define KNOB_WIDTH 50
 #define KNOB_HEIGHT 50
 #define BETWEEN 3
+
+
+
+
+CDrumLine::CDrumLine ()
+{
+  addChildComponent (gr_group);
+
+  int xoffs = XFILLER * 2;
+
+  addAndMakeVisible (label);
+    label.setTopLeftPosition (xoffs, YFILLER);
+    label.setSize (160, 32);
+
+    label.setColour (juce::Label::textColourId, juce::Colours::black);
+    label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
+    label.setFont (f_samplename_font);
+
+    label.setEditable (true);
+
+    label.setText ("EMPTY CELL", juce::dontSendNotification);
+
+    xoffs += label.getWidth();
+    xoffs += XFILLER;
+
+    addAndMakeVisible (sl_pan);
+    sl_pan.setTopLeftPosition (xoffs, YFILLER);
+    sl_pan.setSize (104, 32);
+    sl_pan.setRange (0.0f, 1.0f, 0.01f);
+
+
+    //juce:: Slider::SliderStyle::RotaryVerticalDrag
+    sl_pan.setSliderStyle (juce::Slider::LinearHorizontal);
+    sl_pan.setRange (-96, 6, 1);
+
+    sl_pan.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+    sl_pan.setTooltip ("Pan\n");
+
+    sl_pan.addListener (this);
+
+
+    xoffs += sl_pan.getWidth();
+    xoffs += XFILLER;
+
+
+    addAndMakeVisible (sl_gain);
+
+    sl_gain.setTopLeftPosition (xoffs, YFILLER);
+    sl_gain.setSize (104, 32);
+
+    sl_gain.setSliderStyle (juce::Slider::LinearHorizontal);
+    sl_gain.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+
+//    sl_gain.setRange (-60, 6, 1);
+
+    sl_gain.setRange (-96, 12, 1);
+
+
+    sl_gain.setSkewFactor (4);
+    //sl_gain.setRange (-60.f, 6.f);
+
+    //sl_gain.setSkewFactor	(1,true);
+
+    //sl_gain.setSkewFactorFromMidPoint (0);
+
+
+
+    sl_gain.addListener (this);
+
+
+
+    sl_pan.setTooltip ("Gain\n");
+
+
+    xoffs += sl_gain.getWidth();
+    xoffs += XFILLER;
+
+
+
+    gr_group.setVisible (true);
+    gr_group.setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
+
+    setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
+}
+
+CDrumLine::~CDrumLine()
+{
+
+}
+
+//==============================================================================
+void CDrumLine::paint (juce::Graphics& g)
+{
+    //[UserPrePaint] Add your own custom painting code here..
+    //[/UserPrePaint]
+
+    g.fillAll (juce::Colour (0xff323e44));
+
+    //[UserPaint] Add your own custom painting code here..
+    //[/UserPaint]
+}
+
+void CDrumLine::resized()
+{
+    //[UserPreResize] Add your own custom resize code here..
+    //[/UserPreResize]
+
+    //[UserResized] Add your own custom resize handling here..
+    //[/UserResized]
+}
+
+void CDrumLine::sliderValueChanged (juce::Slider* sliderThatWasMoved)
+{
+    //[UsersliderValueChanged_Pre]
+    //[/UsersliderValueChanged_Pre]
+
+    if (sliderThatWasMoved == &sl_pan)
+    {
+        //[UserSliderCode_sl_pan] -- add your slider handling code here..
+        //[/UserSliderCode_sl_pan]
+    }
+    else if (sliderThatWasMoved == &sl_gain)
+    {
+        //[UserSliderCode_sl_gain] -- add your slider handling code here..
+        //[/UserSliderCode_sl_gain]
+    }
+
+    //[UsersliderValueChanged_Post]
+    //[/UsersliderValueChanged_Post]
+}
+
+
+void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
+{
+  cell_number = cellno;
+
+  std::string param_name = "gain" + std::to_string (cell_number);
+
+  att_gain.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_gain));
+
+  param_name = "pan" + std::to_string (cell_number);
+
+  att_pan.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_pan));
+}
+
+
+void CDrumLine::set_name (const std::string &n)
+{
+  label.setText (n.c_str(), juce::dontSendNotification);
+
+}
+
+
+void CAudioProcessorEditor::load_kit (const std::string &kitpath)
+{
+  //STOP PLAY
+
+  //THEN
+  //make all drum labels empyy
+
+   for (size_t i = 0; i < 36; i++)
+       {
+        drumlines[i].set_name ("EMPTY CELL");
+       }
+
+  if (kits_scanner.v_scanned_kits.size() == 0)
+      return;
+
+
+  //find kit at v_scanned_kits
+
+  CHydrogenKit *k = 0;
+
+  for (size_t i = 0; i < kits_scanner.v_scanned_kits.size() ; i++)
+      {
+       if (kits_scanner.v_scanned_kits[i]->kit_filename == kitpath)
+          k = kits_scanner.v_scanned_kits[i];
+      }
+
+   if (! k)
+      return;
+
+  for (size_t i = 0; i < k->v_samples.size(); i++)
+       {
+        drumlines[i].set_name (k->v_samples[i]->name);
+       }
+
+   juce::String kitname = k->kit_name.c_str();
+
+   l_kitinfo.setText (kitname, juce::dontSendNotification );
+
+   if (file_exists (k->image_fname))
+      {
+       //kit_image
+        std::cout << "k->image_fname: " << k->image_fname << std::endl;
+
+        juce::File fl (k->image_fname);
+        juce::Image im = juce::ImageFileFormat::loadFrom (fl);
+        kit_image.setImage(im);
+
+      }
+   else
+       kit_image.setImage(juce::Image ());
+
+
+
+}
 
 
 
@@ -80,6 +288,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
     int yoffs = 0;
     int xoffs = XFILLER;
+
 
 
     cmb_drumkit_selector.setTextWhenNothingSelected ("CLICK HERE TO SELECT THE DRUMKIT");
@@ -203,28 +412,28 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
         setSize (WINDOW_WIDTH, WINDOW_HEIGHT);
 
 
-        bt_test.setBounds (drumlines[0].getWidth() + 36, 200, 50, 50);
+        bt_test.setBounds (drumlines[0].getWidth() + 50, 400, 50, 50);
 
 
-        addAndMakeVisible (testSlider);
-
-      //  juce::NormalisableRange< double > rr (1, 100, 1, 70, false);
-
-     //   testSlider.setNormalisableRange	(rr);
+        l_pan_mode.setTopLeftPosition (drumlines_viewer.getX() + drumlines_viewer.getWidth() + XFILLER, 450);
 
 
-        testSlider.setRange ( -96, 12, 0.1);
-              testSlider.setSkewFactor (4);
-
-//        testSlider.setSliderStyle(juce:: Slider::SliderStyle::RotaryVerticalDrag);
-          testSlider.setSliderStyle(juce::Slider::LinearHorizontal);
-
-//            setSliderStyle (juce::Slider::LinearHorizontal);
+         addAndMakeVisible (gr_kitinfo);
+         gr_kitinfo.setSize (325, 264);
+         gr_kitinfo.setTopLeftPosition (drumlines_viewer.getX() + drumlines_viewer.getWidth() + (XFILLER * 3), 0);
 
 
-      //  testSlider.setSkewFactorFromMidPoint (50);
+         addAndMakeVisible (l_kitinfo);
+         l_kitinfo.setFont (f_kitname_font);
 
-        testSlider.setBounds (bt_test.getWidth() + bt_test.getX(), bt_test.getY(), 150, 150);
+         l_kitinfo.setTopLeftPosition (gr_kitinfo.getX() + XFILLER, gr_kitinfo.getY());
+         l_kitinfo.setSize (300, 48);
+
+
+         addAndMakeVisible (kit_image);
+         kit_image.setTopLeftPosition (gr_kitinfo.getX() + XFILLER, l_kitinfo.getY() + YFILLER * 3);
+         kit_image.setSize (300, 200);
+
 
 
 }
@@ -418,195 +627,3 @@ void CAudioProcessorEditor::comboBoxChanged(juce::ComboBox *comboBox)
 }
 
 
-
-
-CDrumLine::CDrumLine ()
-{
-
-    addChildComponent (gr_group);
-  //  gr_group.setTextLabelPosition (juce::Justification::centredLeft);
-
-//    gr_group.setBounds (0, 0, 180, 144);
-
-    int xoffs = XFILLER * 2;
-    //int yoffs = 4;
-
-    addAndMakeVisible (label);
-    label.setTopLeftPosition (xoffs, YFILLER);
-    label.setSize (160, 32);
-
-    label.setColour (juce::Label::textColourId, juce::Colours::black);
-    label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
-    label.setFont (f_samplename_font);
-
-    label.setEditable (true);
-
-    label.setText ("EMPTY CELL", juce::dontSendNotification);
-
-    xoffs += label.getWidth();
-    xoffs += XFILLER;
-
-    addAndMakeVisible (sl_pan);
-    sl_pan.setTopLeftPosition (xoffs, YFILLER);
-    sl_pan.setSize (104, 32);
-    sl_pan.setRange (0.0f, 1.0f, 0.01f);
-
-
-    //juce:: Slider::SliderStyle::RotaryVerticalDrag
-    sl_pan.setSliderStyle (juce::Slider::LinearHorizontal);
-    sl_pan.setRange (-96, 12, 1);
-
-    sl_pan.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
-    sl_pan.setTooltip ("Pan\n");
-
-    sl_pan.addListener (this);
-
-
-    xoffs += sl_pan.getWidth();
-    xoffs += XFILLER;
-
-
-    addAndMakeVisible (sl_gain);
-
-    sl_gain.setTopLeftPosition (xoffs, YFILLER);
-    sl_gain.setSize (104, 32);
-
-    sl_gain.setSliderStyle (juce::Slider::LinearHorizontal);
-    sl_gain.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
-
-//    sl_gain.setRange (-60, 6, 1);
-
-    sl_gain.setRange (-96, 12, 1);
-
-
-    sl_gain.setSkewFactor (4);
-    //sl_gain.setRange (-60.f, 6.f);
-
-    //sl_gain.setSkewFactor	(1,true);
-
-    //sl_gain.setSkewFactorFromMidPoint (0);
-
-
-
-    sl_gain.addListener (this);
-
-
-
-    sl_pan.setTooltip ("Gain\n");
-
-
-    xoffs += sl_gain.getWidth();
-    xoffs += XFILLER;
-
-
-
-    gr_group.setVisible (true);
-    gr_group.setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
-
-    setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
-}
-
-CDrumLine::~CDrumLine()
-{
-
-}
-
-//==============================================================================
-void CDrumLine::paint (juce::Graphics& g)
-{
-    //[UserPrePaint] Add your own custom painting code here..
-    //[/UserPrePaint]
-
-    g.fillAll (juce::Colour (0xff323e44));
-
-    //[UserPaint] Add your own custom painting code here..
-    //[/UserPaint]
-}
-
-void CDrumLine::resized()
-{
-    //[UserPreResize] Add your own custom resize code here..
-    //[/UserPreResize]
-
-    //[UserResized] Add your own custom resize handling here..
-    //[/UserResized]
-}
-
-void CDrumLine::sliderValueChanged (juce::Slider* sliderThatWasMoved)
-{
-    //[UsersliderValueChanged_Pre]
-    //[/UsersliderValueChanged_Pre]
-
-    if (sliderThatWasMoved == &sl_pan)
-    {
-        //[UserSliderCode_sl_pan] -- add your slider handling code here..
-        //[/UserSliderCode_sl_pan]
-    }
-    else if (sliderThatWasMoved == &sl_gain)
-    {
-        //[UserSliderCode_sl_gain] -- add your slider handling code here..
-        //[/UserSliderCode_sl_gain]
-    }
-
-    //[UsersliderValueChanged_Post]
-    //[/UsersliderValueChanged_Post]
-}
-
-
-void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
-{
-  cell_number = cellno;
-
-  std::string param_name = "gain" + std::to_string (cell_number);
-
-  att_gain.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_gain));
-
-  param_name = "pan" + std::to_string (cell_number);
-
-  att_pan.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_pan));
-}
-
-
-void CDrumLine::set_name (const std::string &n)
-{
-  label.setText (n.c_str(), juce::dontSendNotification);
-
-}
-
-
-void CAudioProcessorEditor::load_kit (const std::string &kitpath)
-{
-  //STOP PLAY
-
-  //THEN
-  //make all drum labels empyy
-
-   for (size_t i = 0; i < 36; i++)
-       {
-        drumlines[i].set_name ("EMPTY CELL");
-       }
-
-  if (kits_scanner.v_scanned_kits.size() == 0)
-      return;
-
-
-  //find kit at v_scanned_kits
-
-  CHydrogenKit *k = 0;
-
-  for (size_t i = 0; i < kits_scanner.v_scanned_kits.size() ; i++)
-      {
-       if (kits_scanner.v_scanned_kits[i]->kit_filename == kitpath)
-          k = kits_scanner.v_scanned_kits[i];
-      }
-
-   if (! k)
-      return;
-
-  for (size_t i = 0; i < k->v_samples.size(); i++)
-       {
-        drumlines[i].set_name (k->v_samples[i]->name);
-       }
-
-
-}
