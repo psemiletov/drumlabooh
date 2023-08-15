@@ -192,7 +192,10 @@ void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
 
 void CDrumLine::set_name (const std::string &n)
 {
-  label.setText (n.c_str(), juce::dontSendNotification);
+  juce::String s (juce::CharPointer_UTF8((n.c_str())));
+  label.setText (s, juce::dontSendNotification);
+
+  //label.setText (juce::CharPointer_UTF8((n.c_str()), juce::dontSendNotification);
 
 }
 
@@ -238,7 +241,7 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
    if (file_exists (k->image_fname))
       {
        //kit_image
-        std::cout << "k->image_fname: " << k->image_fname << std::endl;
+      //  std::cout << "k->image_fname: " << k->image_fname << std::endl;
 
         juce::File fl (k->image_fname);
         juce::Image im = juce::ImageFileFormat::loadFrom (fl);
@@ -431,9 +434,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
          addAndMakeVisible (kit_image);
-         kit_image.setTopLeftPosition (gr_kitinfo.getX() + XFILLER * 2, l_kitinfo.getY() + YFILLER * 3);
+         //kit_image.setTopLeftPosition (gr_kitinfo.getX() + XFILLER * 2, l_kitinfo.getY() + YFILLER * 3);
          kit_image.setSize (300, 200);
-
+         kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2));
 
 
 }
