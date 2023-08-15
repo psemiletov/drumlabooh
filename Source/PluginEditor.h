@@ -71,7 +71,7 @@ private:
 
 public:
 
-    CHydrogenKitsScanner kits_scanner;
+    CDrumKitsScanner kits_scanner;
 
     juce::AudioProcessorValueTreeState& valueTreeState;
 

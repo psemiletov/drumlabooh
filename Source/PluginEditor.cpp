@@ -215,7 +215,7 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 
   //find kit at v_scanned_kits
 
-  CHydrogenKit *k = 0;
+  CDrumKit *k = 0;
 
   for (size_t i = 0; i < kits_scanner.v_scanned_kits.size() ; i++)
       {
@@ -431,7 +431,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
          addAndMakeVisible (kit_image);
-         kit_image.setTopLeftPosition (gr_kitinfo.getX() + XFILLER, l_kitinfo.getY() + YFILLER * 3);
+         kit_image.setTopLeftPosition (gr_kitinfo.getX() + XFILLER * 2, l_kitinfo.getY() + YFILLER * 3);
          kit_image.setSize (300, 200);
 
 

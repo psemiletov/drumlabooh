@@ -593,7 +593,7 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
    if (drumkit)
       delete drumkit;
 
-    drumkit = new CHydrogenKit;
+    drumkit = new CDrumKit;
     drumkit->load (fullpath, session_samplerate);
 
 //SIGNAL TO

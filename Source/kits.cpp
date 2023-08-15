@@ -32,18 +32,13 @@ juce::AudioFormatManager *formatManager;
 
 juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fname)
 {
-//  std::cout << "1" << std::endl;
 
   juce::File fl (fname);
 
   juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float>;
 
-  //std::cout << "2" << std::endl;
-
-
   std::unique_ptr<juce::AudioFormatReader> reader (formatManager->createReaderFor (fl));
 
-  //std::cout << "3" << std::endl;
 
 
   if (reader.get() != nullptr)
@@ -148,20 +143,12 @@ void CDrumLayer::load (const std::string &fname)
 {
   audio_buffer = load_whole_sample_resampled (fname, session_samplerate);
   file_name = fname;
-/*
-  if (channels > 0)
-    channel_data [0] = audio_buffer->getWritePointer (0);
-
-  if (channels > 1)
-    channel_data [1] = audio_buffer->getWritePointer (1);
-*/
 
   if (channels > 0)
     channel_data [0] = audio_buffer->getReadPointer (0);
 
   if (channels > 1)
     channel_data [1] = audio_buffer->getReadPointer (1);
-
 }
 
 
@@ -271,7 +258,7 @@ void CDrumSample::print_stats()
 }
 
 
-CHydrogenXMLWalker::CHydrogenXMLWalker (CHydrogenKit *hkit)
+CHydrogenXMLWalker::CHydrogenXMLWalker (CDrumKit *hkit)
 {
   kit = hkit;
   drumkit_info_passed = false;
@@ -371,7 +358,7 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
 }
 
 
-void CHydrogenKit::load_txt (const std::string &data)
+void CDrumKit::load_txt (const std::string &data)
 {
 //  cout << "void CHydrogenKit::load_txt (const std::string data)\n";
 
@@ -525,7 +512,7 @@ inline std::string& rtrim(std::string& s, const char* t = " \t\n\r\f\v")
 }
 
 
-void CHydrogenKit::load_sfz (const std::string &data)
+void CDrumKit::load_sfz (const std::string &data)
 {
 //  cout << "void CHydrogenKit::load_sfz (const std::string data)\n";
 
@@ -632,17 +619,15 @@ void CHydrogenKit::load_sfz (const std::string &data)
 }
 
 
-void CHydrogenKit::load (const std::string &fname, int sample_rate)
+void CDrumKit::load (const std::string &fname, int sample_rate)
 {
 //  cout << "void CHydrogenKit::load: " << fname << endl;
 
   auto start = chrono::high_resolution_clock::now();
 
-
   samplerate = sample_rate;
 
   string filename = resolve_symlink (fname.c_str());
-
   kit_filename = filename;
   kit_dir = get_file_path (kit_filename);
 
@@ -714,7 +699,7 @@ void CHydrogenKit::load (const std::string &fname, int sample_rate)
 }
 
 
-CHydrogenKit::CHydrogenKit()
+CDrumKit::CDrumKit()
 {
   scan_mode = false;
   layers_supported = false;
@@ -729,7 +714,7 @@ CHydrogenKit::CHydrogenKit()
 }
 
 
-CHydrogenKit::~CHydrogenKit()
+CDrumKit::~CDrumKit()
 {
   for (size_t i = 0; i < v_samples.size(); i++)
       {
@@ -738,16 +723,16 @@ CHydrogenKit::~CHydrogenKit()
 }
 
 
-void CHydrogenKit::add_sample()
+void CDrumKit::add_sample()
 {
   CDrumSample *s  = new CDrumSample (samplerate);
   v_samples.push_back (s);
 }
 
 
-void CHydrogenKit::print()
+void CDrumKit::print()
 {
-  cout << "void CHydrogenKit::print() -- start" << endl;
+  cout << "void CDrumKit::print() -- start" << endl;
 
   for (size_t i = 0; i < v_samples.size(); i++)
       {
@@ -756,13 +741,13 @@ void CHydrogenKit::print()
 
   cout << "samples count:" << v_samples.size() << endl;
 
-  cout << "void CHydrogenKit::print() -- end" << endl;
+  cout << "void CDrumKit::print() -- end" << endl;
 }
 
 
-void CHydrogenKit::print_stats()
+void CDrumKit::print_stats()
 {
-  cout << "void CHydrogenKit::print-stats() -- start" << endl;
+  cout << "void CDrumKit::print-stats() -- start" << endl;
 
   cout << "kitname: " << kit_name << endl;
 
@@ -771,16 +756,16 @@ void CHydrogenKit::print_stats()
        v_samples[i]->print_stats();
       }
 
-  cout << "void CHydrogenKit::print-stats() -- end" << endl;
+  cout << "void CDrumKit::print-stats() -- end" << endl;
 }
 
 
-CHydrogenKitsScanner::CHydrogenKitsScanner()
+CDrumKitsScanner::CDrumKitsScanner()
 {
 }
 
 
-CHydrogenKitsScanner::~CHydrogenKitsScanner()
+CDrumKitsScanner::~CDrumKitsScanner()
 {
   for (size_t i = 0; i < v_scanned_kits.size(); i++)
       {
@@ -789,7 +774,7 @@ CHydrogenKitsScanner::~CHydrogenKitsScanner()
 }
 
 
-void CHydrogenKitsScanner::scan()
+void CDrumKitsScanner::scan()
 {
   std::vector <std::string> v_kits_locations;
 
@@ -800,6 +785,7 @@ void CHydrogenKitsScanner::scan()
   v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
   v_kits_locations.push_back (get_home_dir() + "/.drmr/drumkits");
   v_kits_locations.push_back (get_home_dir() + "/drumrox-kits");
+  v_kits_locations.push_back (get_home_dir() + "/drumpecker-kits");
   v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
 
   std::vector <std::string> v_kits_dirs;
@@ -846,7 +832,7 @@ void CHydrogenKitsScanner::scan()
 
        if (kit_exists)
           {
-           CHydrogenKit *kit = new CHydrogenKit;
+           CDrumKit *kit = new CDrumKit;
            kit->scan_mode = true;
            kit->load (fname.c_str(), 44100);
            v_scanned_kits.push_back (kit);
@@ -856,7 +842,7 @@ void CHydrogenKitsScanner::scan()
 
       }
 
-  std::sort (v_scanned_kits.begin(), v_scanned_kits.end(), [](CHydrogenKit* a, CHydrogenKit* b) {return a->kit_name < b->kit_name;});
+  std::sort (v_scanned_kits.begin(), v_scanned_kits.end(), [](CDrumKit* a, CDrumKit* b) {return a->kit_name < b->kit_name;});
 
   for (auto i : v_scanned_kits)
       {
@@ -870,7 +856,7 @@ void CHydrogenKitsScanner::scan()
 }
 
 
-void CHydrogenKitsScanner::print()
+void CDrumKitsScanner::print()
 {
   for (size_t i = 0; i < v_scanned_kits.size(); i++)
      {

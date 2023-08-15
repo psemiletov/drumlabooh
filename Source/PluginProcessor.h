@@ -47,8 +47,8 @@ public:
 
  //   juce::AudioParameterInt* p_panner;
 
-    CHydrogenKitsScanner scanner;
-    CHydrogenKit *drumkit;
+    CDrumKitsScanner scanner;
+    CDrumKit *drumkit;
 
     int session_samplerate; //sess rate
 

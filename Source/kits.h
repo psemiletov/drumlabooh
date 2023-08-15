@@ -62,14 +62,10 @@ public:
 };
 
 
-//class CHydrogenKit;
 
 class CDrumSample
 {
 public:
-
-
-  //CHydrogenKit *kit; //uplink
 
 
   std::string name;
@@ -105,7 +101,7 @@ public:
 
 
 
-class CHydrogenKit
+class CDrumKit
 {
 public:
 
@@ -130,25 +126,25 @@ public:
   void load_txt (const std::string &fname);
   void load_sfz (const std::string & fname);
 
-  CHydrogenKit();
-  ~CHydrogenKit();
+  CDrumKit();
+  ~CDrumKit();
 
   void print();
   void print_stats();
 };
 
 
-class CHydrogenKitsScanner
+class CDrumKitsScanner
 {
 public:
 
   std::vector <std::string> v_kits_dirs;
   std::vector <std::string> v_kits_names;
-  std::vector <CHydrogenKit*> v_scanned_kits;
+  std::vector <CDrumKit*> v_scanned_kits;
   std::map <std::string, std::string> map_kits; //name = full path
 
-  CHydrogenKitsScanner();
-  ~CHydrogenKitsScanner();
+  CDrumKitsScanner();
+  ~CDrumKitsScanner();
 
   void scan();
   void print();
@@ -160,7 +156,7 @@ class CHydrogenXMLWalker: public pugi::xml_tree_walker
 {
 public:
 
-  CHydrogenKit *kit;
+  CDrumKit *kit;
 
   bool is_drumkit_info;
   bool is_instrument;
@@ -168,7 +164,7 @@ public:
   bool drumkit_info_passed;
   bool drumkitComponent_passed;
 
-  CHydrogenXMLWalker (CHydrogenKit *hkit);
+  CHydrogenXMLWalker (CDrumKit *hkit);
   bool for_each (pugi::xml_node& node);
 };
 
