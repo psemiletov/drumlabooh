@@ -15,7 +15,6 @@
 
 extern juce::AudioFormatManager *formatManager;
 
-#define minusInfdB -60
 
 
 juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParameterLayout()
@@ -33,50 +32,32 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                            "panner_mode",            // parameter name
                                                             1.0f,              // minimum value
                                                             4.0f,              // maximum value
-                                                            4.0f)); //default
+                                                            1.0f)); //default
 
 
-  layout.add (std::make_unique<juce::AudioParameterFloat> ("first_note_number",            // parameterID
-                                                           "first_note_number",            // parameter name
+   layout.add (std::make_unique <juce::AudioParameterFloat> ("base_note_number", // parameter ID
+                                                             "base_note_number", // parameter name
+                                                              juce::NormalisableRange<float> (0, 127,1), // parameter range
+                                                              36));
+
+
+/*
+  layout.add (std::make_unique<juce::AudioParameterFloat> ("base_note_number",            // parameterID
+                                                           "base_note_number",            // parameter name
                                                             0.0f,              // minimum value
                                                             127.0f,              // maximum value
                                                             36.0f)); //default
 
-
-  //layout.add (std::make_unique<juce::AudioParameterFloat> ("gain", "Gain", 0.0f, 1.0f, 0.5f));
-
-
+*/
   //layout.add (std::make_unique<juce::AudioParameterBool> ("invertPhase", "Invert Phase", false));
-
-  //layout.add (std::make_unique<juce::AudioParameterFloat> ("gain0", "Gain0", minusInfdB, 6, 0));
-  //layout.add (std::make_unique<juce::AudioParameterFloat> ("pan0", "Pan0", 0.0f, 1.0f, 0.5f));
 
   for (size_t i = 0; i < 36; i++)
       {
-        //juce::NormalisableRange<float>(-60.f, 6.f, 1.f, 0.0f)
-/*
-          std::make_unique <juce::AudioParameterFloat> parameter_gain ("gain" + std::to_string(i), // parameter ID
-                                                                      "gain" + std::to_string(i), // parameter name
-                                                                       juce::NormalisableRange<float> (-96, 12, 1, 4), // parameter range
-                                                                       0);
+       layout.add (std::make_unique <juce::AudioParameterFloat> ("gain" + std::to_string(i), // parameter ID
+                                                                 "gain" + std::to_string(i), // parameter name
+                                                                  juce::NormalisableRange<float> (-96, 6, 0.1, 5), // parameter range
+                                                                  0));
 
-*/
-          // layout.add (parameter_gain);
-/* GOOD
-           layout.add (std::make_unique <juce::AudioParameterFloat> ("gain" + std::to_string(i), // parameter ID
-                                                                      "gain" + std::to_string(i), // parameter name
-                                                                       juce::NormalisableRange<float> (-96, 6, 0.1, 4), // parameter range
-                                                                       0));
-*/
-
-        layout.add (std::make_unique <juce::AudioParameterFloat> ("gain" + std::to_string(i), // parameter ID
-                                                                      "gain" + std::to_string(i), // parameter name
-                                                                       juce::NormalisableRange<float> (-96, 6, 0.1, 5), // parameter range
-                                                                       0));
-
-
-//        layout.add (std::make_unique<juce::AudioParameterFloat> ("gain" + std::to_string(i), "gain" + std::to_string(i), -96, 12, 0));
-//       layout.add (std::make_unique<juce::AudioParameterFloat> ("gain" + std::to_string(i), "gain" + std::to_string(i), minusInfdB, 6, 0));
        layout.add (std::make_unique<juce::AudioParameterFloat> ("pan" + std::to_string(i), "pan" + std::to_string(i), 0.0f, 1.0f, 0.5f));
       }
 
@@ -105,55 +86,30 @@ parameters (*this, 0, "Drumpecker", createParameterLayout())
   session_samplerate = 0;
   drumkit_path = "";
 
-
-  //auto addons = treeState.state.getOrCreateChildWithName ("addons", nullptr);
-  //auto text = addons.getProperty ("drumkit_name", juce::String()).toString();
-
-  //std::cout << text << std::endl;
-
-  //phaseParameter = parameters.getRawParameterValue ("invertPhase");
-  //gainParameter  = parameters.getRawParameterValue ("gain");
-//  gain0  = parameters.getRawParameterValue ("gain0");
-//  pan0  = parameters.getRawParameterValue ("pan0");
-
- // gains[0]  = parameters.getRawParameterValue ("gain0");
- // pans[0]  = parameters.getRawParameterValue ("pan0");
-
   for (size_t i = 0; i < 36; i++)
       {
        gains[i]  = parameters.getRawParameterValue ("gain" + std::to_string(i));
        pans[i]  = parameters.getRawParameterValue ("pan" + std::to_string(i));
       }
 
-
-//  val_panner_mode = parameters.getParameterAsValue ("panner_mode");
   panner_mode = parameters.getRawParameterValue ("panner_mode");
-
-  std::cout << "panner_mode:" << *panner_mode << std::endl;
-
-  //*panner_mode = 4;
-
-//  std::cout << "panner_mode:" << *panner_mode << std::endl;
-
-
-  first_note_number  = parameters.getRawParameterValue ("first_note_number");
-  std::cout << "first_note_number:" << *first_note_number << std::endl;
+ // base_note_number  = parameters.getRawParameterValue ("base_note_number");
+//  std::cout << "base_note_number:" << *base_note_number << std::endl;
 }
 
 
 CAudioProcessor::~CAudioProcessor()
 {
+  if (drumkit)
+      delete drumkit;
 
-   if (drumkit)
-       delete drumkit;
-
-   delete formatManager;
+  delete formatManager;
 }
 
-//==============================================================================
+
 const juce::String CAudioProcessor::getName() const
 {
-    return JucePlugin_Name;
+  return JucePlugin_Name;
 }
 
 
@@ -224,20 +180,17 @@ void CAudioProcessor::changeProgramName (int index, const juce::String& newName)
 //==============================================================================
 void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
-     formatManager = new juce::AudioFormatManager();
-     formatManager->registerBasicFormats();
+   formatManager = new juce::AudioFormatManager();
+   formatManager->registerBasicFormats();
 
-      std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
+//      std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
 
-      std::cout << "*audioProcessor.panner_mode: "  << *panner_mode << std::endl;
+  //    std::cout << "*audioProcessor.panner_mode: "  << *panner_mode << std::endl;
 
+     //std::cout << "base_note_number:" << *base_note_number << std::endl;
 
-     session_samplerate = (int) sampleRate;
-
-     load_kit (drumkit_path);
-
+   session_samplerate = (int) sampleRate;
+   load_kit (drumkit_path);
 }
 
 
@@ -278,6 +231,9 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
 
+ //if (base_note_number == nullptr)
+   //  return;
+
   for (const juce::MidiMessageMetadata metadata : midiMessages)
       {
         //  if (metadata.numBytes == 3)
@@ -304,14 +260,16 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                return;
 
 
-             int nn = note_number - *first_note_number;
+//             int nn = note_number - (int) *base_note_number;
+             int nn = note_number - int_base_note_number;
+
              if (nn < 0 || nn > drumkit->v_samples.size() - 1)
                 {
                  std::cout << "nn <> drumkit->v_samples.size(), nn is " << nn << std::endl;
                  continue;
                 }
 
-               std::cout << "GO ON with n: " << nn << std::endl;
+             //std::cout << "GO ON with n: " << nn << std::endl;
 
 
              CDrumSample *s = drumkit->v_samples [nn];
@@ -319,9 +277,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                 continue;
 
 
-             std::cout << "s->v_layers[0]->lengthInSamples: " << s->v_layers[0]->lengthInSamples << std::endl;
-             std::cout << "s->v_layers[0]->channels: " << s->v_layers[0]->channels << std::endl;
-             //std::cout << "s->v_layers[0]->lengthInSamples: " << s->v_layers[0]->lengthInSamples << std::endl;
+            // std::cout << "s->v_layers[0]->lengthInSamples: " << s->v_layers[0]->length_in_samples << std::endl;
+             //std::cout << "s->v_layers[0]->channels: " << s->v_layers[0]->channels << std::endl;
 
 
              s->trigger_sample (velocity);
@@ -340,7 +297,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
            }
 
       }
-//     std::cout << "AAA" << std::endl;
 
     float *channel_data [2];
 
@@ -384,9 +340,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
 
         // ..do something to the data...
-     int out_buf_length = buffer.getNumSamples();
+   int out_buf_length = buffer.getNumSamples();
 
-        //std::cout << "out_buf_length: " << out_buf_length << std::endl;
 
 
    //for each sample out_buf_offs
@@ -414,17 +369,13 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  break;
                 }
 
-             if (l->sample_offset == l->lengthInSamples)
+             if (l->sample_offset == l->length_in_samples)
                 {
                  s->untrigger_sample();
                  continue;
                 }
 
-             //std::cout << "mix start" << std::endl;
 
-             //mix
-
-             //std::cout << "mix start" << std::endl;
 
              l->sample_offset++;
 
@@ -513,69 +464,69 @@ juce::AudioProcessorEditor* CAudioProcessor::createEditor()
 }
 
 
-//==============================================================================
 void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    save_string_keyval ("drumkit_path", drumkit_path);
+  save_string_keyval ("drumkit_path", drumkit_path);
+  save_int_keyval ("int_base_note_number", int_base_note_number);
 
+  std::cout << "get int_base_note_number: " << int_base_note_number << std::endl;
 
-        auto state = parameters.copyState();
-        std::unique_ptr<juce::XmlElement> xml (state.createXml());
-        copyXmlToBinary (*xml, destData);
-
-
-
+  auto state = parameters.copyState();
+  std::unique_ptr <juce::XmlElement> xml (state.createXml());
+  copyXmlToBinary (*xml, destData);
 }
 
 
 void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-        std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
+  std::unique_ptr <juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
 
-        if (xmlState.get() != nullptr)
-            if (xmlState->hasTagName (parameters.state.getType()))
-                parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
+  if (xmlState.get() != nullptr)
+     if (xmlState->hasTagName (parameters.state.getType()))
+         parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
+
+  int_base_note_number = load_int_keyval ("int_base_note_number");
+  drumkit_path = load_string_keyval ("drumkit_path");
 
 
-             drumkit_path = load_string_keyval ("drumkit_path");
+  std::cout << "set int_base_note_number: " << int_base_note_number << std::endl;
 
-     std::cout << ">>>>>>>>>>>>drumkit_path: " << drumkit_path  << std::endl;
-
+//  std::cout << ">>>>>>>>>>>>drumkit_path: " << drumkit_path  << std::endl;
 }
-
 
 
 void CAudioProcessor::save_string_keyval (const std::string &key, const std::string &val)
 {
   auto addons = parameters.state.getOrCreateChildWithName ("addons", nullptr);
   addons.setProperty (key.c_str(), val.c_str(), nullptr);
-
-//  addons.setProperty ("drumkit_name", "val.c_str()", nullptr);
-
-
 }
 
 
 std::string CAudioProcessor::load_string_keyval (const std::string &key)
 {
-  //std::cout << "CAudioProcessor::load_string_keyval : " << key << std::endl;
-
   juce::Identifier keyid (key.c_str());
-
   auto addons = parameters.state.getOrCreateChildWithName ("addons", nullptr);
-  //ret ValueTree
-
-  //auto addons = parameters.state.getOrCreateChildWithName ("addons", nullptr);
-
-  //auto text = addons.getProperty (key.c_str(), juce::String()).toString();
-
-  //auto text = addons.getProperty ("drumkit_name", juce::String()).toString();
-
   auto text = addons.getProperty (keyid, juce::String()).toString();
-
-  std::cout << "TEXT: " << text << std::endl;
-
+//  std::cout << "TEXT: " << text << std::endl;
   return text.toStdString();
+}
+
+
+
+void CAudioProcessor::save_int_keyval (const std::string &key, int val)
+{
+  auto addons = parameters.state.getOrCreateChildWithName ("addons", nullptr);
+  addons.setProperty (key.c_str(), val, nullptr);
+}
+
+
+int CAudioProcessor::load_int_keyval (const std::string &key)
+{
+  juce::Identifier keyid (key.c_str());
+  auto addons = parameters.state.getOrCreateChildWithName ("addons", nullptr);
+  auto v = addons.getProperty (keyid, 36);
+//  std::cout << "TEXT: " << text << std::endl;
+  return v;
 }
 
 
@@ -583,27 +534,26 @@ std::string CAudioProcessor::load_string_keyval (const std::string &key)
 bool CAudioProcessor::load_kit (const std::string &fullpath)
 {
 
-  std::cout << "CAudioProcessor::load_kit - 1" << std::endl;
+//  std::cout << "CAudioProcessor::load_kit - 1" << std::endl;
 //STOP PLAY
 
   suspendProcessing (true);
 
 //THEN
 
-   if (drumkit)
+  if (drumkit)
       delete drumkit;
 
-    drumkit = new CDrumKit;
-    drumkit->load (fullpath, session_samplerate);
+  drumkit = new CDrumKit;
+  drumkit->load (fullpath, session_samplerate);
 
 //SIGNAL TO
 
  suspendProcessing (false);
 
- std::cout << "CAudioProcessor::load_kit - 2" << std::endl;
+// std::cout << "CAudioProcessor::load_kit - 2" << std::endl;
 
-
- return true;
+  return true;
 }
 
 
@@ -613,5 +563,3 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new CAudioProcessor();
 }
-
-

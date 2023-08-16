@@ -56,7 +56,7 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
 
 
       samplerate = reader->sampleRate ;
-      lengthInSamples = reader->lengthInSamples;
+      length_in_samples = reader->lengthInSamples;
       channels = reader->numChannels;
      }
 
@@ -85,16 +85,15 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
   //double ratio = (double) 1.0 * sess_samplerate / samplerate;
 
 
-   float ratio = (float) 1.0f * sess_samplerate / samplerate;
-   size_t output_frames_count = (size_t) floor (lengthInSamples * ratio);
+  float ratio = (float) 1.0f * sess_samplerate / samplerate;
+  size_t output_frames_count = (size_t) floor (length_in_samples * ratio);
 
-   int old_samplerate = samplerate;
+  int old_samplerate = samplerate;
 
-  juce::int64 iSamples = ceil (sess_samplerate * lengthInSamples / samplerate);
+  juce::int64 iSamples = ceil (sess_samplerate * length_in_samples / samplerate);
 
   //juce::AudioBuffer<float> * tempBuffer = new juce::AudioBuffer <float> (channels, iSamples);
- juce::AudioBuffer<float> * tempBuffer = new juce::AudioBuffer <float> (channels, output_frames_count);
-
+  juce::AudioBuffer<float> * tempBuffer = new juce::AudioBuffer <float> (channels, output_frames_count);
 
  //juce::LagrangeInterpolator interpolator;
 
@@ -103,35 +102,26 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
   for (int i = 0; i < channels; i++)
       {
      //  juce::LagrangeInterpolator interpolator;
-         juce::CatmullRomInterpolator  interpolator;
+        juce::CatmullRomInterpolator  interpolator;
 
-       /*int result = interpolator.process (samplerate / sess_samplerate,
-		                                  buffer->getReadPointer(i),
-					                      tempBuffer->getWritePointer(i),
-					                      tempBuffer->getNumSamples());
-*/
+        int result = interpolator.process (samplerate / sess_samplerate,
+                                           buffer->getReadPointer(i),
+                                           tempBuffer->getWritePointer(i),
+                                           output_frames_count,//numOutputSamplesToProduce,
+                                           length_in_samples,
+                                           0);
 
-       int result = interpolator.process (samplerate / sess_samplerate,
-                                          buffer->getReadPointer(i),
-                                          tempBuffer->getWritePointer(i),
-                                          output_frames_count,//numOutputSamplesToProduce,
-                                          lengthInSamples,
-                                          0);
-
-         if (result == 0)
-            std::cout << "resample:: channel: " << i << " result: " << result << std::endl;
+//        if (result == 0)
+  //          std::cout << "resample:: channel: " << i << " result: " << result << std::endl;
        }
 
 
   samplerate = sess_samplerate;
-  lengthInSamples = iSamples;
+  length_in_samples = iSamples;
 
-
-
-  std::cout << "old samplerate: " << old_samplerate << endl;
-    std::cout << "new samplerate: " << samplerate << endl;
-  std::cout << "lengthInSamples: " << lengthInSamples << endl;
-
+//  std::cout << "old samplerate: " << old_samplerate << endl;
+//  std::cout << "new samplerate: " << samplerate << endl;
+  std::cout << "lengthInSamples: " << length_in_samples << endl;
   std::cout << fname << " loaded and resampled to " << samplerate << endl;
 
   delete buffer;
@@ -198,8 +188,7 @@ CDrumSample::~CDrumSample()
 }
 
 
-
-#define GAIN_MIN -60.0f
+//#define GAIN_MIN -60.0f
 
 size_t CDrumSample::map_velo_to_layer_number (float velo)
 {

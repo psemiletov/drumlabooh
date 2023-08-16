@@ -12,9 +12,7 @@
 
 #include "kits.h"
 
-//==============================================================================
-/**
-*/
+
 class CAudioProcessor  : public juce::AudioProcessor
                             #if JucePlugin_Enable_ARA
                              , public juce::AudioProcessorARAExtension
@@ -25,34 +23,23 @@ public:
 
     juce::AudioProcessorValueTreeState parameters;
 
-    //std::atomic<float>* phaseParameter = nullptr;
-    //std::atomic<float>* gainParameter  = nullptr;
- //  std::atomic<float>* gain0  = nullptr;
-  //  std::atomic<float>* pan0  = nullptr;
-
     std::atomic<float>* pans[36];
     std::atomic<float>* gains[36];
 
-
-
-    std::atomic<float>* first_note_number = nullptr;
+ //   std::atomic<float>* base_note_number = nullptr;
     std::atomic<float>* panner_mode = nullptr;
 
-    juce::Value val_panner_mode;
+    int int_base_note_number;
+
 
     std::string drumkit_path; //full path!
-
-
-public:
-
- //   juce::AudioParameterInt* p_panner;
 
     CDrumKitsScanner scanner;
     CDrumKit *drumkit;
 
     int session_samplerate; //sess rate
 
-    //==============================================================================
+
     CAudioProcessor();
     ~CAudioProcessor() override;
 
@@ -63,8 +50,10 @@ public:
     void save_string_keyval (const std::string &key, const std::string &val);
     std::string load_string_keyval (const std::string &key);
 
+    void save_int_keyval (const std::string &key, int val);
+    int load_int_keyval (const std::string &key);
 
-    //==============================================================================
+
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 

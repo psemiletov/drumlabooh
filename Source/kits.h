@@ -36,18 +36,12 @@ public:
   int channels;
   int samplerate;
 
- // int frames; //eq to lengthInSamples
-
-
-  int lengthInSamples;
+  int length_in_samples;// lengthInSamples;
   int sample_offset; //to play inc until < lengthInSamples
 
 
   juce::AudioBuffer<float> *audio_buffer;
   const float *channel_data [2];
-
-  //uint32_t offset;
-  //int dataoffset;
 
   CDrumLayer (CDrumSample *s); //sample_rate is uplink (session) samplerate
   ~CDrumLayer();
@@ -58,7 +52,6 @@ public:
   juce::AudioBuffer<float> * load_whole_sample (const std::string &fname); //called from load_whole_sample_resampled
   juce::AudioBuffer<float> * load_whole_sample_resampled (const std::string &fname, int sess_samplerate);
 
-  //called from load
 };
 
 

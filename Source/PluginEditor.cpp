@@ -55,106 +55,77 @@ CDrumLine::CDrumLine ()
   int xoffs = XFILLER * 2;
 
   addAndMakeVisible (label);
-    label.setTopLeftPosition (xoffs, YFILLER);
-    label.setSize (160, 32);
+  label.setTopLeftPosition (xoffs, YFILLER);
+  label.setSize (160, 32);
 
-    label.setColour (juce::Label::textColourId, juce::Colours::black);
-    label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
-    label.setFont (f_samplename_font);
+  label.setColour (juce::Label::textColourId, juce::Colours::black);
+  label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
+  label.setFont (f_samplename_font);
+//  label.setEditable (true);
 
-    label.setEditable (true);
+  label.setText ("EMPTY CELL", juce::dontSendNotification);
 
-    label.setText ("EMPTY CELL", juce::dontSendNotification);
+  xoffs += label.getWidth();
+  xoffs += XFILLER;
 
-    xoffs += label.getWidth();
-    xoffs += XFILLER;
-
-    addAndMakeVisible (sl_pan);
-    sl_pan.setTopLeftPosition (xoffs, YFILLER);
-    sl_pan.setSize (104, 32);
-    sl_pan.setRange (0.0f, 1.0f, 0.01f);
-
-
-    //juce:: Slider::SliderStyle::RotaryVerticalDrag
-    sl_pan.setSliderStyle (juce::Slider::LinearHorizontal);
-    sl_pan.setRange (-96, 6, 1);
-
-    sl_pan.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
-    sl_pan.setTooltip ("Pan\n");
-
-    sl_pan.addListener (this);
+  addAndMakeVisible (sl_pan);
+  sl_pan.setTopLeftPosition (xoffs, YFILLER);
+  sl_pan.setSize (104, 32);
+  sl_pan.setRange (0.0f, 1.0f, 0.01f);
 
 
-    xoffs += sl_pan.getWidth();
-    xoffs += XFILLER;
+  sl_pan.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_pan.setRange (-96, 6, 1);
 
+  sl_pan.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_pan.setTooltip ("Pan\n");
 
-    addAndMakeVisible (sl_gain);
+    //sl_pan.addListener (this);
 
-    sl_gain.setTopLeftPosition (xoffs, YFILLER);
-    sl_gain.setSize (104, 32);
+  xoffs += sl_pan.getWidth();
+  xoffs += XFILLER;
 
-    sl_gain.setSliderStyle (juce::Slider::LinearHorizontal);
-    sl_gain.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  addAndMakeVisible (sl_gain);
 
-//    sl_gain.setRange (-60, 6, 1);
+  sl_gain.setTopLeftPosition (xoffs, YFILLER);
+  sl_gain.setSize (104, 32);
 
-    sl_gain.setRange (-96, 12, 1);
+  sl_gain.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_gain.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
 
+  sl_gain.setRange (-96, 12, 1);
+  sl_gain.setSkewFactor (4);
 
-    sl_gain.setSkewFactor (4);
-    //sl_gain.setRange (-60.f, 6.f);
+    //sl_gain.addListener (this);
 
-    //sl_gain.setSkewFactor	(1,true);
+  sl_pan.setTooltip ("Gain\n");
 
-    //sl_gain.setSkewFactorFromMidPoint (0);
+  xoffs += sl_gain.getWidth();
+  xoffs += XFILLER;
 
+  gr_group.setVisible (true);
+  gr_group.setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
 
-
-    sl_gain.addListener (this);
-
-
-
-    sl_pan.setTooltip ("Gain\n");
-
-
-    xoffs += sl_gain.getWidth();
-    xoffs += XFILLER;
-
-
-
-    gr_group.setVisible (true);
-    gr_group.setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
-
-    setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
+  setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
 }
+
 
 CDrumLine::~CDrumLine()
 {
-
 }
 
-//==============================================================================
+
 void CDrumLine::paint (juce::Graphics& g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
-    //[/UserPrePaint]
-
-    g.fillAll (juce::Colour (0xff323e44));
-
-    //[UserPaint] Add your own custom painting code here..
-    //[/UserPaint]
+  g.fillAll (juce::Colour (0xff323e44));
 }
+
 
 void CDrumLine::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
-    //[/UserPreResize]
-
-    //[UserResized] Add your own custom resize handling here..
-    //[/UserResized]
 }
 
+/*
 void CDrumLine::sliderValueChanged (juce::Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
@@ -174,7 +145,7 @@ void CDrumLine::sliderValueChanged (juce::Slider* sliderThatWasMoved)
     //[UsersliderValueChanged_Post]
     //[/UsersliderValueChanged_Post]
 }
-
+*/
 
 void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
 {
@@ -240,9 +211,6 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 
    if (file_exists (k->image_fname))
       {
-       //kit_image
-      //  std::cout << "k->image_fname: " << k->image_fname << std::endl;
-
         juce::File fl (k->image_fname);
         juce::Image im = juce::ImageFileFormat::loadFrom (fl);
         kit_image.setImage(im);
@@ -250,9 +218,6 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
       }
    else
        kit_image.setImage(juce::Image ());
-
-
-
 }
 
 
@@ -273,176 +238,140 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   for (size_t i = 0; i < kits_scanner.v_kits_names.size(); i++)
      {
-    //  std::cout << kits_scanner.v_kits_names[i] << std::endl;
-    //  std::cout << "i:" << i << std::endl;
-
       cmb_drumkit_selector.addItem (kits_scanner.v_kits_names[i], i + 1);
-    }
+     }
 
 
-  //kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1];
+  int yoffs = 0;
+  int xoffs = XFILLER;
 
-   // top_header.setTopLeftPosition(1, 1);
+
+  cmb_drumkit_selector.setTextWhenNothingSelected ("CLICK HERE TO SELECT THE DRUMKIT");
+  cmb_drumkit_selector.setTextWhenNoChoicesAvailable ("NO DRUMKITS FOUND");
+  cmb_drumkit_selector.setScrollWheelEnabled (true);
+
+  addAndMakeVisible (cmb_drumkit_selector);
+
+
+   //cmb_drumkit_selector.onChange = [this] { kit_changed(); };
+  cmb_drumkit_selector.addListener (this);
+  cmb_drumkit_selector.setTopLeftPosition (xoffs, 0);
+
+  yoffs += 48;
 /*
-  auto addons = valueTreeState.state.getOrCreateChildWithName ("addons", nullptr);
-  auto text = addons.getProperty ("text", juce::String()).toString();
-  std::cout << "!!!!!!!!!!!!!!!!!!!!!! " << text << std::endl;
+   addAndMakeVisible (bt_test);
+   bt_test.setButtonText ("Test");
+   bt_test.addListener (this);
 */
 
-    int yoffs = 0;
-    int xoffs = XFILLER;
+
+
+  drumlines_container.setSize (drumlines[0].getWidth() + XFILLER, drumlines[0].getHeight() * 36);
+
+  for (size_t i = 0; i < 36; i++)
+      {
+       drumlines[i].setTopLeftPosition (0, i * drumlines[i].getHeight());
+       drumlines_container.addAndMakeVisible (drumlines[i]);
+       drumlines[i].attach_params (this, i);
+      }
+
+
+  load_kit (audioProcessor.drumkit_path);
+
+  addAndMakeVisible (drumlines_group);
+
+  drumlines_viewer.setViewedComponent (&drumlines_container, false);
+  drumlines_viewer.setScrollBarsShown	(true, false);
+  drumlines_viewer.setSize (drumlines_container.getWidth() + (XFILLER * 5), 480);
+  drumlines_viewer.setScrollBarThickness (24);
+
+
+  drumlines_group.setTopLeftPosition (xoffs, yoffs);
+  drumlines_group.setSize (drumlines_viewer.getWidth() + (XFILLER * 3), 480 + (YFILLER * 2));
+
+  xoffs += XFILLER;
+  yoffs += YFILLER;
+
+  drumlines_viewer.setTopLeftPosition (xoffs, yoffs);
+
+  cmb_drumkit_selector.setSize (drumlines_group.getWidth(), 48);
+
+
+  addAndMakeVisible (drumlines_viewer);
+
+
+  //KIT INFO
+
+  addAndMakeVisible (gr_kitinfo);
+  gr_kitinfo.setSize (332, 264);
+  gr_kitinfo.setTopLeftPosition (drumlines_viewer.getX() + drumlines_viewer.getWidth() + (XFILLER * 3), 0);
+
+
+  addAndMakeVisible (l_kitinfo);
+  l_kitinfo.setFont (f_kitname_font);
+  l_kitinfo.setTopLeftPosition (gr_kitinfo.getX() + XFILLER, gr_kitinfo.getY());
+  l_kitinfo.setSize (300, 48);
+
+
+  addAndMakeVisible (kit_image);
+  kit_image.setSize (300, 200);
+  kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2));
 
 
 
-    cmb_drumkit_selector.setTextWhenNothingSelected ("CLICK HERE TO SELECT THE DRUMKIT");
-    cmb_drumkit_selector.setTextWhenNoChoicesAvailable ("NO DRUMKITS FOUND");
-    cmb_drumkit_selector.setScrollWheelEnabled (true);
+  // PAN MODE
 
-    addAndMakeVisible (cmb_drumkit_selector);
+  addAndMakeVisible (l_pan_mode);
+  l_pan_mode.setTopLeftPosition (drumlines_viewer.getWidth() + XFILLER, 450);
+  l_pan_mode.setSize (100, 48);
 
-    //cmb_drumkit_selector.onChange = [this] { kit_changed(); };
-    cmb_drumkit_selector.addListener (this);
-    //cmb_drumkit_selector.setHeight (780, 48);
-    //cmb_drumkit_selector.setSize (780, 48);
-
-    cmb_drumkit_selector.setTopLeftPosition (xoffs, 0);
-
-    yoffs += 48;//cmb_drumkit_selector.getHeight();
-
-    addAndMakeVisible (bt_test);
-    bt_test.setButtonText ("Test");
-    bt_test.addListener (this);
-
-/*
-        gainLabel.setText ("Gain", juce::dontSendNotification);
-        addAndMakeVisible (gainLabel);
-
-        addAndMakeVisible (gainSlider);
-                gainSlider.setRange (0.0, 1.0, 0.01);
-   gainSlider.setSliderStyle(juce:: Slider::SliderStyle::RotaryVerticalDrag);
-    gainSlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox , false, 0, 0);
-
-        gainAttachment.reset (new SliderAttachment (valueTreeState, "gain", gainSlider));
-
-
-        invertButton.setButtonText ("Invert Phase");
-        addAndMakeVisible (invertButton);
-        invertAttachment.reset (new ButtonAttachment (valueTreeState, "invertPhase", invertButton));
-*/
-//        setSize (paramSliderWidth + paramLabelWidth, juce::jmax (100, paramControlHeight * 2));
-
-
-
-
-//        drumlines_container.setSize (780, drumlines[0].getHeight() * 36);
-
-        drumlines_container.setSize (drumlines[0].getWidth() + XFILLER, drumlines[0].getHeight() * 36);
-
-
-        for (size_t i = 0; i < 36; i++)
-            {
-             drumlines[i].setTopLeftPosition (0, i * drumlines[i].getHeight());
-             drumlines_container.addAndMakeVisible (drumlines[i]);
-             drumlines[i].attach_params (this, i);
-            }
-
-/////////////*******************8
-
-        load_kit (audioProcessor.drumkit_path);
-
-        /////////////////************8
-
-
-
-        addAndMakeVisible (drumlines_group);
-
-        drumlines_viewer.setViewedComponent (&drumlines_container, false);
-        drumlines_viewer.setScrollBarsShown	(true, false);
-        drumlines_viewer.setSize (drumlines_container.getWidth() + (XFILLER * 5), 480);
-        drumlines_viewer.setScrollBarThickness (24);
-
-
-        drumlines_group.setTopLeftPosition (xoffs, yoffs);
-        drumlines_group.setSize (drumlines_viewer.getWidth() + (XFILLER * 3), 480 + (YFILLER * 2));
-
-        xoffs += XFILLER;
-        yoffs += YFILLER;
-
-        drumlines_viewer.setTopLeftPosition (xoffs, yoffs);
-
-        cmb_drumkit_selector.setSize (drumlines_group.getWidth(), 48);
-
-
-
-
-
-        addAndMakeVisible (drumlines_viewer);
-
-/////////////////
-
-
-
-
-       juce::Label l_drumkit_name;
-       juce::TextButton bt_drumkit_info;
-
-
-/////////////////
-
-        addAndMakeVisible (l_pan_mode);
-        l_pan_mode.setTopLeftPosition (drumlines_viewer.getWidth() + XFILLER, 450);//getHeight() - cmb_pan_mode.getHeight());
-        l_pan_mode.setSize (100, 48);
-
-        addAndMakeVisible (cmb_pan_mode);
+  addAndMakeVisible (cmb_pan_mode);
       //  cmb_pan_mode.onChange = [this] { panner_modeMenuChanged(); };
+  cmb_pan_mode.setSize (180, 48);
+  cmb_pan_mode.setTopLeftPosition (l_pan_mode.getX() + l_pan_mode.getWidth() + XFILLER, l_pan_mode.getY());
+
+  cmb_pan_mode.addItem ("sin/cos panner, law: -3 dB", 1);
+  cmb_pan_mode.addItem ("square root panner, law: -3 dB", 2);
+  cmb_pan_mode.addItem ("linear panner, law: 0 dB", 3);
+  cmb_pan_mode.addItem ("linear panner, law: -6 dB", 4);
+
+  att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
 
 
 
-        cmb_pan_mode.setSize (180, 48);
-        cmb_pan_mode.setTopLeftPosition (l_pan_mode.getX() + l_pan_mode.getWidth() + XFILLER, l_pan_mode.getY());//getHeight() - cmb_pan_mode.getHeight());
+  //BASE NOTE
+  addAndMakeVisible (l_base_note);
+  l_base_note.setSize (120, 48);
+  l_base_note.setTopLeftPosition (gr_kitinfo.getX() + XFILLER, gr_kitinfo.getY() + gr_kitinfo.getHeight() + YFILLER);
 
-        cmb_pan_mode.addItem ("sin/cos panner, law: -3 dB", 1);
-        cmb_pan_mode.addItem ("square root panner, law: -3 dB", 2);
-        cmb_pan_mode.addItem ("linear panner, law: 0 dB", 3);
-        cmb_pan_mode.addItem ("linear panner, law: -6 dB", 4);
-
-
-        att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
-
-        //cmb_pan_mode.setSelectedItemIndex ((int)*audioProcessor.pan_mode, juce::dontSendNotification);
-    //    cmb_pan_mode.setSelectedId ((int)*audioProcessor.pan_mode);
-
-        setSize (WINDOW_WIDTH, WINDOW_HEIGHT);
+  addAndMakeVisible (sl_base_note);
+  sl_base_note.setSliderStyle (juce::Slider::SliderStyle::IncDecButtons);
+  sl_base_note.setTopLeftPosition (l_base_note.getX() + l_base_note.getWidth() + XFILLER, l_base_note.getY());
+  sl_base_note.setSize (120, 48);
+  sl_base_note.setRange (0, 127, 1.0);
+  sl_base_note.setValue (audioProcessor.int_base_note_number);
 
 
-        bt_test.setBounds (drumlines[0].getWidth() + 50, 400, 50, 50);
+  sl_base_note.addListener (this);
+
+//  sl_base_note.setNumDecimalPlacesToDisplay (0);
+  //sl_base_note.setValue (*audioProcessor.base_note_number);
 
 
-        l_pan_mode.setTopLeftPosition (drumlines_viewer.getX() + drumlines_viewer.getWidth() + XFILLER, 450);
+//   sl_base_note.onChange = [this] { panner_modeMenuChanged(); };
 
+  //std::cout << "1" << std::endl;
+ // att_base_note.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "base_note_number", sl_base_note));
 
-         addAndMakeVisible (gr_kitinfo);
-         gr_kitinfo.setSize (325, 264);
-         gr_kitinfo.setTopLeftPosition (drumlines_viewer.getX() + drumlines_viewer.getWidth() + (XFILLER * 3), 0);
+  //       std::cout << "2" << std::endl;
 
+   setSize (WINDOW_WIDTH, WINDOW_HEIGHT);
 
-         addAndMakeVisible (l_kitinfo);
-         l_kitinfo.setFont (f_kitname_font);
-
-         l_kitinfo.setTopLeftPosition (gr_kitinfo.getX() + XFILLER, gr_kitinfo.getY());
-         l_kitinfo.setSize (300, 48);
-
-
-         addAndMakeVisible (kit_image);
-         //kit_image.setTopLeftPosition (gr_kitinfo.getX() + XFILLER * 2, l_kitinfo.getY() + YFILLER * 3);
-         kit_image.setSize (300, 200);
-         kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2));
-
-
+//bt_test.setBounds (drumlines[0].getWidth() + 50, 400, 50, 50);
 }
 
-CAudioProcessorEditor::~CAudioProcessorEditor()
 
+CAudioProcessorEditor::~CAudioProcessorEditor()
 {
 }
 
@@ -630,3 +559,25 @@ void CAudioProcessorEditor::comboBoxChanged(juce::ComboBox *comboBox)
 }
 
 
+void CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
+    {
+        if (slider == &sl_base_note)
+           {
+             std::cout << "sl_base_note.getValue()" << std::endl;
+             audioProcessor.int_base_note_number = sl_base_note.getValue();
+
+
+              std::cout << "audioProcessor.int_base_note_number: " << audioProcessor.int_base_note_number << std::endl;
+
+            // juce::AudioProcessorParameterWithID* pParam = audioProcessor.parameters.getParameter ( "base_note_number"  );
+            // pParam->setValueNotifyingHost( sl_base_note.getValue() );
+             //durationSlider.setValue (1.0 / c, juce::dontSendNotification);
+            //juce::Value v = audioProcessor.parameters.getParameterAsValue ("base_note_number");
+             //juce::RangedAudioParameter *p = audioProcessor.parameters.getParameter("base_note_number");
+             //p->setValue (sl_base_note.getValue());
+           //v.setValue (sl_base_note.getValue());
+           // *audioProcessor.base_note_number = sl_base_note.getValue();
+          }
+
+
+    }

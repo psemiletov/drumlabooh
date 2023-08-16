@@ -12,23 +12,20 @@
 #include "PluginProcessor.h"
 
 
-//#include "drumcell.h"
 
-
-   typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
-   typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
+typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
 
 class CAudioProcessorEditor;
 
 
-class CDrumLine: public juce::Component,
-                public juce::Slider::Listener
+class CDrumLine: public juce::Component/*,
+                 public juce::Slider::Listener*/
 {
 public:
 
     juce::Font f_samplename_font { 14.0f, juce::Font::bold};
-
 
 
     juce::GroupComponent gr_group;
@@ -51,7 +48,7 @@ public:
 
     void paint (juce::Graphics& g) override;
     void resized() override;
-    void sliderValueChanged (juce::Slider* sliderThatWasMoved) override;
+    //void sliderValueChanged (juce::Slider* sliderThatWasMoved) override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CDrumLine)
 };
@@ -60,14 +57,16 @@ public:
 
 class CAudioProcessorEditor: public juce::AudioProcessorEditor,
                              public juce::Button::Listener,
-                             public juce::ComboBox::Listener
+                             public juce::ComboBox::Listener,
+                             public juce::Slider::Listener
+
+
 
 {
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     CAudioProcessor& audioProcessor;
-
 
 public:
 
@@ -79,13 +78,13 @@ public:
     juce::Label l_pan_mode { {}, "Pan mode" };
     juce::ComboBox cmb_pan_mode;
 
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_base_note;
+    juce::Label l_base_note { {}, "Base MIDI note" };
+    juce::Slider sl_base_note;
+
+
     juce::GroupComponent gr_kitinfo;
     juce::Label l_kitinfo;
-
-  //  juce::MidiKeyboardState keyboardState;
-
-    juce::Label gainLabel;
-    juce::Slider gainSlider;
 
     juce::Slider testSlider;
 
@@ -110,11 +109,8 @@ public:
     juce::TextButton bt_drumkit_info;
 
 
-
     juce::Label l_drumkit_selector { {}, "Drumkit selector" };
     juce::ComboBox cmb_drumkit_selector;
-
-
 
     CDrumLine drumlines [36];
 
@@ -123,21 +119,19 @@ public:
     ~CAudioProcessorEditor() override;
 
 
-    //==============================================================================
-
-   // void save_string_keyval (const std::string &key, const std::string &val);
- //   std::string load_string_keyval (const std::string &key);
 
     void buttonClicked (juce::Button* button) override;
 
     void load_kit (const std::string &kitpath);
     void kit_changed();
 
-
     void paint (juce::Graphics&) override;
     void resized() override;
 
     void panner_modeMenuChanged();
+
+    void sliderValueChanged (juce::Slider* slider) override;
+
 
     void comboBoxChanged(juce::ComboBox *comboBox) override;
 
@@ -151,5 +145,5 @@ public:
 */
 
 
-     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CAudioProcessorEditor)
+   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CAudioProcessorEditor)
 };
