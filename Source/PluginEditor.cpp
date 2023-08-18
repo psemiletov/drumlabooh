@@ -349,7 +349,11 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   sl_base_note.setTopLeftPosition (l_base_note.getX() + l_base_note.getWidth() + XFILLER, l_base_note.getY());
   sl_base_note.setSize (120, 48);
   sl_base_note.setRange (0, 127, 1.0);
-  sl_base_note.setValue (audioProcessor.int_base_note_number);
+
+  std::cout << "audioProcessor.int_base_note_number: " << std::endl;
+
+
+  sl_base_note.setValue (audioProcessor.int_base_note_number, dontSendNotification );
 
 
   sl_base_note.addListener (this);
@@ -561,6 +565,8 @@ void CAudioProcessorEditor::comboBoxChanged(juce::ComboBox *comboBox)
 
 void CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
     {
+      std::cout << "CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)"  << std::endl;
+
         if (slider == &sl_base_note)
            {
              std::cout << "sl_base_note.getValue()" << std::endl;

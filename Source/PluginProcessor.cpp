@@ -35,11 +35,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                             1.0f)); //default
 
 
+  /*
    layout.add (std::make_unique <juce::AudioParameterFloat> ("base_note_number", // parameter ID
                                                              "base_note_number", // parameter name
-                                                              juce::NormalisableRange<float> (0, 127,1), // parameter range
+                                                              juce::NormalisableRange<float> (0, 127, 1), // parameter range
                                                               36));
-
+*/
 
 /*
   layout.add (std::make_unique<juce::AudioParameterFloat> ("base_note_number",            // parameterID
@@ -85,6 +86,8 @@ parameters (*this, 0, "Drumpecker", createParameterLayout())
   drumkit = 0;
   session_samplerate = 0;
   drumkit_path = "";
+
+  int_base_note_number = 36;
 
   for (size_t i = 0; i < 36; i++)
       {
@@ -200,7 +203,7 @@ void CAudioProcessor::releaseResources()
     // spare memory, etc.
 }
 
-
+/*
 #ifndef JucePlugin_PreferredChannelConfigurations
 bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
@@ -226,6 +229,18 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
   #endif
 }
 #endif
+*/
+
+
+bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+{
+   if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+      return true;
+  else
+      return false;
+
+}
+
 
 
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -269,7 +284,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  continue;
                 }
 
-             //std::cout << "GO ON with n: " << nn << std::endl;
+             std::cout << "GO ON with n: " << nn << std::endl;
 
 
              CDrumSample *s = drumkit->v_samples [nn];
@@ -464,6 +479,7 @@ juce::AudioProcessorEditor* CAudioProcessor::createEditor()
 }
 
 
+//load
 void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
   save_string_keyval ("drumkit_path", drumkit_path);
@@ -477,20 +493,20 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 }
 
 
+//save
 void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
   std::unique_ptr <juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
 
   if (xmlState.get() != nullptr)
      if (xmlState->hasTagName (parameters.state.getType()))
-         parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
 
-  int_base_note_number = load_int_keyval ("int_base_note_number");
-  drumkit_path = load_string_keyval ("drumkit_path");
-
-
-  std::cout << "set int_base_note_number: " << int_base_note_number << std::endl;
-
+     {
+      parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
+      int_base_note_number = load_int_keyval ("int_base_note_number", 36);
+      drumkit_path = load_string_keyval ("drumkit_path");
+      std::cout << "set int_base_note_number: " << int_base_note_number << std::endl;
+     }
 //  std::cout << ">>>>>>>>>>>>drumkit_path: " << drumkit_path  << std::endl;
 }
 
@@ -520,12 +536,25 @@ void CAudioProcessor::save_int_keyval (const std::string &key, int val)
 }
 
 
-int CAudioProcessor::load_int_keyval (const std::string &key)
+int CAudioProcessor::load_int_keyval (const std::string &key, int defval)
 {
+  std::cout << "int CAudioProcessor::load_int_keyval (const std::string &key, int defval)  -1" <<  std::endl;
+
+
   juce::Identifier keyid (key.c_str());
   auto addons = parameters.state.getOrCreateChildWithName ("addons", nullptr);
-  auto v = addons.getProperty (keyid, 36);
-//  std::cout << "TEXT: " << text << std::endl;
+  auto v = addons.getProperty (keyid);
+
+std::cout << "int CAudioProcessor::load_int_keyval (const std::string &key, int defval)  -2" <<  std::endl;
+
+
+  if (v.isVoid())
+     return defval;
+
+  std::cout << "int CAudioProcessor::load_int_keyval (const std::string &key, int defval)  -3" <<  std::endl;
+
+
+ // std::cout << "TEXT: " << v.toString() << std::endl;
   return v;
 }
 

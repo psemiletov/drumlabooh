@@ -62,10 +62,23 @@ add_subdirectory(JUCE)                    # If you've put JUCE in a subdirectory
 # the formats specified by the FORMATS arguments. This function accepts many optional arguments.
 # Check the readme at `docs/CMake API.md` in the JUCE repo for the full list.
 
+
+# default plugin formats
+#set(JUCE_FORMATS AU VST3 Standalone)
+set(JUCE_FORMATS VST3 Standalone)
+# Build LV2 only on Linux
+if(UNIX AND NOT APPLE)
+    message(STATUS "Building LV2 plugin format")
+    list(APPEND JUCE_FORMATS LV2)
+endif()
+
+
 juce_add_plugin(drumpecker
     # VERSION ...                               # Set this if the plugin version is different to the project version
     # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
     # ICON_SMALL ...
+     LV2URI https://github.com/psemiletov/drumpecker
+     LV2_SHARED_LIBRARY_NAME drumpecker
      COMPANY_NAME Semiletov                          # Specify the name of the plugin's author
      IS_SYNTH TRUE                       # Is this a synth or an effect?
      NEEDS_MIDI_INPUT TRUE               # Does the plugin need midi input?
@@ -73,10 +86,10 @@ juce_add_plugin(drumpecker
     # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
      EDITOR_WANTS_KEYBOARD_FOCUS TRUE    # Does the editor need keyboard focus?
     # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE        # Should the plugin be installed to a default location after building?
-    PLUGIN_MANUFACTURER_CODE Petr               # A four-character manufacturer id with at least one upper-case character
+    PLUGIN_MANUFACTURER_CODE PetR               # A four-character manufacturer id with at least one upper-case character
     PLUGIN_CODE Petr                            # A unique four-character plugin id with exactly one upper-case character
                                                 # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
-    FORMATS LV2 VST3 Standalone                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+    FORMATS ${JUCE_FORMATS}                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
     PRODUCT_NAME "drumpecker")        # The name of the final executable, which can differ from the target name
 
 # `juce_generate_juce_header` will create a JuceHeader.h for a given target, which will be generated

@@ -51,7 +51,7 @@ public:
     std::string load_string_keyval (const std::string &key);
 
     void save_int_keyval (const std::string &key, int val);
-    int load_int_keyval (const std::string &key);
+    int load_int_keyval (const std::string &key, int defval);
 
 
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
