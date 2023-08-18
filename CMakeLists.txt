@@ -17,7 +17,7 @@ cmake_minimum_required(VERSION 3.15)
 project(DRUMPECKER VERSION 0.0.1)
 
 
-find_package(Git QUIET)
+find_package(Git)
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 # Update submodules as needed
     option(GIT_SUBMODULE "Check submodules during build" ON)
