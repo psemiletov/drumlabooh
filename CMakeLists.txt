@@ -82,6 +82,7 @@ juce_add_plugin(drumpecker
      COMPANY_NAME Semiletov                          # Specify the name of the plugin's author
      IS_SYNTH TRUE                       # Is this a synth or an effect?
      NEEDS_MIDI_INPUT TRUE               # Does the plugin need midi input?
+     VST3_CATEGORIES Instrument Sampler Synth Drum
     # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
     # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
      EDITOR_WANTS_KEYBOARD_FOCUS TRUE    # Does the editor need keyboard focus?
