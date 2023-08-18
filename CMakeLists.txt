@@ -16,6 +16,19 @@ cmake_minimum_required(VERSION 3.15)
 
 project(DRUMPECKER VERSION 0.0.1)
 
+
+#static linking in Windows
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
+# include JUCE *AFTER* the MSVC runtime and so on is set up
+#set(DEXED_JUCE_PATH "${CMAKE_SOURCE_DIR}/libs/JUCE" CACHE STRING "Path to JUCE library source tree")
+
+#add_subdirectory(${DEXED_JUCE_PATH} ${CMAKE_BINARY_DIR}/JUCE EXCLUDE_FROM_ALL)
+#add_subdirectory(libs/clap-juce-extensions EXCLUDE_FROM_ALL)
+
+
+
+
 # If you've installed JUCE somehow (via a package manager, or directly using the CMake install
 # target), you'll need to tell this project that it depends on the installed copy of JUCE. If you've
 # included JUCE directly in your source tree (perhaps as a submodule), you'll need to tell CMake to
