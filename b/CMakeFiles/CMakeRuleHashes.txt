@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+1102fc514dfffa895cc5e65216c55f89 drumpecker_artefacts/JuceLibraryCode/JuceHeader.h

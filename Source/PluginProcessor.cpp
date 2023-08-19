@@ -284,7 +284,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  continue;
                 }
 
-             std::cout << "GO ON with n: " << nn << std::endl;
+//             std::cout << "GO ON with n: " << nn << std::endl;
 
 
              CDrumSample *s = drumkit->v_samples [nn];

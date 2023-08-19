@@ -1,0 +1,862 @@
+@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
+@prefix bufs:  <http://lv2plug.in/ns/ext/buf-size#> .
+@prefix doap:  <http://usefulinc.com/ns/doap#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix midi:  <http://lv2plug.in/ns/ext/midi#> .
+@prefix opts:  <http://lv2plug.in/ns/ext/options#> .
+@prefix param: <http://lv2plug.in/ns/ext/parameters#> .
+@prefix patch: <http://lv2plug.in/ns/ext/patch#> .
+@prefix pg:    <http://lv2plug.in/ns/ext/port-groups#> .
+@prefix plug:  </plugins/drumpecker:> .
+@prefix pprop: <http://lv2plug.in/ns/ext/port-props#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rsz:   <http://lv2plug.in/ns/ext/resize-port#> .
+@prefix state: <http://lv2plug.in/ns/ext/state#> .
+@prefix time:  <http://lv2plug.in/ns/ext/time#> .
+@prefix ui:    <http://lv2plug.in/ns/extensions/ui#> .
+@prefix units: <http://lv2plug.in/ns/extensions/units#> .
+@prefix urid:  <http://lv2plug.in/ns/ext/urid#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+plug:panner_mode
+	a lv2:Parameter ;
+	rdfs:label "panner_mode" ;
+	rdfs:range atom:Float ;
+	lv2:default 1 ;
+	lv2:minimum 1 ;
+	lv2:maximum 4 .
+
+plug:base_note_number
+	a lv2:Parameter ;
+	rdfs:label "base_note_number" ;
+	rdfs:range atom:Float ;
+	lv2:default 36 ;
+	lv2:minimum 0 ;
+	lv2:maximum 127 .
+
+plug:gain0
+	a lv2:Parameter ;
+	rdfs:label "gain0" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan0
+	a lv2:Parameter ;
+	rdfs:label "pan0" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain1
+	a lv2:Parameter ;
+	rdfs:label "gain1" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan1
+	a lv2:Parameter ;
+	rdfs:label "pan1" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain2
+	a lv2:Parameter ;
+	rdfs:label "gain2" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan2
+	a lv2:Parameter ;
+	rdfs:label "pan2" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain3
+	a lv2:Parameter ;
+	rdfs:label "gain3" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan3
+	a lv2:Parameter ;
+	rdfs:label "pan3" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain4
+	a lv2:Parameter ;
+	rdfs:label "gain4" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan4
+	a lv2:Parameter ;
+	rdfs:label "pan4" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain5
+	a lv2:Parameter ;
+	rdfs:label "gain5" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan5
+	a lv2:Parameter ;
+	rdfs:label "pan5" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain6
+	a lv2:Parameter ;
+	rdfs:label "gain6" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan6
+	a lv2:Parameter ;
+	rdfs:label "pan6" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain7
+	a lv2:Parameter ;
+	rdfs:label "gain7" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan7
+	a lv2:Parameter ;
+	rdfs:label "pan7" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain8
+	a lv2:Parameter ;
+	rdfs:label "gain8" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan8
+	a lv2:Parameter ;
+	rdfs:label "pan8" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain9
+	a lv2:Parameter ;
+	rdfs:label "gain9" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan9
+	a lv2:Parameter ;
+	rdfs:label "pan9" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain10
+	a lv2:Parameter ;
+	rdfs:label "gain10" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan10
+	a lv2:Parameter ;
+	rdfs:label "pan10" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain11
+	a lv2:Parameter ;
+	rdfs:label "gain11" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan11
+	a lv2:Parameter ;
+	rdfs:label "pan11" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain12
+	a lv2:Parameter ;
+	rdfs:label "gain12" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan12
+	a lv2:Parameter ;
+	rdfs:label "pan12" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain13
+	a lv2:Parameter ;
+	rdfs:label "gain13" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan13
+	a lv2:Parameter ;
+	rdfs:label "pan13" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain14
+	a lv2:Parameter ;
+	rdfs:label "gain14" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan14
+	a lv2:Parameter ;
+	rdfs:label "pan14" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain15
+	a lv2:Parameter ;
+	rdfs:label "gain15" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan15
+	a lv2:Parameter ;
+	rdfs:label "pan15" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain16
+	a lv2:Parameter ;
+	rdfs:label "gain16" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan16
+	a lv2:Parameter ;
+	rdfs:label "pan16" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain17
+	a lv2:Parameter ;
+	rdfs:label "gain17" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan17
+	a lv2:Parameter ;
+	rdfs:label "pan17" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain18
+	a lv2:Parameter ;
+	rdfs:label "gain18" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan18
+	a lv2:Parameter ;
+	rdfs:label "pan18" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain19
+	a lv2:Parameter ;
+	rdfs:label "gain19" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan19
+	a lv2:Parameter ;
+	rdfs:label "pan19" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain20
+	a lv2:Parameter ;
+	rdfs:label "gain20" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan20
+	a lv2:Parameter ;
+	rdfs:label "pan20" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain21
+	a lv2:Parameter ;
+	rdfs:label "gain21" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan21
+	a lv2:Parameter ;
+	rdfs:label "pan21" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain22
+	a lv2:Parameter ;
+	rdfs:label "gain22" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan22
+	a lv2:Parameter ;
+	rdfs:label "pan22" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain23
+	a lv2:Parameter ;
+	rdfs:label "gain23" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan23
+	a lv2:Parameter ;
+	rdfs:label "pan23" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain24
+	a lv2:Parameter ;
+	rdfs:label "gain24" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan24
+	a lv2:Parameter ;
+	rdfs:label "pan24" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain25
+	a lv2:Parameter ;
+	rdfs:label "gain25" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan25
+	a lv2:Parameter ;
+	rdfs:label "pan25" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain26
+	a lv2:Parameter ;
+	rdfs:label "gain26" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan26
+	a lv2:Parameter ;
+	rdfs:label "pan26" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain27
+	a lv2:Parameter ;
+	rdfs:label "gain27" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan27
+	a lv2:Parameter ;
+	rdfs:label "pan27" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain28
+	a lv2:Parameter ;
+	rdfs:label "gain28" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan28
+	a lv2:Parameter ;
+	rdfs:label "pan28" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain29
+	a lv2:Parameter ;
+	rdfs:label "gain29" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan29
+	a lv2:Parameter ;
+	rdfs:label "pan29" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain30
+	a lv2:Parameter ;
+	rdfs:label "gain30" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan30
+	a lv2:Parameter ;
+	rdfs:label "pan30" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain31
+	a lv2:Parameter ;
+	rdfs:label "gain31" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan31
+	a lv2:Parameter ;
+	rdfs:label "pan31" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain32
+	a lv2:Parameter ;
+	rdfs:label "gain32" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan32
+	a lv2:Parameter ;
+	rdfs:label "pan32" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain33
+	a lv2:Parameter ;
+	rdfs:label "gain33" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan33
+	a lv2:Parameter ;
+	rdfs:label "pan33" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain34
+	a lv2:Parameter ;
+	rdfs:label "gain34" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan34
+	a lv2:Parameter ;
+	rdfs:label "pan34" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:gain35
+	a lv2:Parameter ;
+	rdfs:label "gain35" ;
+	rdfs:range atom:Float ;
+	lv2:default 0 ;
+	lv2:minimum -96 ;
+	lv2:maximum 6 .
+
+plug:pan35
+	a lv2:Parameter ;
+	rdfs:label "pan35" ;
+	rdfs:range atom:Float ;
+	lv2:default 0.5 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 .
+
+plug:output_group_1
+	a pg:OutputGroup ;
+	lv2:name "Output" ;
+	lv2:symbol "output_group_1" .
+
+</plugins/drumpecker>
+	ui:ui </plugins/drumpecker:UI> ;
+	a lv2:InstrumentPlugin ;
+	doap:name "drumpecker" ;
+	doap:description "drumpecker" ;
+	lv2:minorVersion 0 ;
+	lv2:microVersion 1 ;
+	doap:maintainer [
+		a foaf:Person ;
+		foaf:name "Semiletov" ;
+		foaf:homepage <> ;
+		foaf:mbox <> ;
+	] ;
+	doap:release [
+		a doap:Version ;
+		doap:revision "0.0.1" ;
+	] ;
+	lv2:optionalFeature
+		lv2:hardRTCapable ;
+	lv2:extensionData
+		state:interface ;
+	lv2:requiredFeature
+		urid:map ,
+		opts:options ,
+		bufs:boundedBlockLength ;
+	pg:mainOutput plug:output_group_1 ;
+	patch:writable
+		plug:panner_mode ,
+		plug:base_note_number ,
+		plug:gain0 ,
+		plug:pan0 ,
+		plug:gain1 ,
+		plug:pan1 ,
+		plug:gain2 ,
+		plug:pan2 ,
+		plug:gain3 ,
+		plug:pan3 ,
+		plug:gain4 ,
+		plug:pan4 ,
+		plug:gain5 ,
+		plug:pan5 ,
+		plug:gain6 ,
+		plug:pan6 ,
+		plug:gain7 ,
+		plug:pan7 ,
+		plug:gain8 ,
+		plug:pan8 ,
+		plug:gain9 ,
+		plug:pan9 ,
+		plug:gain10 ,
+		plug:pan10 ,
+		plug:gain11 ,
+		plug:pan11 ,
+		plug:gain12 ,
+		plug:pan12 ,
+		plug:gain13 ,
+		plug:pan13 ,
+		plug:gain14 ,
+		plug:pan14 ,
+		plug:gain15 ,
+		plug:pan15 ,
+		plug:gain16 ,
+		plug:pan16 ,
+		plug:gain17 ,
+		plug:pan17 ,
+		plug:gain18 ,
+		plug:pan18 ,
+		plug:gain19 ,
+		plug:pan19 ,
+		plug:gain20 ,
+		plug:pan20 ,
+		plug:gain21 ,
+		plug:pan21 ,
+		plug:gain22 ,
+		plug:pan22 ,
+		plug:gain23 ,
+		plug:pan23 ,
+		plug:gain24 ,
+		plug:pan24 ,
+		plug:gain25 ,
+		plug:pan25 ,
+		plug:gain26 ,
+		plug:pan26 ,
+		plug:gain27 ,
+		plug:pan27 ,
+		plug:gain28 ,
+		plug:pan28 ,
+		plug:gain29 ,
+		plug:pan29 ,
+		plug:gain30 ,
+		plug:pan30 ,
+		plug:gain31 ,
+		plug:pan31 ,
+		plug:gain32 ,
+		plug:pan32 ,
+		plug:gain33 ,
+		plug:pan33 ,
+		plug:gain34 ,
+		plug:pan34 ,
+		plug:gain35 ,
+		plug:pan35 ;
+	patch:readable
+		plug:panner_mode ,
+		plug:base_note_number ,
+		plug:gain0 ,
+		plug:pan0 ,
+		plug:gain1 ,
+		plug:pan1 ,
+		plug:gain2 ,
+		plug:pan2 ,
+		plug:gain3 ,
+		plug:pan3 ,
+		plug:gain4 ,
+		plug:pan4 ,
+		plug:gain5 ,
+		plug:pan5 ,
+		plug:gain6 ,
+		plug:pan6 ,
+		plug:gain7 ,
+		plug:pan7 ,
+		plug:gain8 ,
+		plug:pan8 ,
+		plug:gain9 ,
+		plug:pan9 ,
+		plug:gain10 ,
+		plug:pan10 ,
+		plug:gain11 ,
+		plug:pan11 ,
+		plug:gain12 ,
+		plug:pan12 ,
+		plug:gain13 ,
+		plug:pan13 ,
+		plug:gain14 ,
+		plug:pan14 ,
+		plug:gain15 ,
+		plug:pan15 ,
+		plug:gain16 ,
+		plug:pan16 ,
+		plug:gain17 ,
+		plug:pan17 ,
+		plug:gain18 ,
+		plug:pan18 ,
+		plug:gain19 ,
+		plug:pan19 ,
+		plug:gain20 ,
+		plug:pan20 ,
+		plug:gain21 ,
+		plug:pan21 ,
+		plug:gain22 ,
+		plug:pan22 ,
+		plug:gain23 ,
+		plug:pan23 ,
+		plug:gain24 ,
+		plug:pan24 ,
+		plug:gain25 ,
+		plug:pan25 ,
+		plug:gain26 ,
+		plug:pan26 ,
+		plug:gain27 ,
+		plug:pan27 ,
+		plug:gain28 ,
+		plug:pan28 ,
+		plug:gain29 ,
+		plug:pan29 ,
+		plug:gain30 ,
+		plug:pan30 ,
+		plug:gain31 ,
+		plug:pan31 ,
+		plug:gain32 ,
+		plug:pan32 ,
+		plug:gain33 ,
+		plug:pan33 ,
+		plug:gain34 ,
+		plug:pan34 ,
+		plug:gain35 ,
+		plug:pan35 ;
+	lv2:port [
+		a lv2:OutputPort , lv2:AudioPort ;
+		lv2:index 0 ;
+		lv2:symbol "audio_out_1" ;
+		lv2:name "Audio Out 1" ;
+		pg:group plug:output_group_1 ;
+		lv2:designation <http://lv2plug.in/ns/ext/port-groups#left> ;
+	] , [
+		a lv2:OutputPort , lv2:AudioPort ;
+		lv2:index 1 ;
+		lv2:symbol "audio_out_2" ;
+		lv2:name "Audio Out 2" ;
+		pg:group plug:output_group_1 ;
+		lv2:designation <http://lv2plug.in/ns/ext/port-groups#right> ;
+	] , [
+		a lv2:InputPort , atom:AtomPort ;
+		rsz:minimumSize 13520 ;
+		atom:bufferType atom:Sequence ;
+		atom:supports
+			midi:MidiEvent ,
+			patch:Message ,
+			time:Position ;
+		lv2:designation lv2:control ;
+		lv2:index 2 ;
+		lv2:symbol "in" ;
+		lv2:name "In" ;
+	] , [
+		a lv2:OutputPort , atom:AtomPort ;
+		rsz:minimumSize 13520 ;
+		atom:bufferType atom:Sequence ;
+		atom:supports
+			patch:Message ;
+		lv2:designation lv2:control ;
+		lv2:index 3 ;
+		lv2:symbol "out" ;
+		lv2:name "Out" ;
+	] , [
+		a lv2:OutputPort , lv2:ControlPort ;
+		lv2:designation lv2:latency ;
+		lv2:symbol "latency" ;
+		lv2:name "Latency" ;
+		lv2:index 4 ;
+		lv2:portProperty lv2:reportsLatency , lv2:integer , lv2:connectionOptional , pprop:notOnGUI ;
+		units:unit units:frame ;
+	] , [
+		a lv2:InputPort , lv2:ControlPort ;
+		lv2:designation lv2:freeWheeling ;
+		lv2:symbol "freeWheeling" ;
+		lv2:name "Free Wheeling" ;
+		lv2:default 0.0 ;
+		lv2:minimum 0.0 ;
+		lv2:maximum 1.0 ;
+		lv2:index 5 ;
+		lv2:portProperty lv2:toggled , lv2:connectionOptional , pprop:notOnGUI ;
+	] , [
+		a lv2:InputPort , lv2:ControlPort ;
+		lv2:designation lv2:enabled ;
+		lv2:symbol "enabled" ;
+		lv2:name "Enabled" ;
+		lv2:default 1.0 ;
+		lv2:minimum 0.0 ;
+		lv2:maximum 1.0 ;
+		lv2:index 6 ;
+		lv2:portProperty lv2:toggled , lv2:connectionOptional , pprop:notOnGUI ;
+	] ;
+	opts:supportedOption
+		bufs:maxBlockLength .

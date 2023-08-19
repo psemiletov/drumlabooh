@@ -27,21 +27,19 @@ public:
 
     juce::Font f_samplename_font { 14.0f, juce::Font::bold};
 
-
     juce::GroupComponent gr_group;
     juce::Slider sl_pan;
     juce::Slider sl_gain;
 
     juce::Label label;
-    int cell_number;
-
-    CDrumLine ();
-    ~CDrumLine() override;
-
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_gain;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_pan;
 
+    int cell_number;
+
+    CDrumLine ();
+    ~CDrumLine() override;
 
     void attach_params (CAudioProcessorEditor *ed, int cellno);
     void set_name (const std::string &n);
@@ -59,9 +57,6 @@ class CAudioProcessorEditor: public juce::AudioProcessorEditor,
                              public juce::Button::Listener,
                              public juce::ComboBox::Listener,
                              public juce::Slider::Listener
-
-
-
 {
 private:
     // This reference is provided as a quick way for your editor to

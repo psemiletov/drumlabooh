@@ -1,0 +1,60 @@
+{
+  "Name": "drumpecker",
+  "Version": "0.0.1",
+  "Factory Info": {
+    "Vendor": "Semiletov",
+    "URL": "",
+    "E-Mail": "",
+    "Flags": {
+      "Unicode": true,
+      "Classes Discardable": false,
+      "Component Non Discardable": false,
+    },
+  },
+  "Classes": [
+    {
+      "CID": "ABCDEF01C0DEF00D5065747250657472",
+      "Category": "Plugin Compatibility Class",
+      "Name": "drumpecker",
+      "Vendor": "Semiletov",
+      "Version": "0.0.1",
+      "SDKVersion": "VST 3.7.8",
+      "Class Flags": 0,
+      "Cardinality": 2147483647,
+      "Snapshots": [
+      ],
+    },
+    {
+      "CID": "ABCDEF019182FAEB5065747250657472",
+      "Category": "Audio Module Class",
+      "Name": "drumpecker",
+      "Vendor": "Semiletov",
+      "Version": "0.0.1",
+      "SDKVersion": "VST 3.7.8",
+      "Sub Categories": [
+        "Instrument",
+        "Synth",
+      ],
+      "Class Flags": 2,
+      "Cardinality": 2147483647,
+      "Snapshots": [
+      ],
+    },
+    {
+      "CID": "ABCDEF011234ABCD5065747250657472",
+      "Category": "Component Controller Class",
+      "Name": "drumpecker",
+      "Vendor": "Semiletov",
+      "Version": "0.0.1",
+      "SDKVersion": "VST 3.7.8",
+      "Sub Categories": [
+        "Instrument",
+        "Synth",
+      ],
+      "Class Flags": 2,
+      "Cardinality": 2147483647,
+      "Snapshots": [
+      ],
+    },
+  ],
+}

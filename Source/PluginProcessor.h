@@ -1,10 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
 
 #pragma once
 
@@ -26,11 +19,9 @@ public:
     std::atomic<float>* pans[36];
     std::atomic<float>* gains[36];
 
- //   std::atomic<float>* base_note_number = nullptr;
     std::atomic<float>* panner_mode = nullptr;
 
     int int_base_note_number;
-
 
     std::string drumkit_path; //full path!
 
