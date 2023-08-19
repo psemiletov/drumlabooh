@@ -103,6 +103,8 @@ public:
     juce::Label l_drumkit_name;
     juce::TextButton bt_drumkit_info;
 
+    juce::GroupComponent gr_options;
+
 
     juce::Label l_drumkit_selector { {}, "Drumkit selector" };
     juce::ComboBox cmb_drumkit_selector;
@@ -123,7 +125,7 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 
-    void panner_modeMenuChanged();
+//    void panner_modeMenuChanged();
 
     void sliderValueChanged (juce::Slider* slider) override;
 

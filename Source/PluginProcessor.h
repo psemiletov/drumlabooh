@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <JuceHeader.h>
@@ -30,14 +29,11 @@ public:
 
     int session_samplerate; //sess rate
 
-
     CAudioProcessor();
     ~CAudioProcessor() override;
 
-    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     bool load_kit (const std::string &fullpath);
-
     void save_string_keyval (const std::string &key, const std::string &val);
     std::string load_string_keyval (const std::string &key);
 
@@ -47,6 +43,9 @@ public:
 
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
+
+
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
    #ifndef JucePlugin_PreferredChannelConfigurations
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;

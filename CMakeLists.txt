@@ -77,6 +77,7 @@ juce_add_plugin(drumpecker
     # VERSION ...                               # Set this if the plugin version is different to the project version
     # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
     # ICON_SMALL ...
+     JUCE_DISPLAY_SPLASH_SCREEN=0
      LV2URI https://github.com/psemiletov/drumpecker
      LV2_SHARED_LIBRARY_NAME drumpecker
      COMPANY_NAME Semiletov                          # Specify the name of the plugin's author

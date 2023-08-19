@@ -1,10 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
@@ -61,7 +54,6 @@ CDrumLine::CDrumLine ()
   label.setColour (juce::Label::textColourId, juce::Colours::black);
   label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
   label.setFont (f_samplename_font);
-//  label.setEditable (true);
 
   label.setText ("EMPTY CELL", juce::dontSendNotification);
 
@@ -72,7 +64,6 @@ CDrumLine::CDrumLine ()
   sl_pan.setTopLeftPosition (xoffs, YFILLER);
   sl_pan.setSize (104, 32);
   sl_pan.setRange (0.0f, 1.0f, 0.01f);
-
 
   sl_pan.setSliderStyle (juce::Slider::LinearHorizontal);
   sl_pan.setRange (-96, 6, 1);
@@ -152,11 +143,9 @@ void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
   cell_number = cellno;
 
   std::string param_name = "gain" + std::to_string (cell_number);
-
   att_gain.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_gain));
 
   param_name = "pan" + std::to_string (cell_number);
-
   att_pan.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_pan));
 }
 
@@ -165,18 +154,12 @@ void CDrumLine::set_name (const std::string &n)
 {
   juce::String s (juce::CharPointer_UTF8((n.c_str())));
   label.setText (s, juce::dontSendNotification);
-
-  //label.setText (juce::CharPointer_UTF8((n.c_str()), juce::dontSendNotification);
-
 }
 
 
 void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 {
-  //STOP PLAY
-
-  //THEN
-  //make all drum labels empyy
+  //make all drum labels empty
 
    for (size_t i = 0; i < 36; i++)
        {
@@ -185,7 +168,6 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 
   if (kits_scanner.v_scanned_kits.size() == 0)
       return;
-
 
   //find kit at v_scanned_kits
 
@@ -197,7 +179,7 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
           k = kits_scanner.v_scanned_kits[i];
       }
 
-   if (! k)
+  if (! k)
       return;
 
   for (size_t i = 0; i < k->v_samples.size(); i++)
@@ -211,27 +193,27 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 
    if (file_exists (k->image_fname))
       {
-        juce::File fl (k->image_fname);
-        juce::Image im = juce::ImageFileFormat::loadFrom (fl);
-        kit_image.setImage(im);
-
+       juce::File fl (k->image_fname);
+       juce::Image im = juce::ImageFileFormat::loadFrom (fl);
+       kit_image.setImage(im);
       }
    else
        kit_image.setImage(juce::Image ());
 }
 
-
-
+/*
 void CAudioProcessorEditor::panner_modeMenuChanged()
 {
        std::cout << "cmb_panner_mode.getSelectedId(): " <<  cmb_pan_mode.getSelectedId() << std::endl;
        std::cout << "cmb_panner_mode.getSelectedItemIndex(): " <<  cmb_pan_mode.getSelectedItemIndex() << std::endl;
 }
+*/
 
 
 CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts)
-: AudioProcessorEditor (&parent), audioProcessor (parent),
-          valueTreeState (vts)
+                                             : AudioProcessorEditor (&parent),
+                                               audioProcessor (parent),
+                                               valueTreeState (vts)
 {
 
   kits_scanner.scan();
@@ -241,10 +223,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
       cmb_drumkit_selector.addItem (kits_scanner.v_kits_names[i], i + 1);
      }
 
-
   int yoffs = 0;
   int xoffs = XFILLER;
-
 
   cmb_drumkit_selector.setTextWhenNothingSelected ("CLICK HERE TO SELECT THE DRUMKIT");
   cmb_drumkit_selector.setTextWhenNoChoicesAvailable ("NO DRUMKITS FOUND");
@@ -258,13 +238,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   cmb_drumkit_selector.setTopLeftPosition (xoffs, 0);
 
   yoffs += 48;
-/*
-   addAndMakeVisible (bt_test);
-   bt_test.setButtonText ("Test");
-   bt_test.addListener (this);
-*/
-
-
 
   drumlines_container.setSize (drumlines[0].getWidth() + XFILLER, drumlines[0].getHeight() * 36);
 
@@ -318,17 +291,34 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2));
 
 
+  addAndMakeVisible (gr_options);
+  gr_options.setTopLeftPosition (gr_kitinfo.getX(), gr_kitinfo.getY() + gr_kitinfo.getHeight() + YFILLER);
+
+
+
+  //BASE NOTE
+  addAndMakeVisible (l_base_note);
+  l_base_note.setSize (120, 48);
+  l_base_note.setTopLeftPosition (gr_options.getX() + XFILLER, gr_kitinfo.getY() + gr_kitinfo.getHeight() + YFILLER * 2);
+
+  addAndMakeVisible (sl_base_note);
+  sl_base_note.setSliderStyle (juce::Slider::SliderStyle::IncDecButtons);
+  sl_base_note.setTopLeftPosition (l_base_note.getX() + l_base_note.getWidth() + XFILLER, l_base_note.getY());
+  sl_base_note.setSize (120, 48);
+  sl_base_note.setRange (0, 127, 1.0);
+  sl_base_note.setValue (audioProcessor.int_base_note_number, dontSendNotification );
+  sl_base_note.addListener (this);
 
   // PAN MODE
 
   addAndMakeVisible (l_pan_mode);
-  l_pan_mode.setTopLeftPosition (drumlines_viewer.getWidth() + XFILLER, 450);
+  l_pan_mode.setTopLeftPosition (l_base_note.getX(), sl_base_note.getBottom() + YFILLER);
   l_pan_mode.setSize (100, 48);
 
   addAndMakeVisible (cmb_pan_mode);
       //  cmb_pan_mode.onChange = [this] { panner_modeMenuChanged(); };
-  cmb_pan_mode.setSize (180, 48);
-  cmb_pan_mode.setTopLeftPosition (l_pan_mode.getX() + l_pan_mode.getWidth() + XFILLER, l_pan_mode.getY());
+  cmb_pan_mode.setSize (180 + XFILLER, 48);
+  cmb_pan_mode.setTopLeftPosition (sl_base_note.getX(), l_pan_mode.getY());
 
   cmb_pan_mode.addItem ("sin/cos panner, law: -3 dB", 1);
   cmb_pan_mode.addItem ("square root panner, law: -3 dB", 2);
@@ -337,26 +327,12 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
 
+  gr_options.setSize (gr_kitinfo.getWidth(), l_pan_mode.getHeight() + YFILLER + cmb_pan_mode.getHeight() +
+  YFILLER * 2);
 
 
-  //BASE NOTE
-  addAndMakeVisible (l_base_note);
-  l_base_note.setSize (120, 48);
-  l_base_note.setTopLeftPosition (gr_kitinfo.getX() + XFILLER, gr_kitinfo.getY() + gr_kitinfo.getHeight() + YFILLER);
 
-  addAndMakeVisible (sl_base_note);
-  sl_base_note.setSliderStyle (juce::Slider::SliderStyle::IncDecButtons);
-  sl_base_note.setTopLeftPosition (l_base_note.getX() + l_base_note.getWidth() + XFILLER, l_base_note.getY());
-  sl_base_note.setSize (120, 48);
-  sl_base_note.setRange (0, 127, 1.0);
-
-  std::cout << "audioProcessor.int_base_note_number: " << std::endl;
-
-
-  sl_base_note.setValue (audioProcessor.int_base_note_number, dontSendNotification );
-
-
-  sl_base_note.addListener (this);
+  setSize (WINDOW_WIDTH, WINDOW_HEIGHT);
 
 //  sl_base_note.setNumDecimalPlacesToDisplay (0);
   //sl_base_note.setValue (*audioProcessor.base_note_number);
@@ -369,7 +345,12 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   //       std::cout << "2" << std::endl;
 
-   setSize (WINDOW_WIDTH, WINDOW_HEIGHT);
+
+   /*
+   addAndMakeVisible (bt_test);
+   bt_test.setButtonText ("Test");
+   bt_test.addListener (this);
+*/
 
 //bt_test.setBounds (drumlines[0].getWidth() + 50, 400, 50, 50);
 }

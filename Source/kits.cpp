@@ -29,22 +29,16 @@ using namespace std;
 juce::AudioFormatManager *formatManager;
 
 
-
 juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fname)
 {
-
   juce::File fl (fname);
 
   juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float>;
 
   std::unique_ptr<juce::AudioFormatReader> reader (formatManager->createReaderFor (fl));
 
-
-
   if (reader.get() != nullptr)
      {
-      //auto duration = (float) reader->lengthInSamples / reader->sampleRate;               // [3]
-
       buffer->setSize ((int) reader->numChannels, (int) reader->lengthInSamples);
 
       if (! reader->read (buffer,  0, (int) reader->lengthInSamples, 0,  true, true))
@@ -53,7 +47,6 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
           delete buffer;
           return 0;
          }
-
 
       samplerate = reader->sampleRate ;
       length_in_samples = reader->lengthInSamples;
