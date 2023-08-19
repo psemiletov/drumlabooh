@@ -6,14 +6,12 @@ Drumpecker is an easy way to write drum tracks as MIDI at your DAW, using Hydrog
 
 [Download and install](install.md)
 
+[Get drum kits](https://github.com/psemiletov/drumpecker-kits)
+
 [User's manual](manual.md)
 
 [Donate](donate.md)
 
 
-**Downloads**: [Drumrox github](https://github.com/psemiletov/drumrox) *
-[OpenSUSE](https://build.opensuse.org/package/show/multimedia:proaudio/drumrox) *
-[AUR](https://aur.archlinux.org/packages/drumrox)
-
-**Links**: [Drumrox group at Telegram](https://t.me/drumpecker) * [Drumpecker kits](https://github.com/psemiletov/drumrox-kits) * [More Drumrox kits at Telegram](https://t.me/drumrox_kits)
+**Links**: [Drumpecker group at Telegram](https://t.me/drumpecker) * [Drumpecker kits](https://github.com/psemiletov/drumpecker-kits) * [More Drumpecker kits at Telegram](https://t.me/drumpecker_kits)
 
