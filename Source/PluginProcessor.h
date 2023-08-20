@@ -17,6 +17,7 @@ public:
 
     std::atomic<float>* pans[36];
     std::atomic<float>* gains[36];
+    std::atomic<float>* mutes[36];
 
     std::atomic<float>* panner_mode = nullptr;
 

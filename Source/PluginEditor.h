@@ -19,6 +19,15 @@ typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
 class CAudioProcessorEditor;
 
+class CToggleButton: public juce::ToggleButton
+{
+
+void paintButton 	( 	Graphics &  	g,
+		bool  	shouldDrawButtonAsHighlighted,
+		bool  	shouldDrawButtonAsDown
+	) override;
+
+}
 
 class CDrumLine: public juce::Component/*,
                  public juce::Slider::Listener*/
@@ -31,10 +40,14 @@ public:
     juce::Slider sl_pan;
     juce::Slider sl_gain;
 
+    juce::ToggleButton bt_mute;
+
+
     juce::Label label;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_gain;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_pan;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_mute;
 
     int cell_number;
 

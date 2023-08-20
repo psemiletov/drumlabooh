@@ -62,7 +62,7 @@ CDrumLine::CDrumLine ()
 
   addAndMakeVisible (sl_pan);
   sl_pan.setTopLeftPosition (xoffs, YFILLER);
-  sl_pan.setSize (104, 32);
+  sl_pan.setSize (68, 32);
   sl_pan.setRange (0.0f, 1.0f, 0.01f);
 
   sl_pan.setSliderStyle (juce::Slider::LinearHorizontal);
@@ -92,6 +92,15 @@ CDrumLine::CDrumLine ()
   sl_pan.setTooltip ("Gain\n");
 
   xoffs += sl_gain.getWidth();
+  xoffs += XFILLER;
+
+  bt_mute.setButtonText ("M");
+  addAndMakeVisible (bt_mute);
+  bt_mute.setTopLeftPosition (xoffs, YFILLER);
+  bt_mute.setSize (64, 32);
+
+
+  xoffs += bt_mute.getWidth();
   xoffs += XFILLER;
 
   gr_group.setVisible (true);
@@ -147,6 +156,9 @@ void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
 
   param_name = "pan" + std::to_string (cell_number);
   att_pan.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_pan));
+
+  param_name = "mute" + std::to_string (cell_number);
+  att_mute.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, bt_mute));
 }
 
 
@@ -568,3 +580,13 @@ void CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
 
 
     }
+
+
+void CToggleButton.paintButton 	( 	Graphics &  	g,
+		bool  	shouldDrawButtonAsHighlighted,
+		bool  	shouldDrawButtonAsDown
+	)
+{
+
+
+}

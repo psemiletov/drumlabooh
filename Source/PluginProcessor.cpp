@@ -25,6 +25,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
       {
        pans[i] = nullptr;
        gains[i] = nullptr;
+       mutes[i] = nullptr;
       }
 
 
@@ -60,6 +61,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                                   0));
 
        layout.add (std::make_unique<juce::AudioParameterFloat> ("pan" + std::to_string(i), "pan" + std::to_string(i), 0.0f, 1.0f, 0.5f));
+
+
+       layout.add (std::make_unique<juce::AudioParameterBool> ("mute" + std::to_string(i),      // parameterID
+                                                                     "mute" + std::to_string(i),     // parameter name
+                                                                      false));
+
       }
 
   return layout;
@@ -93,6 +100,8 @@ parameters (*this, 0, "Drumpecker", createParameterLayout())
       {
        gains[i]  = parameters.getRawParameterValue ("gain" + std::to_string(i));
        pans[i]  = parameters.getRawParameterValue ("pan" + std::to_string(i));
+       mutes[i]  = parameters.getRawParameterValue ("mute" + std::to_string(i));
+
       }
 
   panner_mode = parameters.getRawParameterValue ("panner_mode");
@@ -370,6 +379,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
                  break;
                 }
+
+             bool mute = *(mutes[drum_sample_index]) > 0.5f;
+             if (mute)
+                continue;
 
             // std::cout << s->name << std::endl;
 
