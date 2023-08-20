@@ -293,8 +293,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  continue;
                 }
 
-//             std::cout << "GO ON with n: " << nn << std::endl;
+             std::cout << "GO ON with n: " << nn << std::endl;
 
+             float gn = db2lin(*(gains[nn]));
+             std::cout << "gn: " << gn << std::endl;
 
              CDrumSample *s = drumkit->v_samples [nn];
              if (! s)

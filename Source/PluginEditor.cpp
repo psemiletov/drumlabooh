@@ -581,7 +581,7 @@ void CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
 
     }
 
-
+/*
 void CToggleButton.paintButton 	( 	Graphics &  	g,
 		bool  	shouldDrawButtonAsHighlighted,
 		bool  	shouldDrawButtonAsDown
@@ -590,3 +590,4 @@ void CToggleButton.paintButton 	( 	Graphics &  	g,
 
 
 }
+*/

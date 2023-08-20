@@ -18,17 +18,17 @@ typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
 
 class CAudioProcessorEditor;
-
+/*
 class CToggleButton: public juce::ToggleButton
 {
 
-void paintButton 	( 	Graphics &  	g,
+void paintButton 	( 	juce::Graphics &  	g,
 		bool  	shouldDrawButtonAsHighlighted,
 		bool  	shouldDrawButtonAsDown
 	) override;
 
 }
-
+*/
 class CDrumLine: public juce::Component/*,
                  public juce::Slider::Listener*/
 {
