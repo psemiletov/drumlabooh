@@ -62,10 +62,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
        layout.add (std::make_unique<juce::AudioParameterFloat> ("pan" + std::to_string(i), "pan" + std::to_string(i), 0.0f, 1.0f, 0.5f));
 
-
+/*
        layout.add (std::make_unique<juce::AudioParameterBool> ("mute" + std::to_string(i),      // parameterID
-                                                                     "mute" + std::to_string(i),     // parameter name
-                                                                      false));
+                                                               "mute" + std::to_string(i),     // parameter name
+                                                                false));
+*/
+       layout.add (std::make_unique<juce::AudioParameterFloat> ("mute" + std::to_string(i),      // parameterID
+                                                               "mute" + std::to_string(i),     // parameter name
+                                                                0, 1, 0));
 
       }
 

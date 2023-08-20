@@ -11,7 +11,7 @@
 #define YFILLER 16
 
 #define WINDOW_HEIGHT 580
-#define WINDOW_WIDTH 780
+#define WINDOW_WIDTH 790
 
 
 //#define TESTKIT "/home/rox/sfz-kits/Vintage Kit/Vintage Kit.sfz"
