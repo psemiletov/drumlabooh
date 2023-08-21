@@ -37,8 +37,8 @@ void paintButton 	( 	juce::Graphics &  	g,
 class CLed: public juce::Component
 {
 public:
-    juce::Colour cl_on = juce::Colours::grey;
-    juce::Colour cl_off = juce::Colours::gold;
+    juce::Colour cl_on = juce::Colours::gold;
+    juce::Colour cl_off = juce::Colours::grey;
     bool is_on = false;
 
     void paint(Graphics& g);
