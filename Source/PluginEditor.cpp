@@ -344,7 +344,10 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
 
-  setSize (WINDOW_WIDTH, WINDOW_HEIGHT);
+//  setSize (WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    setSize (gr_options.getX() + gr_options.getWidth() + XFILLER * 2, drumlines_viewer.getBottom() + YFILLER * 2);
+
 
 //  sl_base_note.setNumDecimalPlacesToDisplay (0);
   //sl_base_note.setValue (*audioProcessor.base_note_number);
