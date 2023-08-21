@@ -1,10 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
 
 #pragma once
 
@@ -18,6 +11,18 @@ typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
 
 class CAudioProcessorEditor;
+
+class CTimer: public juce::Timer
+{
+public:
+    CTimer() {};
+    CAudioProcessorEditor *uplink = 0;
+    void timerCallback() override;
+
+};
+
+
+
 /*
 class CToggleButton: public juce::ToggleButton
 {
@@ -29,6 +34,17 @@ void paintButton 	( 	juce::Graphics &  	g,
 
 }
 */
+class CLed: public juce::Component
+{
+public:
+    juce::Colour cl_on = juce::Colours::grey;
+    juce::Colour cl_off = juce::Colours::gold;
+    bool is_on = false;
+
+    void paint(Graphics& g);
+
+};
+
 class CDrumLine: public juce::Component/*,
                  public juce::Slider::Listener*/
 {
@@ -41,6 +57,7 @@ public:
     juce::Slider sl_gain;
 
     juce::ToggleButton bt_mute;
+    CLed led;
 
 
     juce::Label label;
@@ -71,16 +88,18 @@ class CAudioProcessorEditor: public juce::AudioProcessorEditor,
                              public juce::ComboBox::Listener,
                              public juce::Slider::Listener
 {
-private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
-    CAudioProcessor& audioProcessor;
+//private:
 
 public:
+   // This reference is provided as a quick way for your editor to
+    // access the processor object that created it.
+    CAudioProcessor& audioProcessor;
 
     CDrumKitsScanner kits_scanner;
 
     juce::AudioProcessorValueTreeState& valueTreeState;
+
+    CTimer tmr_leds;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_pan_mode;
     juce::Label l_pan_mode { {}, "Pan mode" };

@@ -40,12 +40,28 @@
 
 
 
+void CLed::paint(Graphics& g)
+{
+  if (is_on)
+     g.fillAll(cl_on);
+  else
+      g.fillAll(cl_off);
+
+}
 
 CDrumLine::CDrumLine ()
 {
   addChildComponent (gr_group);
 
   int xoffs = XFILLER * 2;
+
+  addAndMakeVisible (led);
+  led.setTopLeftPosition (xoffs, YFILLER);
+  led.setSize (16, 32);
+
+  xoffs += led.getWidth();
+  xoffs += XFILLER;
+
 
   addAndMakeVisible (label);
   label.setTopLeftPosition (xoffs, YFILLER);
@@ -348,7 +364,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
     setSize (gr_options.getX() + gr_options.getWidth() + XFILLER * 2, drumlines_viewer.getBottom() + YFILLER * 2);
 
-
+    tmr_leds.startTimer (100);
 //  sl_base_note.setNumDecimalPlacesToDisplay (0);
   //sl_base_note.setValue (*audioProcessor.base_note_number);
 
@@ -594,3 +610,21 @@ void CToggleButton.paintButton 	( 	Graphics &  	g,
 
 }
 */
+
+
+void CTimer::timerCallback()
+{
+   if (! uplink)
+       return;
+
+   if (! uplink->audioProcessor.drumkit)
+      return;
+
+   for (int i = 0; i < uplink->audioProcessor.drumkit->v_samples.size(); i++)
+        {
+         bool actv = uplink->audioProcessor.drumkit->v_samples[i]->active;
+         uplink->drumlines[i].led.is_on = actv;
+         uplink->drumlines[i].led.repaint();
+        }
+
+}
