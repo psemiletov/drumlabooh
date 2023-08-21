@@ -199,6 +199,8 @@ void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
    formatManager = new juce::AudioFormatManager();
    formatManager->registerBasicFormats();
 
+   std::cout << "CAudioProcessor::prepareToPlay " << std::endl;
+
 //      std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
 
   //    std::cout << "*audioProcessor.panner_mode: "  << *panner_mode << std::endl;
@@ -206,7 +208,7 @@ void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
      //std::cout << "base_note_number:" << *base_note_number << std::endl;
 
    session_samplerate = (int) sampleRate;
-   load_kit (drumkit_path);
+ //  load_kit (drumkit_path);
 }
 
 
@@ -499,7 +501,7 @@ juce::AudioProcessorEditor* CAudioProcessor::createEditor()
 }
 
 
-//load
+//save
 void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
   save_string_keyval ("drumkit_path", drumkit_path);
@@ -513,7 +515,7 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 }
 
 
-//save
+//load
 void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
   std::unique_ptr <juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
@@ -525,7 +527,12 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
       parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
       int_base_note_number = load_int_keyval ("int_base_note_number", 36);
       drumkit_path = load_string_keyval ("drumkit_path");
+      std::cout << "drumkit_path : " << drumkit_path  << std::endl;
+
       std::cout << "set int_base_note_number: " << int_base_note_number << std::endl;
+            std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
+            session_samplerate = getSampleRate();
+        load_kit (drumkit_path);
      }
 //  std::cout << ">>>>>>>>>>>>drumkit_path: " << drumkit_path  << std::endl;
 }
@@ -583,7 +590,9 @@ std::cout << "int CAudioProcessor::load_int_keyval (const std::string &key, int 
 bool CAudioProcessor::load_kit (const std::string &fullpath)
 {
 
-//  std::cout << "CAudioProcessor::load_kit - 1" << std::endl;
+  std::cout << "CAudioProcessor::load_kit - 1" << std::endl;
+    std::cout << "fullpath: " << fullpath << std::endl;
+
 //STOP PLAY
 
   suspendProcessing (true);
@@ -600,7 +609,7 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
 
  suspendProcessing (false);
 
-// std::cout << "CAudioProcessor::load_kit - 2" << std::endl;
+ std::cout << "CAudioProcessor::load_kit - 2" << std::endl;
 
   return true;
 }
