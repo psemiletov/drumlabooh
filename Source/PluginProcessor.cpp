@@ -201,14 +201,15 @@ void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
    std::cout << "CAudioProcessor::prepareToPlay " << std::endl;
 
-//      std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
+    std::cout << "sampleRate: " <<  sampleRate << std::endl;
 
   //    std::cout << "*audioProcessor.panner_mode: "  << *panner_mode << std::endl;
 
      //std::cout << "base_note_number:" << *base_note_number << std::endl;
 
    session_samplerate = (int) sampleRate;
- //  load_kit (drumkit_path);
+   if (! drumkit)
+      load_kit (drumkit_path);
 }
 
 
@@ -280,8 +281,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
         if (isNoteOn )
            {
-            //std::cout << "note_number: " << note_number << std::endl;
-            //std::cout << "velocity: " << velocity << std::endl;
+            std::cout << "note_number: " << note_number << std::endl;
+            std::cout << "velocity: " << velocity << std::endl;
 
             if (! drumkit)
                return;
@@ -302,7 +303,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 //             std::cout << "GO ON with n: " << nn << std::endl;
 
              float gn = db2lin(*(gains[nn]));
-  //           std::cout << "gn: " << gn << std::endl;
+             std::cout << "gn: " << gn << std::endl;
 
              CDrumSample *s = drumkit->v_samples [nn];
              if (! s)
@@ -518,6 +519,8 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 //load
 void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
+  std::cout << "CAudioProcessor::setStateInformation - 1" << std::endl;
+
   std::unique_ptr <juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
 
   if (xmlState.get() != nullptr)
@@ -528,13 +531,15 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
       int_base_note_number = load_int_keyval ("int_base_note_number", 36);
       drumkit_path = load_string_keyval ("drumkit_path");
       std::cout << "drumkit_path : " << drumkit_path  << std::endl;
-
       std::cout << "set int_base_note_number: " << int_base_note_number << std::endl;
-            std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
-            session_samplerate = getSampleRate();
-        load_kit (drumkit_path);
+      std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
+      session_samplerate = getSampleRate();
+      load_kit (drumkit_path);
      }
 //  std::cout << ">>>>>>>>>>>>drumkit_path: " << drumkit_path  << std::endl;
+
+  std::cout << "CAudioProcessor::setStateInformation - 2" << std::endl;
+
 }
 
 
@@ -592,6 +597,9 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
 
   std::cout << "CAudioProcessor::load_kit - 1" << std::endl;
     std::cout << "fullpath: " << fullpath << std::endl;
+
+    if (fullpath.empty())
+       return false;
 
 //STOP PLAY
 
