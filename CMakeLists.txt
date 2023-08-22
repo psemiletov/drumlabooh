@@ -18,6 +18,8 @@ project(DRUMPECKER VERSION 0.0.1)
 
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 ")
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+
 
 FetchContent_Declare(
   juce

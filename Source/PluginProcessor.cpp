@@ -305,7 +305,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
 //  std::cout << "fresh_start:" << fresh_start << std::endl;
 
-/*
+
   if (fresh_start)
      {
 //       std::cout << "fresh_start:" << fresh_start << std::endl;
@@ -318,7 +318,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
       fresh_start = false;
      }
-*/
+
   for (const juce::MidiMessageMetadata metadata : midiMessages)
       {
         //  if (metadata.numBytes == 3)
@@ -613,20 +613,16 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
       session_samplerate = getSampleRate();
 
    //   if (fresh_start)
-     {
+
 //       std::cout << "fresh_start:" << fresh_start << std::endl;
 
 
-  //    session_samplerate = getSampleRate();
-
-      if (! drumkit_path.empty())
-         load_kit (drumkit_path);
-
-     // fresh_start = false;
-     }
+//      if (! drumkit_path.empty())
+  //       load_kit (drumkit_path);
 
 
-     // load_kit (drumkit_path);
+
+
      }
 //  std::cout << ">>>>>>>>>>>>drumkit_path: " << drumkit_path  << std::endl;
 
@@ -689,6 +685,7 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
 
   std::cout << "CAudioProcessor::load_kit - 1" << std::endl;
   std::cout << "fullpath: " << fullpath << std::endl;
+  std::cout << "session samplerate: " << session_samplerate << std::endl;
 
     if (fullpath.empty())
        return false;
@@ -704,6 +701,7 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
 
   drumkit = new CDrumKit;
   drumkit->load (fullpath, session_samplerate);
+
 
 //SIGNAL TO
 

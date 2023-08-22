@@ -43,14 +43,17 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
 
       if (! reader->read (buffer,  0, (int) reader->lengthInSamples, 0,  true, true))
          {
-          std::cout << "!reader->read " << std::endl;
+          std::cout << "! reader->read " << std::endl;
           delete buffer;
           return 0;
          }
 
-      samplerate = reader->sampleRate ;
+      samplerate = reader->sampleRate;
       length_in_samples = reader->lengthInSamples;
       channels = reader->numChannels;
+
+      std::cout << "fname: " << fname << " loaded, samplerate: " << samplerate << " length_in_samples: " << length_in_samples << " channels: " << channels << std::endl;
+
      }
 
   //std::cout << "4" << std::endl;
@@ -63,7 +66,7 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
 {
 //  juce::AudioFormatManager formatManager;
 
-  std::cout << fname << std::endl;
+  std::cout << "load_whole_sample_resampled: " << fname << std::endl;
 
   juce::AudioBuffer<float> *buffer = load_whole_sample (fname);
   if (! buffer)
@@ -75,29 +78,51 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
   if (samplerate == sess_samplerate)
       return buffer;
 
-  //double ratio = (double) 1.0 * sess_samplerate / samplerate;
+
+  //else resample
+
+//  double ratio = (double) 1.0 * sess_samplerate / samplerate;
 
 
-  float ratio = (float) 1.0f * sess_samplerate / samplerate;
-  size_t output_frames_count = (size_t) floor (length_in_samples * ratio);
+  //float ratio = (float) 1.0f * sess_samplerate / samplerate;
+
+//  float ratio = sess_samplerate / samplerate;
+
+  float ratio = (float) samplerate / sess_samplerate;
+
+  juce::int64 output_frames_count  = ceil(sess_samplerate * length_in_samples / samplerate);
+
+//  size_t output_frames_count = (size_t) floor (length_in_samples * ratio);
+
+  std::cout << "=================" << endl;
+
+  std::cout << "ratio: " << ratio << endl;
+  std::cout << "length_in_samples: " << length_in_samples << endl;
+  std::cout << "output_frames_count: " << output_frames_count << endl;
+
+  std::cout << "=================" << endl;
+
 
   int old_samplerate = samplerate;
 
-  juce::int64 iSamples = ceil (sess_samplerate * length_in_samples / samplerate);
+  //juce::int64 iSamples = ceil (sess_samplerate * length_in_samples / samplerate);
 
   //juce::AudioBuffer<float> * tempBuffer = new juce::AudioBuffer <float> (channels, iSamples);
   juce::AudioBuffer<float> * tempBuffer = new juce::AudioBuffer <float> (channels, output_frames_count);
 
  //juce::LagrangeInterpolator interpolator;
 
-  int iResult = 0;
+ // int iResult = 0;
 
   for (int i = 0; i < channels; i++)
       {
-     //  juce::LagrangeInterpolator interpolator;
-        juce::CatmullRomInterpolator  interpolator;
+       //juce::LagrangeInterpolator interpolator;
+       juce::LinearInterpolator interpolator;
 
-        int result = interpolator.process (samplerate / sess_samplerate,
+
+        //juce::CatmullRomInterpolator interpolator;
+
+        int result = interpolator.process (ratio/*samplerate / sess_samplerate*/,
                                            buffer->getReadPointer(i),
                                            tempBuffer->getWritePointer(i),
                                            output_frames_count,//numOutputSamplesToProduce,
@@ -110,14 +135,21 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
 
 
   samplerate = sess_samplerate;
-  length_in_samples = iSamples;
+  length_in_samples = output_frames_count;
 
 //  std::cout << "old samplerate: " << old_samplerate << endl;
 //  std::cout << "new samplerate: " << samplerate << endl;
-  std::cout << "lengthInSamples: " << length_in_samples << endl;
+  //std::cout << "lengthInSamples: " << length_in_samples << endl;
   std::cout << fname << " loaded and resampled to " << samplerate << endl;
 
+  std::cout << "RESAMPLED fname: " << fname << " loaded, samplerate: " << samplerate << " length_in_samples: " << length_in_samples << " channels: " << channels << std::endl;
+
+
   delete buffer;
+
+  std::cout << "load_whole_sample_resampled -end " << std::endl;
+
+
   return tempBuffer;
 }
 
@@ -141,6 +173,7 @@ CDrumLayer::CDrumLayer (CDrumSample *s)
   session_samplerate = drum_sample->session_samplerate;
   sample_offset = 0;
   audio_buffer = 0;
+  length_in_samples = 0;
 }
 
 
@@ -603,11 +636,14 @@ void CDrumKit::load_sfz (const std::string &data)
 
 void CDrumKit::load (const std::string &fname, int sample_rate)
 {
-//  cout << "void CHydrogenKit::load: " << fname << endl;
+  if (! scan_mode)
+     cout << "@@@@@@@@@@@@ void CDrumKit::load: " << fname << "samplerate: " << sample_rate << endl;
 
   auto start = chrono::high_resolution_clock::now();
 
   samplerate = sample_rate;
+
+
 
   string filename = resolve_symlink (fname.c_str());
   kit_filename = filename;
