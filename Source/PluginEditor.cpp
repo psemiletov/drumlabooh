@@ -243,6 +243,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
                                                audioProcessor (parent),
                                                valueTreeState (vts)
 {
+std::cout << "CAudioProcessorEditor::CAudioProcessorEditor - 1" << std::endl;
+
 
   kits_scanner.scan();
 
@@ -250,6 +252,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
      {
       cmb_drumkit_selector.addItem (kits_scanner.v_kits_names[i], i + 1);
      }
+
+std::cout << "CAudioProcessorEditor::CAudioProcessorEditor - 2" << std::endl;
+
 
   int yoffs = 0;
   int xoffs = XFILLER;
@@ -363,9 +368,11 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 //  setSize (WINDOW_WIDTH, WINDOW_HEIGHT);
 
     setSize (gr_options.getX() + gr_options.getWidth() + XFILLER * 2, drumlines_viewer.getBottom() + YFILLER * 2);
-
+/*
     tmr_leds.uplink = this;
     tmr_leds.startTimer (50);
+
+ */
 //  sl_base_note.setNumDecimalPlacesToDisplay (0);
   //sl_base_note.setValue (*audioProcessor.base_note_number);
 

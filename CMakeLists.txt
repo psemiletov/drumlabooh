@@ -16,6 +16,8 @@ include(FetchContent)
 
 project(DRUMPECKER VERSION 0.0.1)
 
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 ")
+
 
 FetchContent_Declare(
   juce

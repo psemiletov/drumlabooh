@@ -91,6 +91,9 @@ CAudioProcessor::CAudioProcessor()
 #endif
 parameters (*this, 0, "Drumpecker", createParameterLayout())
 {
+   formatManager = new juce::AudioFormatManager();
+   formatManager->registerBasicFormats();
+
 
   init_db();
 
@@ -196,10 +199,8 @@ void CAudioProcessor::changeProgramName (int index, const juce::String& newName)
 //==============================================================================
 void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-   formatManager = new juce::AudioFormatManager();
-   formatManager->registerBasicFormats();
 
-   std::cout << "CAudioProcessor::prepareToPlay " << std::endl;
+   std::cout << "CAudioProcessor::prepareToPlay - 1" << std::endl;
 
     std::cout << "sampleRate: " <<  sampleRate << std::endl;
 
@@ -208,8 +209,11 @@ void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
      //std::cout << "base_note_number:" << *base_note_number << std::endl;
 
    session_samplerate = (int) sampleRate;
-   if (! drumkit)
-      load_kit (drumkit_path);
+
+   std::cout << "CAudioProcessor::prepareToPlay - 2" << std::endl;
+
+   //if (! drumkit)
+     // load_kit (drumkit_path);
 }
 
 
@@ -262,8 +266,22 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
 
+//std::cout << "CAudioProcessor::processBlock -1 " << std::endl;
+
+
+
  //if (base_note_number == nullptr)
    //  return;
+
+  if (fresh_start)
+     {
+      session_samplerate = getSampleRate();
+
+      if (! drumkit_path.empty())
+         load_kit (drumkit_path);
+
+      fresh_start = false;
+     }
 
   for (const juce::MidiMessageMetadata metadata : midiMessages)
       {
@@ -281,8 +299,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
         if (isNoteOn )
            {
-            std::cout << "note_number: " << note_number << std::endl;
-            std::cout << "velocity: " << velocity << std::endl;
+            //std::cout << "note_number: " << note_number << std::endl;
+            //std::cout << "velocity: " << velocity << std::endl;
 
             if (! drumkit)
                return;
@@ -303,7 +321,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 //             std::cout << "GO ON with n: " << nn << std::endl;
 
              float gn = db2lin(*(gains[nn]));
-             std::cout << "gn: " << gn << std::endl;
+            // std::cout << "gn: " << gn << std::endl;
 
              CDrumSample *s = drumkit->v_samples [nn];
              if (! s)
@@ -331,6 +349,13 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
       }
 
+
+     if (! drumkit)
+        return;
+
+    // std::cout << "CAudioProcessor::processBlock -2 " << std::endl;
+
+
     float *channel_data [2];
 
     int num_channels = buffer.getNumChannels();
@@ -342,6 +367,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
        channel_data [1] = buffer.getWritePointer (1);
 
 
+  //std::cout << "CAudioProcessor::processBlock -3 " << std::endl;
 
  //   juce::ScopedNoDenormals noDenormals;
 //    auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -371,11 +397,16 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
          //std::cout << "channel: " << channel << std::endl;
 
+//    std::cout << "CAudioProcessor::processBlock -4 " << std::endl;
+
 
         // ..do something to the data...
    int out_buf_length = buffer.getNumSamples();
 
 
+  //   std::cout << "CAudioProcessor::processBlock -5 " << std::endl;
+
+    // std::cout << "drumkit->v_samples.size(): " << drumkit->v_samples.size();
 
    //for each sample out_buf_offs
     for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
@@ -487,6 +518,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
              }
 
+ //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
+
 }
 
 //==============================================================================
@@ -534,7 +567,7 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
       std::cout << "set int_base_note_number: " << int_base_note_number << std::endl;
       std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
       session_samplerate = getSampleRate();
-      load_kit (drumkit_path);
+     // load_kit (drumkit_path);
      }
 //  std::cout << ">>>>>>>>>>>>drumkit_path: " << drumkit_path  << std::endl;
 
@@ -570,20 +603,20 @@ void CAudioProcessor::save_int_keyval (const std::string &key, int val)
 
 int CAudioProcessor::load_int_keyval (const std::string &key, int defval)
 {
-  std::cout << "int CAudioProcessor::load_int_keyval (const std::string &key, int defval)  -1" <<  std::endl;
+  //std::cout << "int CAudioProcessor::load_int_keyval (const std::string &key, int defval)  -1" <<  std::endl;
 
 
   juce::Identifier keyid (key.c_str());
   auto addons = parameters.state.getOrCreateChildWithName ("addons", nullptr);
   auto v = addons.getProperty (keyid);
 
-std::cout << "int CAudioProcessor::load_int_keyval (const std::string &key, int defval)  -2" <<  std::endl;
+//std::cout << "int CAudioProcessor::load_int_keyval (const std::string &key, int defval)  -2" <<  std::endl;
 
 
   if (v.isVoid())
      return defval;
 
-  std::cout << "int CAudioProcessor::load_int_keyval (const std::string &key, int defval)  -3" <<  std::endl;
+//  std::cout << "int CAudioProcessor::load_int_keyval (const std::string &key, int defval)  -3" <<  std::endl;
 
 
  // std::cout << "TEXT: " << v.toString() << std::endl;
@@ -596,7 +629,7 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
 {
 
   std::cout << "CAudioProcessor::load_kit - 1" << std::endl;
-    std::cout << "fullpath: " << fullpath << std::endl;
+  std::cout << "fullpath: " << fullpath << std::endl;
 
     if (fullpath.empty())
        return false;

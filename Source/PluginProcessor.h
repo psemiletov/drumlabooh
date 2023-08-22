@@ -23,6 +23,8 @@ public:
 
     int int_base_note_number;
 
+    bool fresh_start = true;
+
     std::string drumkit_path; //full path!
 
     CDrumKitsScanner scanner;
