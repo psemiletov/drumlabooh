@@ -29,6 +29,15 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(juce)
 
+#FetchContent_Declare(
+  #libsamplerate
+  #GIT_REPOSITORY git@github.com:libsndfile/libsamplerate.git
+  #GIT_TAG        c96f5e3de9c4488f4e6c97f59f5245f22fda22f7 # release-0.2.2
+#)
+
+#FetchContent_MakeAvailable(libsamplerate)
+
+
 #static linking in Windows
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
