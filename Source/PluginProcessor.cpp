@@ -94,6 +94,7 @@ parameters (*this, 0, "Drumpecker", createParameterLayout())
    formatManager = new juce::AudioFormatManager();
    formatManager->registerBasicFormats();
 
+  fresh_start = true;
 
   init_db();
 
@@ -261,7 +262,32 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 
 }
 
+// Map MIDI velocity 0-127 onto gain
+// 0.0-1.0
 
+#define VSENSE 1.0f
+//#define VSENSE 0.0
+
+
+float VelocityToLevel( int velocity )
+{
+
+	// i see no legacy here
+	// when vsense = 0.0, velocity minimum is 1.0
+	// when vsense = 1.0, velocity minimum is 0.05
+	//float min = 1.0f - (VSENSE  * 0.95f);
+
+   float min = 0.1f;
+
+
+	// velocity should logarithmically map onto [min..1]
+
+	float logrange = logf( 1.0f/min );
+
+	float vcurve = powf( (float(velocity-1) / 126.0f), 0.8f );
+
+	return min * expf( logrange * vcurve );
+}
 
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
@@ -273,8 +299,18 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
  //if (base_note_number == nullptr)
    //  return;
 
+  //std::cout << "fresh_start:" << fresh_start << std::endl;
+
+//  std::cout << "drumkit_path: " << drumkit_path << std::endl;
+
+//  std::cout << "fresh_start:" << fresh_start << std::endl;
+
+/*
   if (fresh_start)
      {
+//       std::cout << "fresh_start:" << fresh_start << std::endl;
+
+
       session_samplerate = getSampleRate();
 
       if (! drumkit_path.empty())
@@ -282,7 +318,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
       fresh_start = false;
      }
-
+*/
   for (const juce::MidiMessageMetadata metadata : midiMessages)
       {
         //  if (metadata.numBytes == 3)
@@ -293,14 +329,18 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
         bool isNoteOn = msg.isNoteOn();
         bool isNoteOff = msg.isNoteOff();
-        float velocity = msg.getFloatVelocity ();
+        //float velocity = msg.getFloatVelocity () - 0.01f;
+
+
+
+        float velocity = VelocityToLevel (msg.getVelocity());
 
         int note_number = msg.getNoteNumber(); //36 starting note
 
         if (isNoteOn )
            {
-            //std::cout << "note_number: " << note_number << std::endl;
-            //std::cout << "velocity: " << velocity << std::endl;
+            std::cout << "note_number: " << note_number << std::endl;
+            std::cout << "velocity: " << velocity << std::endl;
 
             if (! drumkit)
                return;
@@ -454,7 +494,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  float fl = l->channel_data[0][l->sample_offset];
                  float fr = l->channel_data[0][l->sample_offset];
 
-                 float gain = db2lin(*(gains[drum_sample_index]));
+                 //float gain = db2lin(*(gains[drum_sample_index]));
+                 float gain = juce::Decibels::decibelsToGain ((float)*(gains[drum_sample_index]));
+
 
                  float pan_right = 0;
                  float pan_left = 0;
@@ -488,7 +530,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  float fl = l->channel_data[0][l->sample_offset];
                  float fr = l->channel_data[1][l->sample_offset];
 
-                 float gain = db2lin(*(gains[drum_sample_index]));
+//                 float gain = db2lin(*(gains[drum_sample_index]));
+                 float gain = juce::Decibels::decibelsToGain ((float)*(gains[drum_sample_index]));
+
 
                  float pan_right = 0;
                  float pan_left = 0;
@@ -567,6 +611,21 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
       std::cout << "set int_base_note_number: " << int_base_note_number << std::endl;
       std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
       session_samplerate = getSampleRate();
+
+   //   if (fresh_start)
+     {
+//       std::cout << "fresh_start:" << fresh_start << std::endl;
+
+
+  //    session_samplerate = getSampleRate();
+
+      if (! drumkit_path.empty())
+         load_kit (drumkit_path);
+
+     // fresh_start = false;
+     }
+
+
      // load_kit (drumkit_path);
      }
 //  std::cout << ">>>>>>>>>>>>drumkit_path: " << drumkit_path  << std::endl;

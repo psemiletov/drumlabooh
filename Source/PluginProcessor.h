@@ -23,7 +23,7 @@ public:
 
     int int_base_note_number;
 
-    bool fresh_start = true;
+    bool fresh_start;
 
     std::string drumkit_path; //full path!
 
