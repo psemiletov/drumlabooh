@@ -51,6 +51,7 @@ public:
 
   juce::AudioBuffer<float> * load_whole_sample (const std::string &fname); //called from load_whole_sample_resampled
   juce::AudioBuffer<float> * load_whole_sample_resampled (const std::string &fname, int sess_samplerate);
+  juce::AudioBuffer<float> * load_whole_sample_resampled2 (const std::string &fname, int sess_samplerate);
 
 };
 

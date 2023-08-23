@@ -14,7 +14,8 @@ include(FetchContent)
 # `project()` command. `project()` sets up some helpful variables that describe source/binary
 # directories, and the current project version. This is a standard CMake command.
 
-project(DRUMPECKER VERSION 0.0.1)
+project(DRUMPECKER LANGUAGES CXX C VERSION 0.0.1 )
+
 
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 ")
 
@@ -30,12 +31,22 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(juce)
 
 #FetchContent_Declare(
-  #libsamplerate
-  #GIT_REPOSITORY git@github.com:libsndfile/libsamplerate.git
-  #GIT_TAG        c96f5e3de9c4488f4e6c97f59f5245f22fda22f7 # release-0.2.2
+#  libsamplerate
+#  GIT_REPOSITORY git@github.com:libsndfile/libsamplerate.git
+#  GIT_TAG        c96f5e3de9c4488f4e6c97f59f5245f22fda22f7 # release-0.2.2
 #)
 
 #FetchContent_MakeAvailable(libsamplerate)
+
+
+#FetchContent_GetProperties(libsamplerate)
+    #if(NOT libsamplerate_POPULATED)
+      #message("Cloning libsamplerate")
+#      FetchContent_Populate(libsamplerate)
+      #add_subdirectory(
+      #  ${libsamplerate_SOURCE_DIR}
+        #${libsamplerate_BINARY_DIR})
+    #endif()
 
 
 #static linking in Windows
@@ -117,7 +128,11 @@ target_sources(drumpecker
         ./Source/dsp.cpp
         ./Source/kits.cpp
         ./Source/utl.cpp
-        )
+./Source/exceptions.cpp
+./Source/resampler_class.cpp
+./Source/resampler_function.cpp
+./Source/speex_resampler.c
+)
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
 # project, these might be passed in the 'Preprocessor Definitions' field. JUCE modules also make use
@@ -150,8 +165,22 @@ target_compile_definitions(drumpecker
 # linked automatically. If we'd generated a binary data target above, we would need to link to it
 # here too. This is a standard CMake command.
 
+
+
+#target_include_directories(drumpecker
+#                           PUBLIC
+#                            ${libsamplerate_INCLUDE_DIR})
+
+#add_library(libsamplerate STATIC
+            #${libsamplerate_SOURCE_DIR})
+
+
+#set_target_properties(libsamplerate PROPERTIES LINKER_LANGUAGE C)
+
+
 target_link_libraries(drumpecker
     PRIVATE
+#        libsamplerate
         # AudioPluginData           # If we'd created a binary data target, we'd link to it here
         juce::juce_audio_utils
     PUBLIC
