@@ -509,8 +509,19 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  float coef_right = pan_right * gain * s->velocity;
                  float coef_left = pan_left * gain * s->velocity;
 
+                 //float coef_right = pan_right * s->velocity;
+                 //float coef_left = pan_left * s->velocity;
+
+
                  channel_data[0][out_buf_offs] += fl * coef_left;
                  channel_data[1][out_buf_offs] += fl * coef_right;
+
+                 if (channel_data[0][out_buf_offs] > 1.0f)
+                     channel_data[0][out_buf_offs] = 1.0f;
+
+                if (channel_data[1][out_buf_offs] > 1.0f)
+                    channel_data[1][out_buf_offs] = 1.0f;
+
 
                 }
 

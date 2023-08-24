@@ -68,7 +68,9 @@ CDrumLine::CDrumLine ()
   label.setSize (160, 32);
 
   label.setColour (juce::Label::textColourId, juce::Colours::black);
-  label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
+  label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+
+//  label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
   label.setFont (f_samplename_font);
 
   label.setText ("EMPTY CELL", juce::dontSendNotification);
@@ -133,7 +135,7 @@ CDrumLine::~CDrumLine()
 
 void CDrumLine::paint (juce::Graphics& g)
 {
-  g.fillAll (juce::Colour (0xff323e44));
+  // g.fillAll (juce::Colour (0xff323e44));
 }
 
 
@@ -243,7 +245,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
                                                audioProcessor (parent),
                                                valueTreeState (vts)
 {
-std::cout << "CAudioProcessorEditor::CAudioProcessorEditor - 1" << std::endl;
+//std::cout << "CAudioProcessorEditor::CAudioProcessorEditor - 1" << std::endl;
 
 
   kits_scanner.scan();
@@ -253,7 +255,10 @@ std::cout << "CAudioProcessorEditor::CAudioProcessorEditor - 1" << std::endl;
       cmb_drumkit_selector.addItem (kits_scanner.v_kits_names[i], i + 1);
      }
 
-std::cout << "CAudioProcessorEditor::CAudioProcessorEditor - 2" << std::endl;
+//std::cout << "CAudioProcessorEditor::CAudioProcessorEditor - 2" << std::endl;
+
+ // getLookAndFeel().setColour (juce::LookAndFeel::backgroundColourId, juce::Colours::red);
+
 
 
   int yoffs = 0;
@@ -262,6 +267,10 @@ std::cout << "CAudioProcessorEditor::CAudioProcessorEditor - 2" << std::endl;
   cmb_drumkit_selector.setTextWhenNothingSelected ("CLICK HERE TO SELECT THE DRUMKIT");
   cmb_drumkit_selector.setTextWhenNoChoicesAvailable ("NO DRUMKITS FOUND");
   cmb_drumkit_selector.setScrollWheelEnabled (true);
+
+
+  cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, juce::Colour (53, 84, 100));
+  cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, juce::Colour (255, 254, 255));
 
   addAndMakeVisible (cmb_drumkit_selector);
 
@@ -330,6 +339,10 @@ std::cout << "CAudioProcessorEditor::CAudioProcessorEditor - 2" << std::endl;
 
 
   //BASE NOTE
+
+  l_base_note.setColour (juce::Slider::thumbColourId, juce::Colour (53, 84, 100));
+  l_base_note.setColour (juce::Slider::trackColourId, juce::Colour (255, 254, 255));
+
   addAndMakeVisible (l_base_note);
   l_base_note.setSize (120, 48);
   l_base_note.setTopLeftPosition (gr_options.getX() + XFILLER, gr_kitinfo.getY() + gr_kitinfo.getHeight() + YFILLER * 2);
@@ -347,6 +360,11 @@ std::cout << "CAudioProcessorEditor::CAudioProcessorEditor - 2" << std::endl;
   addAndMakeVisible (l_pan_mode);
   l_pan_mode.setTopLeftPosition (l_base_note.getX(), sl_base_note.getBottom() + YFILLER);
   l_pan_mode.setSize (100, 48);
+
+
+  cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (53, 84, 100));
+  cmb_pan_mode.setColour (juce::ComboBox::textColourId, juce::Colour (255, 254, 255));
+
 
   addAndMakeVisible (cmb_pan_mode);
       //  cmb_pan_mode.onChange = [this] { panner_modeMenuChanged(); };
@@ -410,10 +428,13 @@ void CAudioProcessorEditor::paint (juce::Graphics& g)
     g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
     */
 
-        g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+//        g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
 
-   //  g.fillAll (juce::Colours::white);
+    //g.fillAll (juce::Colour(0x3D3945));
+
+
+     g.fillAll (juce::Colour::fromRGB(103, 97, 114)	);
 
    //set the current drawing colour to black
 //    g.setColour (juce::Colours::black);
