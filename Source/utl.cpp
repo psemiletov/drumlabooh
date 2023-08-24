@@ -10,9 +10,17 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#if !defined(_WIN32) || !defined(_WIN64)
+
 #include <unistd.h>
 #include <dirent.h>
 
+#else
+
+#include <Windows.h>
+
+
+#endif
 
 #include "utl.h"
 
@@ -41,6 +49,8 @@ bool ends_with (std::string const & value, std::string const & ending)
 
 std::string resolve_symlink (const std::string &path)
 {
+#if !defined(_WIN32) || !defined(_WIN64)
+
   bool is_symlink = false;
 
     struct stat buf;
@@ -62,8 +72,16 @@ std::string resolve_symlink (const std::string &path)
      }
 
    return path;
+
+#else
+
+   return path;
+
+#endif
 }
 
+
+#if !defined(_WIN32) || !defined(_WIN64)
 
 std::vector <std::string> files_get_list (const std::string &path)
 {
@@ -112,6 +130,49 @@ std::vector <std::string> files_get_list (const std::string &path, const std::st
    closedir (directory);
    return result;
 }
+
+
+#else
+
+
+
+std::vector <std::string> files_get_list (const std::string &path)
+{
+
+}
+
+
+
+std::vector <std::string> files_get_list (const std::string &path, const std::string &ext) //ext with dot: ".txt"
+{
+ WIN32_FIND_DATAA findData;
+    HANDLE hFind = INVALID_HANDLE_VALUE;
+    std::string full_path = directory + "\\*";
+    std::vector<std::string> dir_list;
+
+    hFind = FindFirstFileA(fyll_path.c_str(), &findData);
+
+    if (hFind == INVALID_HANDLE_VALUE)
+        //throw std::runtime_error("Invalid handle value! Please check your path...");
+       return std::string;
+
+    while (FindNextFileA(hFind, &findData) != 0)
+    {
+       string t = findData.cFileName;
+
+      if (t.rfind (ext) != string::npos)
+            dir_list.push_back (path + "/" + t);
+
+    }
+
+    FindClose(hFind);
+
+    return dir_list;
+}
+
+
+#endif
+
 
 
 std::string get_home_dir()
