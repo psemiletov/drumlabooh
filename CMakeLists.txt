@@ -14,7 +14,7 @@ include(FetchContent)
 # `project()` command. `project()` sets up some helpful variables that describe source/binary
 # directories, and the current project version. This is a standard CMake command.
 
-project(DRUMPECKER LANGUAGES CXX C VERSION 0.0.1 )
+project(DRUMLABOOH LANGUAGES CXX C VERSION 0.0.1 )
 
 
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 ")
@@ -86,13 +86,13 @@ if(UNIX AND NOT APPLE)
 endif()
 
 
-juce_add_plugin(drumpecker
+juce_add_plugin(drumlabooh
     # VERSION ...                               # Set this if the plugin version is different to the project version
     # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
     # ICON_SMALL ...
      JUCE_DISPLAY_SPLASH_SCREEN=0
-     LV2URI https://github.com/psemiletov/drumpecker
-     LV2_SHARED_LIBRARY_NAME drumpecker
+     LV2URI https://github.com/psemiletov/drumlabooh
+     LV2_SHARED_LIBRARY_NAME drumlabooh
      COMPANY_NAME Semiletov                          # Specify the name of the plugin's author
      IS_SYNTH TRUE                       # Is this a synth or an effect?
      NEEDS_MIDI_INPUT TRUE               # Does the plugin need midi input?
@@ -105,7 +105,7 @@ juce_add_plugin(drumpecker
     PLUGIN_CODE Petr                            # A unique four-character plugin id with exactly one upper-case character
                                                 # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
     FORMATS ${JUCE_FORMATS}                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
-    PRODUCT_NAME "drumpecker")        # The name of the final executable, which can differ from the target name
+    PRODUCT_NAME "drumlabooh")        # The name of the final executable, which can differ from the target name
 
 # `juce_generate_juce_header` will create a JuceHeader.h for a given target, which will be generated
 # into your build tree. This should be included with `#include <JuceHeader.h>`. The include path for
@@ -113,14 +113,14 @@ juce_add_plugin(drumpecker
 # include all your JUCE module headers; if you're happy to include module headers directly, you
 # probably don't need to call this.
 
- juce_generate_juce_header(drumpecker)
+ juce_generate_juce_header(drumlabooh)
 
 # `target_sources` adds source files to a target. We pass the target that needs the sources as the
 # first argument, then a visibility parameter for the sources which should normally be PRIVATE.
 # Finally, we supply a list of source files that will be built into the target. This is a standard
 # CMake command.
 
-target_sources(drumpecker
+target_sources(drumlabooh
     PRIVATE
         ./Source/PluginEditor.cpp
         ./Source/PluginProcessor.cpp
@@ -141,7 +141,7 @@ target_sources(drumpecker
 # definitions will be visible both to your code, and also the JUCE module code, so for new
 # definitions, pick unique names that are unlikely to collide! This is a standard CMake command.
 
-target_compile_definitions(drumpecker
+target_compile_definitions(drumlabooh
     PUBLIC
         # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
         JUCE_JACK=0
@@ -178,7 +178,7 @@ target_compile_definitions(drumpecker
 #set_target_properties(libsamplerate PROPERTIES LINKER_LANGUAGE C)
 
 
-target_link_libraries(drumpecker
+target_link_libraries(drumlabooh
     PRIVATE
 #        libsamplerate
         # AudioPluginData           # If we'd created a binary data target, we'd link to it here

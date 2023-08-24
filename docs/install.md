@@ -1,8 +1,8 @@
-# Drumpecker: Download and install
+# Drumlabooh | Драмлабух: Download and install
 
-[Drumpecker github](https://github.com/psemiletov/drumpecker)
+[Drumpecker github](https://github.com/psemiletov/drumlabooh)
 
-[AUR](https://aur.archlinux.org/packages/drumpecker)
+[AUR](https://aur.archlinux.org/packages/drumlabooh)
 
 Dependencies (Ubuntu packages names)
 
