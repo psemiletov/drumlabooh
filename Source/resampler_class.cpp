@@ -32,7 +32,7 @@ class ResamplerImplementation: public Resampler {
 
 ResamplerImplementation::ResamplerImplementation(int inputFrameCount, int inputChannels, int inputSr, int outputSr): input_frame_count(inputFrameCount), input_channels(inputChannels), input_sr(inputSr), output_sr(outputSr) {
 	delta = (float)inputSr/(float)outputSr;
-	spx_resampler = speex_resampler_init(inputChannels, inputSr, outputSr, 1, &spx_error);
+	spx_resampler = speex_resampler_init(inputChannels, inputSr, outputSr, /*1*/SPEEX_RESAMPLER_QUALITY_DEFAULT, &spx_error);
 	if(spx_error == RESAMPLER_ERR_ALLOC_FAILED) throw MemoryAllocationError();
 	else if(spx_error != RESAMPLER_ERR_SUCCESS) throw SpeexError(spx_error);
 	else if(spx_resampler == nullptr) throw MemoryAllocationError(); //Yay! Defensive Programming!

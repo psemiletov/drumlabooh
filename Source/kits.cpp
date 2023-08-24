@@ -32,7 +32,7 @@ juce::AudioFormatManager *formatManager;
 
 juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fname)
 {
-  std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
+//  std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
 
   juce::File fl (fname);
 
@@ -56,17 +56,15 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
       length_in_samples = reader->lengthInSamples;
       channels = reader->numChannels;
 
-//      std::cout << "fname: " << fname << std::endl;
-      std::cout << "samplerate: " << samplerate << std::endl;
-      std::cout << "length_in_samples: " << length_in_samples << std::endl;
-      std::cout << "channels: " << channels << std::endl;
+//      std::cout << "samplerate: " << samplerate << std::endl;
+//      std::cout << "length_in_samples: " << length_in_samples << std::endl;
+//      std::cout << "channels: " << channels << std::endl;
 
      }
 
   //std::cout << "4" << std::endl;
 
-  std::cout << "@@@@@ CDrumLayer::load_whole_sample END" << std::endl;
-
+//  std::cout << "@@@@@ CDrumLayer::load_whole_sample END" << std::endl;
 
   return buffer;
 }
@@ -75,7 +73,7 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
 {
 //  juce::AudioFormatManager formatManager;
 
-  std::cout << "@@@@@@@ CDrumLayer::load_whole_sample_resampled: " << fname << std::endl;
+//  std::cout << "@@@@@@@ CDrumLayer::load_whole_sample_resampled: " << fname << std::endl;
 
   juce::AudioBuffer<float> *buffer = load_whole_sample (fname);
   if (! buffer)
@@ -95,7 +93,7 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
   size_t output_frames_count = ratio * length_in_samples;
 
 //  size_t output_frames_count = (size_t) floor (length_in_samples * ratio);
-
+/*
   std::cout << "=================BEFORE" << endl;
 
   std::cout << "ratio: " << ratio << endl;
@@ -103,7 +101,7 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
   std::cout << "output_frames_count: " << output_frames_count << endl;
 
   std::cout << "=================BEFORE END" << endl;
-
+*/
   juce::AudioBuffer<float> * out_buf = new juce::AudioBuffer <float> (channels, output_frames_count);
 
 
@@ -116,27 +114,10 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
         std::shared_ptr<speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler(length_in_samples, 1, samplerate, sess_samplerate);
         rs->read (inp);
         rs->write (out_buf->getWritePointer(i), output_frames_count);
-       //const float *inbuffer = buffer->getReadPointer(i);
 
-         //float *outbuffer = out_buf->getWritePointer(i);
-
-
-
-
-        //juce::CatmullRomInterpolator interpolator;
-
-     //  int result = interpolator.process (ratio,
-       //                                   buffer->getReadPointer(i),
-         ///                                 tempBuffer->getWritePointer(i),
-            //                              output_frames_count,
-              //                            length_in_samples,
-                //                         0);
-
-//        if (result == 0)
-  //          std::cout << "resample:: channel: " << i << " result: " << result << std::endl;
        }
 
-  std::cout << "=================AFTER" << endl;
+ // std::cout << "=================AFTER" << endl;
 
   samplerate = sess_samplerate;
   length_in_samples = output_frames_count;
@@ -147,16 +128,16 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
 //  std::cout << "new samplerate: " << samplerate << endl;
   //std::cout << "lengthInSamples: " << length_in_samples << endl;
 //  std::cout << fname << " loaded and resampled to " << samplerate << endl;
-
+/*
   std::cout << "RESAMPLED fname: " << fname << " loaded, samplerate: " << samplerate << " length_in_samples: " << length_in_samples << " channels: " << channels << std::endl;
 
 
   std::cout << "=================AFTER END" << endl;
-
+*/
 
   delete buffer;
 
-  std::cout << "@@@@@@@ CDrumLayer::load_whole_sample_resampled END" << std::endl;
+ // std::cout << "@@@@@@@ CDrumLayer::load_whole_sample_resampled END" << std::endl;
 
 
   return out_buf;
@@ -1202,6 +1183,8 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back ("/usr/local/share/hydrogen/data/drumkits");
   v_kits_locations.push_back ("/usr/share/drmr/drumkits");
   v_kits_locations.push_back ("/usr/share/drumrox-kits");
+  v_kits_locations.push_back ("/usr/share/drumpecker-kits");
+
   v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
   v_kits_locations.push_back (get_home_dir() + "/.drmr/drumkits");
   v_kits_locations.push_back (get_home_dir() + "/drumrox-kits");
