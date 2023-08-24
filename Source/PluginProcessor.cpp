@@ -465,15 +465,15 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  break;
                 }
 
+
+             l->sample_offset++;
+
              if (l->sample_offset == l->length_in_samples)
                 {
                  s->untrigger_sample();
                  continue;
                 }
 
-
-
-             l->sample_offset++;
 
              if (mute)
                 continue;
@@ -482,7 +482,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
              if (l->channels == 1)
                 {
                  float fl = l->channel_data[0][l->sample_offset];
-                 float fr = l->channel_data[0][l->sample_offset];
+                 float fr = fl;
+
+                 //float fr = l->channel_data[0][l->sample_offset];
 
                  //float gain = db2lin(*(gains[drum_sample_index]));
                  float gain = juce::Decibels::decibelsToGain ((float)*(gains[drum_sample_index]));
@@ -516,12 +518,14 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  channel_data[0][out_buf_offs] += fl * coef_left;
                  channel_data[1][out_buf_offs] += fl * coef_right;
 
+                 //TEST CLIPPING
+/*
                  if (channel_data[0][out_buf_offs] > 1.0f)
                      channel_data[0][out_buf_offs] = 1.0f;
 
                 if (channel_data[1][out_buf_offs] > 1.0f)
                     channel_data[1][out_buf_offs] = 1.0f;
-
+*/
 
                 }
 
