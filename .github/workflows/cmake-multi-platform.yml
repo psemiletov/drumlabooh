@@ -2,12 +2,12 @@
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
 name: CMake on multiple platforms
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
+#on:
+ # push:
+#    branches: [ "main" ]
+#  pull_request:
+#    branches: [ "main" ]
+on: [workflow_dispatch]
 jobs:
   build:
     runs-on: ${{ matrix.os }}

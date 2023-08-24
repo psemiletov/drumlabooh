@@ -1,9 +1,5 @@
 /*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
+2023, Peter Semiletov
 */
 
 #include "PluginProcessor.h"
@@ -62,11 +58,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
        layout.add (std::make_unique<juce::AudioParameterFloat> ("pan" + std::to_string(i), "pan" + std::to_string(i), 0.0f, 1.0f, 0.5f));
 
-/*
-       layout.add (std::make_unique<juce::AudioParameterBool> ("mute" + std::to_string(i),      // parameterID
-                                                               "mute" + std::to_string(i),     // parameter name
-                                                                false));
-*/
        layout.add (std::make_unique<juce::AudioParameterFloat> ("mute" + std::to_string(i),      // parameterID
                                                                "mute" + std::to_string(i),     // parameter name
                                                                 0, 1, 0));
@@ -89,20 +80,19 @@ CAudioProcessor::CAudioProcessor()
                      #endif
                        ),
 #endif
-parameters (*this, 0, "Drumpecker", createParameterLayout())
+parameters (*this, 0, "Drumlabooh", createParameterLayout())
 {
-   formatManager = new juce::AudioFormatManager();
-   formatManager->registerBasicFormats();
+  formatManager = new juce::AudioFormatManager();
+  formatManager->registerBasicFormats();
 
-  fresh_start = true;
 
   init_db();
 
+  fresh_start = true;
   drumkit = 0;
-  session_samplerate = 0;
   drumkit_path = "";
-
   int_base_note_number = 36;
+  session_samplerate = 0;
 
   for (size_t i = 0; i < 36; i++)
       {
