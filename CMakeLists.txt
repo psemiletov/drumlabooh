@@ -21,6 +21,8 @@ project(DRUMLABOOH LANGUAGES CXX C VERSION 0.0.1 )
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 
+SET(FETCHCONTENT_QUIET FALSE)
+
 
 #FetchContent_Declare(
 #  juce
@@ -32,6 +34,7 @@ FetchContent_Declare(
   juce
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
   GIT_TAG        d24c2729268e322f3ba1b5070eb96ab232d7f6ba # release-7.0.6
+  GIT_PROGRESS TRUE
 )
 
 
