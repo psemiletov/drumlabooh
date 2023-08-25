@@ -277,9 +277,11 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
    //cmb_drumkit_selector.onChange = [this] { kit_changed(); };
   cmb_drumkit_selector.addListener (this);
-  cmb_drumkit_selector.setTopLeftPosition (xoffs, 0);
+  cmb_drumkit_selector.setTopLeftPosition (xoffs, 8);
 
-  yoffs += 48;
+  //yoffs += 48;
+
+  yoffs += 52;
 
   drumlines_container.setSize (drumlines[0].getWidth() + XFILLER, drumlines[0].getHeight() * 36);
 
