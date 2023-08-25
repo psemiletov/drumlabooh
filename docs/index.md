@@ -4,7 +4,7 @@ Drumlabooh is an easy way to write drum tracks as MIDI at your DAW, using Hydrog
 
 [About](about.md)
 
-[Download and install](install.md)
+[Install](install.md)
 
 [Get drum kits](https://github.com/psemiletov/Drumlabooh-kits)
 
