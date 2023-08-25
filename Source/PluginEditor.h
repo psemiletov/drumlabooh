@@ -113,6 +113,11 @@ public:
     juce::GroupComponent gr_kitinfo;
     juce::Label l_kitinfo;
 
+
+    juce::Label l_plugin_name;
+    juce::HyperlinkButton hl_homepage;
+
+
     juce::Slider testSlider;
 
 

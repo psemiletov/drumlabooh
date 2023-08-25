@@ -94,6 +94,7 @@ if(UNIX AND NOT APPLE)
     list(APPEND JUCE_FORMATS LV2)
 endif()
 
+add_definitions(-DJUCE_DISPLAY_SPLASH_SCREEN=0)
 
 juce_add_plugin(drumlabooh
     # VERSION ...                               # Set this if the plugin version is different to the project version

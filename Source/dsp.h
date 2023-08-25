@@ -1,10 +1,14 @@
 #ifndef DSP_H
 #define DSP_H
 
-#define _USE_MATH_DEFINES
+//#define _USE_MATH_DEFINES
 
 #include <cmath>
 #include <limits>
+
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
 
 extern double db_scale;
 
