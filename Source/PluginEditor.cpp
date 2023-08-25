@@ -391,13 +391,11 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
   addAndMakeVisible (hl_homepage);
-  hl_homepage.setSize (180 + XFILLER, 48);
+  hl_homepage.setSize (280 + XFILLER, 24);
   hl_homepage.setTopLeftPosition (l_plugin_name.getX(), l_plugin_name.getY() + l_plugin_name.getHeight() + (YFILLER * 2));
   hl_homepage.setURL (juce::URL("https://psemiletov.github.io/drumlabooh"));
-
-
-
-    // hl_homepage;
+  hl_homepage.setButtonText ("psemiletov.github.io/drumlabooh");
+  hl_homepage.setFont	(f_sitelink,false,  juce::Justification::left);
 
 //  setSize (WINDOW_WIDTH, WINDOW_HEIGHT);
 
