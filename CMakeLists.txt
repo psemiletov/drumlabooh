@@ -19,9 +19,13 @@ project(DRUMLABOOH LANGUAGES CXX C VERSION 0.0.1 )
 
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 ")
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should be installed")
 
-SET(FETCHCONTENT_QUIET FALSE)
+set(VST3_INSTALL_DIR lib/vst3 CACHE PATH "Specifies where the VST3 libraries should be installed")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+
+set(FETCHCONTENT_QUIET FALSE)
 
 
 #FetchContent_Declare(
@@ -29,6 +33,11 @@ SET(FETCHCONTENT_QUIET FALSE)
 #  GIT_REPOSITORY git@github.com:juce-framework/JUCE.git
 #  GIT_TAG        d24c2729268e322f3ba1b5070eb96ab232d7f6ba # release-7.0.6
 #)
+
+
+#static linking in Windows
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
 
 FetchContent_Declare(
   juce
@@ -60,9 +69,6 @@ FetchContent_MakeAvailable(juce)
         #${libsamplerate_BINARY_DIR})
     #endif()
 
-
-#static linking in Windows
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 # include JUCE *AFTER* the MSVC runtime and so on is set up
 
@@ -202,5 +208,15 @@ target_link_libraries(drumlabooh
         juce::juce_recommended_warning_flags)
 
 
-install (DIRECTORY drumlabooh_artefacts/LV2/drumlabooh.lv2 DESTINATION /usr/lib/lv2/drumlabooh.lv2)
+install (DIRECTORY drumlabooh_artefacts/LV2/drumlabooh.lv2 DESTINATION {CMAKE_INSTALL_PREFIX}/lib/lv2/drumlabooh.lv2)
 
+
+# config install
+#install(TARGETS drumrox drumrox_ui
+#  LIBRARY
+#  DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/drumrox.lv2
+#)
+
+#install (FILES ttl/manifest.ttl ttl/drumrox.ttl knob.png
+#  DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/drumrox.lv2
+#)
