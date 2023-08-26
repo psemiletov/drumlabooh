@@ -26,5 +26,12 @@ And then, under sudo or root:
 ```
 mkdir b
 cd b
-cmake ..```
+cmake ..
+make
+make install
+```
+
+This installs Lv2 and VSTi versions of the plugin to /usr/local/lib/LV2 and /usr/local/lib/VST3 by default. To redefine te destination dir, set another dest dir via CMAKE_INSTALL_PREFIX variable. For example, from ```/usr/local``` to ```/usr```:
+
+```cmake -DCMAKE_INSTALL_PREFIX=/usr ..```
 

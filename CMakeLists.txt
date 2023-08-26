@@ -49,7 +49,15 @@ FetchContent_Declare(
 
 
 
-FetchContent_MakeAvailable(juce)
+#FetchContent_MakeAvailable(juce)
+
+FetchContent_GetProperties(juce)
+if(NOT juce_POPULATED)
+  FetchContent_Populate(juce)
+  add_subdirectory(${juce_SOURCE_DIR} ${juce_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
+
+
 
 #FetchContent_Declare(
 #  libsamplerate
@@ -196,6 +204,9 @@ target_compile_definitions(drumlabooh
 
 #set_target_properties(libsamplerate PROPERTIES LINKER_LANGUAGE C)
 
+message ("!!!!!!!!!!!!!!!!!!!!!!!!!")
+message (${CMAKE_CURRENT_BINARY_DIR})
+message ("!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 target_link_libraries(drumlabooh
     PRIVATE
@@ -208,7 +219,8 @@ target_link_libraries(drumlabooh
         juce::juce_recommended_warning_flags)
 
 
-install (DIRECTORY drumlabooh_artefacts/LV2/drumlabooh.lv2 DESTINATION {CMAKE_INSTALL_PREFIX}/lib/lv2/drumlabooh.lv2)
+install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/LV2/drumlabooh.lv2 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/lv2)
+install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/VST3/drumlabooh.vst3 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/vst3)
 
 
 # config install
