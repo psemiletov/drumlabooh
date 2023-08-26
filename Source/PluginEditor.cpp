@@ -386,16 +386,17 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   addAndMakeVisible (l_plugin_name);
   l_plugin_name.setSize (180 + XFILLER, 48);
-  l_plugin_name.setTopLeftPosition (gr_options.getX(), gr_options.getY() + gr_options.getHeight() + (YFILLER * 2));
+  l_plugin_name.setTopLeftPosition (gr_options.getX(), gr_options.getY() + gr_options.getHeight() + (YFILLER * 3));
   l_plugin_name.setText (juce::CharPointer_UTF8("ДРАМЛАБУХ"), juce::NotificationType::dontSendNotification);
+  l_plugin_name.setFont	(f_logo);
 
 
   addAndMakeVisible (hl_homepage);
   hl_homepage.setSize (280 + XFILLER, 24);
-  hl_homepage.setTopLeftPosition (l_plugin_name.getX(), l_plugin_name.getY() + l_plugin_name.getHeight() + (YFILLER * 2));
+  hl_homepage.setTopLeftPosition (l_plugin_name.getX(), l_plugin_name.getY() + l_plugin_name.getHeight() + YFILLER);
   hl_homepage.setURL (juce::URL("https://psemiletov.github.io/drumlabooh"));
   hl_homepage.setButtonText ("psemiletov.github.io/drumlabooh");
-  hl_homepage.setFont	(f_sitelink,false,  juce::Justification::left);
+  hl_homepage.setFont (f_sitelink,false,  juce::Justification::left);
 
 //  setSize (WINDOW_WIDTH, WINDOW_HEIGHT);
 

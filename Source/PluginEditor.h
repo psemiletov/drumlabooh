@@ -126,6 +126,7 @@ public:
     std::unique_ptr<ButtonAttachment> invertAttachment;
 
     juce::Font f_sitelink { 20.0f, juce::Font::bold};
+    juce::Font f_logo { 40.0f, juce::Font::bold};
 
 
     juce::Font f_kitname_font { 20.0f, juce::Font::bold};
