@@ -148,4 +148,36 @@ inline void pan_sincos_v2 (float &l, float& r, float p)
 }
 
 
+//power panner, law: -4.5 dB
+inline void pan_power45 (float &l, float& r, float p)
+{
+  l  = pow((1-p),0.75) * l;
+  r = pow(p,0.75) * r;
+}
+
+/*
+
+  -1.5dB = 10^(-1.5/20) = 0.841395142 (power taper)
+CODE: SELECT ALL
+
+LeftOut  = power((1-pan),0.25) * MonoIn;
+RightOut = power(pan,0.25) * MonoIn;
+-3dB = 10^(-3/20) = 0.707945784 (equal power taper)
+CODE: SELECT ALL
+
+LeftOut  = sqrt(1-pan) * MonoIn; // = power((1-pan),0.5) * MonoIn;
+RightOut = sqrt(pan) * MonoIn; // = power(pan,0.5) * MonoIn
+-4.5dB = 10^(-4.5/20) = 0.595662144 (power taper)
+CODE: SELECT ALL
+
+LeftOut  = power((1-pan),0.75) * MonoIn;
+RightOut = power(pan,0.75) * MonoIn;
+-6dB = 10^(-6/20) = 0.501187234 (linear)
+CODE: SELECT ALL
+
+LeftOut  = (1-pan) * MonoIn // = power((1-pan),1) * MonoIn;
+RightOut = pan * MonoIn // = power(pan,1) * MonoIn;
+
+ */
+
 #endif
