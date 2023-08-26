@@ -4,7 +4,7 @@
 
 [AUR](https://aur.archlinux.org/packages/drumlabooh)
 
-To build Drumlabooh form the source, you need to install dependencies first:
+To build Drumlabooh form the source, you need to install some dependencies first. Drumlabooh is based on JUCE, JUCE source code will be fetched by configuration process, so JUCE needs additional libraries.
 
 Dependencies (Ubuntu packages names):
 

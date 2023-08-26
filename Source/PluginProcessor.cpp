@@ -201,6 +201,11 @@ void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
    session_samplerate = (int) sampleRate;
 
+   //RELOAD IF SRATE CHANGED DURING SESSION, AS REAPER CAN
+   if (drumkit)
+      if (drumkit->samplerate != session_samplerate)
+         load_kit (drumkit_path);
+
    std::cout << "CAudioProcessor::prepareToPlay - 2" << std::endl;
 
    //if (! drumkit)

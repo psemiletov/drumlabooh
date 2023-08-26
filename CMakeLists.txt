@@ -200,3 +200,7 @@ target_link_libraries(drumlabooh
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags)
+
+
+install (DIRECTORY drumlabooh_artefacts/LV2/drumlabooh.lv2 DESTINATION /usr/lib/lv2/drumlabooh.lv2)
+
