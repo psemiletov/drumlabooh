@@ -407,7 +407,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
     setSize (gr_options.getX() + gr_options.getWidth() + XFILLER * 2, drumlines_viewer.getBottom() + YFILLER * 2);
 
     tmr_leds.uplink = this;
-    tmr_leds.startTimer (1000 / 15);
+    tmr_leds.startTimer (1000 / 15); //15 FPS
 
 
 //  sl_base_note.setNumDecimalPlacesToDisplay (0);
@@ -660,7 +660,7 @@ void CToggleButton.paintButton 	( 	Graphics &  	g,
 */
 
 
-void CTimer::timerCallback()
+void CTimer::hiResTimerCallback()
 {
  // std::cout << "CTimer::timerCallback -1" << std::endl;
 

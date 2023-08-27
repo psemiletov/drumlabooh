@@ -382,8 +382,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
     //for (int i = 0; i < num_channels; ++i)
 
-     //for (int i = 0; i < 2; ++i)
-       //  buffer.clear (i, 0, buffer.getNumSamples());
+     for (int i = 0; i < 2; ++i)
+         buffer.clear (i, 0, buffer.getNumSamples());
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...

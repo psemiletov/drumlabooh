@@ -12,12 +12,13 @@ typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
 class CAudioProcessorEditor;
 
-class CTimer: public juce::Timer
+class CTimer: public juce::HighResolutionTimer
 {
 public:
     CTimer() {};
     CAudioProcessorEditor *uplink = 0;
-    void timerCallback() override;
+   //void timerCallback() override;
+   void hiResTimerCallback() override;
 
 };
 
