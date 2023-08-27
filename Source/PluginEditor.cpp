@@ -669,7 +669,6 @@ void CTimer::hiResTimerCallback()
 
 //  std::cout << "CTimer::timerCallback - 2" << std::endl;
 
-
    if (! uplink->audioProcessor.drumkit)
       return;
 
