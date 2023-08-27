@@ -47,7 +47,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                             36.0f)); //default
 
 */
-  //layout.add (std::make_unique<juce::AudioParameterBool> ("invertPhase", "Invert Phase", false));
 
   for (size_t i = 0; i < 36; i++)
       {
@@ -125,21 +124,13 @@ const juce::String CAudioProcessor::getName() const
 
 bool CAudioProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
-    return true;
-   #else
-    return false;
-   #endif
+  return true;
 }
 
 
 bool CAudioProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
-    return true;
-   #else
-    return false;
-   #endif
+  return false;
 }
 
 
@@ -207,9 +198,6 @@ void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
          load_kit (drumkit_path);
 
    std::cout << "CAudioProcessor::prepareToPlay - 2" << std::endl;
-
-   //if (! drumkit)
-     // load_kit (drumkit_path);
 }
 
 
@@ -266,46 +254,24 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 
 float VelocityToLevel( int velocity )
 {
+  float min = 0.1f;
+// velocity should logarithmically map onto [min..1]
 
-	// i see no legacy here
-	// when vsense = 0.0, velocity minimum is 1.0
-	// when vsense = 1.0, velocity minimum is 0.05
-	//float min = 1.0f - (VSENSE  * 0.95f);
+  float logrange = logf( 1.0f / min );
+  float vcurve = powf ((float (velocity-1) / 126.0f), 0.8f );
 
-   float min = 0.1f;
-
-
-	// velocity should logarithmically map onto [min..1]
-
-	float logrange = logf( 1.0f/min );
-
-	float vcurve = powf( (float(velocity-1) / 126.0f), 0.8f );
-
-	return min * expf( logrange * vcurve );
+  return min * expf( logrange * vcurve );
 }
+
 
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
 
 //std::cout << "CAudioProcessor::processBlock -1 " << std::endl;
 
-
-
- //if (base_note_number == nullptr)
-   //  return;
-
-  //std::cout << "fresh_start:" << fresh_start << std::endl;
-
-//  std::cout << "drumkit_path: " << drumkit_path << std::endl;
-
-//  std::cout << "fresh_start:" << fresh_start << std::endl;
-
-
   if (fresh_start)
      {
 //       std::cout << "fresh_start:" << fresh_start << std::endl;
-
-
       session_samplerate = getSampleRate();
 
       if (! drumkit_path.empty())
@@ -324,9 +290,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
         bool isNoteOn = msg.isNoteOn();
         bool isNoteOff = msg.isNoteOff();
-        //float velocity = msg.getFloatVelocity () - 0.01f;
-
-
+        //float velocity = msg.getFloatVelocity();
 
         float velocity = VelocityToLevel (msg.getVelocity());
 
@@ -343,31 +307,29 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             if (drumkit->v_samples.size() == 0)
                return;
 
-
 //             int nn = note_number - (int) *base_note_number;
-             int nn = note_number - int_base_note_number;
+            int nn = note_number - int_base_note_number;
 
-             if (nn < 0 || nn > drumkit->v_samples.size() - 1)
-                {
-                 std::cout << "nn <> drumkit->v_samples.size(), nn is " << nn << std::endl;
-                 continue;
-                }
+            if (nn < 0 || nn > drumkit->v_samples.size() - 1)
+               {
+                std::cout << "nn <> drumkit->v_samples.size(), nn is " << nn << std::endl;
+                continue;
+               }
 
 //             std::cout << "GO ON with n: " << nn << std::endl;
 
-             float gn = db2lin(*(gains[nn]));
+            float gn = db2lin(*(gains[nn]));
             // std::cout << "gn: " << gn << std::endl;
 
-             CDrumSample *s = drumkit->v_samples [nn];
-             if (! s)
+            CDrumSample *s = drumkit->v_samples [nn];
+            if (! s)
                 continue;
-
 
             // std::cout << "s->v_layers[0]->lengthInSamples: " << s->v_layers[0]->length_in_samples << std::endl;
              //std::cout << "s->v_layers[0]->channels: " << s->v_layers[0]->channels << std::endl;
 
 
-             s->trigger_sample (velocity);
+            s->trigger_sample (velocity);
 
              //also untrigger open hihat if closed hihat triggering
              // so find the open hihat
@@ -419,8 +381,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     // this code if your algorithm always overwrites all the output channels.
 
     //for (int i = 0; i < num_channels; ++i)
-     for (int i = 0; i < 2; ++i)
-         buffer.clear (i, 0, buffer.getNumSamples());
+
+     //for (int i = 0; i < 2; ++i)
+       //  buffer.clear (i, 0, buffer.getNumSamples());
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
@@ -436,12 +399,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
 
         // ..do something to the data...
-   int out_buf_length = buffer.getNumSamples();
-
-
-  //   std::cout << "CAudioProcessor::processBlock -5 " << std::endl;
-
-    // std::cout << "drumkit->v_samples.size(): " << drumkit->v_samples.size();
+    int out_buf_length = buffer.getNumSamples();
 
    //for each sample out_buf_offs
     for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
@@ -500,17 +458,26 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
                  float pan = *(pans[drum_sample_index]);
 
-                 if (*panner_mode == 1)
+                 if (*panner_mode == PANMODE01)
                       pan_sincos (pan_left, pan_right, pan);
                  else
-                 if (*panner_mode == 2)
+                 if (*panner_mode == PANMODE02)
                      pan_sqrt (pan_left, pan_right, pan);
                  else
-                 if (*panner_mode == 3)
+                 if (*panner_mode == PANMODE03)
                      pan_linear0 (pan_left, pan_right, pan);
                  else
-                 if (*panner_mode == 4)
+                 if (*panner_mode == PANMODE04)
                      pan_linear6 (pan_left, pan_right, pan);
+                 else
+                 if (*panner_mode == PANMODE05)
+                     pan_power45 (pan_left, pan_right, pan);
+                 else
+                 if (*panner_mode == PANMODE06)
+                     pan_power15 (pan_left, pan_right, pan);
+                 else
+                 if (*panner_mode == PANMODE07)
+                     pan_equal_power3 (pan_left, pan_right, pan);
 
 
                  float coef_right = pan_right * gain * s->velocity;

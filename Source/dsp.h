@@ -106,25 +106,19 @@ inline float scale_val (float val, float from_min, float from_max, float to_min,
 #define PANLAW_SINCOSV2 4
 
 
-
-
-//linear panner, law: -6 dB
-inline void pan_linear6 (float &l, float& r, float p)
+//sin/cos panner, law: -3 dB
+#define PANMODE01 1
+inline void pan_sincos (float &l, float& r, float p)
 {
-  l = 1 - p;
-  r = p;
+  float pan = 0.5 * M_PI * p;
+  l = cos (pan);
+  r = sin (pan);
 }
 
-
-//linear panner, law: 0 dB
-inline void pan_linear0 (float &l, float& r, float p)
-{
-  l = 0.5 + (1 - p);
-  r = 0.5 + p;
-}
 
 
 //square root panner, law: -3 dB
+#define PANMODE02 2
 inline void pan_sqrt (float &l, float& r, float p)
 {
   l = sqrt (1 - p);
@@ -132,13 +126,26 @@ inline void pan_sqrt (float &l, float& r, float p)
 }
 
 
-//sin/cos panner, law: -3 dB
-inline void pan_sincos (float &l, float& r, float p)
+
+//linear panner, law: 0 dB
+#define PANMODE03 3
+inline void pan_linear0 (float &l, float& r, float p)
 {
-  float pan = 0.5 * M_PI * p;
-  l = cos (pan);
-  r = sin (pan);
+  l = 0.5 + (1 - p);
+  r = 0.5 + p;
 }
+
+
+
+//linear panner, law: -6 dB
+#define PANMODE04 4
+inline void pan_linear6 (float &l, float& r, float p)
+{
+  l = 1 - p;
+  r = p;
+}
+
+
 
 inline void pan_sincos_v2 (float &l, float& r, float p)
 {
@@ -149,32 +156,35 @@ inline void pan_sincos_v2 (float &l, float& r, float p)
 
 
 //power panner, law: -4.5 dB
+#define PANMODE05 5
 inline void pan_power45 (float &l, float& r, float p)
 {
-  l  = pow((1-p),0.75) * l;
-  r = pow(p,0.75) * r;
+  l  = powf ((1 - p), 0.75) * l;
+  r = powf (p, 0.75) * r;
 }
+
+//power panner, law: -1.5 dB
+//  -1.5dB = 10^(-1.5/20) = 0.841395142 (power taper)
+#define PANMODE06 6
+inline void pan_power15 (float &l, float& r, float p)
+{
+  l  = powf ((1 - p), 0.25) * l;
+  r = powf (p, 025) * r;
+}
+
+//equal power panner, law: -3 dB
+//  -3dB = 10^(-3/20) = 0.707945784
+#define PANMODE07 7
+inline void pan_equal_power3 (float &l, float& r, float p)
+{
+  l  = sqrt (1 - p) * l; // = power((1-pan),0.5) * MonoIn;
+  r = sqrt(p) * r; // = power(pan,0.5) * MonoIn
+}
+
 
 /*
 
-  -1.5dB = 10^(-1.5/20) = 0.841395142 (power taper)
-CODE: SELECT ALL
-
-LeftOut  = power((1-pan),0.25) * MonoIn;
-RightOut = power(pan,0.25) * MonoIn;
--3dB = 10^(-3/20) = 0.707945784 (equal power taper)
-CODE: SELECT ALL
-
-LeftOut  = sqrt(1-pan) * MonoIn; // = power((1-pan),0.5) * MonoIn;
-RightOut = sqrt(pan) * MonoIn; // = power(pan,0.5) * MonoIn
--4.5dB = 10^(-4.5/20) = 0.595662144 (power taper)
-CODE: SELECT ALL
-
-LeftOut  = power((1-pan),0.75) * MonoIn;
-RightOut = power(pan,0.75) * MonoIn;
 -6dB = 10^(-6/20) = 0.501187234 (linear)
-CODE: SELECT ALL
-
 LeftOut  = (1-pan) * MonoIn // = power((1-pan),1) * MonoIn;
 RightOut = pan * MonoIn // = power(pan,1) * MonoIn;
 

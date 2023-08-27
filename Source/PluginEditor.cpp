@@ -6,6 +6,7 @@
 
 #include "kits.h"
 #include "utl.h"
+#include "dsp.h"
 
 #define XFILLER 4
 #define YFILLER 16
@@ -373,10 +374,13 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   cmb_pan_mode.setSize (180 + XFILLER, 48);
   cmb_pan_mode.setTopLeftPosition (sl_base_note.getX(), l_pan_mode.getY());
 
-  cmb_pan_mode.addItem ("sin/cos panner, law: -3 dB", 1);
-  cmb_pan_mode.addItem ("square root panner, law: -3 dB", 2);
-  cmb_pan_mode.addItem ("linear panner, law: 0 dB", 3);
-  cmb_pan_mode.addItem ("linear panner, law: -6 dB", 4);
+  cmb_pan_mode.addItem ("sin/cos panner, law: -3 dB", PANMODE01);
+  cmb_pan_mode.addItem ("square root panner, law: -3 dB", PANMODE02);
+  cmb_pan_mode.addItem ("linear panner, law: 0 dB", PANMODE03);
+  cmb_pan_mode.addItem ("linear panner, law: -6 dB", PANMODE04);
+  cmb_pan_mode.addItem ("power panner, law: -4.5 dB", PANMODE05);
+  cmb_pan_mode.addItem ("power panner, law: -1.5 dB", PANMODE06);
+  cmb_pan_mode.addItem ("equal power panner, law: -1.3 dB", PANMODE07);
 
   att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
 
@@ -401,11 +405,11 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 //  setSize (WINDOW_WIDTH, WINDOW_HEIGHT);
 
     setSize (gr_options.getX() + gr_options.getWidth() + XFILLER * 2, drumlines_viewer.getBottom() + YFILLER * 2);
-/*
-    tmr_leds.uplink = this;
-    tmr_leds.startTimer (50);
 
- */
+    tmr_leds.uplink = this;
+    tmr_leds.startTimer (1000 / 15);
+
+
 //  sl_base_note.setNumDecimalPlacesToDisplay (0);
   //sl_base_note.setValue (*audioProcessor.base_note_number);
 
