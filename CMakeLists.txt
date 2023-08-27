@@ -43,6 +43,27 @@ set(FETCHCONTENT_QUIET FALSE)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 
+
+#FetchContent_Declare(
+#  drumkits
+  #GIT_REPOSITORY https://github.com/psemiletov/drum_sklad.git
+  #GIT_TAG        master # last one
+  #GIT_PROGRESS TRUE
+#)
+
+
+
+#FetchContent_GetProperties(drumkits)
+#if(NOT drumkits_POPULATED)
+  #FetchContent_Populate(drumkits
+  #CONFIGURE_COMMAND ""
+  #BUILD_COMMAND ""
+  #)
+  #add_subdirectory(${drumkits_SOURCE_DIR} ${drumkits_BINARY_DIR} EXCLUDE_FROM_ALL)
+#endif()
+
+
+
 FetchContent_Declare(
   juce
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
