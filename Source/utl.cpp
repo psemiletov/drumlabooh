@@ -18,7 +18,7 @@
 #else
 
 #include <Windows.h>
-
+#include <shlobj.h>
 
 #endif
 
