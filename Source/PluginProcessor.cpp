@@ -516,17 +516,28 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
                  float pan = *(pans[drum_sample_index]);
 
-                 if (*panner_mode == 1)
+                 if (*panner_mode == PANMODE01)
                       pan_sincos (pan_left, pan_right, pan);
                  else
-                 if (*panner_mode == 2)
+                 if (*panner_mode == PANMODE02)
                      pan_sqrt (pan_left, pan_right, pan);
                  else
-                 if (*panner_mode == 3)
+                 if (*panner_mode == PANMODE03)
                      pan_linear0 (pan_left, pan_right, pan);
                  else
-                 if (*panner_mode == 4)
+                 if (*panner_mode == PANMODE04)
                      pan_linear6 (pan_left, pan_right, pan);
+                 else
+                 if (*panner_mode == PANMODE05)
+                     pan_power45 (pan_left, pan_right, pan);
+                 else
+                 if (*panner_mode == PANMODE06)
+                     pan_power15 (pan_left, pan_right, pan);
+                 else
+                 if (*panner_mode == PANMODE07)
+                     pan_equal_power3 (pan_left, pan_right, pan);
+
+
 
 
                  float coef_right = pan_right * gain * s->velocity;
