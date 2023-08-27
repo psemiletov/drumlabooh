@@ -19,6 +19,10 @@ project(DRUMLABOOH LANGUAGES CXX C VERSION 0.0.1 )
 
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 ")
 
+option(BUILD_MULTI "Build with multy-channel support" OFF)
+
+
+
 set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should be installed")
 
 set(VST3_INSTALL_DIR lib/vst3 CACHE PATH "Specifies where the VST3 libraries should be installed")
@@ -58,24 +62,6 @@ if(NOT juce_POPULATED)
 endif()
 
 
-
-#FetchContent_Declare(
-#  libsamplerate
-#  GIT_REPOSITORY git@github.com:libsndfile/libsamplerate.git
-#  GIT_TAG        c96f5e3de9c4488f4e6c97f59f5245f22fda22f7 # release-0.2.2
-#)
-
-#FetchContent_MakeAvailable(libsamplerate)
-
-
-#FetchContent_GetProperties(libsamplerate)
-    #if(NOT libsamplerate_POPULATED)
-      #message("Cloning libsamplerate")
-#      FetchContent_Populate(libsamplerate)
-      #add_subdirectory(
-      #  ${libsamplerate_SOURCE_DIR}
-        #${libsamplerate_BINARY_DIR})
-    #endif()
 
 
 # include JUCE *AFTER* the MSVC runtime and so on is set up
@@ -140,7 +126,7 @@ juce_add_plugin(drumlabooh
 # include all your JUCE module headers; if you're happy to include module headers directly, you
 # probably don't need to call this.
 
- juce_generate_juce_header(drumlabooh)
+juce_generate_juce_header(drumlabooh)
 
 # `target_sources` adds source files to a target. We pass the target that needs the sources as the
 # first argument, then a visibility parameter for the sources which should normally be PRIVATE.
@@ -194,20 +180,6 @@ target_compile_definitions(drumlabooh
 
 
 
-#target_include_directories(drumpecker
-#                           PUBLIC
-#                            ${libsamplerate_INCLUDE_DIR})
-
-#add_library(libsamplerate STATIC
-            #${libsamplerate_SOURCE_DIR})
-
-
-#set_target_properties(libsamplerate PROPERTIES LINKER_LANGUAGE C)
-
-message ("!!!!!!!!!!!!!!!!!!!!!!!!!")
-message (${CMAKE_CURRENT_BINARY_DIR})
-message ("!!!!!!!!!!!!!!!!!!!!!!!!!")
-
 target_link_libraries(drumlabooh
     PRIVATE
 #        libsamplerate
@@ -221,6 +193,62 @@ target_link_libraries(drumlabooh
 
 install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/LV2/drumlabooh.lv2 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/lv2)
 install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/VST3/drumlabooh.vst3 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/vst3)
+
+
+
+if(BUILD_MULTI)
+  add_definitions(-DMULTICHANNEL=1)
+  message("+ Build with multi channel support")
+
+  juce_add_plugin(drumlabooh-multi
+    # VERSION ...                               # Set this if the plugin version is different to the project version
+    # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
+    # ICON_SMALL ...
+     JUCE_DISPLAY_SPLASH_SCREEN=0
+     LV2URI https://github.com/psemiletov/drumlabooh-multi
+     LV2_SHARED_LIBRARY_NAME drumlabooh-drumlabooh-multi
+     COMPANY_NAME Semiletov                     # Specify the name of the plugin's author
+     IS_SYNTH TRUE                       # Is this a synth or an effect?
+     NEEDS_MIDI_INPUT TRUE               # Does the plugin need midi input?
+     VST3_CATEGORIES Instrument Sampler Synth Drum
+    # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
+    # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
+     EDITOR_WANTS_KEYBOARD_FOCUS TRUE    # Does the editor need keyboard focus?
+    # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE        # Should the plugin be installed to a default location after building?
+    PLUGIN_MANUFACTURER_CODE PetR               # A four-character manufacturer id with at least one upper-case character
+    PLUGIN_CODE Petr                            # A unique four-character plugin id with exactly one upper-case character
+                                                # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
+    FORMATS VST LV2                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+    PRODUCT_NAME "drumlabooh-multi")        # The name of the final executable, which can differ from the target name
+
+juce_generate_juce_header(drumlabooh-multi)
+
+
+  target_compile_definitions(drumlabooh-multi
+    PUBLIC
+        # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
+        JUCE_JACK=0
+        JUCE_PLUGINHOST_LADSPA=0
+        JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
+        JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
+        JUCE_VST3_CAN_REPLACE_VST2=0)
+
+
+target_link_libraries(drumlabooh-multi
+    PRIVATE
+#        libsamplerate
+        # AudioPluginData           # If we'd created a binary data target, we'd link to it here
+        juce::juce_audio_utils
+    PUBLIC
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_lto_flags
+        juce::juce_recommended_warning_flags)
+
+
+install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh-multi_artefacts/LV2/drumlabooh-multi.lv2 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/lv2)
+install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh-multi_artefacts/VST3/drumlabooh-multi.vst3 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/vst3)
+
+endif(BUILD_MULTI)
 
 
 # config install
