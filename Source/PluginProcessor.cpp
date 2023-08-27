@@ -298,8 +298,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
         if (isNoteOn )
            {
-            std::cout << "note_number: " << note_number << std::endl;
-            std::cout << "velocity: " << velocity << std::endl;
+            //std::cout << "note_number: " << note_number << std::endl;
+//            std::cout << "velocity: " << velocity << std::endl;
 
             if (! drumkit)
                return;
@@ -312,7 +312,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
             if (nn < 0 || nn > drumkit->v_samples.size() - 1)
                {
-                std::cout << "nn <> drumkit->v_samples.size(), nn is " << nn << std::endl;
+  //              std::cout << "nn <> drumkit->v_samples.size(), nn is " << nn << std::endl;
                 continue;
                }
 
