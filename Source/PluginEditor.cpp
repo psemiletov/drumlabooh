@@ -47,8 +47,8 @@ void CLed::paint(Graphics& g)
      g.fillAll(cl_on);
   else
       g.fillAll(cl_off);
-
 }
+
 
 CDrumLine::CDrumLine ()
 {
@@ -439,29 +439,9 @@ CAudioProcessorEditor::~CAudioProcessorEditor()
 //==============================================================================
 void CAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    /*g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
-    */
 
 //        g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-
-    //g.fillAll (juce::Colour(0x3D3945));
-
-
-     g.fillAll (juce::Colour::fromRGB(103, 97, 114)	);
-
-   //set the current drawing colour to black
-//    g.setColour (juce::Colours::black);
-
-    // set the font size and draw text to the screen
- //   g.setFont (15.0f);
-
-   // g.drawFittedText ("Midi Volume", 0, 0, getWidth(), 30, juce::Justification::centred, 1);
+  g.fillAll (juce::Colour::fromRGB(103, 97, 114)	);
 }
 
 void CAudioProcessorEditor::resized()
@@ -471,100 +451,12 @@ void CAudioProcessorEditor::resized()
 
 
 void CAudioProcessorEditor::buttonClicked (juce::Button* button)
-  {
+{
   if (button == &bt_test)
     {
      std::cout << "NewProjectAudioProcessorEditor::buttonClicked " << std::endl;
-
-      //    audioProcessor.val_panner_mode .setValue (4);
-
-    // *audioProcessor.panner_mode = 1.0f;
-     //*audioProcessor.panner_mode = 4;
-   //  std::cout << "*audioProcessor.panner_mode: "  << *audioProcessor.panner_mode << std::endl;
-
-    //         load_kit (audioProcessor.drumkit_path);
-
-  //   audioProcessor.drumkit->print_stats();
-
-
-
-       // auto addons = valueTreeState.state.getOrCreateChildWithName ("addons", nullptr);
-        //addons.setProperty ("text", "Lorem Ipsum", nullptr);
-
-
-//     std::cout << "SAVE"  << std::endl;
-
-    // audioProcessor.drumkit_name = "BUUUUUU";
-  //   audioProcessor.save_string_keyval ("drumkit_name", audioProcessor.drumkit_name);
-/*
-     std::cout << "LOAD"  << std::endl;
-
-     audioProcessor.drumkit_name = audioProcessor.load_string_keyval ("drumkit_name");
-
-     std::cout << "drumkit_name: " << audioProcessor.drumkit_name  << std::endl;
-*/
-
-      // std::cout << "save drumkit_name: " << drumkit_name << std::endl;
-
-
-
-
-
-//     audioProcessor.save_string_keyval ("drumkit_name", "YAYAYAY");
-
-   //   CDrumLayer l ("/home/rox/.hydrogen/data/drumkits/acustica_percussoes/01_ganza_forte_44100.flac", 44100);
-
-//        CDrumSample *s = new CDrumSample   (44100);
-/*
-        CDrumSample s (44100);
-
-        CDrumLayer l (&s);
-        l.load("/home/rox/.hydrogen/data/drumkits/BigMono/CLudwigKick-Dyn01.wav");
-        l.print();
-*/
-       // delete s;
-
-//     formatManager = new juce::AudioFormatManager();
-     //formatManager->registerBasicFormats();
-/*
-     CDrumSample s (44100);
-     s.add_layer();
-//d:
-//loading kit: /home/rox/.hydrogen/data/drumkits/AVL-BlackPearl-5-1.1/drumkit.xml
-     if (s.v_layers.size() != 0)
-         s.v_layers.back()->load ("/home/rox/drumrox-kits/Lel-DR8/bongo.wav");
-
-     s.add_layer();
-     s.v_layers.back()->load ("/home/rox/drumrox-kits/Lel-DR8/clhat.wav");
-
-
-     s.add_layer();
-     s.v_layers.back()->load ("/home/rox/drumrox-kits/Lel-DR8/cowbell.wav");
-
-     //cout << "s.v_layers.size: " << s.v_layers.size() << endl;
-
-     //("/home/rox/.hydrogen/data/drumkits/acustica_percussoes/01_ganza_forte_44100.flac", 48000);
-
-     s.print();
-*/
-/*
-
-   CHydrogenKit k;
-   k.load (TESTKIT, 48000);
-   k.print();
-*/
-    // CHydrogenKitsScanner sc;
-//     sc.scan();
-  //   sc.print();
-
-
-
-    // // delete formatManager;
-
   }
-  }
-
-
+}
 
 
 
@@ -599,24 +491,14 @@ void CAudioProcessorEditor::comboBoxChanged(juce::ComboBox *comboBox)
 
       audioProcessor.drumkit_path = full;
 
+      tmr_leds.stopTimer();
+
       audioProcessor.load_kit (full);
 
       //update GUI
       load_kit (full);
+      tmr_leds.startTimer (1000 / 15); //15 FPS
 
-
-
-      //audioProcessor.drumkit_name = kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1];
-
-
-
-//      juce::String sk = cmb_drumkit_selector::getItemText(cmb_drumkit_selector.getSelectedId());
-
-      //std::cout << kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1] << std::endl;
-
-
-        //[UserSliderCode_sl_pan] -- add your slider handling code here..
-        //[/UserSliderCode_sl_pan]
     }
 
 
