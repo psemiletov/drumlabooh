@@ -337,7 +337,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
   addAndMakeVisible (gr_options);
-  gr_options.setTopLeftPosition (gr_kitinfo.getX(), gr_kitinfo.getY() + gr_kitinfo.getHeight() + YFILLER);
+  gr_options.setTopLeftPosition (gr_kitinfo.getX(), gr_kitinfo.getY() + gr_kitinfo.getHeight());
 
 
 
@@ -348,7 +348,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   addAndMakeVisible (l_base_note);
   l_base_note.setSize (120, 48);
-  l_base_note.setTopLeftPosition (gr_options.getX() + XFILLER, gr_kitinfo.getY() + gr_kitinfo.getHeight() + YFILLER * 2);
+  l_base_note.setTopLeftPosition (gr_options.getX() + XFILLER, gr_kitinfo.getY() + gr_kitinfo.getHeight() + YFILLER);
 
   addAndMakeVisible (sl_base_note);
   sl_base_note.setSliderStyle (juce::Slider::SliderStyle::IncDecButtons);
@@ -372,7 +372,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   addAndMakeVisible (cmb_pan_mode);
       //  cmb_pan_mode.onChange = [this] { panner_modeMenuChanged(); };
   cmb_pan_mode.setSize (180 + XFILLER, 48);
-  cmb_pan_mode.setTopLeftPosition (sl_base_note.getX(), l_pan_mode.getY());
+  cmb_pan_mode.setTopLeftPosition (sl_base_note.getX(), sl_base_note.getBottom() + YFILLER);
 
   cmb_pan_mode.addItem ("sin/cos panner, law: -3 dB", PANMODE01);
   cmb_pan_mode.addItem ("square root panner, law: -3 dB", PANMODE02);
@@ -384,13 +384,28 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
 
-  gr_options.setSize (gr_kitinfo.getWidth(), l_pan_mode.getHeight() + YFILLER + cmb_pan_mode.getHeight() +
+
+
+
+  addAndMakeVisible (bt_ignore_midi_velocity);
+  bt_ignore_midi_velocity.setButtonText ("Ignore MIDI velocity");
+
+  bt_ignore_midi_velocity.setSize (180 + XFILLER, 48);
+  bt_ignore_midi_velocity.setTopLeftPosition (l_pan_mode.getX(), cmb_pan_mode.getY() + cmb_pan_mode.getHeight() + YFILLER);
+
+  att_ignore_midi_velocity.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "ignore_midi_velocity", bt_ignore_midi_velocity));
+
+
+  gr_options.setSize (gr_kitinfo.getWidth(), l_pan_mode.getHeight() + YFILLER + cmb_pan_mode.getHeight() + bt_ignore_midi_velocity.getHeight() +
   YFILLER * 2);
+
+
+
 
 
   addAndMakeVisible (l_plugin_name);
   l_plugin_name.setSize (180 + XFILLER, 48);
-  l_plugin_name.setTopLeftPosition (gr_options.getX(), gr_options.getY() + gr_options.getHeight() + (YFILLER * 3));
+  l_plugin_name.setTopLeftPosition (gr_options.getX(), gr_options.getY() + gr_options.getHeight() + YFILLER);
   l_plugin_name.setText (juce::CharPointer_UTF8("DRUMЛАБУХ"), juce::NotificationType::dontSendNotification);
   l_plugin_name.setFont	(f_logo);
 

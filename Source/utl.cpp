@@ -147,10 +147,10 @@ std::vector <std::string> files_get_list (const std::string &path, const std::st
 {
  WIN32_FIND_DATAA findData;
     HANDLE hFind = INVALID_HANDLE_VALUE;
-    std::string full_path = directory + "\\*";
+    std::string full_path = path + "\\*";
     std::vector<std::string> dir_list;
 
-    hFind = FindFirstFileA(fyll_path.c_str(), &findData);
+    hFind = FindFirstFileA(full_path.c_str(), &findData);
 
     if (hFind == INVALID_HANDLE_VALUE)
         //throw std::runtime_error("Invalid handle value! Please check your path...");

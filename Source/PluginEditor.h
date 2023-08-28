@@ -92,8 +92,7 @@ class CAudioProcessorEditor: public juce::AudioProcessorEditor,
 //private:
 
 public:
-   // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
+
     CAudioProcessor& audioProcessor;
 
     CDrumKitsScanner kits_scanner;
@@ -101,6 +100,10 @@ public:
     juce::AudioProcessorValueTreeState& valueTreeState;
 
     CTimer tmr_leds;
+
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_ignore_midi_velocity;
+    juce::ToggleButton bt_ignore_midi_velocity;
+
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_pan_mode;
     juce::Label l_pan_mode { {}, "Pan mode" };
