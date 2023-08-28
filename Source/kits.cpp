@@ -766,6 +766,7 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back ("/usr/share/drmr/drumkits");
   v_kits_locations.push_back ("/usr/share/drumrox-kits");
   v_kits_locations.push_back ("/usr/share/drumlabooh-kits");
+  v_kits_locations.push_back ("/usr/local/share/drumlabooh-kits");
 
   v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
   v_kits_locations.push_back (get_home_dir() + "/.drmr/drumkits");

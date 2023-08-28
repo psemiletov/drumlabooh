@@ -65,6 +65,25 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 
 FetchContent_Declare(
+  drum_sklad
+  URL https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
+  GIT_PROGRESS TRUE
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+)
+
+
+FetchContent_GetProperties(drum_sklad)
+if(NOT drum_sklad_POPULATED)
+  FetchContent_Populate(drum_sklad)
+#  add_subdirectory(${drum_sklad_SOURCE_DIR} ${drum_sklad_BINARY_DIR} EXCLUDE_FROM_ALL)
+  message ("WOW!")
+  message (${drum_sklad_SOURCE_DIR})
+endif()
+
+#FetchContent_MakeAvailable(drum_sklad)
+
+
+FetchContent_Declare(
   juce
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
   GIT_TAG        d24c2729268e322f3ba1b5070eb96ab232d7f6ba # release-7.0.6
@@ -214,6 +233,7 @@ target_link_libraries(drumlabooh
 
 install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/LV2/drumlabooh.lv2 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/lv2)
 install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/VST3/drumlabooh.vst3 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/vst3)
+install (DIRECTORY ${drum_sklad_SOURCE_DIR}/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/drumlabooh-kits)
 
 
 

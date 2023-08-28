@@ -154,7 +154,7 @@ std::vector <std::string> files_get_list (const std::string &path, const std::st
 
     if (hFind == INVALID_HANDLE_VALUE)
         //throw std::runtime_error("Invalid handle value! Please check your path...");
-       return std::string;
+       return std::string("");
 
     while (FindNextFileA(hFind, &findData) != 0)
     {
