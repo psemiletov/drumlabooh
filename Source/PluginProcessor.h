@@ -20,6 +20,7 @@ public:
     std::atomic<float>* mutes[36];
 
     std::atomic<float>* panner_mode = nullptr;
+    std::atomic<float>* ignore_midi_velocity = nullptr;
 
     int int_base_note_number;
 

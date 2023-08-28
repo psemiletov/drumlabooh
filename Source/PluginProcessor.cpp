@@ -31,6 +31,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                             4.0f,              // maximum value
                                                             1.0f)); //default
 
+  layout.add (std::make_unique<juce::AudioParameterFloat> ("ignore_midi_velocity",      // parameterID
+                                                                "ignore_midi_velocity",     // parameter name
+                                                                0, 1, 0));
 
   /*
    layout.add (std::make_unique <juce::AudioParameterFloat> ("base_note_number", // parameter ID
@@ -58,7 +61,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
        layout.add (std::make_unique<juce::AudioParameterFloat> ("pan" + std::to_string(i), "pan" + std::to_string(i), 0.0f, 1.0f, 0.5f));
 
        layout.add (std::make_unique<juce::AudioParameterFloat> ("mute" + std::to_string(i),      // parameterID
-                                                               "mute" + std::to_string(i),     // parameter name
+                                                                "mute" + std::to_string(i),     // parameter name
                                                                 0, 1, 0));
 
       }
@@ -102,6 +105,8 @@ parameters (*this, 0, "Drumlabooh", createParameterLayout())
       }
 
   panner_mode = parameters.getRawParameterValue ("panner_mode");
+  ignore_midi_velocity = parameters.getRawParameterValue ("ignore_midi_velocity");
+
  // base_note_number  = parameters.getRawParameterValue ("base_note_number");
 //  std::cout << "base_note_number:" << *base_note_number << std::endl;
 }
@@ -293,6 +298,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
         //float velocity = msg.getFloatVelocity();
 
         float velocity = VelocityToLevel (msg.getVelocity());
+
+        if (*ignore_midi_velocity > 0.5)
+           velocity = 1;
 
         int note_number = msg.getNoteNumber(); //36 starting note
 
