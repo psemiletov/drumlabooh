@@ -152,12 +152,13 @@ std::vector <std::string> files_get_list (const std::string &path, const std::st
 
     hFind = FindFirstFileA(full_path.c_str(), &findData);
 
+    std::vector <std::string> v;
 
     std::string t;
 
     if (hFind == INVALID_HANDLE_VALUE)
         //throw std::runtime_error("Invalid handle value! Please check your path...");
-       return t;
+       return v;
 
     while (FindNextFileA(hFind, &findData) != 0)
       {
