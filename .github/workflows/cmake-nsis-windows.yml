@@ -1,6 +1,6 @@
 # This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
-name: CMake for art on Windows
+name: CMake + NSIS on Windows
 
 on: [workflow_dispatch]
 
@@ -27,8 +27,14 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Archive artifacts
-      uses: actions/upload-artifact@v3
+#    - name: Archive artifacts
+#      uses: actions/upload-artifact@v3
+#      with:
+#       name: drumlabooh.vst3
+#       path: build\drumlabooh_artefacts\Release\VST3\drumlabooh.vst3\
+
+    - name: Create NSIS installer
+      uses: joncloud/makensis-action@v4
       with:
-       name: drumlabooh.vst3
-       path: build\drumlabooh_artefacts\Release\VST3\
+       arguments: "/V3"
+       script-file: ${{github.workspace}}/install.nsi
