@@ -25,7 +25,11 @@ jobs:
 
     - name: Build
       # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: |
+       cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+       rm build\drumlabooh_artefacts\Release\VST3\drumlabooh.lib
+       rm build\drumlabooh_artefacts\Release\VST3\drumlabooh.exp
+
 
     - name: Archive artifacts
       uses: actions/upload-artifact@v3
