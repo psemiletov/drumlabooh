@@ -761,6 +761,8 @@ void CDrumKitsScanner::scan()
 {
   std::vector <std::string> v_kits_locations;
 
+#if !defined(_WIN32) || !defined(_WIN64)
+
   v_kits_locations.push_back ("/usr/share/hydrogen/data/drumkits");
   v_kits_locations.push_back ("/usr/local/share/hydrogen/data/drumkits");
   v_kits_locations.push_back ("/usr/share/drmr/drumkits");
@@ -773,6 +775,14 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back (get_home_dir() + "/drumrox-kits");
   v_kits_locations.push_back (get_home_dir() + "/drumlabooh-kits");
   v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
+
+#else
+
+  v_kits_locations.push_back (get_home_dir() + "/drumlabooh-kits");
+  v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
+
+
+#endif
 
   std::vector <std::string> v_kits_dirs;
 
