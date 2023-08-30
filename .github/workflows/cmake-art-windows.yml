@@ -31,4 +31,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
        name: drumlabooh-vsti
-       path: drumlabooh_artefacts\Release\VST3\
+       path: build\drumlabooh_artefacts\Release\VST3\
