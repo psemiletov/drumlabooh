@@ -44,7 +44,7 @@ ShowUninstDetails show
 OutFile "drumlabooh-installer.exe"
 
 ; The default installation directory
-InstallDir $PROGRAMFILES\Common Files\VST3\drumlabooh.vst3
+InstallDir "$PROGRAMFILES\Common Files\VST3\drumlabooh.vst3"
 
 
 ; The text to prompt the user to enter a directory
