@@ -30,5 +30,5 @@ jobs:
     - name: Archive artifacts
       uses: actions/upload-artifact@v3
       with:
-       name: drumlabooh-vsti
-       path: build\drumlabooh_artefacts\Release\VST3\
+       name: drumlabooh.vst3
+       path: build\drumlabooh_artefacts\Release\VST3\drumlabooh.vst3\
