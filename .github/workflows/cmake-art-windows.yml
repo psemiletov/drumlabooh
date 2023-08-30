@@ -27,8 +27,8 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Archive production artifacts
+    - name: Archive artifacts
       uses: actions/upload-artifact@v3
-        with:
-          name: drumlabooh-vsti
-          path: drumlabooh_artefacts\Release\VST3
+      with:
+       name: drumlabooh-vsti
+       path: drumlabooh_artefacts\Release\VST3
