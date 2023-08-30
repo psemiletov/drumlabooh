@@ -94,9 +94,11 @@ std::vector <std::string> files_get_list (const std::string &path)
   if (! directory)
      return result;
 
+  std::string t;
+
   while ((dir_entry = readdir (directory)))
         {
-         std::string t = dir_entry->d_name;
+         t = dir_entry->d_name;
 
          if (t != "." && t != "..")
              result.push_back (path + "/" + t);
@@ -113,16 +115,19 @@ std::vector <std::string> files_get_list (const std::string &path, const std::st
   DIR *directory;
   struct dirent *dir_entry;
 
-  vector <string> result;
+  std::vector <std::string> result;
 
   directory = opendir(path.c_str());
   if (! directory)
       return result;
 
+  std::string t = dir_entry->d_name;
+
+
    while (dir_entry = readdir (directory))
          {
           // std::cout << dir_entry->d_name << std::endl;
-          string t = dir_entry->d_name;
+          t = dir_entry->d_name;
           if (t.rfind (ext) != string::npos)
             result.push_back (path + "/" + t);
          }
@@ -138,27 +143,48 @@ std::vector <std::string> files_get_list (const std::string &path, const std::st
 
 std::vector <std::string> files_get_list (const std::string &path)
 {
+    WIN32_FIND_DATAA findData;
+    HANDLE hFind = INVALID_HANDLE_VALUE;
+    std::string full_path = path + "\\*";
+    std::vector<std::string> result;
 
+    hFind = FindFirstFileA (full_path.c_str(), &findData);
+
+    std::string t;
+
+    if (hFind == INVALID_HANDLE_VALUE)
+        //throw std::runtime_error("Invalid handle value! Please check your path...");
+       return result;
+
+    while (FindNextFileA(hFind, &findData) != 0)
+      {
+       t = findData.cFileName;
+
+       if (t != "." && t != "..")
+           result.push_back (path + "/" + t);
+     }
+
+    FindClose(hFind);
+
+    return result;
 }
 
 
 
 std::vector <std::string> files_get_list (const std::string &path, const std::string &ext) //ext with dot: ".txt"
 {
- WIN32_FIND_DATAA findData;
+    WIN32_FIND_DATAA findData;
     HANDLE hFind = INVALID_HANDLE_VALUE;
     std::string full_path = path + "\\*";
-    std::vector<std::string> dir_list;
+    std::vector<std::string> result;
 
-    hFind = FindFirstFileA(full_path.c_str(), &findData);
-
-    std::vector <std::string> v;
+    hFind = FindFirstFileA (full_path.c_str(), &findData);
 
     std::string t;
 
     if (hFind == INVALID_HANDLE_VALUE)
         //throw std::runtime_error("Invalid handle value! Please check your path...");
-       return v;
+       return result;
 
     while (FindNextFileA(hFind, &findData) != 0)
       {
