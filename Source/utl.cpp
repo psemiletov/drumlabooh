@@ -191,13 +191,13 @@ std::vector <std::string> files_get_list (const std::string &path, const std::st
         t = findData.cFileName;
 
       if (t.rfind (ext) != string::npos)
-            dir_list.push_back (path + "/" + t);
+            result.push_back (path + "/" + t);
 
     }
 
     FindClose(hFind);
 
-    return dir_list;
+    return result;
 }
 
 
