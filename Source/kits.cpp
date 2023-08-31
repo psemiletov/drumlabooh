@@ -15,8 +15,6 @@ this code is the public domain
 #include <stdlib.h>
 #include <math.h>
 
-//#include <samplerate.h>
-
 
 #include "kits.h"
 #include "utl.h"
@@ -62,8 +60,6 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
 
      }
 
-  //std::cout << "4" << std::endl;
-
 //  std::cout << "@@@@@ CDrumLayer::load_whole_sample END" << std::endl;
 
   return buffer;
@@ -71,7 +67,6 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
 
 juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::string &fname, int sess_samplerate)
 {
-
   juce::AudioBuffer<float> *buffer = load_whole_sample (fname);
   if (! buffer)
      {
@@ -82,7 +77,6 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
   if (samplerate == sess_samplerate)
       return buffer;
 
-
   //else resample
 
   float ratio = (float) sess_samplerate / samplerate;
@@ -90,18 +84,16 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
 
   juce::AudioBuffer<float> * out_buf = new juce::AudioBuffer <float> (channels, output_frames_count);
 
-
   for (int i = 0; i < channels; i++)
       {
        float *input_buffer = buffer->getWritePointer(i);
        if (! input_buffer)
           continue;
 
-       std::shared_ptr<speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler(length_in_samples, 1, samplerate, sess_samplerate);
+       std::shared_ptr<speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
        rs->read (input_buffer);
        rs->write (out_buf->getWritePointer(i), output_frames_count);
       }
-
 
   samplerate = sess_samplerate;
   length_in_samples = output_frames_count;
@@ -125,10 +117,10 @@ void CDrumLayer::load (const std::string &fname)
   file_name = fname;
 
   if (channels > 0)
-    channel_data [0] = audio_buffer->getReadPointer (0);
+      channel_data [0] = audio_buffer->getReadPointer (0);
 
   if (channels > 1)
-    channel_data [1] = audio_buffer->getReadPointer (1);
+      channel_data [1] = audio_buffer->getReadPointer (1);
 }
 
 
@@ -188,7 +180,7 @@ size_t CDrumSample::map_velo_to_layer_number (float velo)
 
   size_t result = 0;
 
-  //search for layer within its min..max gain
+  //search for layer within its min..max velo
   for (size_t i = 0; i < v_layers.size(); i++)
       {
        if (v_layers[i]->min <= velo &&

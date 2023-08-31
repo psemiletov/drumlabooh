@@ -116,7 +116,6 @@ inline void pan_sincos (float &l, float& r, float p)
 }
 
 
-
 //square root panner, law: -3 dB
 #define PANMODE02 2
 inline void pan_sqrt (float &l, float& r, float p)
@@ -126,7 +125,6 @@ inline void pan_sqrt (float &l, float& r, float p)
 }
 
 
-
 //linear panner, law: 0 dB
 #define PANMODE03 3
 inline void pan_linear0 (float &l, float& r, float p)
@@ -134,7 +132,6 @@ inline void pan_linear0 (float &l, float& r, float p)
   l = 0.5 + (1 - p);
   r = 0.5 + p;
 }
-
 
 
 //linear panner, law: -6 dB

@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <JuceHeader.h>
@@ -35,6 +34,7 @@ void paintButton 	( 	juce::Graphics &  	g,
 
 }
 */
+
 class CLed: public juce::Component
 {
 public:
@@ -55,7 +55,7 @@ public:
 
     juce::GroupComponent gr_group;
     juce::Slider sl_pan;
-    juce::Slider sl_gain;
+    juce::Slider sl_vol;
 
     juce::ToggleButton bt_mute;
     CLed led;
@@ -63,7 +63,7 @@ public:
 
     juce::Label label;
 
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_gain;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_vol;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_pan;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_mute;
 
@@ -77,7 +77,6 @@ public:
 
     void paint (juce::Graphics& g) override;
     void resized() override;
-    //void sliderValueChanged (juce::Slider* sliderThatWasMoved) override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CDrumLine)
 };
@@ -89,8 +88,6 @@ class CAudioProcessorEditor: public juce::AudioProcessorEditor,
                              public juce::ComboBox::Listener,
                              public juce::Slider::Listener
 {
-//private:
-
 public:
 
     CAudioProcessor& audioProcessor;
@@ -117,32 +114,27 @@ public:
     juce::GroupComponent gr_kitinfo;
     juce::Label l_kitinfo;
 
-
     juce::Label l_plugin_name;
     juce::HyperlinkButton hl_homepage;
 
+//    juce::Slider testSlider;
 
-    juce::Slider testSlider;
-
-
-    std::unique_ptr<SliderAttachment> gainAttachment;
-    juce::ToggleButton invertButton;
-    std::unique_ptr<ButtonAttachment> invertAttachment;
+ //   std::unique_ptr<SliderAttachment> gainAttachment;
+//    juce::ToggleButton invertButton;
+//    std::unique_ptr<ButtonAttachment> invertAttachment;
 
     juce::Font f_sitelink { 20.0f, juce::Font::bold};
     juce::Font f_logo { 40.0f, juce::Font::bold};
 
-
     juce::Font f_kitname_font { 20.0f, juce::Font::bold};
     juce::ImageComponent kit_image;
-
 
     juce::GroupComponent drumlines_group;
     juce::Component drumlines_container;
     juce::Viewport drumlines_viewer;
 
 
-    juce::TextButton bt_test;
+//    juce::TextButton bt_test;
 
     juce::Label l_drumkit_name;
     juce::TextButton bt_drumkit_info;
@@ -172,7 +164,6 @@ public:
 //    void panner_modeMenuChanged();
 
     void sliderValueChanged (juce::Slider* slider) override;
-
 
     void comboBoxChanged(juce::ComboBox *comboBox) override;
 

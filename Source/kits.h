@@ -27,23 +27,21 @@ public:
 
   CDrumSample *drum_sample;
 
-  //for layer velo range
+  //for layer's velo range
   float min;
   float max;
 
   std::string file_name; //name of the loaded file
 
-  int channels;
-  int samplerate;
+  int channels; //channels at this layer
+  int samplerate; //samplerate of this layer
+  int length_in_samples;// i.e frames, the amount of samples per channel
+  int sample_offset; //to play inc until < length_in_samples
 
-  int length_in_samples;// lengthInSamples;
-  int sample_offset; //to play inc until < lengthInSamples
+  juce::AudioBuffer<float> *audio_buffer; //holds audio data
+  const float *channel_data [2]; // pointers to channels of audio_buffer
 
-
-  juce::AudioBuffer<float> *audio_buffer;
-  const float *channel_data [2];
-
-  CDrumLayer (CDrumSample *s); //sample_rate is uplink (session) samplerate
+  CDrumLayer (CDrumSample *s);
   ~CDrumLayer();
 
   void load (const std::string &fname); //loads the sample, sets internally info, data, file_name

@@ -1,7 +1,5 @@
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
 
 
 #include "kits.h"
@@ -15,29 +13,10 @@
 #define WINDOW_WIDTH 790
 
 
-//#define TESTKIT "/home/rox/sfz-kits/Vintage Kit/Vintage Kit.sfz"
 
-//#define TESTKIT "/home/rox/.hydrogen/data/drumkits/AVL-BlackPearl-5-1.1/drumkit.xml"
-
-//#define TESTKIT "/home/rox/.hydrogen/data/drumkits/HipHop-1/drumkit.xml"
-
-
-#define TESTKIT "/home/rox/drumrox-kits/Lel-DR8/drumkit.txt"
-
-//#define TESTKIT "/home/rox/drumrox-kits/tamil/drumkit.txt"
-
-//#define TESTKIT "/home/rox/sfz-kits/BLONDE_BOP_SFZ/BLONDE_BOP.sfz"
-
-
-//#define TESTKIT "/home/rox/sfz-kits/Drums/Drums V2.sfz"
-
-//#define TESTKIT "/home/rox/sfz-kits/SCC Taiko Drums/SCC Taiko Drums.sfz
-
-//==============================================================================
-
-#define KNOB_WIDTH 50
-#define KNOB_HEIGHT 50
-#define BETWEEN 3
+//#define KNOB_WIDTH 50
+//#define KNOB_HEIGHT 50
+//#define BETWEEN 3
 
 
 
@@ -95,22 +74,22 @@ CDrumLine::CDrumLine ()
   xoffs += sl_pan.getWidth();
   xoffs += XFILLER;
 
-  addAndMakeVisible (sl_gain);
+  addAndMakeVisible (sl_vol);
 
-  sl_gain.setTopLeftPosition (xoffs, YFILLER);
-  sl_gain.setSize (104, 32);
+  sl_vol.setTopLeftPosition (xoffs, YFILLER);
+  sl_vol.setSize (104, 32);
 
-  sl_gain.setSliderStyle (juce::Slider::LinearHorizontal);
-  sl_gain.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_vol.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_vol.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
 
-  sl_gain.setRange (-96, 12, 1);
-  sl_gain.setSkewFactor (4);
+  sl_vol.setRange (-96, 12, 1);
+  sl_vol.setSkewFactor (4);
 
     //sl_gain.addListener (this);
 
-  sl_pan.setTooltip ("Gain\n");
+  sl_pan.setTooltip ("Volume\n");
 
-  xoffs += sl_gain.getWidth();
+  xoffs += sl_vol.getWidth();
   xoffs += XFILLER;
 
   bt_mute.setButtonText ("M");
@@ -170,8 +149,8 @@ void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
 {
   cell_number = cellno;
 
-  std::string param_name = "gain" + std::to_string (cell_number);
-  att_gain.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_gain));
+  std::string param_name = "vol" + std::to_string (cell_number);
+  att_vol.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_vol));
 
   param_name = "pan" + std::to_string (cell_number);
   att_pan.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_pan));
@@ -355,7 +334,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   sl_base_note.setTopLeftPosition (l_base_note.getX() + l_base_note.getWidth() + XFILLER, l_base_note.getY());
   sl_base_note.setSize (120, 48);
   sl_base_note.setRange (0, 127, 1.0);
-  sl_base_note.setValue (audioProcessor.int_base_note_number, dontSendNotification );
+  sl_base_note.setValue (audioProcessor.base_note_number, dontSendNotification );
   sl_base_note.addListener (this);
 
   // PAN MODE
@@ -467,10 +446,10 @@ void CAudioProcessorEditor::resized()
 
 void CAudioProcessorEditor::buttonClicked (juce::Button* button)
 {
-  if (button == &bt_test)
+ /* if (button == &bt_test)
     {
      std::cout << "NewProjectAudioProcessorEditor::buttonClicked " << std::endl;
-  }
+  }*/
 }
 
 
@@ -527,10 +506,10 @@ void CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
         if (slider == &sl_base_note)
            {
              std::cout << "sl_base_note.getValue()" << std::endl;
-             audioProcessor.int_base_note_number = sl_base_note.getValue();
+             audioProcessor.base_note_number = sl_base_note.getValue();
 
 
-              std::cout << "audioProcessor.int_base_note_number: " << audioProcessor.int_base_note_number << std::endl;
+              std::cout << "audioProcessor.int_base_note_number: " << audioProcessor.base_note_number << std::endl;
 
             // juce::AudioProcessorParameterWithID* pParam = audioProcessor.parameters.getParameter ( "base_note_number"  );
             // pParam->setValueNotifyingHost( sl_base_note.getValue() );
