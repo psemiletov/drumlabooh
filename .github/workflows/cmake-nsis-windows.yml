@@ -38,3 +38,10 @@ jobs:
       with:
        arguments: "/V3"
        script-file: ${{github.workspace}}/install.nsi
+
+
+    - name: Get installe
+      uses: actions/upload-artifact@v3
+      with:
+       name: drumlabooh-installer.exe
+       path: ${{github.workspace}}/build/drumlabooh-installer.exe
