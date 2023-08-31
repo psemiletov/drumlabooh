@@ -13,12 +13,27 @@ libasound2-dev
 libfreetype6-dev
 libx11-dev
 libxcomposite-dev
-ibxcursor-dev
+libxcursor-dev
 libxext-dev
 libxinerama-dev
 libxrandr-dev
 libxrender-dev
 ```
+
+Dependencies (Arch packages names):
+
+```
+alsa-lib
+freetype2
+libx11
+libxcomposite
+libxcursor
+libxext
+libxinerama
+libxrandr
+libxrender
+```
+
 
 And then, under sudo or root:
 

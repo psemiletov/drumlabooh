@@ -57,8 +57,8 @@ Section "Files (mandatory)"
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   ; Put file there
-  File /r ".\build\drumlabooh_artefacts\Release\VST3\drumlabooh.vst3\Contents\Resources/moduleinfo.json"
-  File /r ".\build\drumlabooh_artefacts\Release\VST3\drumlabooh.vst3\Contents\x86_64-win/drumlabooh.vst3"
+  File /r "D:\a\drumlabooh\drumlabooh\build\drumlabooh_artefacts\Release\VST3\drumlabooh.vst3\Contents\Resources\moduleinfo.json"
+  File /r "D:\a\drumlabooh\drumlabooh\build\drumlabooh_artefacts\Release\VST3\drumlabooh.vst3\Contents\x86_64-win\drumlabooh.vst3"
 
   WriteRegStr HKLM SOFTWARE\Drumlabooh "Install_Dir" "$INSTDIR"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Drumlabooh" "DisplayName" "Drumlabooh (remove)"
