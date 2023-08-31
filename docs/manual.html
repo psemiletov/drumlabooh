@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Drumlabooh | Драмлабух: USER'S MANUAL</title>
+</head>
+<body>
+
+<h2> Drumlabooh | Драмлабух: USER'S MANUAL</h2>
+
+<table>
+
+<tr>
+
+<td>
+
+<p>Drumlabooh is aimed to not interfere with creativity. All that you need is to create a new MIDI track at your DAW, select the drumkit from the list, and play. Yes indeed, Drumlabooh is not for inventors of new, synthesized drum sounds. Drumlabooh uses the existing, sampled drumkits, so you need to install them first.</p>
+
+
+<h3>Get kits</h3>
+
+<p>For Hydrogen drumkits, run Hydrogen, then go there to <b>Drumkits - Online import</b> menu and download kits from Hydrogen or Musical Artifacts repositories. To install Drumlabooh format kits, download them from [<a href="https://github.com/psemiletov/drum_sklad">Drum sklad</a> and <a href="https://t.me/drum_sklad">Drumlabooh kits at Telegram</a>, then copy or unpack drumkits folders to <i>$HOME/drumlabooh-kits</i>. Each kit = one folder.</p>
+
+<p>Similary, Dramlabooh searches SFZ kits at <i>$HOME/sfz-kits</i></p>
+
+<p>All kits those found will be available from the menu (drop-down list) at the top left corner of the plugin.</p>
+
+
+<p>Note: actually, Drumalbooh searches kits at many locations.</p>
+
+<p>Hydrogen format:</p>
+
+<pre>/usr/share/hydrogen/data/drumkits
+/usr/local/share/hydrogen/data/drumkits
+/usr/share/drmr/drumkits
+$HOME/.hydrogen/data/drumkits
+$HOME/.drmr/drumkits</pre>
+
+
+<p>Drumlabooh/Drumrox format:</p>
+
+<pre>/usr/share/drumrox-kits
+$HOME/drumrox-kits
+/usr/share/drumlabooh-kits
+$HOME/drumlabooh-kits</pre>
+
+<p>SFZ format:</p>
+
+<pre>$HOME/sfz-kits</pre>
+
+
+<p>When Drumlabooh loads the kit samples, it converts them (if needed) to the DAW's project session rate, so the conversion can take some time. Please note that any resampling changes how samples sounds, at some degree.</p>
+
+<h3>Built-in mixer</h3>
+
+<p>Below the drumkit selector you see the cells with loaded samples. Here the layout of each cell:</p>
+
+<p>1 Led - lights when note plays.<br>
+
+2 Instrument name - taken from the kit xml file, or in another way.<br>
+
+3 Pan control - values from 0 to 1, 0.5 is a middle.<br>
+
+4. Volume slider - non-linear, values from -96 to +6 dB.<br>
+
+5. Mute switch - mutes instrument.
+</p>
+
+<h3> Built-in options</h3>
+
+<p>By the right side of the plugin window you see, below the drumkit info section, the Options.</p>
+
+<p>Base MIDI note - default 36, means at witch MIDI note number we map the first instrument at the kit. MIDI note 36 = C at 1-st octave.</p>
+
+<p>Pan mode - allow to select the pan mode for Drumlabooh's internal mixer engine. See the <a href="https://en.wikipedia.org/wiki/Panning_law">article</a>. Defaul panner is sin/cos panner, law: -3 dB.
+</p>
+
+</td>
+
+
+
+<td>
+
+
+<p>Драмлабух старается не мешать творчеству. Всё что вам нужно, дабы создать с его помощью партию ударных, это создать новую MIDI-дорожку в вашей любимой программе звукозаписи, затем выбрать в Драмлабухе один из установленных драмкитов, и начать играть с клавиатуры, дрампадов или прописывать квадратики в секвенсере. Драмлабух это не синтезатор, а сэмплер, поэтому надо установить какие-то оцифрованные драмкиты.
+</p>
+
+<h3>Скачайте драмкиты</h3>
+
+<p>Драмкиты для Hydrogen проще скачать так - запустите Hydrogen, а в нем пойдите в меню <b>Drumkits - Online import</b> и скачайте драмкиты по вкусу из предложенных хранилищ.</p>
+
+<p>Чтобы установить драмкиты формата Драмлабуха, скачайте их с <a href="https://github.com/psemiletov/drum_sklad">Drum sklad</a> или <a href="https://t.me/drum_sklad">Драмсклад в Телеге</a>, а затем скопируйте распакованные папки драмкитов в  
+<i>$HOME/drumlabooh-kits</i>. Каждый кит = 
+одна папка.</p>
+
+
+<p>А драмкиты в формате SFZ Драмлабух будет искать в папке<i>$HOME/sfz-kits</i></p>
+
+<p>Все найденные драмкиты будут доступны в Драмлабухе из выпадающего списка в верхней левой части плагина</p>
+
+
+<p>Примечание: вообще-то Драмлабух ищет киты во многих каталогах, а именно:</p>
+
+<p>Киты в формате Hydrogen:</p>
+
+<pre>/usr/share/hydrogen/data/drumkits
+/usr/local/share/hydrogen/data/drumkits
+/usr/share/drmr/drumkits
+$HOME/.hydrogen/data/drumkits
+$HOME/.drmr/drumkits</pre>
+
+
+<p>Киты в формате Drumlabooh/Drumrox:</p>
+
+<pre>/usr/share/drumrox-kits
+$HOME/drumrox-kits
+/usr/share/drumlabooh-kits
+$HOME/drumlabooh-kits</pre>
+
+<p>В формате SFZ:</p>
+
+<pre>$HOME/sfz-kits</pre>
+
+
+<p>Когда Драмлабух загружает сэмплы из кита в память, то, если частота оцифровки текущей сессии/проекта DAW отлична от частоты сэмплов, сэмплы ресэмплируются (в оперативной памяти) к частоте сессии, что может занять некоторое время в зависимости от количества сэмплов, мощности процессора и т.д.</p>
+
+
+<h3>Встроенный микшер</h3>
+
+<p>Под списком выбора драмкита расположены ячейки инструментов. Каждая из них состоит из:</p>
+
+<p>1 Светодиод - загорается когда играет  инструмент, загруженный в ячейку.<br>
+
+2 Название инструмента - берется из XML-файла кита или другим способом.<br>
+
+3 Регулятор панорамы - значения от 0 до 1, 0.5 середина.<br>
+
+4. Регулятор громкости - нелинейный, значения от -96 до +6 dB.<br>
+
+5. Переключатель "Mute" (молчать, заглушить) - если стоит галочка, инструмент не играет, т.е. временно исключается из микса.
+</p>
+
+<h3>Настройки плагина</h3>
+
+<p>В правой части окна плагина, под разделом сведений о драмките, находятся настройки.</p>
+
+<p>Base MIDI note - по умолчанию 36, задает MIDI номер ноты, с которой начинается  "раскладка" инструментов из драмкита. MIDI нота 36 это "До" первой октавы.</p>
+
+<p>Pan mode - выбор режима панорамы для микшера Драмлабуха. Подробнее <a href="https://en.wikipedia.org/wiki/Panning_law">в этой статье</a>. По умолчанию стоит паннер на основе синуса/косинуса, -3 dB.
+</p>
+
+</td>
+
+
+</tr>
+
+</table>

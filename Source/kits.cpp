@@ -461,10 +461,10 @@ std::string guess_sample_name (const std::string &raw)
 
   //remove part before slash
 
-   size_t pos = t.find ("/");
+  size_t pos = t.find ("/");
 
-   if (pos != string::npos)
-       t = t.substr (pos + 1);
+  if (pos != string::npos)
+      t = t.substr (pos + 1);
 
   //remove all non-letters
 
@@ -593,14 +593,12 @@ void CDrumKit::load_sfz (const std::string &data)
 
 void CDrumKit::load (const std::string &fname, int sample_rate)
 {
-  if (! scan_mode)
-     cout << "@@@@@@@@@@@@ void CDrumKit::load: " << fname << "samplerate: " << sample_rate << endl;
+//  if (! scan_mode)
+  //   cout << "@@@@@@@@@@@@ void CDrumKit::load: " << fname << "samplerate: " << sample_rate << endl;
 
   auto start = chrono::high_resolution_clock::now();
 
   samplerate = sample_rate;
-
-
 
   string filename = resolve_symlink (fname.c_str());
   kit_filename = filename;
@@ -631,7 +629,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
   size_t r = source.find ("<layer>");
   if (r != std::string::npos)
-     layers_supported = true;
+      layers_supported = true;
    else
        layers_supported = false;
 
@@ -772,7 +770,7 @@ void CDrumKitsScanner::scan()
 
   v_kits_locations.push_back (get_home_dir() + "/drumlabooh-kits");
   v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
-
+  v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
 
 #endif
 
@@ -837,10 +835,6 @@ void CDrumKitsScanner::scan()
        v_kits_names.push_back (i->kit_name);
       }
 
-//    std::sort ( v_kits_names.begin(),  v_kits_names.end(),  [](CHydrogenKit* a, CHydrogenKit* b){return a->kit_name < b->kit_name;});
-
-   //std::sort (v_kits_names.begin(), v_kits_names.end());
-   //v_kits_names.erase (std::unique( v_kits_names.begin(), v_kits_names.end() ), v_kits_names.end() );
 }
 
 
@@ -855,11 +849,9 @@ void CDrumKitsScanner::print()
 }
 
 
-
-
 void CDrumSample::untrigger_sample()
 {
-  std::cout << "CDrumSample::UNtrigger_sample" << std::endl;
+//  std::cout << "CDrumSample::UNtrigger_sample" << std::endl;
 
   active = false;
 
@@ -872,7 +864,7 @@ void CDrumSample::untrigger_sample()
 
 void CDrumSample::trigger_sample (float vel)
 {
-  std::cout << "CDrumSample::trigger_sample: " << name << std::endl;
+//  std::cout << "CDrumSample::trigger_sample: " << name << std::endl;
 
   v_layers[current_layer]->sample_offset = 0;
 
@@ -881,14 +873,6 @@ void CDrumSample::trigger_sample (float vel)
 
  // std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
 
-/*
-  if (data)
-         {
-          lv2_atom_forge_frame_time (&drumrox->forge, 0);
-          build_midi_info_message (drumrox, data);
-         }
-*/
   active = true;
   v_layers[current_layer]->sample_offset = 0;
-
 }

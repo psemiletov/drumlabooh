@@ -92,9 +92,6 @@ parameters (*this, 0, "Drumlabooh", createParameterLayout())
 
   panner_mode = parameters.getRawParameterValue ("panner_mode");
   ignore_midi_velocity = parameters.getRawParameterValue ("ignore_midi_velocity");
-
- // base_note_number  = parameters.getRawParameterValue ("base_note_number");
-//  std::cout << "base_note_number:" << *base_note_number << std::endl;
 }
 
 
@@ -314,10 +311,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             if (! s)
                continue;
 
-            // std::cout << "s->v_layers[0]->lengthInSamples: " << s->v_layers[0]->length_in_samples << std::endl;
-             //std::cout << "s->v_layers[0]->channels: " << s->v_layers[0]->channels << std::endl;
-
-
             s->trigger_sample (velocity);
 
              //also untrigger open hihat if closed hihat triggering
@@ -371,23 +364,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
     //for (int i = 0; i < num_channels; ++i)
 
-     for (int i = 0; i < 2; ++i)
+    for (int i = 0; i < 2; ++i)
          buffer.clear (i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-      //  auto* channelData = buffer.getWritePointer (channel);
 
-         //std::cout << "channel: " << channel << std::endl;
-
-//    std::cout << "CAudioProcessor::processBlock -4 " << std::endl;
-
-
-        // ..do something to the data...
     int out_buf_length = buffer.getNumSamples();
 
    //for each sample out_buf_offs
@@ -426,10 +406,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  continue;
                 }
 
-
              if (mute)
                 continue;
-
 
              if (l->channels == 1)
                 {
@@ -464,23 +442,11 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  if (*panner_mode == PANMODE07)
                      pan_equal_power3 (pan_left, pan_right, pan);
 
-
                  float coef_right = pan_right * vol * s->velocity;
                  float coef_left = pan_left * vol * s->velocity;
 
-
                  channel_data[0][out_buf_offs] += fl * coef_left;
                  channel_data[1][out_buf_offs] += fl * coef_right;
-
-                 //TEST CLIPPING
-/*
-                 if (channel_data[0][out_buf_offs] > 1.0f)
-                     channel_data[0][out_buf_offs] = 1.0f;
-
-                if (channel_data[1][out_buf_offs] > 1.0f)
-                    channel_data[1][out_buf_offs] = 1.0f;
-*/
-
                 }
 
              if (l->channels == 2)
@@ -492,14 +458,13 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 //                 float gain = db2lin(*(gains[drum_sample_index]));
                  float vol = juce::Decibels::decibelsToGain ((float)*(vols[drum_sample_index]));
 
-
                  float pan_right = 0;
                  float pan_left = 0;
 
                  float pan = *(pans[drum_sample_index]);
 
                  if (*panner_mode == PANMODE01)
-                      pan_sincos (pan_left, pan_right, pan);
+                     pan_sincos (pan_left, pan_right, pan);
                  else
                  if (*panner_mode == PANMODE02)
                      pan_sqrt (pan_left, pan_right, pan);
@@ -529,19 +494,18 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
              }
 
  //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
-
 }
 
 //==============================================================================
 bool CAudioProcessor::hasEditor() const
 {
-    return true; // (change this to false if you choose to not supply an editor)
+  return true; // (change this to false if you choose to not supply an editor)
 }
 
 
 juce::AudioProcessorEditor* CAudioProcessor::createEditor()
 {
-    return new CAudioProcessorEditor (*this, parameters);
+  return new CAudioProcessorEditor (*this, parameters);
 }
 
 
@@ -563,25 +527,21 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
 //  std::cout << "CAudioProcessor::setStateInformation - 1" << std::endl;
-
   std::unique_ptr <juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
 
   if (xmlState.get() != nullptr)
      if (xmlState->hasTagName (parameters.state.getType()))
+        {
+         parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
+         base_note_number = load_int_keyval ("base_note_number", 36);
+         drumkit_path = load_string_keyval ("drumkit_path");
+         //std::cout << "drumkit_path : " << drumkit_path  << std::endl;
+         //std::cout << "set base_note_number: " << _base_note_number << std::endl;
+         //std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
+         session_samplerate = getSampleRate();
+        }
 
-     {
-      parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
-      base_note_number = load_int_keyval ("base_note_number", 36);
-      drumkit_path = load_string_keyval ("drumkit_path");
-      //std::cout << "drumkit_path : " << drumkit_path  << std::endl;
-      //std::cout << "set base_note_number: " << int_base_note_number << std::endl;
-      //std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
-      session_samplerate = getSampleRate();
-     }
-
-     //  std::cout << ">>>>>>>>>>>>drumkit_path: " << drumkit_path  << std::endl;
 //  std::cout << "CAudioProcessor::setStateInformation - 2" << std::endl;
-
 }
 
 
@@ -602,7 +562,6 @@ std::string CAudioProcessor::load_string_keyval (const std::string &key)
 }
 
 
-
 void CAudioProcessor::save_int_keyval (const std::string &key, int val)
 {
   auto addons = parameters.state.getOrCreateChildWithName ("addons", nullptr);
@@ -612,34 +571,24 @@ void CAudioProcessor::save_int_keyval (const std::string &key, int val)
 
 int CAudioProcessor::load_int_keyval (const std::string &key, int defval)
 {
-  //std::cout << "int CAudioProcessor::load_int_keyval (const std::string &key, int defval)  -1" <<  std::endl;
-
-
   juce::Identifier keyid (key.c_str());
   auto addons = parameters.state.getOrCreateChildWithName ("addons", nullptr);
   auto v = addons.getProperty (keyid);
 
-//std::cout << "int CAudioProcessor::load_int_keyval (const std::string &key, int defval)  -2" <<  std::endl;
-
-
   if (v.isVoid())
      return defval;
 
-//  std::cout << "int CAudioProcessor::load_int_keyval (const std::string &key, int defval)  -3" <<  std::endl;
-
-
- // std::cout << "TEXT: " << v.toString() << std::endl;
   return v;
 }
 
 
-
 bool CAudioProcessor::load_kit (const std::string &fullpath)
 {
+  std::cout << "CAudioProcessor::load_kit: " << fullpath << std::endl;
 
-  std::cout << "CAudioProcessor::load_kit - 1" << std::endl;
-  std::cout << "fullpath: " << fullpath << std::endl;
-  std::cout << "session samplerate: " << session_samplerate << std::endl;
+  //std::cout << "CAudioProcessor::load_kit - 1" << std::endl;
+  //std::cout << "fullpath: " << fullpath << std::endl;
+  //std::cout << "session samplerate: " << session_samplerate << std::endl;
 
     if (fullpath.empty())
        return false;
@@ -656,12 +605,11 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
   drumkit = new CDrumKit;
   drumkit->load (fullpath, session_samplerate);
 
+//resume
 
-//SIGNAL TO
+  suspendProcessing (false);
 
- suspendProcessing (false);
-
- std::cout << "CAudioProcessor::load_kit - 2" << std::endl;
+ //std::cout << "CAudioProcessor::load_kit - 2" << std::endl;
 
   return true;
 }

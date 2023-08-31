@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Drumlabooh | Драмлабух: ABOUT</title>
+</head>
+<body>
+
+<h2> Drumlabooh | Драмлабух: ABOUT</h2>
+
+<table>
+
+<tr>
+
+<td>
+<h3>Get the plugin!</h3>
+
+<p><a href="https://github.com/psemiletov/drumlabooh">Drumlabooh github source</a><br><br>
+
+<a href="https://aur.archlinux.org/packages/drumlabooh">Drumlabooh AUR page</a><br>
+<i>yay -S drumlabooh</i>
+</p>
+
+<h3>Build from the source</h3>
+
+<p>To build Drumlabooh form the source, you need to install some dependencies first. Drumlabooh is based on JUCE, JUCE source code will be fetched by configuration process, so JUCE needs additional libraries.</p>
+
+<p>Dependencies (Ubuntu packages names):</p>
+
+
+<pre>libasound2-dev
+libfreetype6-dev
+libx11-dev
+libxcomposite-dev
+libxcursor-dev
+libxext-dev
+libxinerama-dev
+libxrandr-dev
+libxrender-dev</pre>
+
+
+<p>Dependencies (Arch packages names):</p>
+
+<pre>alsa-lib
+freetype2
+libx11
+libxcomposite
+libxcursor
+libxext
+libxinerama
+libxrandr
+libxrender</pre>
+
+<p>Install them if not installed, and then, under sudo or root:</p>
+
+
+<pre>mkdir b
+cd b
+cmake ..
+make
+make install</pre>
+
+
+<p>This installs Lv2 and VSTi versions of the plugin to /usr/local/lib/LV2 and /usr/local/lib/VST3 by default. To redefine te destination dir, set another dest dir via CMAKE_INSTALL_PREFIX variable. For example, from <i>/usr/local</i> to <i>/usr</i>:</p>
+
+<pre>cmake -DCMAKE_INSTALL_PREFIX=/usr ..</pre>
+
+
+</td>
+
+
+</tr>
+
+
+</table>
