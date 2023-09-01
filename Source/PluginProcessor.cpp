@@ -285,7 +285,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
         if (isNoteOn )
            {
             //std::cout << "note_number: " << note_number << std::endl;
-//            std::cout << "velocity: " << velocity << std::endl;
+            //std::cout << "velocity: " << velocity << std::endl;
 
             if (! drumkit)
                return;
@@ -398,20 +398,21 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                 }
 
 
-             l->sample_offset++;
-
-             if (l->sample_offset == l->length_in_samples)
+             if (l->sample_offset + 1 == l->length_in_samples)
                 {
                  s->untrigger_sample();
                  continue;
                 }
 
              if (mute)
-                continue;
+                {
+                 continue;
+                 l->sample_offset++;
+                }
 
              if (l->channels == 1)
                 {
-                 float fl = l->channel_data[0][l->sample_offset];
+                 float fl = l->channel_data[0][l->sample_offset++];
                  float fr = fl;
 
                  float vol = juce::Decibels::decibelsToGain ((float)*(vols[drum_sample_index]));
@@ -452,7 +453,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
              if (l->channels == 2)
                 {
 
-                 float fl = l->channel_data[0][l->sample_offset];
+                 float fl = l->channel_data[0][l->sample_offset++];
                  float fr = l->channel_data[1][l->sample_offset];
 
 //                 float gain = db2lin(*(gains[drum_sample_index]));
