@@ -360,15 +360,16 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     // guaranteed to be empty - they may contain garbage).
     // This is here to avoid people getting screaming feedback
     // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-
-    //for (int i = 0; i < num_channels; ++i)
-
-    for (int i = 0; i < 2; ++i)
-         buffer.clear (i, 0, buffer.getNumSamples());
+  // this code if your algorithm always overwrites all the output channels.
 
 
     int out_buf_length = buffer.getNumSamples();
+
+
+    for (int i = 0; i < 2; ++i)
+         buffer.clear (i, 0, out_buf_length);
+
+
 
    //for each sample out_buf_offs
     for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
@@ -415,7 +416,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  float fl = l->channel_data[0][l->sample_offset++];
                  float fr = fl;
 
-                 float vol = juce::Decibels::decibelsToGain ((float)*(vols[drum_sample_index]));
+//                 float vol = juce::Decibels::decibelsToGain ((float)*(vols[drum_sample_index]));
+                 float vol = db2lin(*(vols[drum_sample_index]));
 
                  float pan_right = 0;
                  float pan_left = 0;

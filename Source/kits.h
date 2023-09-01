@@ -67,9 +67,9 @@ public:
   int session_samplerate; //session srate, taken from the upper object
 
   bool active;
+
   float velocity;
 
-  //bool hihat;
   bool hihat_open;
   bool hihat_close;
 

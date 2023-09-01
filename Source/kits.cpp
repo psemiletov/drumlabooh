@@ -868,11 +868,12 @@ void CDrumSample::trigger_sample (float vel)
 
   //v_layers[current_layer]->sample_offset = 0;
 
+  active = true;
+
   velocity = vel;
   current_layer = map_velo_to_layer_number (velocity);
 
-  std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
+  //std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
 
-  active = true;
   v_layers[current_layer]->sample_offset = 0;
 }
