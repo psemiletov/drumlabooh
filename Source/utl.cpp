@@ -20,6 +20,10 @@
 #include <Windows.h>
 #include <shlobj.h>
 
+//#include <shlobj_core.h>
+//#include <KnownFolders.h>
+//#include <wchar.h>
+
 #endif
 
 #include "utl.h"
@@ -222,6 +226,11 @@ std::string get_home_dir()
 
   if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, homeDirStr)))
     result = homeDirStr;
+
+/*
+     PWSTR path = NULL;
+    HRESULT hres = SHGetKnownFolderPath(FOLDERID_Documents, 0, NULL, &path);*/
+    //%USERPROFILE%\Documents
 
 #endif
 
