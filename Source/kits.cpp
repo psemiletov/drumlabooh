@@ -778,7 +778,7 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
 */
 
-  juce::File home_location = File::getSpecialLocation	(juce::File::SpecialLocationType::userHomeDirectory);
+ // juce::File home_location = File::getSpecialLocation	(juce::File::SpecialLocationType::userHomeDirectory);
 
 
   v_kits_locations.push_back ("c:\\drumlabooh-kits");
