@@ -767,10 +767,25 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
 
 #else
-
+/*
   v_kits_locations.push_back (get_home_dir() + "/drumlabooh-kits");
   v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
   v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
+*/
+
+  v_kits_locations.push_back ("c:\\drumlabooh-kits");
+  v_kits_locations.push_back ("c:\\sfz-kits");
+  v_kits_locations.push_back ("d:\\drumlabooh-kits");
+  v_kits_locations.push_back ("d:\\sfz-kits");
+
+  v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
+
+  std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
+
+  std::cout << get_home_dir() + "/.hydrogen/data/drumkits" << std::endl;
+
+  std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
+
 
 #endif
 
