@@ -765,7 +765,12 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back (get_home_dir() + "/drumrox-kits");
   v_kits_locations.push_back (get_home_dir() + "/drumlabooh-kits");
   v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
-
+/*
+  juce::File home_location = File::getSpecialLocation	(juce::File::SpecialLocationType::userHomeDirectory);
+  const String & fnm = home_location.getFullPathName();
+  std::string sfnm (fnm.toStdString());
+  sfnm += "\\";
+  */
 #else
 /*
   v_kits_locations.push_back (get_home_dir() + "/drumlabooh-kits");
@@ -773,19 +778,31 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
 */
 
+  juce::File home_location = File::getSpecialLocation	(juce::File::SpecialLocationType::userHomeDirectory);
+
+
   v_kits_locations.push_back ("c:\\drumlabooh-kits");
   v_kits_locations.push_back ("c:\\sfz-kits");
   v_kits_locations.push_back ("d:\\drumlabooh-kits");
   v_kits_locations.push_back ("d:\\sfz-kits");
 
-  v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
+  //v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
 
+
+  juce::File home_location = File::getSpecialLocation (juce::File::SpecialLocationType::userHomeDirectory);
+  const String & fnm = home_location.getFullPathName();
+  std::string sfnm (fnm.toStdString());
+  sfnm += "\\";
+  sfnm += ".hydrogen/data/drumkits";
+  v_kits_locations.push_back (sfnm);
+
+  /*
   std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
 
   std::cout << get_home_dir() + "/.hydrogen/data/drumkits" << std::endl;
 
   std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
-
+*/
 
 #endif
 
