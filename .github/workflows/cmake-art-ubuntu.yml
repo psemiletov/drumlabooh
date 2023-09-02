@@ -30,4 +30,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
        name: drumlabooh.lv2
-       path: ${{github.workspace}}/build/drumlabooh_artefacts/LV2/drumlabooh.lv2
+       path: ${{github.workspace}}/build/drumlabooh_artefacts/Release/LV2/drumlabooh.lv2
