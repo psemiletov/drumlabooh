@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <link href="styles.css" rel="stylesheet" type="text/css">
-<title>Drumlabooh | Драмлабух: ABOUT</title>
+<title>Drumlabooh | Драмлабух: INSTALL</title>
 </head>
 <body>
 
-<h2 align="center"> Drumlabooh | Драмлабух: ABOUT</h2>
+<h2 align="center"> Drumlabooh | Драмлабух: INSTALL</h2>
 
 <table class="center">
 
@@ -16,15 +16,25 @@
 <td class="table_top_cell">
 <h3>Get the plugin!</h3>
 
-<p><a href="https://github.com/psemiletov/drumlabooh">Drumlabooh github source</a><br><br>
+<p><a href="https://github.com/psemiletov/drumlabooh/releases/tag/0.0.2">Latest release (0.0.2)</><br>
 
-<a href="https://aur.archlinux.org/packages/drumlabooh">Drumlabooh AUR page</a><br>
-<i>yay -S drumlabooh</i>
+<a href="https://github.com/psemiletov/drumlabooh">Github page</a><br>
+
+<a href="https://aur.archlinux.org/packages/drumlabooh">AUR page</a> // <i>yay -S drumlabooh</i>
 </p>
 
-<h3>Build from the source</h3>
+<h3>Windows: installation</h3>
 
-<p>To build Drumlabooh form the source, you need to install some dependencies first. Drumlabooh is based on JUCE, JUCE source code will be fetched by configuration process, so JUCE needs additional libraries.</p>
+<p>Download <a href="">this zipped VSTi</a>  and unpack to your VSTi folder. Then install some drumkits with <a href="http://hydrogen-music.org">Hydrogen</a>, or Drumlabooh kits manually from <a href="https://github.com/psemiletov/drum_sklad">Drum sklad</a> (just copy/unpack kit directories to <i>C:\drumlabooh_kits</i> or  <i>D:\drumlabooh_kits</i> or, for SFZ format <i>C:\sfz_kits</i> or <i>D:\sfz_kits</i>. Please read <a href="manual.html">the Manual for a details.</a>
+</p>
+
+<h3>Linux: Install binary</h3>
+
+<p>Download and unpack LV2 or/and VSTi <a href="">from this archive</a> to <i>.lv2</i> and <i>vst3</i> directories at your home directory. Voila!</p>
+
+<h3>Linux: Build from the source</h3>
+
+<p>To build Drumlabooh form the source, you need to install some dependencies first. Drumlabooh is based on JUCE. JUCE source code will be fetched by configuration process, but JUCE needs additional libraries.</p>
 
 <p>Dependencies (Ubuntu packages names):</p>
 
@@ -69,9 +79,68 @@ make install</pre>
 
 </td>
 
-
 <td class="table_top_cell">
+<h3>Скачать плагин!</h3>
+
+<p><a href="https://github.com/psemiletov/drumlabooh/releases/tag/0.0.2">Свежий выпуск (0.0.2)</><br>
+
+<a href="https://github.com/psemiletov/drumlabooh">Страница на Github</a><br>
+
+<a href="https://aur.archlinux.org/packages/drumlabooh">Страница на AUR</a> //<i>yay -S drumlabooh</i>
+</p>
+
+<h3>Windows: установка</h3>
+
+<p>Скачайте <a href="">этот ZIP-архив с VSTi</a> и распакуйте в папку, где у вас плагины VST. Затем установите какие-нибудь драмкиты, например в драм-машине <a href="http://hydrogen-music.org">Hydrogen</a>, или вручную, формата Drumлабуха с сайта <a href="https://github.com/psemiletov/drum_sklad">Drum sklad</a> (скопируйте/распакуйте папки драмкитов в <i>C:\drumlabooh_kits</i> или  <i>D:\drumlabooh_kits</i> либо, в случае формата SFZ: <i>C:\sfz_kits</i> или <i>D:\sfz_kits</i>. За подробностями обратитесь к <a href="manual.html">Руководству пользователя</a>. Зачитаетесь!
+</p>
+
+<h3>Linux: сборка из исходника</h3>
+
+<p>Чтобы собрать Драмлабух из исходника, надо его удовлетворить, то бишь установить зависимости, нужные для библиотеки JUCE, на которой Драмлабух основан и которую подгружает из сети во время сборки.</p>
+
+
+<p>Зависимости (имена пакетов в Ubuntu):</p>
+
+
+<pre>libasound2-dev
+libfreetype6-dev
+libx11-dev
+libxcomposite-dev
+libxcursor-dev
+libxext-dev
+libxinerama-dev
+libxrandr-dev
+libxrender-dev</pre>
+
+
+<p>Зависимости (имена пакетов для Arch):</p>
+
+<pre>alsa-lib
+freetype2
+libx11
+libxcomposite
+libxcursor
+libxext
+libxinerama
+libxrandr
+libxrender</pre>
+
+<p>Установите их, ежели они еще не установлены, а потом выполните из каталога исходника Драмлабуха, под рутом или sudo:</p>
+
+
+<pre>mkdir b
+cd b
+cmake ..
+make
+make install</pre>
+
+
+<p>Сие установит Lv2 и VSTi версии плагина в /usr/local/lib/LV2 в /usr/local/lib/VST3. Если вы хотите переопределить каталог назначения, то назначьте его посредством переменной CMAKE_INSTALL_PREFIX. Например, заменить <i>/usr/local</i> на глобальный <i>/usr</i> можно так:</p>
+
+<pre>cmake -DCMAKE_INSTALL_PREFIX=/usr ..</pre>
+
 </td>
+
 
 </tr>
 
