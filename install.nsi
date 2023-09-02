@@ -3,12 +3,12 @@
 ; The name of the installer
 Name "Drumlabooh installer"
 
-;Caption "Установка TEA (Win32) 18.0.0"
-;SubCaption 2 ": Выбор папки"
-;SubCaption 0 ": Условия установки"
-;SubCaption 3 ": Установка файлов"
-;SubCaption 4 ": Завершено"
-;SubCaption 1 ": Компоненты"
+Caption "Drumlabooh VSTi setup"
+SubCaption 2 ": Select VSTi folder"
+SubCaption 0 ": License agreement"
+SubCaption 3 ": Files installation"
+SubCaption 4 ": Done"
+SubCaption 1 ": Components"
 
 CRCCheck on
 ;SetCompressor zlib
@@ -26,17 +26,17 @@ InstProgressFlags smooth colored
 ;LicenseText "Условия установки и новости" "Хорошо!"
 ;LicenseData "tealic.txt"
 LicenseData "LICENSE"
-;UninstallText "Удаление TEA. Еще не поздно отказаться ;)"
+UninstallText "Removing Drumlabooh. Are you sure?"
 ShowInstDetails show
 ShowUninstDetails show
-;CompletedText "Выполнено!"
-;MiscButtonText "< Назад" "Дальше >" "Отмена" "Закрыть"
-;InstallButtonText "Установить"
-;UninstallButtonText "Стереть"
-;UninstallCaption "Удалить TEA"
-;UninstallSubCaption 0 ": Подтверждение"
-;UninstallSubCaption 1 ": Стираю файлы"
-;UninstallSubCaption 2 ": Завершено"
+CompletedText "Done!"
+MiscButtonText "< Previous" "Next >" "Cancel" "Close"
+InstallButtonText "Install"
+UninstallButtonText "Uninstall"
+UninstallCaption "Remove Drumlabooh"
+UninstallSubCaption 0 ": Confirmation"
+UninstallSubCaption 1 ": Removing files"
+UninstallSubCaption 2 ": Done"
 
 ;C:\Program Files\Common Files\VST3\drumlabooh.vst3
 
@@ -48,8 +48,8 @@ InstallDir "$PROGRAMFILES\Common Files\VST3\drumlabooh.vst3"
 
 
 ; The text to prompt the user to enter a directory
-;DirText "Сейчас, наверное, установка начнется. Выберите папку."
-;ComponentText "Выберите компоненты для установки"
+;DirText "Select VSTi folder please"
+;ComponentText "Select the compoments to install"
 
 
 ; The stuff to install
