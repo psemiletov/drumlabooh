@@ -1,6 +1,15 @@
-th, td {
-  padding: 15px;
+table {
+table-layout: fixed;
+  border: 10px solid;
+ border-style: outset;
 }
+
+td {
+    padding: 15px;
+   vertical-align:top;
+ 
+}
+
 
 .center {
   margin-left: auto;
@@ -8,4 +17,3 @@ th, td {
 }
 
 
-.table_top_cell{vertical-align:top;width:50%}
