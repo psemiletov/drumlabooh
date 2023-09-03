@@ -82,20 +82,20 @@ I spend many time to play with small toolkits that produces X-based GUI, then (o
 
 <h3>История создания</h3>
 
-Drumlabooh was written as the replacement of <a href="https://github.com/psemiletov/drumrox">Drumrox</a>, my fork of DrMr (see <a href="https://github.com/nicklan/drmr">Nicklan's DrMr</a>  and <a href="https://github.com/falkTX/drmr">Filipe Coelho's fork</a>.
+Drumlabooh был написан как замена<a href="https://github.com/psemiletov/drumrox">Drumrox</a>, моему форку DrMr (см.<a href="https://github.com/nicklan/drmr">Nicklan's DrMr</a>  and <a href="https://github.com/falkTX/drmr">Filipe Coelho's fork</a>.
 
-<p>DrMr is cool C/Gtk+2 LV2 plugin that I used for a years, but then it stopped support current Hydrogen's drumkit format. First I "fixed" kits XML files manually, and at the some point I made a fork of DrMr called Drumrox and fix it at the XML parsing level.
+<p>DrMr это классный, написанный на C/Gtk+2 LV2-плагин который я использовал годами, он умел загружать драмкиты формата Hydrogen, а потом формат поменялся, и DrMr перестал его понимать. Сначала я правил XML-файлы драмкитов вручную, чтобы DrMr их понимал, а потом решил исправить это дело в самом DrMr на уровне кода, так возник мой форк - Drumrox. Это было весной 2023.
 </p>
 
-<p>It was a spring 2023.</p>
-
-<p>The C language is not my favourite, so I converted codebase to C++ and wrote new drumkit's loader using Pugi xml parser. Soon SFZ and the own, simple kit format has been added. Also I replaced note on/off leds to clickable buttons, made some redesign of the window, but I still feeled myself not comfortable with old code - I did not understand some parts of it. I found LV2 documentation too unclear for me. Alas!</p>
-
-<p>After upgrade of my PC box I started to see that Ardour may record MIDI events with some pre-delay (or negative shift), and I readed about this bug and this was not fixed. I would be happy to use Drumrox in another DAW, Reaper, but DrMr UI is based on GTK2, and Reaper does not support GTK2 GUI!
-I spend many time to play with small toolkits that produces X-based GUI, then (of course!) started to write the own one, but tried JUCE and... That how Drumlabooh was born!
+<p>Язык Си - не мой любимый, так что я перевел всё под комлятор С++ и переписал на Плюсы часть кода - парсер и загрузчик драмкитов (используя Pugi), сделал поддержку SFZ, придумал свой, упрощенный формат драмкитов, заменил диоды на кнопки с названиями инструментов - словом, поменял часть начинки и интерфейса, а также переписал внутренний микшер. Дальше дело особо не двигалось, ибо я не понимал часть старого кода и не мог толком разобраться в документации по API LV2 - словом, дальше шибко развивать Драмрокс я не мог и особо не хотел.
 </p>
 
-<p>From the Drumrox I took my code of drumkits loader, ported it to JUCE file supports format, and resampler I took from Speex.</p>
+<p>А была одна фигня. После апгрейда компа отошла в прошлое моя звуковуха M-Audio Audiophile, я стал использовать встроенную звуковуху, а еще юсб-шную M-Audio Solo, и в связи или не связи с этим заметил, что Ардор при записи с MIDI-клавы помещает ноты раньше чем нужно, после окончания записи на дорожку. Это оказывается известный глюк и никто его не починил. Я бы стал использовать для творчества другую программу, например Рипер, но мне нужен был Драмрокс, а его  
+интерфейс на основе GTK2 работал, по большому счету, только в Ардоре. И это непобедимая данность.
+</p>
+
+<p>Поэтому я написал с нуля Драмлабуха, положив в основу тулкит JUCE, что позволило плагину работать под всеми DAW, воплотил в нем всё что было в Драмроксе, и могу развивать дальше сколько вздумается.
+</p>
 
 </td>
 

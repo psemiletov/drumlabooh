@@ -27,7 +27,7 @@ set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should
 
 set(VST3_INSTALL_DIR lib/vst3 CACHE PATH "Specifies where the VST3 libraries should be installed")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w -O3 ")
 
 set(FETCHCONTENT_QUIET FALSE)
 
