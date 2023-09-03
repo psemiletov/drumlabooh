@@ -14,7 +14,7 @@ include(FetchContent)
 # `project()` command. `project()` sets up some helpful variables that describe source/binary
 # directories, and the current project version. This is a standard CMake command.
 
-project(DRUMLABOOH LANGUAGES CXX C VERSION 0.0.2)
+project(DRUMLABOOH LANGUAGES CXX C VERSION 0.0.3)
 
 
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 ")
@@ -27,7 +27,7 @@ set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should
 
 set(VST3_INSTALL_DIR lib/vst3 CACHE PATH "Specifies where the VST3 libraries should be installed")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w -O3 ")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 
 set(FETCHCONTENT_QUIET FALSE)
 
@@ -86,11 +86,9 @@ endif()
 FetchContent_Declare(
   juce
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-  GIT_TAG        d24c2729268e322f3ba1b5070eb96ab232d7f6ba # release-7.0.6
+  GIT_TAG        2a27ebcfae7ca7f6eb62b29d5f002ceefdaadbdb # release-7.0.7
   GIT_PROGRESS TRUE
 )
-
-
 
 
 #FetchContent_MakeAvailable(juce)
