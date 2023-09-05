@@ -23,8 +23,6 @@ LicenseBkColor FCE6BD
 ;InstProgressFlags "colored"
 InstProgressFlags smooth colored
 
-;LicenseText "Условия установки и новости" "Хорошо!"
-;LicenseData "tealic.txt"
 LicenseData "LICENSE"
 UninstallText "Removing Drumlabooh. Are you sure?"
 ShowInstDetails show
@@ -67,8 +65,20 @@ Section "Files (mandatory)"
 
 ;  ExecShell "open" '"$INSTDIR\doc\note_for_users.html"'
 
+SectionEnd
+
+
+Section "Basic drumkits"
+  ; Set output path to the installation directory.
+  SetOutPath "C:\drumlabooh_kits\
+;D:/a/drumlabooh/drumlabooh/build/_deps/drum_sklad-src
+  ; Put file there
+  File /r "D:/a/drumlabooh/drumlabooh/build/_deps/drum_sklad-src/*"
+
+;  ExecShell "open" '"$INSTDIR\doc\note_for_users.html"'
 
 SectionEnd
+
 
 ;Section "Ярлыки в Главном меню (выборочно)"
 
@@ -92,6 +102,8 @@ Section "Uninstall"
 ;          RMDir $SMPROGRAMS\TEA
           Delete $INSTDIR\nsUninst.exe
           Delete $INSTDIR\*.*
+          Delete "C:\drumlabooh_kits\*.*"
+
           RMDir /r $INSTDIR
 
 SectionEnd
