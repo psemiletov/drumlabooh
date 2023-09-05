@@ -73,7 +73,7 @@ Section "Basic drumkits"
   SetOutPath "C:\drumlabooh_kits"
 ;D:/a/drumlabooh/drumlabooh/build/_deps/drum_sklad-src
   ; Put file there
-  File /r "D:/a/drumlabooh/drumlabooh/build/_deps/drum_sklad-src/*"
+  File /r "D:\a\drumlabooh\drumlabooh\build\_deps\drum_sklad-src\*"
 
 ;  ExecShell "open" '"$INSTDIR\doc\note_for_users.html"'
 
