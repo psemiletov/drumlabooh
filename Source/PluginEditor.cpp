@@ -23,7 +23,7 @@
 void CLed::paint(Graphics& g)
 {
   if (is_on)
-     g.fillAll(cl_on);
+     g.fillAll(cl_on.withLightness(velocity));
   else
       g.fillAll(cl_off);
 }
@@ -555,6 +555,7 @@ void CTimer::hiResTimerCallback()
         {
          bool actv = uplink->audioProcessor.drumkit->v_samples[i]->active;
          uplink->drumlines[i].led.is_on = actv;
+         uplink->drumlines[i].led.velocity = uplink->audioProcessor.drumkit->v_samples[i]->velocity;
          uplink->drumlines[i].led.repaint();
         }
 
