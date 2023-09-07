@@ -70,6 +70,9 @@ CAudioProcessor::CAudioProcessor()
 #endif
 parameters (*this, 0, "Drumlabooh", createParameterLayout())
 {
+
+//std::cout << "CAudioProcessor::CAudioProcessor() - 1" << std::endl;
+
   formatManager = new juce::AudioFormatManager();
   formatManager->registerBasicFormats();
 
@@ -254,13 +257,17 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
   if (fresh_start)
      {
-//       std::cout << "fresh_start:" << fresh_start << std::endl;
+     //  std::cout << "fresh_start:" << fresh_start << std::endl;
       session_samplerate = getSampleRate();
 
-      if (! drumkit_path.empty())
-         load_kit (drumkit_path);
+      //std::cout << "drumkit_path: " << drumkit_path << std::endl;
 
-      fresh_start = false;
+      if (! drumkit_path.empty())
+         {
+          load_kit (drumkit_path);
+          fresh_start = false;
+          return;
+         }
      }
 
   for (const juce::MidiMessageMetadata metadata : midiMessages)
@@ -529,7 +536,7 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 //load
 void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-//  std::cout << "CAudioProcessor::setStateInformation - 1" << std::endl;
+  //std::cout << "CAudioProcessor::setStateInformation - 1" << std::endl;
   std::unique_ptr <juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
 
   if (xmlState.get() != nullptr)
@@ -538,13 +545,13 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
          parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
          base_note_number = load_int_keyval ("base_note_number", 36);
          drumkit_path = load_string_keyval ("drumkit_path");
-         //std::cout << "drumkit_path : " << drumkit_path  << std::endl;
+        // std::cout << "drumkit_path : " << drumkit_path  << std::endl;
          //std::cout << "set base_note_number: " << _base_note_number << std::endl;
          //std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
          session_samplerate = getSampleRate();
         }
 
-//  std::cout << "CAudioProcessor::setStateInformation - 2" << std::endl;
+  //std::cout << "CAudioProcessor::setStateInformation - 2" << std::endl;
 }
 
 
@@ -587,7 +594,7 @@ int CAudioProcessor::load_int_keyval (const std::string &key, int defval)
 
 bool CAudioProcessor::load_kit (const std::string &fullpath)
 {
-  std::cout << "CAudioProcessor::load_kit: " << fullpath << std::endl;
+  //std::cout << "CAudioProcessor::load_kit: " << fullpath << std::endl;
 
   //std::cout << "CAudioProcessor::load_kit - 1" << std::endl;
   //std::cout << "fullpath: " << fullpath << std::endl;
