@@ -14,7 +14,7 @@ include(FetchContent)
 # `project()` command. `project()` sets up some helpful variables that describe source/binary
 # directories, and the current project version. This is a standard CMake command.
 
-project(DRUMLABOOH LANGUAGES CXX C VERSION 0.0.3)
+project(DRUMLABOOH LANGUAGES CXX C VERSION 0.0.4)
 
 
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 ")
