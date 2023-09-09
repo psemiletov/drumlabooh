@@ -90,7 +90,6 @@ parameters (*this, 0, "Drumlabooh", createParameterLayout())
        vols[i]  = parameters.getRawParameterValue ("vol" + std::to_string(i));
        pans[i]  = parameters.getRawParameterValue ("pan" + std::to_string(i));
        mutes[i]  = parameters.getRawParameterValue ("mute" + std::to_string(i));
-
       }
 
   panner_mode = parameters.getRawParameterValue ("panner_mode");
@@ -224,11 +223,10 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 
 bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-   if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+  if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
       return true;
   else
       return false;
-
 }
 
 // Map MIDI velocity 0-127 onto gain
@@ -253,14 +251,10 @@ float VelocityToLevel (int velocity)
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
 
-//std::cout << "CAudioProcessor::processBlock -1 " << std::endl;
-
+  //this code allow Ardour load kit properly when session rate is ready
   if (fresh_start)
      {
-     //  std::cout << "fresh_start:" << fresh_start << std::endl;
       session_samplerate = getSampleRate();
-
-      //std::cout << "drumkit_path: " << drumkit_path << std::endl;
 
       if (! drumkit_path.empty())
          {
@@ -270,36 +264,43 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
          }
      }
 
-  for (const juce::MidiMessageMetadata metadata : midiMessages)
+
+  if (! drumkit)
+      return;
+
+  if (drumkit->v_samples.size() == 0)
+      return;
+
+  for (const juce::MidiMessageMetadata metadata: midiMessages)
       {
         //  if (metadata.numBytes == 3)
             //Logger::writeToLog (metadata.getMessage().getDescription());
           // std::cout << metadata.getMessage().getDescription() << std::endl;
 
-        juce::MidiMessage msg = metadata.getMessage();
+       juce::MidiMessage msg = metadata.getMessage();
 
-        bool isNoteOn = msg.isNoteOn();
-        bool isNoteOff = msg.isNoteOff();
-        //float velocity = msg.getFloatVelocity();
+       bool isNoteOn = msg.isNoteOn();
+       bool isNoteOff = msg.isNoteOff();
 
-        float velocity = VelocityToLevel (msg.getVelocity());
+       //float velocity = msg.getFloatVelocity();
+       float velocity = VelocityToLevel (msg.getVelocity());
 
-        if (*ignore_midi_velocity > 0.5)
+       if (*ignore_midi_velocity > 0.5)
            velocity = 1;
 
-        int note_number = msg.getNoteNumber(); //36 starting note
+       int note_number = msg.getNoteNumber(); //36 starting note
 
-        if (isNoteOn )
-           {
+       if (isNoteOn )
+          {
             //std::cout << "note_number: " << note_number << std::endl;
             //std::cout << "velocity: " << velocity << std::endl;
+/*
+           if (! drumkit)
+              return;
 
-            if (! drumkit)
+           if (drumkit->v_samples.size() == 0)
                return;
-
-            if (drumkit->v_samples.size() == 0)
-               return;
-
+*/
 //             int nn = note_number - (int) *base_note_number;
             int nn = note_number - base_note_number;
 
