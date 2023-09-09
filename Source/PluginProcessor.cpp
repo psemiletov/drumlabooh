@@ -268,7 +268,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   if (! drumkit)
       return;
 
-  if (drumkit->v_samples.size() == 0)
+  size_t v_samples_size = drumkit->v_samples.size();
+
+  if (v_samples_size == 0)
       return;
 
   for (const juce::MidiMessageMetadata metadata: midiMessages)
@@ -294,17 +296,11 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
           {
             //std::cout << "note_number: " << note_number << std::endl;
             //std::cout << "velocity: " << velocity << std::endl;
-/*
-           if (! drumkit)
-              return;
 
-           if (drumkit->v_samples.size() == 0)
-               return;
-*/
-//             int nn = note_number - (int) *base_note_number;
+//          int nn = note_number - (int) *base_note_number;
             int nn = note_number - base_note_number;
 
-            if (nn < 0 || nn > drumkit->v_samples.size() - 1)
+            if (nn < 0 || nn > v_samples_size - 1)
                {
   //              std::cout << "nn <> drumkit->v_samples.size(), nn is " << nn << std::endl;
                 continue;
@@ -315,7 +311,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             float gn = db2lin(*(vols[nn]));
             // std::cout << "gn: " << gn << std::endl;
 
-            CDrumSample *s = drumkit->v_samples [nn];
+            CDrumSample *s = drumkit->v_samples[nn];
             if (! s)
                continue;
 
@@ -325,7 +321,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
              // so find the open hihat
             if (s->hihat_close)
                {
-                for (size_t i = 0; i < drumkit->v_samples.size(); i++)
+                for (size_t i = 0; i < v_samples_size; i++)
                     {
                      CDrumSample *s2 = drumkit->v_samples[i]; //point to the sample
                      if (s2->hihat_open)
@@ -337,8 +333,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       }
 
 
-     if (! drumkit)
-        return;
+     //if (! drumkit)
+        //return;
 
     // std::cout << "CAudioProcessor::processBlock -2 " << std::endl;
 
@@ -382,7 +378,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
    //for each sample out_buf_offs
     for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
         //for each drum instrument
-        for (int drum_sample_index = 0; drum_sample_index < drumkit->v_samples.size(); drum_sample_index++)
+        for (int drum_sample_index = 0; drum_sample_index < v_samples_size; drum_sample_index++)
             {
              CDrumSample *s = drumkit->v_samples [drum_sample_index];
              if (! s)
