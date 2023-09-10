@@ -40,7 +40,9 @@ libxinerama-dev
 libxrandr-dev
 libxrender-dev```
 
+
 Dependencies (Arch packages names):
+
 
 ```alsa-lib
 freetype2
