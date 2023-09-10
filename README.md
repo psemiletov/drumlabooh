@@ -30,7 +30,7 @@ To build Drumlabooh form the source, you need to install some dependencies first
 
 Dependencies (Ubuntu packages names):
 
-```libasound2-dev
+``libasound2-dev
 libfreetype6-dev
 libx11-dev
 libxcomposite-dev
@@ -38,13 +38,13 @@ libxcursor-dev
 libxext-dev
 libxinerama-dev
 libxrandr-dev
-libxrender-dev```
+libxrender-dev``
 
 
 Dependencies (Arch packages names):
 
 
-```alsa-lib
+``alsa-lib
 freetype2
 libx11
 libxcomposite
@@ -52,7 +52,7 @@ libxcursor
 libxext
 libxinerama
 libxrandr
-libxrender```
+libxrender``
 
 Install them if not installed, and then, under sudo or root:
 
