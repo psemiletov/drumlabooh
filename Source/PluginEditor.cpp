@@ -316,7 +316,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   sl_base_note.setValue (audioProcessor.base_note_number, dontSendNotification );
   sl_base_note.addListener (this);
 
-  sl_base_note..setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
+  sl_base_note.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
 
 
   // PAN MODE
@@ -525,8 +525,14 @@ void CTimer::hiResTimerCallback()
 {
  // std::cout << "CTimer::timerCallback -1" << std::endl;
 
+
    if (! uplink)
        return;
+
+   if (! uplink->isVisible())
+       return;
+
+
 
 //  std::cout << "CTimer::timerCallback - 2" << std::endl;
 
