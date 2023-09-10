@@ -2,7 +2,7 @@
 
 Drumlabooh is an easy way to write drum tracks as MIDI at your DAW, using Hydrogen, Drumlabooh/Drumrox kits or SFZ.
 
-For all details see the [Drumlabooh site](https://psemiletov.github.io/drumlabooh/)
+For all details, docs and drumkits see the [Drumlabooh site](https://psemiletov.github.io/drumlabooh/)
 
 
 ## Features
