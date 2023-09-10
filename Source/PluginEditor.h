@@ -39,15 +39,14 @@ class CLed: public juce::Component
 {
 public:
 //    juce::Colour cl_on = juce::Colours::gold;
-   juce::Colour cl_on = juce::Colours::orange;
+  juce::Colour cl_on = juce::Colours::orange;
+  juce::Colour cl_off = juce::Colours::grey;
+  bool is_on = false;
+  float velocity = 1.0f;
 
-    juce::Colour cl_off = juce::Colours::grey;
-    bool is_on = false;
-    float velocity = 1.0f;
-
-    void paint(Graphics& g);
-
+  void paint(Graphics& g);
 };
+
 
 class CDrumLine: public juce::Component/*,
                  public juce::Slider::Listener*/
@@ -98,6 +97,8 @@ public:
     CDrumKitsScanner kits_scanner;
 
     juce::AudioProcessorValueTreeState& valueTreeState;
+
+    juce::TooltipWindow tooltip_window;
 
     CTimer tmr_leds;
 

@@ -67,7 +67,7 @@ CDrumLine::CDrumLine ()
   sl_pan.setRange (-96, 6, 1);
 
   sl_pan.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
-  sl_pan.setTooltip ("Pan\n");
+  sl_pan.setTooltip ("Pan");
 
     //sl_pan.addListener (this);
 
@@ -87,7 +87,7 @@ CDrumLine::CDrumLine ()
 
     //sl_gain.addListener (this);
 
-  sl_pan.setTooltip ("Volume\n");
+  sl_vol.setTooltip ("Volume");
 
   xoffs += sl_vol.getWidth();
   xoffs += XFILLER;
@@ -123,27 +123,6 @@ void CDrumLine::resized()
 {
 }
 
-/*
-void CDrumLine::sliderValueChanged (juce::Slider* sliderThatWasMoved)
-{
-    //[UsersliderValueChanged_Pre]
-    //[/UsersliderValueChanged_Pre]
-
-    if (sliderThatWasMoved == &sl_pan)
-    {
-        //[UserSliderCode_sl_pan] -- add your slider handling code here..
-        //[/UserSliderCode_sl_pan]
-    }
-    else if (sliderThatWasMoved == &sl_gain)
-    {
-        //[UserSliderCode_sl_gain] -- add your slider handling code here..
-        //[/UserSliderCode_sl_gain]
-    }
-
-    //[UsersliderValueChanged_Post]
-    //[/UsersliderValueChanged_Post]
-}
-*/
 
 void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
 {
@@ -248,6 +227,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   cmb_drumkit_selector.setTextWhenNoChoicesAvailable ("NO DRUMKITS FOUND");
   cmb_drumkit_selector.setScrollWheelEnabled (true);
 
+  cmb_drumkit_selector.setTooltip ("Select from installed drum kits");
+
 
   cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, juce::Colour (53, 84, 100));
   cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, juce::Colour (255, 254, 255));
@@ -258,8 +239,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
    //cmb_drumkit_selector.onChange = [this] { kit_changed(); };
   cmb_drumkit_selector.addListener (this);
   cmb_drumkit_selector.setTopLeftPosition (xoffs, 8);
-
-  //yoffs += 48;
 
   yoffs += 52;
 
@@ -337,6 +316,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   sl_base_note.setValue (audioProcessor.base_note_number, dontSendNotification );
   sl_base_note.addListener (this);
 
+  sl_base_note..setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
+
+
   // PAN MODE
 
   addAndMakeVisible (l_pan_mode);
@@ -368,6 +350,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   addAndMakeVisible (bt_ignore_midi_velocity);
   bt_ignore_midi_velocity.setButtonText ("Ignore MIDI velocity");
+
+  bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
+
 
   bt_ignore_midi_velocity.setSize (180 + XFILLER, 48);
   bt_ignore_midi_velocity.setTopLeftPosition (l_pan_mode.getX(), cmb_pan_mode.getY() + cmb_pan_mode.getHeight() + YFILLER);
