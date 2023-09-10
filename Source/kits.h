@@ -14,8 +14,9 @@ this code is the public domain
 
 #include <JuceHeader.h>
 
+//JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wno-switch-enum -Wzero-as-null-pointer-constant")
 #include "pugixml.hpp"
-
+//JUCE_END_IGNORE_WARNINGS_GCC_LIKE
 
 class CDrumSample;
 

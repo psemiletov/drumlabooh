@@ -100,6 +100,16 @@ if(NOT juce_POPULATED)
 endif()
 
 
+#include (FetchContent)
+
+#FetchContent_Declare (melatonin_perfetto
+#  GIT_REPOSITORY https://github.com/sudara/melatonin_perfetto.git
+  #GIT_TAG origin/main)
+
+#FetchContent_MakeAvailable (melatonin_perfetto)
+
+
+#target_link_libraries (yourTarget PRIVATE Melatonin::Perfetto)
 
 
 # include JUCE *AFTER* the MSVC runtime and so on is set up
@@ -192,6 +202,10 @@ target_sources(drumlabooh
 # definitions will be visible both to your code, and also the JUCE module code, so for new
 # definitions, pick unique names that are unlikely to collide! This is a standard CMake command.
 
+
+#target_compile_options (drumlabooh
+#PRIVATE -Wno-switch-enum -Wsign-compare -Wsign-conversion -Wzero-as-null-pointer-constant)
+
 target_compile_definitions(drumlabooh
     PUBLIC
         # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
@@ -220,7 +234,6 @@ target_compile_definitions(drumlabooh
 
 target_link_libraries(drumlabooh
     PRIVATE
-#        libsamplerate
         # AudioPluginData           # If we'd created a binary data target, we'd link to it here
         juce::juce_audio_utils
     PUBLIC

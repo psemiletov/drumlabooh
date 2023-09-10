@@ -9,6 +9,8 @@
 #include "dsp.h"
 
 
+
+
 extern juce::AudioFormatManager *formatManager;
 
 
@@ -73,6 +75,7 @@ parameters (*this, 0, "Drumlabooh", createParameterLayout())
 
 //std::cout << "CAudioProcessor::CAudioProcessor() - 1" << std::endl;
 
+
   formatManager = new juce::AudioFormatManager();
   formatManager->registerBasicFormats();
 
@@ -103,6 +106,7 @@ CAudioProcessor::~CAudioProcessor()
       delete drumkit;
 
   delete formatManager;
+
 }
 
 
@@ -250,7 +254,6 @@ float VelocityToLevel (int velocity)
 
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-
   //this code allow Ardour load kit properly when session rate is ready
   if (fresh_start)
      {
@@ -260,7 +263,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
          {
           load_kit (drumkit_path);
           fresh_start = false;
-          return;
+          //return;
          }
      }
 
@@ -380,7 +383,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
         //for each drum instrument
         for (int drum_sample_index = 0; drum_sample_index < v_samples_size; drum_sample_index++)
             {
-             CDrumSample *s = drumkit->v_samples [drum_sample_index];
+             CDrumSample *s = drumkit->v_samples[drum_sample_index];
              if (! s)
                 {
                  std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
@@ -458,12 +461,12 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
              if (l->channels == 2)
                 {
-
                  float fl = l->channel_data[0][l->sample_offset++];
                  float fr = l->channel_data[1][l->sample_offset];
 
 //                 float gain = db2lin(*(gains[drum_sample_index]));
-                 float vol = juce::Decibels::decibelsToGain ((float)*(vols[drum_sample_index]));
+//                 float vol = juce::Decibels::decibelsToGain ((float)*(vols[drum_sample_index]));
+                 float vol = db2lin(*(vols[drum_sample_index]));
 
                  float pan_right = 0;
                  float pan_left = 0;
