@@ -23,7 +23,7 @@ this code is the public domain
 
 using namespace std;
 
-#define MAX_SAMPLES 32
+#define MAX_SAMPLES 36
 
 juce::AudioFormatManager *formatManager;
 
@@ -64,6 +64,7 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
 
   return buffer;
 }
+
 
 juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::string &fname, int sess_samplerate)
 {
@@ -279,7 +280,7 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
      {
       drumkit_info_passed = true;
 
-      if (kit->v_samples.size() == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 32 SAMPLES
+      if (kit->v_samples.size() == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
         return false;
 
       kit->add_sample();
