@@ -58,6 +58,7 @@ CDrumLine::CDrumLine ()
   xoffs += label.getWidth();
   xoffs += XFILLER;
 
+
   addAndMakeVisible (sl_pan);
   sl_pan.setTopLeftPosition (xoffs, YFILLER);
   sl_pan.setSize (68, 32);
@@ -105,11 +106,20 @@ CDrumLine::CDrumLine ()
   gr_group.setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
 
   setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
+
+   //testlabel.setSize (32, 32);
+  //testlabel.setText ("testlabel", juce::dontSendNotification);
+  //testlabel.setVisible (true);
+
+  //dsp_box = new juce::CallOutBox (testlabel, label.getBounds(), this);
+
+
 }
 
 
 CDrumLine::~CDrumLine()
 {
+//  delete dsp_box;
 }
 
 

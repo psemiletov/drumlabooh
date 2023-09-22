@@ -62,8 +62,11 @@ public:
     juce::ToggleButton bt_mute;
     CLed led;
 
-
     juce::Label label;
+
+    //juce::CallOutBox *dsp_box;
+
+    //juce::Label testlabel;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_vol;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_pan;
