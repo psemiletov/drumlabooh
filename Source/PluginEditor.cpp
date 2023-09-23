@@ -18,6 +18,47 @@
 //#define KNOB_HEIGHT 50
 //#define BETWEEN 3
 
+/*
+CFx::CFx(): juce::TopLevelWindow::TopLevelWindow ("FX", false)
+{
+  addAndMakeVisible (l_test);
+  l_test.setSize (160, 32);
+  l_test.setText ("LABEL TEST", juce::dontSendNotification);
+
+  setSize (640, 480);
+
+
+}
+*/
+
+
+
+CFx::CFx()
+{
+  addAndMakeVisible (l_test);
+
+  l_test.setTopLeftPosition (0, 0);
+  l_test.setSize (160, 32);
+  l_test.setText ("LABEL TEST", juce::dontSendNotification);
+
+  setSize (640, 480);
+
+}
+
+
+
+CFx::~CFx()
+{
+
+
+}
+
+
+void CFx::resized()
+{
+
+}
+
 
 
 void CLed::paint(Graphics& g)
@@ -29,7 +70,7 @@ void CLed::paint(Graphics& g)
 }
 
 
-CDrumLine::CDrumLine ()
+CDrumLine::CDrumLine()
 {
   addChildComponent (gr_group);
 
@@ -56,6 +97,51 @@ CDrumLine::CDrumLine ()
   label.setText ("EMPTY CELL", juce::dontSendNotification);
 
   xoffs += label.getWidth();
+  xoffs += XFILLER;
+
+
+  wnd_fx = new juce::ResizableWindow ("FX", false);
+  wnd_fx->setContentNonOwned (&fx, true);
+  wnd_fx->setUsingNativeTitleBar (false);
+
+  addAndMakeVisible (bt_fx);
+
+  bt_fx.setButtonText ("FX");
+
+  bt_fx.setTopLeftPosition (xoffs, YFILLER);
+  bt_fx.setSize (42, 32);
+
+
+   //wnd_fx->setTopLeftPosition (bt_fx.getScreenX(), bt_fx.getScreenY() + bt_fx.getHeight());
+
+
+
+   bt_fx.onClick = [this] {
+                          std::cout << "CLICK" << std::endl;
+
+//                          std::cout << "bt_fx.getScreenX() " << bt_fx.getScreenX() << std::endl;
+
+
+                           if (wnd_fx->isOnDesktop())
+                               wnd_fx->removeFromDesktop();
+                           else
+                               wnd_fx->addToDesktop();
+
+                         // wnd_fx.addToDesktop (juce::ComponentPeer::StyleFlags::windowHasCloseButton |
+                                         //      juce::ComponentPeer::StyleFlags::windowHasTitleBar | juce::ComponentPeer::StyleFlags::windowIsTemporary);
+
+                          wnd_fx->setVisible (! wnd_fx->isVisible());
+
+                         // wnd_fx->setTopLeftPosition (1, 1);
+                             wnd_fx->setTopLeftPosition (bt_fx.getScreenX() + bt_fx.getWidth(), bt_fx.getScreenY() + bt_fx.getHeight());
+
+
+
+                         };
+
+
+
+  xoffs += bt_fx.getWidth();
   xoffs += XFILLER;
 
 
@@ -102,6 +188,12 @@ CDrumLine::CDrumLine ()
   xoffs += bt_mute.getWidth();
   xoffs += XFILLER;
 
+
+  xoffs += bt_fx.getWidth();
+  xoffs += XFILLER;
+
+
+
   gr_group.setVisible (true);
   gr_group.setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
 
@@ -120,6 +212,7 @@ CDrumLine::CDrumLine ()
 CDrumLine::~CDrumLine()
 {
 //  delete dsp_box;
+  delete wnd_fx;
 }
 
 

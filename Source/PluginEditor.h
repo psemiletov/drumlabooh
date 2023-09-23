@@ -48,6 +48,42 @@ public:
 };
 
 
+
+/*
+class CFx: public juce::TopLevelWindow
+{
+public:
+
+ juce::Label l_test;
+
+ CFx();
+ ~CFx() override;
+
+
+ void resized() override;
+
+};
+
+*/
+
+
+
+class CFx: public juce::Component
+{
+public:
+
+ juce::Label l_test;
+
+ CFx();
+ ~CFx() override;
+
+
+ void resized() override;
+
+};
+
+
+
 class CDrumLine: public juce::Component/*,
                  public juce::Slider::Listener*/
 {
@@ -61,6 +97,14 @@ public:
 
     juce::ToggleButton bt_mute;
     CLed led;
+
+    //CFx wnd_fx;
+
+    juce::ResizableWindow *wnd_fx;
+    CFx fx;
+
+
+    juce::TextButton bt_fx;
 
     juce::Label label;
 
