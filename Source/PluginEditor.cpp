@@ -189,11 +189,6 @@ CDrumLine::CDrumLine()
   xoffs += XFILLER;
 
 
-  xoffs += bt_fx.getWidth();
-  xoffs += XFILLER;
-
-
-
   gr_group.setVisible (true);
   gr_group.setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
 
