@@ -105,9 +105,53 @@ void CLed::paint(Graphics& g)
 
 CDrumLine::CDrumLine()
 {
-  addChildComponent (gr_group);
+  //INIT FX
 
   int xoffs = XFILLER * 2;
+
+  bt_lp.setButtonText ("LP");
+  fx.addAndMakeVisible (bt_lp);
+  bt_lp.setTopLeftPosition (xoffs, YFILLER);
+  bt_lp.setSize (48, 32);
+
+  xoffs += bt_lp.getWidth();
+  xoffs += XFILLER;
+
+
+  fx.addAndMakeVisible (sl_lp_cutoff);
+
+  sl_lp_cutoff.setTopLeftPosition (xoffs, YFILLER);
+  sl_lp_cutoff.setSize (68, 32);
+  sl_lp_cutoff.setRange (0.1f, 0.99f, 0.001f);
+
+  sl_lp_cutoff.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_lp_cutoff.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_lp_cutoff.setTooltip ("Cutoff");
+
+  xoffs += sl_lp_cutoff.getWidth();
+  xoffs += XFILLER;
+
+
+  fx.addAndMakeVisible (sl_lp_reso);
+  sl_lp_reso.setTopLeftPosition (xoffs, YFILLER);
+  sl_lp_reso.setSize (68, 32);
+  sl_lp_reso.setRange (0.0f, 1.0f, 0.001f);
+
+  sl_lp_reso.setSliderStyle (juce::Slider::LinearHorizontal);
+
+  sl_lp_reso.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_lp_reso.setTooltip ("Reso");
+
+
+  fx.setSize (480, 200);
+
+
+
+
+  //
+  addChildComponent (gr_group);
+
+  xoffs = XFILLER * 2;
 
   addAndMakeVisible (led);
   led.setTopLeftPosition (xoffs, YFILLER);
@@ -265,15 +309,19 @@ void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
   param_name = "mute" + std::to_string (cell_number);
   att_mute.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, bt_mute));
 
-  param_name = "lp" + std::to_string (cell_number);
-  fx.att_lp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx.bt_lp));
+ // param_name = "lp" + std::to_string (cell_number);
+ // fx.att_lp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx.bt_lp));
+
+   param_name = "lp" + std::to_string (cell_number);
+  att_lp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, bt_lp));
 
 
   param_name = "lp_cutoff" + std::to_string (cell_number);
 
   std::cout << "param_name: " << param_name << std::endl;
 
-  fx.att_lp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_lp_cutoff));
+//  fx.att_lp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_lp_cutoff));
+  att_lp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_lp_cutoff));
 
 
   //param_name = "lpreso" + std::to_string (cell_number);

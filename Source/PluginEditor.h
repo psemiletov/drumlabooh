@@ -80,6 +80,31 @@ class CDrumLine: public juce::Component/*,
 {
 public:
 
+
+    //FX
+
+      std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_lp;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_cutoff;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_reso;
+
+
+ juce::Label l_test;
+
+ juce::ToggleButton bt_lp;
+ juce::Slider sl_lp_cutoff;
+ juce::Slider sl_lp_reso;
+
+
+ juce::Component fx;
+
+
+    //
+
+
+     juce::Component main;
+
+
+
     juce::Font f_samplename_font { 14.0f, juce::Font::bold};
 
     juce::GroupComponent gr_group;
@@ -92,7 +117,7 @@ public:
     //CFx wnd_fx;
 
     juce::ResizableWindow *wnd_fx;
-    CFx fx;
+    //CFx fx;
 
 
     juce::TextButton bt_fx;
