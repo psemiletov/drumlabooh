@@ -49,30 +49,21 @@ public:
 
 
 
-/*
-class CFx: public juce::TopLevelWindow
-{
-public:
-
- juce::Label l_test;
-
- CFx();
- ~CFx() override;
-
-
- void resized() override;
-
-};
-
-*/
-
-
-
 class CFx: public juce::Component
 {
 public:
 
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_lp;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_cutoff;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_reso;
+
+
  juce::Label l_test;
+
+ juce::ToggleButton bt_lp;
+ juce::Slider sl_lp_cutoff;
+ juce::Slider sl_lp_reso;
+
 
  CFx();
  ~CFx() override;

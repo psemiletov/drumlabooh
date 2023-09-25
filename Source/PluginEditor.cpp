@@ -13,11 +13,6 @@
 #define WINDOW_WIDTH 790
 
 
-
-//#define KNOB_WIDTH 50
-//#define KNOB_HEIGHT 50
-//#define BETWEEN 3
-
 /*
 CFx::CFx(): juce::TopLevelWindow::TopLevelWindow ("FX", false)
 {
@@ -35,13 +30,51 @@ CFx::CFx(): juce::TopLevelWindow::TopLevelWindow ("FX", false)
 
 CFx::CFx()
 {
+  int xoffs = XFILLER;
+
+/*
   addAndMakeVisible (l_test);
 
   l_test.setTopLeftPosition (0, 0);
   l_test.setSize (160, 32);
   l_test.setText ("LABEL TEST", juce::dontSendNotification);
+*/
 
-  setSize (640, 480);
+  bt_lp.setButtonText ("LP");
+  addAndMakeVisible (bt_lp);
+  bt_lp.setTopLeftPosition (xoffs, YFILLER);
+  bt_lp.setSize (48, 32);
+
+  xoffs += bt_lp.getWidth();
+  xoffs += XFILLER;
+
+
+  addAndMakeVisible (sl_lp_cutoff);
+
+  sl_lp_cutoff.setTopLeftPosition (xoffs, YFILLER);
+  sl_lp_cutoff.setSize (68, 32);
+  sl_lp_cutoff.setRange (0.1f, 0.99f, 0.001f);
+
+  sl_lp_cutoff.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_lp_cutoff.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_lp_cutoff.setTooltip ("Cutoff");
+
+  xoffs += sl_lp_cutoff.getWidth();
+  xoffs += XFILLER;
+
+
+  addAndMakeVisible (sl_lp_reso);
+  sl_lp_reso.setTopLeftPosition (xoffs, YFILLER);
+  sl_lp_reso.setSize (68, 32);
+  sl_lp_reso.setRange (0.0f, 1.0f, 0.001f);
+
+  sl_lp_reso.setSliderStyle (juce::Slider::LinearHorizontal);
+
+  sl_lp_reso.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_lp_reso.setTooltip ("Reso");
+
+
+  setSize (480, 200);
 
 }
 
@@ -151,12 +184,9 @@ CDrumLine::CDrumLine()
   sl_pan.setRange (0.0f, 1.0f, 0.01f);
 
   sl_pan.setSliderStyle (juce::Slider::LinearHorizontal);
-  sl_pan.setRange (-96, 6, 1);
 
   sl_pan.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
   sl_pan.setTooltip ("Pan");
-
-    //sl_pan.addListener (this);
 
   xoffs += sl_pan.getWidth();
   xoffs += XFILLER;
@@ -182,7 +212,7 @@ CDrumLine::CDrumLine()
   bt_mute.setButtonText ("M");
   addAndMakeVisible (bt_mute);
   bt_mute.setTopLeftPosition (xoffs, YFILLER);
-  bt_mute.setSize (64, 32);
+  bt_mute.setSize (48, 32);
 
 
   xoffs += bt_mute.getWidth();
@@ -190,7 +220,7 @@ CDrumLine::CDrumLine()
 
 
   gr_group.setVisible (true);
-  gr_group.setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
+  gr_group.setSize (xoffs, 32 + YFILLER + YFILLER);
 
   setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
 
@@ -207,7 +237,7 @@ CDrumLine::CDrumLine()
 CDrumLine::~CDrumLine()
 {
 //  delete dsp_box;
-  delete wnd_fx;
+ delete wnd_fx;
 }
 
 
@@ -234,6 +264,21 @@ void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
 
   param_name = "mute" + std::to_string (cell_number);
   att_mute.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, bt_mute));
+
+  param_name = "lp" + std::to_string (cell_number);
+  fx.att_lp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx.bt_lp));
+
+
+  param_name = "lp_cutoff" + std::to_string (cell_number);
+
+  std::cout << "param_name: " << param_name << std::endl;
+
+  fx.att_lp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_lp_cutoff));
+
+
+  //param_name = "lpreso" + std::to_string (cell_number);
+  //fx.att_lp_reso.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_lp_reso));
+
 }
 
 

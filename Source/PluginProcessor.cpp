@@ -52,6 +52,19 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                                 "mute" + std::to_string(i),     // parameter name
                                                                 0, 1, 0));
 
+       layout.add (std::make_unique<juce::AudioParameterFloat> ("lp" + std::to_string(i),      // parameterID
+                                                                "lp" + std::to_string(i),     // parameter name
+                                                                0, 1, 0));
+
+       layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_cutoff" + std::to_string(i),
+                                                                "lp_cutoff" + std::to_string(i),
+                                                                0.01f, 0.99f, 0.99f));
+
+       layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_reso" + std::to_string(i),
+                                                                "lp_reso" + std::to_string(i),
+                                                                0.01f, 0.99f, 0.01f));
+
+
       }
 
   return layout;
@@ -93,6 +106,10 @@ parameters (*this, 0, "Drumlabooh", createParameterLayout())
        vols[i]  = parameters.getRawParameterValue ("vol" + std::to_string(i));
        pans[i]  = parameters.getRawParameterValue ("pan" + std::to_string(i));
        mutes[i]  = parameters.getRawParameterValue ("mute" + std::to_string(i));
+       lps[i]  = parameters.getRawParameterValue ("lp" + std::to_string(i));
+       lp_cutoff[i]  = parameters.getRawParameterValue ("lp_cutoff" + std::to_string(i));
+       lp_reso[i]  = parameters.getRawParameterValue ("lp_reso" + std::to_string(i));
+
       }
 
   panner_mode = parameters.getRawParameterValue ("panner_mode");

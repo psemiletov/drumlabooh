@@ -5,6 +5,7 @@
 //nclude "melatonin_perfetto/melatonin_perfetto.h"
 
 #include "kits.h"
+#include "fx-resofilter.h"
 
 
 class CAudioProcessor  : public juce::AudioProcessor
@@ -19,7 +20,15 @@ public:
 
     std::atomic<float>* pans[36];
     std::atomic<float>* vols[36];
-    std::atomic<float>* mutes[36];
+    std::atomic<float>* mutes[36]; //bool
+    std::atomic<float>* lps[36]; //bool
+
+    std::atomic<float>* lp_cutoff[36]; //
+    std::atomic<float>* lp_reso[36]; //
+
+
+    CResoFilter lp[36];
+
 
     std::atomic<float>* panner_mode = nullptr;
     std::atomic<float>* ignore_midi_velocity = nullptr;

@@ -29,6 +29,9 @@ set(VST3_INSTALL_DIR lib/vst3 CACHE PATH "Specifies where the VST3 libraries sho
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 
+
+
+
 set(FETCHCONTENT_QUIET FALSE)
 
 
@@ -189,10 +192,11 @@ target_sources(drumlabooh
         ./Source/dsp.cpp
         ./Source/kits.cpp
         ./Source/utl.cpp
-./Source/exceptions.cpp
-./Source/resampler_class.cpp
-./Source/resampler_function.cpp
-./Source/speex_resampler.c
+        ./Source/fx-resofilter.cpp
+        ./Source/exceptions.cpp
+        ./Source/resampler_class.cpp
+        ./Source/resampler_function.cpp
+        ./Source/speex_resampler.c
 )
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
@@ -229,6 +233,8 @@ target_compile_definitions(drumlabooh
 # dependencies are resolved automatically, so `juce_core`, `juce_events` and so on will also be
 # linked automatically. If we'd generated a binary data target above, we would need to link to it
 # here too. This is a standard CMake command.
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
 
 
 
