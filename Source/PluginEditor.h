@@ -57,12 +57,25 @@ public:
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_cutoff;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_reso;
 
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_hp;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_hp_cutoff;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_hp_reso;
 
- juce::Label l_test;
+
+
+ juce::GroupComponent gr_group_lp;
+ juce::GroupComponent gr_group_hp;
+
+
+// juce::Label l_test;
 
  juce::ToggleButton bt_lp;
  juce::Slider sl_lp_cutoff;
  juce::Slider sl_lp_reso;
+
+ juce::ToggleButton bt_hp;
+ juce::Slider sl_hp_cutoff;
+ juce::Slider sl_hp_reso;
 
 
  CFx();
@@ -87,14 +100,14 @@ public:
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_cutoff;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_reso;
 */
-
+/*
  juce::Label l_test;
 
  juce::ToggleButton bt_lp;
  juce::Slider sl_lp_cutoff;
  juce::Slider sl_lp_reso;
 
-
+*/
  //juce::Component fx;
 
 

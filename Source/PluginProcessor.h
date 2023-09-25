@@ -27,7 +27,12 @@ public:
     std::atomic<float>* lp_reso[36]; //
 
 
+    std::atomic<float>* hp_cutoff[36]; //
+    std::atomic<float>* hp_reso[36]; //
+
+
     CResoFilter lp[36];
+    CResoFilter hp[36];
 
 
     std::atomic<float>* panner_mode = nullptr;

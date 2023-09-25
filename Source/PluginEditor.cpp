@@ -30,28 +30,23 @@ CFx::CFx(): juce::TopLevelWindow::TopLevelWindow ("FX", false)
 
 CFx::CFx()
 {
-  int xoffs = XFILLER;
+  int xoffs = XFILLER * 2;
+  int yoffs = YFILLER * 2;
 
-/*
-  addAndMakeVisible (l_test);
+  addChildComponent (gr_group_lp);
+  gr_group_lp.setText ("LP");
 
-  l_test.setTopLeftPosition (0, 0);
-  l_test.setSize (160, 32);
-  l_test.setText ("LABEL TEST", juce::dontSendNotification);
-*/
-
-  bt_lp.setButtonText ("LP");
+  bt_lp.setButtonText ("ON");
   addAndMakeVisible (bt_lp);
-  bt_lp.setTopLeftPosition (xoffs, YFILLER);
+  bt_lp.setTopLeftPosition (xoffs, yoffs);
   bt_lp.setSize (48, 32);
 
   xoffs += bt_lp.getWidth();
   xoffs += XFILLER;
 
-
   addAndMakeVisible (sl_lp_cutoff);
 
-  sl_lp_cutoff.setTopLeftPosition (xoffs, YFILLER);
+  sl_lp_cutoff.setTopLeftPosition (xoffs, yoffs);
   sl_lp_cutoff.setSize (68, 32);
   //sl_lp_cutoff.setRange (0.001f, 0.099f, 0.001f);
 
@@ -66,7 +61,7 @@ CFx::CFx()
 
 
   addAndMakeVisible (sl_lp_reso);
-  sl_lp_reso.setTopLeftPosition (xoffs, YFILLER);
+  sl_lp_reso.setTopLeftPosition (xoffs, yoffs);
   sl_lp_reso.setSize (68, 32);
   //sl_lp_reso.setRange (0.0f, 1.0f, 0.001f);
   //sl_lp_reso.setNumDecimalPlacesToDisplay (5);
@@ -75,6 +70,82 @@ CFx::CFx()
 
   sl_lp_reso.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
   sl_lp_reso.setTooltip ("Reso");
+
+  xoffs += sl_lp_reso.getWidth();
+  xoffs += XFILLER;
+
+
+  int x = XFILLER;
+  int y = YFILLER;
+
+  gr_group_lp.setTopLeftPosition (x, y);
+  gr_group_lp.setSize (xoffs, yoffs + sl_lp_reso.getHeight());
+
+  gr_group_lp.setVisible (true);
+
+
+///////////////
+
+
+  xoffs = XFILLER * 2;
+  yoffs = gr_group_lp.getY + YFILLER * 2;
+
+
+  addChildComponent (gr_group_hp);
+  gr_group_hlp.setText ("HP");
+
+  bt_hp.setButtonText ("ON");
+  addAndMakeVisible (bt_hp);
+  bt_hp.setTopLeftPosition (xoffs, yoffs);
+  bt_hp.setSize (48, 32);
+
+  xoffs += bt_hp.getWidth();
+  xoffs += XFILLER;
+
+  addAndMakeVisible (sl_hp_cutoff);
+
+  sl_hp_cutoff.setTopLeftPosition (xoffs, yoffs);
+  sl_hp_cutoff.setSize (68, 32);
+  //sl_lp_cutoff.setRange (0.001f, 0.099f, 0.001f);
+
+  sl_hp_cutoff.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_hp_cutoff.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  //sl_lp_cutoff.setNumDecimalPlacesToDisplay (5);
+
+  sl_hp_cutoff.setTooltip ("Cutoff");
+
+  xoffs += sl_hp_cutoff.getWidth();
+  xoffs += XFILLER;
+
+
+  addAndMakeVisible (sl_hp_reso);
+  sl_hp_reso.setTopLeftPosition (xoffs, yoffs);
+  sl_hp_reso.setSize (68, 32);
+  //sl_lp_reso.setRange (0.0f, 1.0f, 0.001f);
+  //sl_lp_reso.setNumDecimalPlacesToDisplay (5);
+
+  sl_hp_reso.setSliderStyle (juce::Slider::LinearHorizontal);
+
+  sl_hp_reso.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_hp_reso.setTooltip ("Reso");
+
+  xoffs += sl_hp_reso.getWidth();
+  xoffs += XFILLER;
+
+
+  x = XFILLER;
+  y = gr_group_lp.getY + YFILLER;
+
+  gr_group_hp.setTopLeftPosition (x, y);
+  gr_group_hp.setSize (xoffs, yoffs + sl_lp_reso.getHeight());
+
+  gr_group_hp.setVisible (true);
+
+
+
+
+
+
 
 
   setSize (480, 200);

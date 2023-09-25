@@ -64,10 +64,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
 
 
-          layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_cutoff" + std::to_string(i),
-                                                                  "lp_cutoff" + std::to_string(i),
-                                                                  juce::NormalisableRange<float> (0, 0.999f, 0.001f), // parameter range
-                                                                  0.999f));
 
 /*
         layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_cutoff" + std::to_string(i),
@@ -77,11 +73,26 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
 
 */
+
+
+       layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_cutoff" + std::to_string(i),
+                                                                "lp_cutoff" + std::to_string(i),
+                                                                 juce::NormalisableRange<float> (0, 0.999f, 0.001f), // parameter range
+                                                                  0.999f));
        layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_reso" + std::to_string(i),
                                                                 "lp_reso" + std::to_string(i),
                                                                   juce::NormalisableRange<float> (0, 0.999f, 0.001f), // parameter range
                                                                   0.001f));
 
+
+       layout.add (std::make_unique<juce::AudioParameterFloat> ("hp_cutoff" + std::to_string(i),
+                                                                "hp_cutoff" + std::to_string(i),
+                                                                 juce::NormalisableRange<float> (0, 0.999f, 0.001f), // parameter range
+                                                                  0.999f));
+       layout.add (std::make_unique<juce::AudioParameterFloat> ("hp_reso" + std::to_string(i),
+                                                                "hp_reso" + std::to_string(i),
+                                                                  juce::NormalisableRange<float> (0, 0.999f, 0.001f), // parameter range
+                                                                  0.001f));
 
       }
 
@@ -128,7 +139,6 @@ parameters (*this, 0, "Drumlabooh", createParameterLayout())
        lp_cutoff[i]  = parameters.getRawParameterValue ("lp_cutoff" + std::to_string(i));
        lp_reso[i]  = parameters.getRawParameterValue ("lp_reso" + std::to_string(i));
 
-       lp[i].reset();
 
       }
 
@@ -677,7 +687,11 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
   drumkit->load (fullpath, session_samplerate);
 
   for (size_t i = 0; i < 36; i++)
-      lp[i].reset();
+      {
+       lp[i].reset();
+       hp[i].reset();
+       hp[i].mode = FILTER_MODE_LOWPASS;
+      }
 
 //resume
 
