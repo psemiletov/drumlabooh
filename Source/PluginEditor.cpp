@@ -83,6 +83,10 @@ CFx::CFx()
 CFx::~CFx()
 {
 
+      att_lp =  nullptr ;
+  att_lp_cutoff =  nullptr ;
+  att_lp_reso =  nullptr ;
+
 
 }
 
@@ -106,11 +110,15 @@ void CLed::paint(Graphics& g)
 CDrumLine::CDrumLine()
 {
   //INIT FX
-
+/*
   int xoffs = XFILLER * 2;
 
   bt_lp.setButtonText ("LP");
-  fx.addAndMakeVisible (bt_lp);
+  //fx.addAndMakeVisible (bt_lp);
+
+  addChildComponent (bt_lp);
+
+
   bt_lp.setTopLeftPosition (xoffs, YFILLER);
   bt_lp.setSize (48, 32);
 
@@ -118,7 +126,8 @@ CDrumLine::CDrumLine()
   xoffs += XFILLER;
 
 
-  fx.addAndMakeVisible (sl_lp_cutoff);
+  //fx.addAndMakeVisible (sl_lp_cutoff);
+  addChildComponent(sl_lp_cutoff);
 
   sl_lp_cutoff.setTopLeftPosition (xoffs, YFILLER);
   sl_lp_cutoff.setSize (68, 32);
@@ -132,7 +141,9 @@ CDrumLine::CDrumLine()
   xoffs += XFILLER;
 
 
-  fx.addAndMakeVisible (sl_lp_reso);
+  //fx.addAndMakeVisible (sl_lp_reso);
+  addChildComponent(sl_lp_cutoff);
+
   sl_lp_reso.setTopLeftPosition (xoffs, YFILLER);
   sl_lp_reso.setSize (68, 32);
   sl_lp_reso.setRange (0.0f, 1.0f, 0.001f);
@@ -144,14 +155,15 @@ CDrumLine::CDrumLine()
 
 
   fx.setSize (480, 200);
-
+*/
+  addChildComponent (fx);
 
 
 
   //
   addChildComponent (gr_group);
 
-  xoffs = XFILLER * 2;
+  int xoffs = XFILLER * 2;
 
   addAndMakeVisible (led);
   led.setTopLeftPosition (xoffs, YFILLER);
@@ -178,7 +190,7 @@ CDrumLine::CDrumLine()
 
 
   wnd_fx = new juce::ResizableWindow ("FX", false);
-  wnd_fx->setContentNonOwned (&fx, true);
+ wnd_fx->setContentNonOwned (&fx, true);
   wnd_fx->setUsingNativeTitleBar (false);
 
   addAndMakeVisible (bt_fx);
@@ -196,6 +208,18 @@ CDrumLine::CDrumLine()
    bt_fx.onClick = [this] {
                           std::cout << "CLICK" << std::endl;
 
+      /*                    if (fx.isVisible())
+                             {
+                              fx.setVisible (false);
+                              fx.toBack();
+                            }
+                          else
+                               {
+                                fx.setVisible (true);
+                                fx.toFront(true);
+                               }
+
+*/
 //                          std::cout << "bt_fx.getScreenX() " << bt_fx.getScreenX() << std::endl;
 
 
@@ -210,7 +234,7 @@ CDrumLine::CDrumLine()
                           wnd_fx->setVisible (! wnd_fx->isVisible());
 
                          // wnd_fx->setTopLeftPosition (1, 1);
-                             wnd_fx->setTopLeftPosition (bt_fx.getScreenX() + bt_fx.getWidth(), bt_fx.getScreenY() + bt_fx.getHeight());
+                            wnd_fx->setTopLeftPosition (bt_fx.getScreenX() + bt_fx.getWidth(), bt_fx.getScreenY() + bt_fx.getHeight());
 
 
 
@@ -281,6 +305,12 @@ CDrumLine::CDrumLine()
 CDrumLine::~CDrumLine()
 {
 //  delete dsp_box;
+
+ /*  att_lp =  nullptr ;
+  att_lp_cutoff =  nullptr ;
+  att_lp_reso =  nullptr ;
+*/
+
  delete wnd_fx;
 }
 
@@ -313,19 +343,21 @@ void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
  // fx.att_lp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx.bt_lp));
 
    param_name = "lp" + std::to_string (cell_number);
-  att_lp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, bt_lp));
+//  att_lp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, bt_lp));
+  fx.att_lp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx.bt_lp));
 
 
   param_name = "lp_cutoff" + std::to_string (cell_number);
 
-  std::cout << "param_name: " << param_name << std::endl;
+  //std::cout << "param_name: " << param_name << std::endl;
 
-//  fx.att_lp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_lp_cutoff));
-  att_lp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_lp_cutoff));
+ // att_lp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_lp_cutoff));
+//  att_lp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_lp_cutoff));
 
+  fx.att_lp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_lp_cutoff));
 
-  //param_name = "lpreso" + std::to_string (cell_number);
-  //fx.att_lp_reso.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_lp_reso));
+  param_name = "lp_reso" + std::to_string (cell_number);
+  fx.att_lp_reso.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_lp_reso));
 
 }
 

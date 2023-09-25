@@ -82,11 +82,11 @@ public:
 
 
     //FX
-
-      std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_lp;
+/*
+   std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_lp;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_cutoff;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_reso;
-
+*/
 
  juce::Label l_test;
 
@@ -95,13 +95,13 @@ public:
  juce::Slider sl_lp_reso;
 
 
- juce::Component fx;
+ //juce::Component fx;
 
 
     //
 
 
-     juce::Component main;
+    // juce::Component main;
 
 
 
@@ -117,7 +117,7 @@ public:
     //CFx wnd_fx;
 
     juce::ResizableWindow *wnd_fx;
-    //CFx fx;
+    CFx fx;
 
 
     juce::TextButton bt_fx;
