@@ -14,6 +14,11 @@
 extern juce::AudioFormatManager *formatManager;
 
 
+static juce::NormalisableRange<float> get_cutoff_range()
+{
+    return {0.f, 0.999f, 0.001f, 0.999f};
+}
+
 
 juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParameterLayout()
 {
@@ -44,7 +49,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
        layout.add (std::make_unique <juce::AudioParameterFloat> ("vol" + std::to_string(i), // parameter ID
                                                                  "vol" + std::to_string(i), // parameter name
                                                                   juce::NormalisableRange<float> (-96, 6, 0.1, 5), // parameter range
-                                                                  0));
+                                                                  0)); //default value
 
        layout.add (std::make_unique<juce::AudioParameterFloat> ("pan" + std::to_string(i), "pan" + std::to_string(i), 0.0f, 1.0f, 0.5f));
 
@@ -56,13 +61,26 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                                 "lp" + std::to_string(i),     // parameter name
                                                                 0, 1, 0));
 
-       layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_cutoff" + std::to_string(i),
-                                                                "lp_cutoff" + std::to_string(i),
-                                                                0.01f, 0.99f, 0.99f));
 
+
+
+          layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_cutoff" + std::to_string(i),
+                                                                  "lp_cutoff" + std::to_string(i),
+                                                                  juce::NormalisableRange<float> (0, 0.999f, 0.001f), // parameter range
+                                                                  0.999f));
+
+/*
+        layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_cutoff" + std::to_string(i),
+                                                                  "lp_cutoff" + std::to_string(i),
+                                                                  juce::NormalisableRange<float> (1, 22100.0f, 1.0f), // parameter range
+                                                                  48000.0f));
+
+
+*/
        layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_reso" + std::to_string(i),
                                                                 "lp_reso" + std::to_string(i),
-                                                                0.01f, 0.99f, 0.01f));
+                                                                  juce::NormalisableRange<float> (0, 0.999f, 0.001f), // parameter range
+                                                                  0.001f));
 
 
       }
@@ -109,6 +127,8 @@ parameters (*this, 0, "Drumlabooh", createParameterLayout())
        lps[i]  = parameters.getRawParameterValue ("lp" + std::to_string(i));
        lp_cutoff[i]  = parameters.getRawParameterValue ("lp_cutoff" + std::to_string(i));
        lp_reso[i]  = parameters.getRawParameterValue ("lp_reso" + std::to_string(i));
+
+       lp[i].reset();
 
       }
 
@@ -440,6 +460,30 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  float fl = l->channel_data[0][l->sample_offset++];
                  float fr = fl;
 
+
+                 //DPS
+
+
+                 bool lp_on = *(lps[drum_sample_index]) > 0.5f;
+
+                 if (lp_on)
+                    {
+                     lp[drum_sample_index].set_cutoff (*(lp_cutoff[drum_sample_index]));
+                     //lp[drum_sample_index].set_cutoff ((float) *(lp_cutoff[drum_sample_index]) / session_samplerate);
+
+
+                     lp[drum_sample_index].set_resonance (*(lp_reso[drum_sample_index]));
+
+                     fl = lp[drum_sample_index].process (fl);
+                     fr = fl;
+
+                     std::cout << "lpon" << std::endl;
+                    }
+
+
+
+                 //AFTER DSP
+
 //                 float vol = juce::Decibels::decibelsToGain ((float)*(vols[drum_sample_index]));
                  float vol = db2lin(*(vols[drum_sample_index]));
 
@@ -631,6 +675,9 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
 
   drumkit = new CDrumKit;
   drumkit->load (fullpath, session_samplerate);
+
+  for (size_t i = 0; i < 36; i++)
+      lp[i].reset();
 
 //resume
 

@@ -53,10 +53,12 @@ CFx::CFx()
 
   sl_lp_cutoff.setTopLeftPosition (xoffs, YFILLER);
   sl_lp_cutoff.setSize (68, 32);
-  sl_lp_cutoff.setRange (0.1f, 0.99f, 0.001f);
+  //sl_lp_cutoff.setRange (0.001f, 0.099f, 0.001f);
 
   sl_lp_cutoff.setSliderStyle (juce::Slider::LinearHorizontal);
   sl_lp_cutoff.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  //sl_lp_cutoff.setNumDecimalPlacesToDisplay (5);
+
   sl_lp_cutoff.setTooltip ("Cutoff");
 
   xoffs += sl_lp_cutoff.getWidth();
@@ -66,7 +68,8 @@ CFx::CFx()
   addAndMakeVisible (sl_lp_reso);
   sl_lp_reso.setTopLeftPosition (xoffs, YFILLER);
   sl_lp_reso.setSize (68, 32);
-  sl_lp_reso.setRange (0.0f, 1.0f, 0.001f);
+  //sl_lp_reso.setRange (0.0f, 1.0f, 0.001f);
+  //sl_lp_reso.setNumDecimalPlacesToDisplay (5);
 
   sl_lp_reso.setSliderStyle (juce::Slider::LinearHorizontal);
 
