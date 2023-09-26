@@ -82,7 +82,7 @@ public:
  ~CFx() override;
 
 
- void resized() override;
+// void resized() override;
 
 };
 
@@ -129,17 +129,28 @@ public:
 
     //CFx wnd_fx;
 
-    juce::ResizableWindow *wnd_fx;
+    //juce::ResizableWindow *wnd_fx;
+
+    juce::DocumentWindow *wnd_fx;
+
     CFx fx;
 
+    //std::unique_ptr <CFx> fx;
 
     juce::TextButton bt_fx;
+
+    juce::Button *bt_fx_close;
+
 
     juce::Label label;
 
     //juce::CallOutBox *dsp_box;
 
     //juce::Label testlabel;
+
+   // juce::CallOutBox *callout_box;
+
+
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_vol;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_pan;

@@ -134,7 +134,7 @@ CFx::CFx()
   gr_group_hp.setVisible (true);
 
 
-
+//  setVisible (true);
   //setSize (gr_group_lp.getRight() + XFILLER, gr_group_hp.getHeight() + gr_group_lp.getHeight() + YFILLER);
 
   setSize (gr_group_lp.getRight() + XFILLER, gr_group_hp.getHeight() + gr_group_lp.getHeight() + YFILLER * 2);
@@ -161,12 +161,12 @@ CFx::~CFx()
 
 }
 
-
+/*
 void CFx::resized()
 {
 
 }
-
+*/
 
 
 void CLed::paint(Graphics& g)
@@ -227,6 +227,8 @@ CDrumLine::CDrumLine()
 
   fx.setSize (480, 200);
 */
+
+ // fx = new CFx();
   addChildComponent (fx);
 
 
@@ -260,9 +262,15 @@ CDrumLine::CDrumLine()
   xoffs += XFILLER;
 
 
-  wnd_fx = new juce::ResizableWindow ("FX", false);
- wnd_fx->setContentNonOwned (&fx, true);
-  wnd_fx->setUsingNativeTitleBar (false);
+
+
+  //wnd_fx = new juce::ResizableWindow ("FX", false);
+  //wnd_fx = new juce::DocumentWindow ("FX", Colours::black, /*DocumentWindow::TitleBarButtons::closeButton*/0, false);
+  wnd_fx = new juce::DocumentWindow ("FX", Colours::black, DocumentWindow::TitleBarButtons::closeButton, false);
+
+  wnd_fx->setContentNonOwned (&fx, true);
+//  wnd_fx->setUsingNativeTitleBar (true);
+
 
   addAndMakeVisible (bt_fx);
 
@@ -272,49 +280,28 @@ CDrumLine::CDrumLine()
   bt_fx.setSize (42, 32);
 
 
+//  fx.setVisible (true);
+
+
    //wnd_fx->setTopLeftPosition (bt_fx.getScreenX(), bt_fx.getScreenY() + bt_fx.getHeight());
-
-
-
-   bt_fx.onClick = [this] {
-                          std::cout << "CLICK" << std::endl;
-
-      /*                    if (fx.isVisible())
-                             {
-                              fx.setVisible (false);
-                              fx.toBack();
-                            }
-                          else
-                               {
-                                fx.setVisible (true);
-                                fx.toFront(true);
-                               }
-
-*/
-//                          std::cout << "bt_fx.getScreenX() " << bt_fx.getScreenX() << std::endl;
-
-
-                           if (wnd_fx->isOnDesktop())
-                               wnd_fx->removeFromDesktop();
-                           else
-                               wnd_fx->addToDesktop();
-
-                         // wnd_fx.addToDesktop (juce::ComponentPeer::StyleFlags::windowHasCloseButton |
-                                         //      juce::ComponentPeer::StyleFlags::windowHasTitleBar | juce::ComponentPeer::StyleFlags::windowIsTemporary);
-
-                          wnd_fx->setVisible (! wnd_fx->isVisible());
-
-                         // wnd_fx->setTopLeftPosition (1, 1);
-                            wnd_fx->setTopLeftPosition (bt_fx.getScreenX() + bt_fx.getWidth(), bt_fx.getScreenY() + bt_fx.getHeight());
-
-
-
-                         };
-
 
 
   xoffs += bt_fx.getWidth();
   xoffs += XFILLER;
+/*
+
+  callout_box = new CallOutBox	(fx,
+                                 bt_fx.getBounds(),
+                                 this);
+*/
+  //addAndMakeVisible (callout_box);
+ // callout_box->setTopLeftPosition (xoffs, YFILLER);
+  //callout_box->setSize (68, 32);
+
+
+  //xoffs +=  callout_box->getWidth();
+  //xoffs += XFILLER;
+
 
 
   addAndMakeVisible (sl_pan);
@@ -370,6 +357,84 @@ CDrumLine::CDrumLine()
   //dsp_box = new juce::CallOutBox (testlabel, label.getBounds(), this);
 
 
+  //fx.setTopLeftPosition (bt_fx.getX() + bt_fx.getWidth(), bt_fx.getY() + bt_fx.getHeight());
+
+  bt_fx_close = wnd_fx->getCloseButton();
+  if (bt_fx_close)
+     {
+      //std::cout << "WOW" << std::endl;
+
+      bt_fx_close->onClick = [this] {
+                             std::cout << "YES" << std::endl;
+
+                              wnd_fx->setVisible (false);
+                              wnd_fx->removeFromDesktop();
+                             };
+
+
+     }
+
+
+   bt_fx.onClick = [this] {
+                          std::cout << "CLICK" << std::endl;
+
+
+                          //  auto& myBox = juce::CallOutBox::launchAsynchronously (fx.get(),
+                            //                        getScreenBounds(),
+                              //                      nullptr);
+/*
+                          wnd_fx->setSize (320, 320);
+                          wnd_fx->setTopLeftPosition (1, 1);
+
+                          wnd_fx->setVisible (true);
+                          wnd_fx->toFront (true);
+
+  */                      //   wnd_fx->setVisible (! wnd_fx->isVisible());
+
+                  //    fx.setVisible (true);
+
+                                //fx.setVisible (true);
+//                                fx.toFront(true);
+
+
+  //                        if (fx.isVisible())
+
+ //                         std::cout << "visible" << std::endl;
+/*
+
+                          if (fx.isVisible())
+                             {
+                              fx.setVisible (false);
+                              fx.toBack();
+                            }
+                          else
+                               {
+
+                                fx.setVisible (true);
+                                fx.toFront(true);
+                               }
+
+*/
+//                          std::cout << "bt_fx.getScreenX() " << bt_fx.getScreenX() << std::endl;
+
+
+
+                           if (wnd_fx->isOnDesktop())
+                               wnd_fx->removeFromDesktop();
+                           else
+                               wnd_fx->addToDesktop();//ComponentPeer::StyleFlags::windowIsTemporary | ComponentPeer::StyleFlags::windowHasTitleBar | ComponentPeer::StyleFlags::windowHasCloseButton);
+
+
+                          wnd_fx->setVisible (! wnd_fx->isVisible());
+
+                          wnd_fx->setTopLeftPosition (bt_fx.getScreenX() + bt_fx.getWidth(), bt_fx.getScreenY() + bt_fx.getHeight());
+
+
+
+                         };
+
+
+
 }
 
 
@@ -382,6 +447,7 @@ CDrumLine::~CDrumLine()
   att_lp_reso =  nullptr ;
 */
 
+// delete fx;
  delete wnd_fx;
 }
 
@@ -428,6 +494,26 @@ void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
   param_name = "hp_reso" + std::to_string (cell_number);
   fx.att_hp_reso.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_hp_reso));
 
+/*
+
+  param_name = "lp" + std::to_string (cell_number);
+  fx->att_lp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx->bt_lp));
+
+  param_name = "lp_cutoff" + std::to_string (cell_number);
+  fx->att_lp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx->sl_lp_cutoff));
+
+  param_name = "lp_reso" + std::to_string (cell_number);
+  fx->att_lp_reso.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx->sl_lp_reso));
+
+  param_name = "hp" + std::to_string (cell_number);
+  fx->att_hp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx->bt_hp));
+
+  param_name = "hp_cutoff" + std::to_string (cell_number);
+  fx->att_hp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx->sl_hp_cutoff));
+
+  param_name = "hp_reso" + std::to_string (cell_number);
+  fx->att_hp_reso.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx->sl_hp_reso));
+*/
 
 }
 
