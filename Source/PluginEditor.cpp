@@ -134,6 +134,46 @@ CFx::CFx()
   gr_group_hp.setVisible (true);
 
 
+  //SATURATOR ///////////////////////////////
+
+
+  xoffs = gr_group_hp.getRight() + XFILLER * 2;
+  yoffs = YFILLER * 2;
+
+  addChildComponent (gr_group_saturator);
+  gr_group_saturator.setText ("SATURATE");
+
+  bt_saturator.setButtonText ("ON");
+  addAndMakeVisible (bt_saturator);
+  bt_saturator.setTopLeftPosition (xoffs, yoffs);
+  bt_saturator.setSize (48, 32);
+
+  xoffs += bt_saturator.getWidth();
+  xoffs += XFILLER;
+
+  addAndMakeVisible (sl_saturator_amount);
+
+  sl_saturator_amount.setTopLeftPosition (xoffs, yoffs);
+  sl_saturator_amount.setSize (68, 32);
+
+  sl_saturator_amount.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_saturator_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+
+  sl_saturator_amount.setTooltip ("Amount");
+
+  xoffs += sl_saturator_amount.getWidth();
+  xoffs += XFILLER;
+
+  x = gr_group_hp.getRight() + XFILLER;
+  y = sl_saturator_amount.getBottom() + YFILLER;
+
+  gr_group_saturator.setTopLeftPosition (x, y);
+  gr_group_saturator.setSize (xoffs, sl_saturator_amount.getHeight() + YFILLER * 2);
+
+  gr_group_saturator.setVisible (true);
+
+
+
 //  setVisible (true);
   //setSize (gr_group_lp.getRight() + XFILLER, gr_group_hp.getHeight() + gr_group_lp.getHeight() + YFILLER);
 
@@ -158,6 +198,9 @@ CFx::~CFx()
   att_hp =  nullptr ;
   att_hp_cutoff =  nullptr ;
   att_hp_reso =  nullptr ;
+
+  att_saturator = nullptr;
+  att_saturator_amount = nullptr;
 
 }
 
@@ -348,6 +391,7 @@ CDrumLine::CDrumLine()
   gr_group.setVisible (true);
   gr_group.setSize (xoffs, 32 + YFILLER + YFILLER);
 
+
   setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
 
    //testlabel.setSize (32, 32);
@@ -493,6 +537,14 @@ void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
 
   param_name = "hp_reso" + std::to_string (cell_number);
   fx.att_hp_reso.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_hp_reso));
+
+  param_name = "saturator" + std::to_string (cell_number);
+  fx.att_saturator.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx.bt_saturator));
+
+  param_name = "saturator_amount" + std::to_string (cell_number);
+  fx.att_saturator_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_saturator_amount));
+
+
 
 /*
 

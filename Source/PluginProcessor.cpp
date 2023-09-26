@@ -76,6 +76,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                                 "hp" + std::to_string(i),     // parameter name
                                                                 0, 1, 0));
 
+       layout.add (std::make_unique<juce::AudioParameterFloat> ("saturator" + std::to_string(i),      // parameterID
+                                                                "saturator" + std::to_string(i),     // parameter name
+                                                                0, 1, 0));
 
 /*
         layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_cutoff" + std::to_string(i),
@@ -94,7 +97,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
        layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_reso" + std::to_string(i),
                                                                 "lp_reso" + std::to_string(i),
-                                                                  juce::NormalisableRange<float> (0, 0.999f, 0.001f), // parameter range
+                                                                  juce::NormalisableRange<float> (0, 1.0f, 0.001f), // parameter range
                                                                   0.001f));
 
 
@@ -102,10 +105,19 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                                 "hp_cutoff" + std::to_string(i),
                                                                  juce::NormalisableRange<float> (0, 0.999f, 0.001f), // parameter range
                                                                   0.999f));
+
        layout.add (std::make_unique<juce::AudioParameterFloat> ("hp_reso" + std::to_string(i),
                                                                 "hp_reso" + std::to_string(i),
-                                                                  juce::NormalisableRange<float> (0, 0.999f, 0.001f), // parameter range
+                                                                  juce::NormalisableRange<float> (0, 1.0f, 0.001f), // parameter range
                                                                   0.001f));
+
+
+       layout.add (std::make_unique<juce::AudioParameterFloat> ("saturator_amount" + std::to_string(i),
+                                                                "saturator_amount" + std::to_string(i),
+                                                                  juce::NormalisableRange<float> (0, 1.0f, 0.001f), // parameter range
+                                                                  0.001f));
+
+
 
       }
 

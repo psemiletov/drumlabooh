@@ -24,6 +24,7 @@ public:
 
     std::atomic<float>* lps[36]; //bool
     std::atomic<float>* hps[36]; //bool
+    std::atomic<float>* saturator[36]; //bool
 
 
     std::atomic<float>* lp_cutoff[36]; //
@@ -31,6 +32,9 @@ public:
 
     std::atomic<float>* hp_cutoff[36]; //
     std::atomic<float>* hp_reso[36]; //
+
+    std::atomic<float>* saturator_amount[36]; //
+
 
 
     CResoFilter lp[36];
