@@ -187,4 +187,30 @@ RightOut = pan * MonoIn // = power(pan,1) * MonoIn;
 
  */
 
+//from https://www.musicdsp.org/en/latest/Effects/42-soft-saturation.html
+//by Bram de Jong
+
+inline float soft_saturate (float in, float a)
+{
+  float result = 0;
+  if (in < a)
+     result = in;
+
+  if (in > a)
+      result = a + (in - a)/ powf (1+((in - a) / (1 - a)),2);
+
+ if (in > 1)
+    result = (a + 1) / 2;
+
+  //You can normalise the output:
+//f(x)'=f(x)*(1/((a+1)/2))
+
+    result = result*(1/((a+1)/2));
+
+
+  return result;
+}
+
+
+
 #endif
