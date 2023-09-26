@@ -21,11 +21,13 @@ public:
     std::atomic<float>* pans[36];
     std::atomic<float>* vols[36];
     std::atomic<float>* mutes[36]; //bool
+
     std::atomic<float>* lps[36]; //bool
+    std::atomic<float>* hps[36]; //bool
+
 
     std::atomic<float>* lp_cutoff[36]; //
     std::atomic<float>* lp_reso[36]; //
-
 
     std::atomic<float>* hp_cutoff[36]; //
     std::atomic<float>* hp_reso[36]; //
