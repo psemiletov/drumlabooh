@@ -28,6 +28,7 @@ using namespace std;
 juce::AudioFormatManager *formatManager;
 
 
+//WE READ JUST LEFT CHANNEL IF STEREO
 juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fname)
 {
 //  std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
@@ -40,10 +41,15 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
 
   if (reader.get() != nullptr)
      {
-      int bufsize =  (int) reader->lengthInSamples;
-      buffer->setSize ((int) reader->numChannels, bufsize);
+      int bufsize = (int) reader->lengthInSamples;
+//      buffer->setSize ((int) reader->numChannels, bufsize);
+       buffer->setSize ((int) 1, bufsize);
 
-      if (! reader->read (buffer,  0, bufsize, 0,  true, true))
+
+
+      // if (! reader->read (buffer,  0, bufsize, 0,  true, true))
+       if (! reader->read (buffer,  0, bufsize, 0,  true, false)) //read just left channel
+
          {
           std::cout << "! reader->read " << std::endl;
           delete buffer;
@@ -52,7 +58,7 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
 
       samplerate = reader->sampleRate;
       length_in_samples = reader->lengthInSamples;
-      channels = reader->numChannels;
+      channels = 1;//reader->numChannels;
 
 //      std::cout << "samplerate: " << samplerate << std::endl;
 //      std::cout << "length_in_samples: " << length_in_samples << std::endl;

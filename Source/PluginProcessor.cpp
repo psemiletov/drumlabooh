@@ -586,7 +586,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  channel_data[0][out_buf_offs] += fl * coef_left;
                  channel_data[1][out_buf_offs] += fl * coef_right;
                 }
-
+/*
              if (l->channels == 2)
                 {
                  float fl = l->channel_data[0][l->sample_offset++];
@@ -628,7 +628,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
                  channel_data[0][out_buf_offs] += fl * coef_left;
                  channel_data[1][out_buf_offs] += fr * coef_right;
-                }
+                }*/
              }
 
  //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
