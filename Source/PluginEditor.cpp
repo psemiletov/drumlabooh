@@ -321,12 +321,10 @@ CDrumLine::CDrumLine()
 
 
 
-  //wnd_fx = new juce::ResizableWindow ("FX", false);
-  //wnd_fx = new juce::DocumentWindow ("FX", Colours::black, /*DocumentWindow::TitleBarButtons::closeButton*/0, false);
-  wnd_fx = new CDocumentWindow ("FX", Colours::black, DocumentWindow::TitleBarButtons::closeButton, false);
+  wnd_fx = 0;
 
-  wnd_fx->setContentNonOwned (&fx, true);
-//  wnd_fx->setUsingNativeTitleBar (true);
+//  wnd_fx = new CDocumentWindow ("FX", Colours::black, DocumentWindow::TitleBarButtons::closeButton, false);
+  //wnd_fx->setContentNonOwned (&fx, true);
 
 
   addAndMakeVisible (bt_fx);
@@ -416,7 +414,7 @@ CDrumLine::CDrumLine()
 
 
   //fx.setTopLeftPosition (bt_fx.getX() + bt_fx.getWidth(), bt_fx.getY() + bt_fx.getHeight());
-
+/*
   bt_fx_close = wnd_fx->getCloseButton();
   if (bt_fx_close)
      {
@@ -431,11 +429,16 @@ CDrumLine::CDrumLine()
 
 
      }
-
+*/
 
    bt_fx.onClick = [this] {
                           std::cout << "CLICK" << std::endl;
 
+                          if (! wnd_fx)
+                            {
+                            wnd_fx = new CDocumentWindow ("FX", Colours::black, DocumentWindow::TitleBarButtons::closeButton, false);
+                            wnd_fx->setContentNonOwned (&fx, true);
+                            }
 
                           //  auto& myBox = juce::CallOutBox::launchAsynchronously (fx.get(),
                             //                        getScreenBounds(),
@@ -506,7 +509,9 @@ CDrumLine::~CDrumLine()
 */
 
 // delete fx;
- delete wnd_fx;
+  if (wnd_fx)
+    delete wnd_fx;
+
 }
 
 
