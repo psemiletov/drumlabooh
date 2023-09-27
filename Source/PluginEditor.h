@@ -48,6 +48,17 @@ public:
 };
 
 
+class CDocumentWindow: public juce::DocumentWindow
+{
+  public:
+
+    CDocumentWindow (const String &name, Colour backgroundColour, int requiredButtons, bool addToDesktop=true);
+    void closeButtonPressed() override;
+
+
+};
+
+
 
 class CFx: public juce::Component
 {
@@ -139,7 +150,7 @@ public:
 
     //juce::ResizableWindow *wnd_fx;
 
-    juce::DocumentWindow *wnd_fx;
+    CDocumentWindow *wnd_fx;
 
     CFx fx;
 

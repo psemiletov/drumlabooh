@@ -27,6 +27,20 @@ CFx::CFx(): juce::TopLevelWindow::TopLevelWindow ("FX", false)
 */
 
 
+CDocumentWindow::CDocumentWindow (const String &name, Colour backgroundColour, int requiredButtons, bool addToDesktop):
+juce::DocumentWindow (name, backgroundColour, requiredButtons, addToDesktop)
+{
+}
+
+
+
+void CDocumentWindow::closeButtonPressed()
+{
+   setVisible (false);
+removeFromDesktop();
+
+}
+
 
 CFx::CFx()
 {
@@ -309,7 +323,7 @@ CDrumLine::CDrumLine()
 
   //wnd_fx = new juce::ResizableWindow ("FX", false);
   //wnd_fx = new juce::DocumentWindow ("FX", Colours::black, /*DocumentWindow::TitleBarButtons::closeButton*/0, false);
-  wnd_fx = new juce::DocumentWindow ("FX", Colours::black, DocumentWindow::TitleBarButtons::closeButton, false);
+  wnd_fx = new CDocumentWindow ("FX", Colours::black, DocumentWindow::TitleBarButtons::closeButton, false);
 
   wnd_fx->setContentNonOwned (&fx, true);
 //  wnd_fx->setUsingNativeTitleBar (true);
