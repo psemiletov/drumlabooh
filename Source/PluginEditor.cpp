@@ -178,11 +178,11 @@ CFx::CFx()
   xoffs += sl_saturator_amount.getWidth();
   xoffs += XFILLER;
 
-  x = gr_group_hp.getRight() + XFILLER;
-  y = sl_saturator_amount.getBottom() + YFILLER;
+  x = gr_group_lp.getRight() + XFILLER;
+  y = YFILLER;
 
   gr_group_saturator.setTopLeftPosition (x, y);
-  gr_group_saturator.setSize (xoffs, sl_saturator_amount.getHeight() + YFILLER * 2);
+  gr_group_saturator.setSize (bt_saturator.getWidth() + XFILLER * 2 + sl_saturator_amount.getWidth() + XFILLER * 2, sl_saturator_amount.getHeight() + YFILLER * 2);
 
   gr_group_saturator.setVisible (true);
 
@@ -191,7 +191,7 @@ CFx::CFx()
 //  setVisible (true);
   //setSize (gr_group_lp.getRight() + XFILLER, gr_group_hp.getHeight() + gr_group_lp.getHeight() + YFILLER);
 
-  setSize (gr_group_lp.getRight() + XFILLER, gr_group_hp.getHeight() + gr_group_lp.getHeight() + YFILLER * 2);
+  setSize (gr_group_saturator.getRight() + XFILLER, gr_group_hp.getHeight() + gr_group_lp.getHeight() + YFILLER * 2);
 
 
 //  setSize (640, 480);
@@ -440,45 +440,9 @@ CDrumLine::CDrumLine()
                             wnd_fx->setContentNonOwned (&fx, true);
                             }
 
-                          //  auto& myBox = juce::CallOutBox::launchAsynchronously (fx.get(),
-                            //                        getScreenBounds(),
-                              //                      nullptr);
-/*
-                          wnd_fx->setSize (320, 320);
-                          wnd_fx->setTopLeftPosition (1, 1);
 
-                          wnd_fx->setVisible (true);
-                          wnd_fx->toFront (true);
-
-  */                      //   wnd_fx->setVisible (! wnd_fx->isVisible());
-
-                  //    fx.setVisible (true);
-
-                                //fx.setVisible (true);
-//                                fx.toFront(true);
-
-
-  //                        if (fx.isVisible())
-
- //                         std::cout << "visible" << std::endl;
-/*
-
-                          if (fx.isVisible())
-                             {
-                              fx.setVisible (false);
-                              fx.toBack();
-                            }
-                          else
-                               {
-
-                                fx.setVisible (true);
-                                fx.toFront(true);
-                               }
-
-*/
-//                          std::cout << "bt_fx.getScreenX() " << bt_fx.getScreenX() << std::endl;
-
-
+                           if (! wnd_fx)
+                              return;
 
                            if (wnd_fx->isOnDesktop())
                                wnd_fx->removeFromDesktop();
