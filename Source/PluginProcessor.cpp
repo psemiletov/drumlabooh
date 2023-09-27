@@ -13,12 +13,12 @@
 
 extern juce::AudioFormatManager *formatManager;
 
-
+/*
 static juce::NormalisableRange<float> get_cutoff_range()
 {
     return {0.f, 0.999f, 0.001f, 0.999f};
 }
-
+*/
 
 juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParameterLayout()
 {
@@ -38,6 +38,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
        hp_cutoff[i] = nullptr;
        hp_reso[i] = nullptr;
+
+       saturator[i] = nullptr;
+       saturator_amount[i] = nullptr;
 
 
       }
@@ -114,7 +117,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
        layout.add (std::make_unique<juce::AudioParameterFloat> ("saturator_amount" + std::to_string(i),
                                                                 "saturator_amount" + std::to_string(i),
-                                                                  juce::NormalisableRange<float> (0, 1.0f, 0.001f), // parameter range
+                                                                  juce::NormalisableRange<float> (0.001f, 1.0f, 0.001f), // parameter range
                                                                   0.001f));
 
 
@@ -168,6 +171,10 @@ parameters (*this, 0, "Drumlabooh", createParameterLayout())
        hps[i]  = parameters.getRawParameterValue ("hp" + std::to_string(i));
        hp_cutoff[i]  = parameters.getRawParameterValue ("hp_cutoff" + std::to_string(i));
        hp_reso[i]  = parameters.getRawParameterValue ("hp_reso" + std::to_string(i));
+
+       saturator[i] = parameters.getRawParameterValue ("saturator" + std::to_string(i));
+       saturator_amount[i] = parameters.getRawParameterValue ("saturator_amount" + std::to_string(i));
+
 
       }
 
@@ -523,7 +530,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  if (hp_on)
                     {
                      hp[drum_sample_index].set_cutoff (*(hp_cutoff[drum_sample_index]));
-                     //lp[drum_sample_index].set_cutoff ((float) *(lp_cutoff[drum_sample_index]) / session_samplerate);
 
 
                      hp[drum_sample_index].set_resonance (*(hp_reso[drum_sample_index]));
@@ -533,6 +539,14 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                     }
 
 
+                 bool saturator_on = *(saturator[drum_sample_index]) > 0.5f;
+
+                 if (saturator_on)
+                    {
+                     fl = soft_saturate (fl,*(saturator_amount[drum_sample_index]));
+                    fr = fl;
+
+                    }
 
 
                  //AFTER DSP
@@ -736,6 +750,8 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
        hp[i].mode = FILTER_MODE_HIGHPASS;
        hp[i].reset();
       }
+
+
 
 //resume
 
