@@ -148,50 +148,50 @@ CFx::CFx()
   gr_group_hp.setVisible (true);
 
 
-  //SATURATOR ///////////////////////////////
+  //ANALOG ///////////////////////////////
 
 
   xoffs = gr_group_hp.getRight() + XFILLER * 2;
   yoffs = YFILLER * 2;
 
-  addChildComponent (gr_group_saturator);
-  gr_group_saturator.setText ("SATURATE");
+  addChildComponent (gr_group_analog);
+  gr_group_analog.setText ("ANALOG");
 
-  bt_saturator.setButtonText ("ON");
-  addAndMakeVisible (bt_saturator);
-  bt_saturator.setTopLeftPosition (xoffs, yoffs);
-  bt_saturator.setSize (48, 32);
+  bt_analog.setButtonText ("ON");
+  addAndMakeVisible (bt_analog);
+  bt_analog.setTopLeftPosition (xoffs, yoffs);
+  bt_analog.setSize (48, 32);
 
-  xoffs += bt_saturator.getWidth();
+  xoffs += bt_analog.getWidth();
   xoffs += XFILLER;
 
-  addAndMakeVisible (sl_saturator_amount);
+  addAndMakeVisible (sl_analog_amount);
 
-  sl_saturator_amount.setTopLeftPosition (xoffs, yoffs);
-  sl_saturator_amount.setSize (68, 32);
+  sl_analog_amount.setTopLeftPosition (xoffs, yoffs);
+  sl_analog_amount.setSize (68, 32);
 
-  sl_saturator_amount.setSliderStyle (juce::Slider::LinearHorizontal);
-  sl_saturator_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_analog_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
 
-  sl_saturator_amount.setTooltip ("Amount");
+  sl_analog_amount.setTooltip ("Amount");
 
-  xoffs += sl_saturator_amount.getWidth();
+  xoffs += sl_analog_amount.getWidth();
   xoffs += XFILLER;
 
   x = gr_group_lp.getRight() + XFILLER;
   y = YFILLER;
 
-  gr_group_saturator.setTopLeftPosition (x, y);
-  gr_group_saturator.setSize (bt_saturator.getWidth() + XFILLER * 2 + sl_saturator_amount.getWidth() + XFILLER * 2, sl_saturator_amount.getHeight() + YFILLER * 2);
+  gr_group_analog.setTopLeftPosition (x, y);
+  gr_group_analog.setSize (bt_analog.getWidth() + XFILLER * 2 + sl_analog_amount.getWidth() + XFILLER * 2, sl_analog_amount.getHeight() + YFILLER * 2);
 
-  gr_group_saturator.setVisible (true);
+  gr_group_analog.setVisible (true);
 
 
 
 //  setVisible (true);
   //setSize (gr_group_lp.getRight() + XFILLER, gr_group_hp.getHeight() + gr_group_lp.getHeight() + YFILLER);
 
-  setSize (gr_group_saturator.getRight() + XFILLER, gr_group_hp.getHeight() + gr_group_lp.getHeight() + YFILLER * 2);
+  setSize (gr_group_analog.getRight() + XFILLER, gr_group_hp.getHeight() + gr_group_lp.getHeight() + YFILLER * 2);
 
 
 //  setSize (640, 480);
@@ -213,8 +213,8 @@ CFx::~CFx()
   att_hp_cutoff =  nullptr ;
   att_hp_reso =  nullptr ;
 
-  att_saturator = nullptr;
-  att_saturator_amount = nullptr;
+  att_analog = nullptr;
+  att_analog_amount = nullptr;
 
 }
 
@@ -521,11 +521,11 @@ void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
   param_name = "hp_reso" + std::to_string (cell_number);
   fx.att_hp_reso.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_hp_reso));
 
-  param_name = "saturator" + std::to_string (cell_number);
-  fx.att_saturator.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx.bt_saturator));
+  param_name = "analog" + std::to_string (cell_number);
+  fx.att_analog.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx.bt_analog));
 
-  param_name = "saturator_amount" + std::to_string (cell_number);
-  fx.att_saturator_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_saturator_amount));
+  param_name = "analog_amount" + std::to_string (cell_number);
+  fx.att_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_analog_amount));
 
 
 

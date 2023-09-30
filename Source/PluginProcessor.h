@@ -5,7 +5,70 @@
 //nclude "melatonin_perfetto/melatonin_perfetto.h"
 
 #include "kits.h"
+#include "dsp.h"
 #include "fx-resofilter.h"
+
+
+
+class CTransientShaper
+{
+public:
+
+    float attackTime_;     // Время нарастания атаки в секундах
+    float releaseTime_;    // Время спада в секундах
+    float envelope_;       // Значение огибающей амплитуды
+    float fs_ = 44100.0;   // Частота дискретизации, можно изменить на нужную
+
+
+    CTransientShaper (float attackTime = 0.001f, float releaseTime = 0.1f)
+    {
+      attackTime_ = attackTime;
+      releaseTime_ = releaseTime;
+      envelope_ = 0.0;
+    }
+
+    // Функция обработки атаки входного сэмпла
+    float processAttack(float input) {
+        // Вычисляем изменение амплитуды атаки
+        float attackDelta = (1.0 - envelope_) / (attackTime_ * fs_);
+
+        // Акцентируем атаку, увеличивая амплитуду
+        envelope_ += attackDelta * input;
+
+        // Ограничиваем амплитуду атаки в пределах [0, 1]
+        envelope_ = myclamp(envelope_, 0.0f, 1.0f);
+
+        // Применяем изменение амплитуды к входному сэмплу
+        return envelope_ * input;
+    }
+
+    // Функция обработки спада входного сэмпла
+    float processRelease(float input) {
+        // Вычисляем изменение амплитуды спада
+        float releaseDelta = envelope_ / (releaseTime_ * fs_);
+
+        // Уменьшаем амплитуду спада
+        envelope_ -= releaseDelta * envelope_;
+
+        // Ограничиваем амплитуду спада в пределах [0, 1]
+        envelope_ = myclamp(envelope_, 0.0f, 1.0f);
+
+        // Применяем изменение амплитуды к входному сэмплу
+        return envelope_ * input;
+    }
+
+
+    template <typename T>
+    T myclamp(const T& value, const T& min, const T& max) {
+        if (value < min) {
+            return min;
+        } else if (value > max) {
+            return max;
+        } else {
+            return value;
+        }
+    }
+};
 
 
 class CAudioProcessor  : public juce::AudioProcessor
@@ -24,7 +87,7 @@ public:
 
     std::atomic<float>* lps[36]; //bool
     std::atomic<float>* hps[36]; //bool
-    std::atomic<float>* saturator[36]; //bool
+    std::atomic<float>* analog[36]; //bool
 
 
     std::atomic<float>* lp_cutoff[36]; //
@@ -33,13 +96,15 @@ public:
     std::atomic<float>* hp_cutoff[36]; //
     std::atomic<float>* hp_reso[36]; //
 
-    std::atomic<float>* saturator_amount[36]; //
+    std::atomic<float>* analog_amount[36]; //
 
 
 
     CResoFilter lp[36];
     CResoFilter hp[36];
 
+//    CTransientShaper shaper;
+  //  DistortionProcessor dst;
 
     std::atomic<float>* panner_mode = nullptr;
     std::atomic<float>* ignore_midi_velocity = nullptr;

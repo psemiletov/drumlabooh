@@ -72,14 +72,14 @@ public:
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_hp_cutoff;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_hp_reso;
 
-  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_saturator;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_saturator_amount;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_analog;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_analog_amount;
 
 
 
  juce::GroupComponent gr_group_lp;
  juce::GroupComponent gr_group_hp;
- juce::GroupComponent gr_group_saturator;
+ juce::GroupComponent gr_group_analog;
 
 
 // juce::Label l_test;
@@ -93,8 +93,8 @@ public:
  juce::Slider sl_hp_reso;
 
 
- juce::ToggleButton bt_saturator;
- juce::Slider sl_saturator_amount;
+ juce::ToggleButton bt_analog;
+ juce::Slider sl_analog_amount;
 
 
  CFx();
