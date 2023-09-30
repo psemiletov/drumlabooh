@@ -386,4 +386,82 @@ int main() {
 }
 */
 
+
+
+#include <cmath>
+
+class MoogFilter {
+public:
+    MoogFilter() {
+        reset();
+    }
+
+    // Установка параметров фильтра
+    void setParams(float cutoff, float resonance) {
+        if (cutoff < 0.01f) cutoff = 0.01f;
+        if (cutoff > 0.99f) cutoff = 0.99f;
+        if (resonance < 0.0f) resonance = 0.0f;
+        if (resonance > 1.0f) resonance = 1.0f;
+
+        cutoff_ = cutoff;
+        resonance_ = resonance;
+    }
+
+    // Сброс состояния фильтра
+    void reset() {
+        for (int i = 0; i < 4; i++) {
+            buf_[i] = 0.0f;
+        }
+    }
+
+    // Применение фильтра к входному сэмплу
+    float process(float input) {
+        float g = static_cast<float>(2.0 - 2.0 * cutoff_);
+        float k = static_cast<float>(4.0 * resonance_);
+
+        float t1 = buf_[0] - k * buf_[3];
+        float t2 = buf_[1] - k * buf_[0];
+        float t3 = buf_[2] - k * buf_[1];
+        float t4 = input - k * buf_[2];
+
+        buf_[0] += g * t1;
+        buf_[1] += g * t2;
+        buf_[2] += g * t3;
+        buf_[3] += g * t4;
+
+        buf_[0] = clip(buf_[0]);
+        buf_[1] = clip(buf_[1]);
+        buf_[2] = clip(buf_[2]);
+        buf_[3] = clip(buf_[3]);
+
+        return buf_[3];
+    }
+
+private:
+    float clip(float x) {
+        if (x > 1.0f) return 1.0f;
+        if (x < -1.0f) return -1.0f;
+        return x;
+    }
+
+    float cutoff_ = 0.5f;
+    float resonance_ = 0.5f;
+    float buf_[4];
+};
+/*
+int main() {
+    MoogFilter filter;
+    filter.setParams(0.5f, 0.5f); // Установка параметров фильтра
+
+    // Применение фильтра к входным сэмплам
+    float input[5] = {0.1f, 0.2f, -0.1f, -0.2f, 0.3f};
+    for (int i = 0; i < 5; i++) {
+        float output = filter.process(input[i]);
+        // Здесь можно использовать выходной сэмпл output
+    }
+
+    return 0;
+}
+*/
+
 #endif

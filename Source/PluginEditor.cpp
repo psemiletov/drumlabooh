@@ -47,6 +47,56 @@ CFx::CFx()
   int xoffs = XFILLER * 2;
   int yoffs = YFILLER * 2;
 
+
+
+  //ANALOG ///////////////////////////////
+
+
+  //xoffs = gr_group_hp.getRight() + XFILLER * 2;
+//  yoffs = YFILLER * 2;
+
+  addChildComponent (gr_group_analog);
+  gr_group_analog.setText ("ANALOG");
+
+  bt_analog.setButtonText ("ON");
+  addAndMakeVisible (bt_analog);
+  bt_analog.setTopLeftPosition (xoffs, yoffs);
+  bt_analog.setSize (48, 32);
+
+  //xoffs += bt_analog.getWidth();
+//  xoffs += XFILLER;
+
+  addAndMakeVisible (sl_analog_amount);
+
+  sl_analog_amount.setTopLeftPosition (bt_analog.getX(), bt_analog.getBottom());
+  sl_analog_amount.setSize (82, 82);
+
+  sl_analog_amount.setSliderStyle (juce::Slider::Rotary);
+  //sl_analog_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  //sl_analog_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_analog_amount.setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
+
+
+
+  sl_analog_amount.setTooltip ("Amount");
+
+  //xoffs += sl_analog_amount.getWidth();
+  //xoffs += XFILLER;
+
+  int x = XFILLER;
+  int y = YFILLER;
+
+  gr_group_analog.setTopLeftPosition (x, y);
+  gr_group_analog.setSize (sl_analog_amount.getWidth() + XFILLER * 2,
+                           sl_analog_amount.getHeight() + YFILLER + bt_analog.getHeight() + YFILLER);
+
+  gr_group_analog.setVisible (true);
+
+
+  xoffs = gr_group_analog.getWidth() + XFILLER * 2;
+  yoffs = YFILLER * 2;
+
+
   //LP ///////////////////////////////
 
   addChildComponent (gr_group_lp);
@@ -87,11 +137,12 @@ CFx::CFx()
   xoffs += XFILLER;
 
 
-  int x = XFILLER;
-  int y = YFILLER;
+  x = XFILLER;
+  y = YFILLER;
 
-  gr_group_lp.setTopLeftPosition (x, y);
-  gr_group_lp.setSize (xoffs, yoffs + sl_lp_reso.getHeight());
+  gr_group_lp.setTopLeftPosition (gr_group_analog.getWidth() + XFILLER * 2, y);
+  gr_group_lp.setSize (bt_lp.getWidth() + XFILLER + sl_lp_reso.getWidth() + XFILLER + sl_lp_reso.getWidth() + XFILLER ,
+                       bt_lp.getHeight() + YFILLER * 2);
 
   gr_group_lp.setVisible (true);
 
@@ -99,7 +150,8 @@ CFx::CFx()
   //HP ///////////////////////////////
 
 
-  xoffs = XFILLER * 2;
+  //xoffs = XFILLER * 2;
+  xoffs = gr_group_analog.getWidth() + XFILLER * 2;
   yoffs = gr_group_lp.getBottom() + YFILLER * 2;
 
   addChildComponent (gr_group_hp);
@@ -139,59 +191,24 @@ CFx::CFx()
   xoffs += XFILLER;
 
 
-  x = XFILLER;
-  y = gr_group_lp.getBottom() + YFILLER;
+  //x = XFILLER;
+//  y = gr_group_lp.getBottom() + YFILLER;
 
-  gr_group_hp.setTopLeftPosition (x, y);
-  gr_group_hp.setSize (xoffs, sl_hp_reso.getHeight() + YFILLER * 2);
+  gr_group_hp.setTopLeftPosition (gr_group_lp.getX(), gr_group_lp.getBottom() + YFILLER);
+  //gr_group_hp.setSize (xoffs, sl_hp_reso.getHeight() + YFILLER * 2);
+ gr_group_hp.setSize (bt_hp.getWidth() + XFILLER + sl_hp_reso.getWidth() + XFILLER + sl_hp_reso.getWidth() + XFILLER,
+                       bt_hp.getHeight() + YFILLER * 2);
+
 
   gr_group_hp.setVisible (true);
-
-
-  //ANALOG ///////////////////////////////
-
-
-  xoffs = gr_group_hp.getRight() + XFILLER * 2;
-  yoffs = YFILLER * 2;
-
-  addChildComponent (gr_group_analog);
-  gr_group_analog.setText ("ANALOG");
-
-  bt_analog.setButtonText ("ON");
-  addAndMakeVisible (bt_analog);
-  bt_analog.setTopLeftPosition (xoffs, yoffs);
-  bt_analog.setSize (48, 32);
-
-  xoffs += bt_analog.getWidth();
-  xoffs += XFILLER;
-
-  addAndMakeVisible (sl_analog_amount);
-
-  sl_analog_amount.setTopLeftPosition (xoffs, yoffs);
-  sl_analog_amount.setSize (68, 32);
-
-  sl_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
-  sl_analog_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
-
-  sl_analog_amount.setTooltip ("Amount");
-
-  xoffs += sl_analog_amount.getWidth();
-  xoffs += XFILLER;
-
-  x = gr_group_lp.getRight() + XFILLER;
-  y = YFILLER;
-
-  gr_group_analog.setTopLeftPosition (x, y);
-  gr_group_analog.setSize (bt_analog.getWidth() + XFILLER * 2 + sl_analog_amount.getWidth() + XFILLER * 2, sl_analog_amount.getHeight() + YFILLER * 2);
-
-  gr_group_analog.setVisible (true);
 
 
 
 //  setVisible (true);
   //setSize (gr_group_lp.getRight() + XFILLER, gr_group_hp.getHeight() + gr_group_lp.getHeight() + YFILLER);
 
-  setSize (gr_group_analog.getRight() + XFILLER, gr_group_hp.getHeight() + gr_group_lp.getHeight() + YFILLER * 2);
+  setSize (gr_group_analog.getWidth() + XFILLER + gr_group_lp.getWidth() + XFILLER * 2,
+           gr_group_lp.getHeight() + gr_group_lp.getHeight() + YFILLER * 2);
 
 
 //  setSize (640, 480);
