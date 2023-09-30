@@ -257,6 +257,8 @@ CDrumLine::CDrumLine()
 
   bt_fx.setButtonText ("FX");
 
+  bt_fx.setColour (TextButton::ColourIds::buttonColourId,  Colours::darkslategrey);
+
   bt_fx.setTopLeftPosition (xoffs, YFILLER);
   bt_fx.setSize (42, 32);
 
@@ -493,8 +495,15 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   //cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, juce::Colour (53, 84, 100));
   //cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, Colours::mediumseagreen);
 
-  cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, Colours::steelblue);
+  //cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, Colours::steelblue);
+  //cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, Colours::white);
+
+  cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, juce::Colour (126, 126, 84));
   cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, Colours::white);
+
+
+
+
 
   //cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, Colours::midnightblue);
   //cmb_drumkit_selector.getLookAndFeel().setColour (juce::Label::textWhenEditingColourId, Colours::yellow);
@@ -598,8 +607,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   //cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (53, 84, 100));
   //cmb_pan_mode.setColour (juce::ComboBox::textColourId, juce::Colour (255, 254, 255));
 
-  cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, Colours::steelblue);
+  cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (126, 126, 84));
   cmb_pan_mode.setColour (juce::ComboBox::textColourId, Colours::white);
+
 
 
   addAndMakeVisible (cmb_pan_mode);
