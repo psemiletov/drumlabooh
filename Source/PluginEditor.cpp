@@ -13,25 +13,15 @@
 #define WINDOW_WIDTH 790
 
 
-/*
-CFx::CFx(): juce::TopLevelWindow::TopLevelWindow ("FX", false)
-{
-  addAndMakeVisible (l_test);
-  l_test.setSize (160, 32);
-  l_test.setText ("LABEL TEST", juce::dontSendNotification);
-
-  setSize (640, 480);
 
 
-}
-*/
-
-
-CDocumentWindow::CDocumentWindow (const String &name, Colour backgroundColour, int requiredButtons, bool addToDesktop):
-juce::DocumentWindow (name, backgroundColour, requiredButtons, addToDesktop)
+CDocumentWindow::CDocumentWindow (const String &name,
+                                  Colour backgroundColour,
+                                  int requiredButtons,
+                                  bool addToDesktop):
+                                  juce::DocumentWindow (name, backgroundColour, requiredButtons, addToDesktop)
 {
 }
-
 
 
 void CDocumentWindow::closeButtonPressed()
@@ -43,16 +33,14 @@ void CDocumentWindow::closeButtonPressed()
 
 bool CDocumentWindow::keyPressed (const KeyPress &key)
 {
-   if (key == juce::KeyPress::escapeKey)
+  if (key == juce::KeyPress::escapeKey)
      {
-        setVisible (false);
+      setVisible (false);
       removeFromDesktop();
-
      }
 
   return false;
 }
-
 
 
 CFx::CFx()
@@ -61,12 +49,8 @@ CFx::CFx()
   int yoffs = YFILLER * 2;
 
 
-
   //ANALOG ///////////////////////////////
 
-
-  //xoffs = gr_group_hp.getRight() + XFILLER * 2;
-//  yoffs = YFILLER * 2;
 
   addChildComponent (gr_group_analog);
   gr_group_analog.setText ("ANALOG");
@@ -75,9 +59,6 @@ CFx::CFx()
   addAndMakeVisible (bt_analog);
   bt_analog.setTopLeftPosition (xoffs, yoffs);
   bt_analog.setSize (48, 32);
-
-  //xoffs += bt_analog.getWidth();
-//  xoffs += XFILLER;
 
   addAndMakeVisible (sl_analog_amount);
 
@@ -90,11 +71,7 @@ CFx::CFx()
   sl_analog_amount.setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
 
 
-
   sl_analog_amount.setTooltip ("Amount");
-
-  //xoffs += sl_analog_amount.getWidth();
-  //xoffs += XFILLER;
 
   int x = XFILLER;
   int y = YFILLER;
@@ -162,8 +139,6 @@ CFx::CFx()
 
   //HP ///////////////////////////////
 
-
-  //xoffs = XFILLER * 2;
   xoffs = gr_group_analog.getWidth() + XFILLER * 2;
   yoffs = gr_group_lp.getBottom() + YFILLER * 2;
 
@@ -203,57 +178,36 @@ CFx::CFx()
   xoffs += sl_hp_reso.getWidth();
   xoffs += XFILLER;
 
-
-  //x = XFILLER;
-//  y = gr_group_lp.getBottom() + YFILLER;
-
   gr_group_hp.setTopLeftPosition (gr_group_lp.getX(), gr_group_lp.getBottom() + YFILLER);
-  //gr_group_hp.setSize (xoffs, sl_hp_reso.getHeight() + YFILLER * 2);
- gr_group_hp.setSize (bt_hp.getWidth() + XFILLER + sl_hp_reso.getWidth() + XFILLER + sl_hp_reso.getWidth() + XFILLER,
+  gr_group_hp.setSize (bt_hp.getWidth() + XFILLER + sl_hp_reso.getWidth() + XFILLER + sl_hp_reso.getWidth() + XFILLER,
                        bt_hp.getHeight() + YFILLER * 2);
-
 
   gr_group_hp.setVisible (true);
 
 
 
-//  setVisible (true);
-  //setSize (gr_group_lp.getRight() + XFILLER, gr_group_hp.getHeight() + gr_group_lp.getHeight() + YFILLER);
-
   setSize (gr_group_analog.getWidth() + XFILLER + gr_group_lp.getWidth() + XFILLER * 2,
-           gr_group_lp.getHeight() + gr_group_lp.getHeight() + YFILLER * 2);
-
-
-//  setSize (640, 480);
-
+           gr_group_lp.getHeight() + gr_group_lp.getHeight() + YFILLER * 3);
 
 }
 
 
-
 CFx::~CFx()
 {
+ //this ugly hack prevent crash with Slider attachments and their listener
 
+  att_lp = nullptr;
+  att_lp_cutoff = nullptr;
+  att_lp_reso = nullptr;
 
-  att_lp =  nullptr ;
-  att_lp_cutoff =  nullptr ;
-  att_lp_reso =  nullptr ;
-
-  att_hp =  nullptr ;
-  att_hp_cutoff =  nullptr ;
-  att_hp_reso =  nullptr ;
+  att_hp = nullptr;
+  att_hp_cutoff = nullptr;
+  att_hp_reso = nullptr;
 
   att_analog = nullptr;
   att_analog_amount = nullptr;
 
 }
-
-/*
-void CFx::resized()
-{
-
-}
-*/
 
 
 void CLed::paint(Graphics& g)
@@ -267,60 +221,8 @@ void CLed::paint(Graphics& g)
 
 CDrumLine::CDrumLine()
 {
-  //INIT FX
-/*
-  int xoffs = XFILLER * 2;
-
-  bt_lp.setButtonText ("LP");
-  //fx.addAndMakeVisible (bt_lp);
-
-  addChildComponent (bt_lp);
-
-
-  bt_lp.setTopLeftPosition (xoffs, YFILLER);
-  bt_lp.setSize (48, 32);
-
-  xoffs += bt_lp.getWidth();
-  xoffs += XFILLER;
-
-
-  //fx.addAndMakeVisible (sl_lp_cutoff);
-  addChildComponent(sl_lp_cutoff);
-
-  sl_lp_cutoff.setTopLeftPosition (xoffs, YFILLER);
-  sl_lp_cutoff.setSize (68, 32);
-  sl_lp_cutoff.setRange (0.1f, 0.99f, 0.001f);
-
-  sl_lp_cutoff.setSliderStyle (juce::Slider::LinearHorizontal);
-  sl_lp_cutoff.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
-  sl_lp_cutoff.setTooltip ("Cutoff");
-
-  xoffs += sl_lp_cutoff.getWidth();
-  xoffs += XFILLER;
-
-
-  //fx.addAndMakeVisible (sl_lp_reso);
-  addChildComponent(sl_lp_cutoff);
-
-  sl_lp_reso.setTopLeftPosition (xoffs, YFILLER);
-  sl_lp_reso.setSize (68, 32);
-  sl_lp_reso.setRange (0.0f, 1.0f, 0.001f);
-
-  sl_lp_reso.setSliderStyle (juce::Slider::LinearHorizontal);
-
-  sl_lp_reso.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
-  sl_lp_reso.setTooltip ("Reso");
-
-
-  fx.setSize (480, 200);
-*/
-
- // fx = new CFx();
   addChildComponent (fx);
 
-
-
-  //
   addChildComponent (gr_group);
 
   int xoffs = XFILLER * 2;
@@ -349,13 +251,7 @@ CDrumLine::CDrumLine()
   xoffs += XFILLER;
 
 
-
-
   wnd_fx = 0;
-
-//  wnd_fx = new CDocumentWindow ("FX", Colours::black, DocumentWindow::TitleBarButtons::closeButton, false);
-  //wnd_fx->setContentNonOwned (&fx, true);
-
 
   addAndMakeVisible (bt_fx);
 
@@ -365,27 +261,8 @@ CDrumLine::CDrumLine()
   bt_fx.setSize (42, 32);
 
 
-//  fx.setVisible (true);
-
-
-   //wnd_fx->setTopLeftPosition (bt_fx.getScreenX(), bt_fx.getScreenY() + bt_fx.getHeight());
-
-
   xoffs += bt_fx.getWidth();
   xoffs += XFILLER;
-/*
-
-  callout_box = new CallOutBox	(fx,
-                                 bt_fx.getBounds(),
-                                 this);
-*/
-  //addAndMakeVisible (callout_box);
- // callout_box->setTopLeftPosition (xoffs, YFILLER);
-  //callout_box->setSize (68, 32);
-
-
-  //xoffs +=  callout_box->getWidth();
-  //xoffs += XFILLER;
 
 
 
@@ -436,76 +313,35 @@ CDrumLine::CDrumLine()
 
   setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
 
-   //testlabel.setSize (32, 32);
-  //testlabel.setText ("testlabel", juce::dontSendNotification);
-  //testlabel.setVisible (true);
 
-  //dsp_box = new juce::CallOutBox (testlabel, label.getBounds(), this);
-
-
-  //fx.setTopLeftPosition (bt_fx.getX() + bt_fx.getWidth(), bt_fx.getY() + bt_fx.getHeight());
-/*
-  bt_fx_close = wnd_fx->getCloseButton();
-  if (bt_fx_close)
-     {
-      //std::cout << "WOW" << std::endl;
-
-      bt_fx_close->onClick = [this] {
-                             std::cout << "YES" << std::endl;
-
-                              wnd_fx->setVisible (false);
-                              wnd_fx->removeFromDesktop();
-                             };
-
-
-     }
-*/
-
-   bt_fx.onClick = [this] {
-                          std::cout << "CLICK" << std::endl;
+  bt_fx.onClick = [this] {
 
                           if (! wnd_fx)
-                            {
-                            wnd_fx = new CDocumentWindow ("FX", Colours::black, DocumentWindow::TitleBarButtons::closeButton, false);
-                            wnd_fx->setContentNonOwned (&fx, true);
-                            }
+                             {
+                              wnd_fx = new CDocumentWindow ("FX", Colours::darkslategrey, DocumentWindow::TitleBarButtons::closeButton, false);
+                              wnd_fx->setContentNonOwned (&fx, true);
+                             }
 
-
-                           if (! wnd_fx)
+                          if (! wnd_fx)
                               return;
 
-                           if (wnd_fx->isOnDesktop())
-                               wnd_fx->removeFromDesktop();
-                           else
-                               wnd_fx->addToDesktop();//ComponentPeer::StyleFlags::windowIsTemporary | ComponentPeer::StyleFlags::windowHasTitleBar | ComponentPeer::StyleFlags::windowHasCloseButton);
+                          if (wnd_fx->isOnDesktop())
+                              wnd_fx->removeFromDesktop();
+                          else
+                              wnd_fx->addToDesktop();//ComponentPeer::StyleFlags::windowIsTemporary | ComponentPeer::StyleFlags::windowHasTitleBar | ComponentPeer::StyleFlags::windowHasCloseButton);
 
 
                           wnd_fx->setVisible (! wnd_fx->isVisible());
-
                           wnd_fx->setTopLeftPosition (bt_fx.getScreenX() + bt_fx.getWidth(), bt_fx.getScreenY() + bt_fx.getHeight());
-
-
-
                          };
-
-
 
 }
 
 
 CDrumLine::~CDrumLine()
 {
-//  delete dsp_box;
-
- /*  att_lp =  nullptr ;
-  att_lp_cutoff =  nullptr ;
-  att_lp_reso =  nullptr ;
-*/
-
-// delete fx;
   if (wnd_fx)
     delete wnd_fx;
-
 }
 
 
@@ -556,30 +392,6 @@ void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
 
   param_name = "analog_amount" + std::to_string (cell_number);
   fx.att_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_analog_amount));
-
-
-
-/*
-
-  param_name = "lp" + std::to_string (cell_number);
-  fx->att_lp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx->bt_lp));
-
-  param_name = "lp_cutoff" + std::to_string (cell_number);
-  fx->att_lp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx->sl_lp_cutoff));
-
-  param_name = "lp_reso" + std::to_string (cell_number);
-  fx->att_lp_reso.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx->sl_lp_reso));
-
-  param_name = "hp" + std::to_string (cell_number);
-  fx->att_hp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx->bt_hp));
-
-  param_name = "hp_cutoff" + std::to_string (cell_number);
-  fx->att_hp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx->sl_hp_cutoff));
-
-  param_name = "hp_reso" + std::to_string (cell_number);
-  fx->att_hp_reso.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx->sl_hp_reso));
-*/
-
 }
 
 
@@ -667,15 +479,28 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   int yoffs = 0;
   int xoffs = XFILLER;
 
-  cmb_drumkit_selector.setTextWhenNothingSelected ("CLICK HERE TO SELECT THE DRUMKIT");
+  /*cmb_drumkit_selector.setTextWhenNothingSelected ("CLICK HERE TO SELECT THE DRUMKIT");
   cmb_drumkit_selector.setTextWhenNoChoicesAvailable ("NO DRUMKITS FOUND");
+  */
+
+  cmb_drumkit_selector.setText	("CLICK HERE TO SELECT THE DRUMKIT", juce::NotificationType::dontSendNotification );
+
   cmb_drumkit_selector.setScrollWheelEnabled (true);
 
   cmb_drumkit_selector.setTooltip ("Select from installed drum kits");
 
 
-  cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, juce::Colour (53, 84, 100));
-  cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, juce::Colour (255, 254, 255));
+  //cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, juce::Colour (53, 84, 100));
+  //cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, Colours::mediumseagreen);
+
+  cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, Colours::steelblue);
+  cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, Colours::white);
+
+  //cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, Colours::midnightblue);
+  //cmb_drumkit_selector.getLookAndFeel().setColour (juce::Label::textWhenEditingColourId, Colours::yellow);
+
+
+ // cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, juce::Colour (255, 254, 255));
 
   addAndMakeVisible (cmb_drumkit_selector);
 
@@ -770,8 +595,11 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   l_pan_mode.setSize (100, 48);
 
 
-  cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (53, 84, 100));
-  cmb_pan_mode.setColour (juce::ComboBox::textColourId, juce::Colour (255, 254, 255));
+  //cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (53, 84, 100));
+  //cmb_pan_mode.setColour (juce::ComboBox::textColourId, juce::Colour (255, 254, 255));
+
+  cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, Colours::steelblue);
+  cmb_pan_mode.setColour (juce::ComboBox::textColourId, Colours::white);
 
 
   addAndMakeVisible (cmb_pan_mode);
