@@ -10,67 +10,6 @@
 
 
 
-class CTransientShaper
-{
-public:
-
-    float attackTime_;     // Время нарастания атаки в секундах
-    float releaseTime_;    // Время спада в секундах
-    float envelope_;       // Значение огибающей амплитуды
-    float fs_ = 44100.0;   // Частота дискретизации, можно изменить на нужную
-
-
-    CTransientShaper (float attackTime = 0.001f, float releaseTime = 0.1f)
-    {
-      attackTime_ = attackTime;
-      releaseTime_ = releaseTime;
-      envelope_ = 0.0;
-    }
-
-    // Функция обработки атаки входного сэмпла
-    float processAttack(float input) {
-        // Вычисляем изменение амплитуды атаки
-        float attackDelta = (1.0 - envelope_) / (attackTime_ * fs_);
-
-        // Акцентируем атаку, увеличивая амплитуду
-        envelope_ += attackDelta * input;
-
-        // Ограничиваем амплитуду атаки в пределах [0, 1]
-        envelope_ = myclamp(envelope_, 0.0f, 1.0f);
-
-        // Применяем изменение амплитуды к входному сэмплу
-        return envelope_ * input;
-    }
-
-    // Функция обработки спада входного сэмпла
-    float processRelease(float input) {
-        // Вычисляем изменение амплитуды спада
-        float releaseDelta = envelope_ / (releaseTime_ * fs_);
-
-        // Уменьшаем амплитуду спада
-        envelope_ -= releaseDelta * envelope_;
-
-        // Ограничиваем амплитуду спада в пределах [0, 1]
-        envelope_ = myclamp(envelope_, 0.0f, 1.0f);
-
-        // Применяем изменение амплитуды к входному сэмплу
-        return envelope_ * input;
-    }
-
-
-    template <typename T>
-    T myclamp(const T& value, const T& min, const T& max) {
-        if (value < min) {
-            return min;
-        } else if (value > max) {
-            return max;
-        } else {
-            return value;
-        }
-    }
-};
-
-
 class CAudioProcessor  : public juce::AudioProcessor
                             #if JucePlugin_Enable_ARA
                              , public juce::AudioProcessorARAExtension
@@ -99,12 +38,9 @@ public:
     std::atomic<float>* analog_amount[36]; //
 
 
-
     CResoFilter lp[36];
     CResoFilter hp[36];
 
-//    CTransientShaper shaper;
-  //  DistortionProcessor dst;
 
     std::atomic<float>* panner_mode = nullptr;
     std::atomic<float>* ignore_midi_velocity = nullptr;

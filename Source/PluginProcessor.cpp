@@ -562,10 +562,29 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      lp[drum_sample_index].set_cutoff (*(lp_cutoff[drum_sample_index]));
                      lp[drum_sample_index].set_resonance (*(lp_reso[drum_sample_index]));
 
+
                      fl = lp[drum_sample_index].process (fl);
                      fr = fl;
                     }
 
+
+
+
+/*
+                 bool lp_on = *(lps[drum_sample_index]) > 0.5f;
+
+                 if (lp_on)
+                    {
+                     moog_filter[drum_sample_index].setParams (*(lp_cutoff[drum_sample_index]),
+                     *(lp_reso[drum_sample_index]));
+
+
+                     fl = moog_filter[drum_sample_index].process (fl);
+                     fr = fl;
+
+                     std::cout << "fl:" << fl << std::endl;
+                    }
+*/
 
 
 

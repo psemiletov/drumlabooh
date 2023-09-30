@@ -54,6 +54,7 @@ class CDocumentWindow: public juce::DocumentWindow
 
     CDocumentWindow (const String &name, Colour backgroundColour, int requiredButtons, bool addToDesktop=true);
     void closeButtonPressed() override;
+    bool keyPressed (const KeyPress &key) override;
 
 
 };

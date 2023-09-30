@@ -36,10 +36,23 @@ juce::DocumentWindow (name, backgroundColour, requiredButtons, addToDesktop)
 
 void CDocumentWindow::closeButtonPressed()
 {
-   setVisible (false);
-removeFromDesktop();
-
+  setVisible (false);
+  removeFromDesktop();
 }
+
+
+bool CDocumentWindow::keyPressed (const KeyPress &key)
+{
+   if (key == juce::KeyPress::escapeKey)
+     {
+        setVisible (false);
+      removeFromDesktop();
+
+     }
+
+  return false;
+}
+
 
 
 CFx::CFx()
