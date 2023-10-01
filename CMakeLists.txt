@@ -1,18 +1,6 @@
-# Example Audio Plugin CMakeLists.txt
-
-# To get started on a new plugin, copy this entire folder (containing this file and C++ sources) to
-# a convenient location, and then start making modifications.
-
-# The first line of any CMake project should be a call to `cmake_minimum_required`, which checks
-# that the installed CMake will be able to understand the following CMakeLists, and ensures that
-# CMake's behaviour is compatible with the named version. This is a standard CMake command, so more
-# information can be found in the CMake docs.
-
 cmake_minimum_required(VERSION 3.15)
 include(FetchContent)
-# The top-level CMakeLists.txt file for a project must contain a literal, direct call to the
-# `project()` command. `project()` sets up some helpful variables that describe source/binary
-# directories, and the current project version. This is a standard CMake command.
+
 
 project(DRUMLABOOH LANGUAGES CXX C VERSION 0.0.4)
 
@@ -22,13 +10,8 @@ project(DRUMLABOOH LANGUAGES CXX C VERSION 0.0.4)
 option(BUILD_MULTI "Build with multy-channel support" OFF)
 
 
-
 set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should be installed")
-
 set(VST3_INSTALL_DIR lib/vst3 CACHE PATH "Specifies where the VST3 libraries should be installed")
-
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
-
 
 
 
@@ -234,7 +217,8 @@ target_compile_definitions(drumlabooh
 # linked automatically. If we'd generated a binary data target above, we would need to link to it
 # here too. This is a standard CMake command.
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
+
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
 
 
 
