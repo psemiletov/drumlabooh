@@ -226,16 +226,13 @@ public:
     juce::Label l_kitinfo;
 
     juce::Label l_plugin_name;
+    juce::Label l_plugin_author;
+
     juce::HyperlinkButton hl_homepage;
 
-//    juce::Slider testSlider;
-
- //   std::unique_ptr<SliderAttachment> gainAttachment;
-//    juce::ToggleButton invertButton;
-//    std::unique_ptr<ButtonAttachment> invertAttachment;
 
     juce::Font f_sitelink { 20.0f, juce::Font::bold};
-    juce::Font f_logo { 40.0f, juce::Font::bold};
+    juce::Font f_logo { 36.0f, juce::Font::bold};
 
     juce::Font f_kitname_font { 20.0f, juce::Font::bold};
     juce::ImageComponent kit_image;
@@ -244,8 +241,6 @@ public:
     juce::Component drumlines_container;
     juce::Viewport drumlines_viewer;
 
-
-//    juce::TextButton bt_test;
 
     juce::Label l_drumkit_name;
     juce::TextButton bt_drumkit_info;

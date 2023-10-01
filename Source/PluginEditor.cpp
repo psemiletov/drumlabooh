@@ -408,10 +408,10 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 {
   //make all drum labels empty
 
-   for (size_t i = 0; i < 36; i++)
-       {
-        drumlines[i].set_name ("EMPTY CELL");
-       }
+  for (size_t i = 0; i < 36; i++)
+      {
+       drumlines[i].set_name ("EMPTY CELL");
+      }
 
   if (kits_scanner.v_scanned_kits.size() == 0)
       return;
@@ -430,9 +430,9 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
       return;
 
   for (size_t i = 0; i < k->v_samples.size(); i++)
-       {
+      {
         drumlines[i].set_name (k->v_samples[i]->name);
-       }
+      }
 
    juce::String kitname = k->kit_name.c_str();
 
@@ -462,20 +462,19 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
                                                audioProcessor (parent),
                                                valueTreeState (vts)
 {
-//std::cout << "CAudioProcessorEditor::CAudioProcessorEditor - 1" << std::endl;
+
+//   getLookAndFeel ().setColour (TextButton::ColourIds::buttonColourId, juce::Colour (77, 102, 139));
+   getLookAndFeel ().setColour (TextButton::ColourIds::buttonColourId, juce::Colour (87, 110, 113));
 
 
   kits_scanner.scan();
 
   for (size_t i = 0; i < kits_scanner.v_kits_names.size(); i++)
-     {
-      cmb_drumkit_selector.addItem (kits_scanner.v_kits_names[i], i + 1);
-     }
-
-//std::cout << "CAudioProcessorEditor::CAudioProcessorEditor - 2" << std::endl;
+      {
+       cmb_drumkit_selector.addItem (kits_scanner.v_kits_names[i], i + 1);
+      }
 
  // getLookAndFeel().setColour (juce::LookAndFeel::backgroundColourId, juce::Colours::red);
-
 
 
   int yoffs = 0;
@@ -492,24 +491,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   cmb_drumkit_selector.setTooltip ("Select from installed drum kits");
 
 
-  //cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, juce::Colour (53, 84, 100));
-  //cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, Colours::mediumseagreen);
-
-  //cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, Colours::steelblue);
-  //cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, Colours::white);
-
-  cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, juce::Colour (126, 126, 84));
+  cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
   cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, Colours::white);
 
-
-
-
-
-  //cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, Colours::midnightblue);
-  //cmb_drumkit_selector.getLookAndFeel().setColour (juce::Label::textWhenEditingColourId, Colours::yellow);
-
-
- // cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, juce::Colour (255, 254, 255));
 
   addAndMakeVisible (cmb_drumkit_selector);
 
@@ -579,16 +563,19 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   //BASE NOTE
 
-  l_base_note.setColour (juce::Slider::thumbColourId, juce::Colour (53, 84, 100));
-  l_base_note.setColour (juce::Slider::trackColourId, juce::Colour (255, 254, 255));
 
   addAndMakeVisible (l_base_note);
   l_base_note.setSize (120, 48);
   l_base_note.setTopLeftPosition (gr_options.getX() + XFILLER, gr_kitinfo.getY() + gr_kitinfo.getHeight() + YFILLER);
+  l_base_note.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
 
   addAndMakeVisible (sl_base_note);
+
+
   sl_base_note.setSliderStyle (juce::Slider::SliderStyle::IncDecButtons);
   sl_base_note.setTopLeftPosition (l_base_note.getX() + l_base_note.getWidth() + XFILLER, l_base_note.getY());
+
+
   sl_base_note.setSize (120, 48);
   sl_base_note.setRange (0, 127, 1.0);
   sl_base_note.setValue (audioProcessor.base_note_number, dontSendNotification );
@@ -601,20 +588,16 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   addAndMakeVisible (l_pan_mode);
   l_pan_mode.setTopLeftPosition (l_base_note.getX(), sl_base_note.getBottom() + YFILLER);
-  l_pan_mode.setSize (100, 48);
+  l_pan_mode.setSize (100, 32);
 
-
-  //cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (53, 84, 100));
-  //cmb_pan_mode.setColour (juce::ComboBox::textColourId, juce::Colour (255, 254, 255));
-
-  cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (126, 126, 84));
+  cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
   cmb_pan_mode.setColour (juce::ComboBox::textColourId, Colours::white);
 
 
 
   addAndMakeVisible (cmb_pan_mode);
       //  cmb_pan_mode.onChange = [this] { panner_modeMenuChanged(); };
-  cmb_pan_mode.setSize (180 + XFILLER, 48);
+  cmb_pan_mode.setSize (180 + XFILLER, 42);
   cmb_pan_mode.setTopLeftPosition (sl_base_note.getX(), sl_base_note.getBottom() + YFILLER);
 
   cmb_pan_mode.addItem ("sin/cos panner, law: -3 dB", PANMODE01);
@@ -628,8 +611,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
 
 
-
-
   addAndMakeVisible (bt_ignore_midi_velocity);
   bt_ignore_midi_velocity.setButtonText ("Ignore MIDI velocity");
 
@@ -637,7 +618,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
   bt_ignore_midi_velocity.setSize (180 + XFILLER, 48);
-  bt_ignore_midi_velocity.setTopLeftPosition (l_pan_mode.getX(), cmb_pan_mode.getY() + cmb_pan_mode.getHeight() + YFILLER);
+  bt_ignore_midi_velocity.setTopLeftPosition (l_pan_mode.getX(), cmb_pan_mode.getBottom());
 
   att_ignore_midi_velocity.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "ignore_midi_velocity", bt_ignore_midi_velocity));
 
@@ -646,41 +627,31 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   YFILLER * 2);
 
 
-
-
-
   addAndMakeVisible (l_plugin_name);
   l_plugin_name.setSize (180 + XFILLER, 48);
-  l_plugin_name.setTopLeftPosition (gr_options.getX(), gr_options.getY() + gr_options.getHeight() + YFILLER);
+  l_plugin_name.setTopLeftPosition (gr_options.getX(), gr_options.getBottom() + YFILLER);
   l_plugin_name.setText (juce::CharPointer_UTF8("DRUMЛАБУХ"), juce::NotificationType::dontSendNotification);
   l_plugin_name.setFont	(f_logo);
 
+  addAndMakeVisible (l_plugin_author);
+  l_plugin_author.setSize (180 + XFILLER, 24);
+  l_plugin_author.setTopLeftPosition (l_plugin_name.getX(), l_plugin_name.getBottom());
+  l_plugin_author.setText (juce::CharPointer_UTF8("by Peter Semiletov"), juce::NotificationType::dontSendNotification);
+  //l_plugin_author.setFont (f_logo);
 
   addAndMakeVisible (hl_homepage);
   hl_homepage.setSize (280 + XFILLER, 24);
-  hl_homepage.setTopLeftPosition (l_plugin_name.getX(), l_plugin_name.getY() + l_plugin_name.getHeight() + YFILLER);
+  hl_homepage.setTopLeftPosition (l_plugin_author.getX() + XFILLER, l_plugin_author.getBottom() + YFILLER);
   hl_homepage.setURL (juce::URL("https://psemiletov.github.io/drumlabooh"));
   hl_homepage.setButtonText ("psemiletov.github.io/drumlabooh");
-  hl_homepage.setFont (f_sitelink,false,  juce::Justification::left);
+  hl_homepage.setFont (f_sitelink, false, juce::Justification::left);
+  hl_homepage.setColour (juce::HyperlinkButton::textColourId, juce::Colour (121, 164, 103));
+  //make link color 121 164 103
 
-//  setSize (WINDOW_WIDTH, WINDOW_HEIGHT);
+  setSize (gr_options.getX() + gr_options.getWidth() + XFILLER * 2, drumlines_viewer.getBottom() + YFILLER * 2);
 
-    setSize (gr_options.getX() + gr_options.getWidth() + XFILLER * 2, drumlines_viewer.getBottom() + YFILLER * 2);
-
-    tmr_leds.uplink = this;
-    tmr_leds.startTimer (1000 / 15); //15 FPS
-
-
-//  sl_base_note.setNumDecimalPlacesToDisplay (0);
-  //sl_base_note.setValue (*audioProcessor.base_note_number);
-
-
-//   sl_base_note.onChange = [this] { panner_modeMenuChanged(); };
-
-  //std::cout << "1" << std::endl;
- // att_base_note.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "base_note_number", sl_base_note));
-
-  //       std::cout << "2" << std::endl;
+  tmr_leds.uplink = this;
+  tmr_leds.startTimer (1000 / 15); //15 FPS
 
 
    /*
