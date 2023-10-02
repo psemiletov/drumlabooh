@@ -189,6 +189,8 @@ CFx::CFx()
   setSize (gr_group_analog.getWidth() + XFILLER + gr_group_lp.getWidth() + XFILLER * 2,
            gr_group_lp.getHeight() + gr_group_lp.getHeight() + YFILLER * 3);
 
+
+  //setAlwaysOnTop(true);
 }
 
 
