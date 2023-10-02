@@ -10,15 +10,7 @@
 
 
 
-
 extern juce::AudioFormatManager *formatManager;
-
-/*
-static juce::NormalisableRange<float> get_cutoff_range()
-{
-    return {0.f, 0.999f, 0.001f, 0.999f};
-}
-*/
 
 
 
@@ -43,20 +35,18 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
        analog[i] = nullptr;
        analog_amount[i] = nullptr;
-
-
       }
 
 
   layout.add (std::make_unique<juce::AudioParameterFloat> ("panner_mode",            // parameterID
                                                            "panner_mode",            // parameter name
-                                                            1.0f,              // minimum value
-                                                            4.0f,              // maximum value
-                                                            1.0f)); //default
+                                                           1.0f,              // minimum value
+                                                           4.0f,              // maximum value
+                                                           1.0f)); //default
 
   layout.add (std::make_unique<juce::AudioParameterFloat> ("ignore_midi_velocity",      // parameterID
                                                            "ignore_midi_velocity",     // parameter name
-                                                            0, 1, 0));
+                                                           0, 1, 0));
 
 
 
@@ -90,8 +80,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                                   "lp_cutoff" + std::to_string(i),
                                                                   juce::NormalisableRange<float> (1, 22100.0f, 1.0f), // parameter range
                                                                   48000.0f));
-
-
 */
 
 
@@ -121,9 +109,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                                 "analog_amount" + std::to_string(i),
                                                                   juce::NormalisableRange<float> (0.001f, 1.0f, 0.001f), // parameter range
                                                                   0.001f));
-
-
-
       }
 
   return layout;
@@ -133,24 +118,20 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
 CAudioProcessor::CAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       ),
+                                  :AudioProcessor (BusesProperties()
+                                  #if ! JucePlugin_IsMidiEffect
+                                      #if ! JucePlugin_IsSynth
+                                          .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+                                       #endif
+                                      .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+                                  #endif
+                                 ),
 #endif
 parameters (*this, 0, "Drumlabooh", createParameterLayout())
 {
-
 //std::cout << "CAudioProcessor::CAudioProcessor() - 1" << std::endl;
-
-
   formatManager = new juce::AudioFormatManager();
   formatManager->registerBasicFormats();
-
 
   init_db();
 
@@ -176,8 +157,6 @@ parameters (*this, 0, "Drumlabooh", createParameterLayout())
 
        analog[i] = parameters.getRawParameterValue ("analog" + std::to_string(i));
        analog_amount[i] = parameters.getRawParameterValue ("analog_amount" + std::to_string(i));
-
-
       }
 
   panner_mode = parameters.getRawParameterValue ("panner_mode");
@@ -191,7 +170,6 @@ CAudioProcessor::~CAudioProcessor()
       delete drumkit;
 
   delete formatManager;
-
 }
 
 
@@ -562,8 +540,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      lp[drum_sample_index].set_cutoff (*(lp_cutoff[drum_sample_index]));
                      lp[drum_sample_index].set_resonance (*(lp_reso[drum_sample_index]));
 
-
-                     fl = softLimit (lp[drum_sample_index].process (fl), 18.0f);
+                     fl = softLimit (lp[drum_sample_index].process (fl));
                      fr = fl;
                     }
 
@@ -596,7 +573,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      hp[drum_sample_index].set_cutoff (*(hp_cutoff[drum_sample_index]));
                      hp[drum_sample_index].set_resonance (*(hp_reso[drum_sample_index]));
 
-                     fl = softLimit (hp[drum_sample_index].process (fl), 18.0f);
+                     fl = softLimit (hp[drum_sample_index].process (fl));
                      fr = fl;
                     }
 

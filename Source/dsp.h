@@ -183,7 +183,7 @@ inline void pan_equal_power3 (float &l, float& r, float p)
 
 
 float warmify(float x, float warmth);
-float softLimit(float input, float threshold_dB);
+float softLimit(float input);
 
 
 #endif
