@@ -1,13 +1,11 @@
+#include <vector>
+#include <cmath>
+
 #include "dsp.h"
 
-#include <vector>
-
-#include <cmath>
 
 using namespace std;
 
-
-#define PI 3.14159265358979323846
 
 float db_scale;
 
@@ -30,4 +28,21 @@ float warmify(float x, float warmth)
   warm_x = std::min(1.0f, std::max(-1.0f, warm_x));
 
   return warm_x;
+}
+
+
+// Функция для мягкого понижения уровня сигнала, если он превышает порог в 18 дБ (выше нуля)
+float softLimit(float input, float threshold_dB)
+{
+  // Проверяем, превышает ли входной сигнал порог
+  if (input > 0.0f && 20.0f * log10f(input) > threshold_dB)
+     {
+      // Рассчитываем множитель для понижения уровня
+      float reductionFactor = pow(10.0f, (threshold_dB - 20.0f * log10f(input)) / 20.0f);
+      // Применяем мягкое понижение уровня
+      return input * reductionFactor;
+    }
+
+  // Если сигнал не превышает порог, возвращаем его без изменений
+  return input;
 }

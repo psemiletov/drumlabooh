@@ -13,6 +13,7 @@
     #define M_PI 3.14159265358979323846
 #endif
 
+
 extern float db_scale;
 
 inline float db2lin (float db)
@@ -182,45 +183,8 @@ inline void pan_equal_power3 (float &l, float& r, float p)
 }
 
 
-/*
-
--6dB = 10^(-6/20) = 0.501187234 (linear)
-LeftOut  = (1-pan) * MonoIn // = power((1-pan),1) * MonoIn;
-RightOut = pan * MonoIn // = power(pan,1) * MonoIn;
-
- */
-
-//from https://www.musicdsp.org/en/latest/Effects/42-soft-saturation.html
-//by Bram de Jong
-
-inline float soft_saturate (float in, float a)
-{
-  float result = 0;
-  if (in < a)
-     result = in;
-
-  if (in > a)
-      result = a + (in - a)/ powf (1+((in - a) / (1 - a)),2);
-
- if (in > 1)
-    result = (a + 1) / 2;
-
-  //You can normalise the output:
-//f(x)'=f(x)*(1/((a+1)/2))
-
-    result = result*(1/((a+1)/2));
-
-
-  return result;
-}
-
-
-float grittyGuitarDistortion(float inputSample, float distortionLevel);
-float guitarDistortion(float inputSample, float distortionLevel);
-float gabberDistortion(float inputSample, float distortionLevel);
-
-
 float warmify(float x, float warmth);
+float softLimit(float input, float threshold_dB);
 
 
 #endif

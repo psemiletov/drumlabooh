@@ -563,7 +563,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      lp[drum_sample_index].set_resonance (*(lp_reso[drum_sample_index]));
 
 
-                     fl = lp[drum_sample_index].process (fl);
+                     fl = softLimit (lp[drum_sample_index].process (fl), 18.0f);
                      fr = fl;
                     }
 
@@ -594,11 +594,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  if (hp_on)
                     {
                      hp[drum_sample_index].set_cutoff (*(hp_cutoff[drum_sample_index]));
-
-
                      hp[drum_sample_index].set_resonance (*(hp_reso[drum_sample_index]));
 
-                     fl = hp[drum_sample_index].process (fl);
+                     fl = softLimit (hp[drum_sample_index].process (fl), 18.0f);
                      fr = fl;
                     }
 
