@@ -89,9 +89,7 @@ public:
   void untrigger_sample();
   void trigger_sample (float vel);
 
-
 };
-
 
 
 class CDrumKit
@@ -144,7 +142,6 @@ public:
 };
 
 
-
 class CHydrogenXMLWalker: public pugi::xml_tree_walker
 {
 public:
@@ -162,6 +159,4 @@ public:
 };
 
 
-
 #endif
-

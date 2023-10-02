@@ -42,14 +42,11 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
   if (reader.get() != nullptr)
      {
       int bufsize = (int) reader->lengthInSamples;
-//      buffer->setSize ((int) reader->numChannels, bufsize);
-       buffer->setSize ((int) 1, bufsize);
-
-
+      //buffer->setSize ((int) reader->numChannels, bufsize);
+      buffer->setSize ((int) 1, bufsize);
 
       // if (! reader->read (buffer,  0, bufsize, 0,  true, true))
-       if (! reader->read (buffer,  0, bufsize, 0,  true, false)) //read just left channel
-
+      if (! reader->read (buffer,  0, bufsize, 0,  true, false)) //read just left channel
          {
           std::cout << "! reader->read " << std::endl;
           delete buffer;
@@ -58,12 +55,13 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
 
       samplerate = reader->sampleRate;
       length_in_samples = reader->lengthInSamples;
+
+      //hardcode 1 channel please :)
       channels = 1;//reader->numChannels;
 
 //      std::cout << "samplerate: " << samplerate << std::endl;
 //      std::cout << "length_in_samples: " << length_in_samples << std::endl;
 //      std::cout << "channels: " << channels << std::endl;
-
      }
 
 //  std::cout << "@@@@@ CDrumLayer::load_whole_sample END" << std::endl;
@@ -84,7 +82,7 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
   if (samplerate == sess_samplerate)
       return buffer;
 
-  //else resample
+  //else we need to resample
 
   float ratio = (float) sess_samplerate / samplerate;
   size_t output_frames_count = ratio * length_in_samples;
@@ -125,6 +123,8 @@ void CDrumLayer::load (const std::string &fname)
 
   if (channels > 0)
       channel_data [0] = audio_buffer->getReadPointer (0);
+
+  //altough we have just mono sample, this "stereo" code is a legacy
 
   if (channels > 1)
       channel_data [1] = audio_buffer->getReadPointer (1);
@@ -187,7 +187,7 @@ size_t CDrumSample::map_velo_to_layer_number (float velo)
 
   size_t result = 0;
 
-  //search for layer within its min..max velo
+  //search for the layer within its min..max velo
   for (size_t i = 0; i < v_layers.size(); i++)
       {
        if (v_layers[i]->min <= velo &&
@@ -205,9 +205,7 @@ size_t CDrumSample::map_velo_to_layer_number (float velo)
 
 void CDrumSample::add_layer()
 {
-  //CDrumLayer *l = new CDrumLayer (session_samplerate);
   CDrumLayer *l = new CDrumLayer (this);
-
   v_layers.push_back (l);
 }
 
@@ -287,7 +285,7 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
       drumkit_info_passed = true;
 
       if (kit->v_samples.size() == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
-        return false;
+         return false;
 
       kit->add_sample();
 

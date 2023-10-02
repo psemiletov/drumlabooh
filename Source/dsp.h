@@ -80,12 +80,11 @@ inline float conv_to_db (float v, float v_min, float v_max, float range_negative
      return 0;
 
   if (v > 0)
-    {
-     float x = v_max / range_positive;
-     float y = v_max / v;
-
-     return v / (y * x);
-    }
+     {
+      float x = v_max / range_positive;
+      float y = v_max / v;
+      return v / (y * x);
+     }
   else
       {
        float x = v_min / range_negative;

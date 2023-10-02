@@ -14,13 +14,12 @@ class CAudioProcessorEditor;
 class CTimer: public juce::HighResolutionTimer
 {
 public:
-    CTimer() {};
-    CAudioProcessorEditor *uplink = 0;
-   //void timerCallback() override;
-   void hiResTimerCallback() override;
+
+  CTimer() {};
+  CAudioProcessorEditor *uplink = 0;
+  void hiResTimerCallback() override;
 
 };
-
 
 
 /*
@@ -38,7 +37,7 @@ void paintButton 	( 	juce::Graphics &  	g,
 class CLed: public juce::Component
 {
 public:
-//    juce::Colour cl_on = juce::Colours::gold;
+
   juce::Colour cl_on = juce::Colours::orange;
   juce::Colour cl_off = juce::Colours::grey;
   bool is_on = false;
@@ -50,15 +49,12 @@ public:
 
 class CDocumentWindow: public juce::DocumentWindow
 {
-  public:
+public:
 
-    CDocumentWindow (const String &name, Colour backgroundColour, int requiredButtons, bool addToDesktop=true);
-    void closeButtonPressed() override;
-    bool keyPressed (const KeyPress &key) override;
-
-
+  CDocumentWindow (const String &name, Colour backgroundColour, int requiredButtons, bool addToDesktop=true);
+  void closeButtonPressed() override;
+  bool keyPressed (const KeyPress &key) override;
 };
-
 
 
 class CFx: public juce::Component

@@ -19,7 +19,6 @@ enum filter_mode
      };
 
 
-
 class CResoFilter
 {
 public:

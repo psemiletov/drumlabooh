@@ -14,7 +14,6 @@
 
 
 
-
 CDocumentWindow::CDocumentWindow (const String &name,
                                   Colour backgroundColour,
                                   int requiredButtons,
@@ -51,7 +50,6 @@ CFx::CFx()
 
   //ANALOG ///////////////////////////////
 
-
   addChildComponent (gr_group_analog);
   gr_group_analog.setText ("ANALOG");
 
@@ -73,10 +71,7 @@ CFx::CFx()
 
   sl_analog_amount.setTooltip ("Amount");
 
-  int x = XFILLER;
-  int y = YFILLER;
-
-  gr_group_analog.setTopLeftPosition (x, y);
+  gr_group_analog.setTopLeftPosition (XFILLER, YFILLER);
   gr_group_analog.setSize (sl_analog_amount.getWidth() + XFILLER * 2,
                            sl_analog_amount.getHeight() + YFILLER + bt_analog.getHeight() + YFILLER);
 
@@ -126,11 +121,7 @@ CFx::CFx()
   xoffs += sl_lp_reso.getWidth();
   xoffs += XFILLER;
 
-
-  x = XFILLER;
-  y = YFILLER;
-
-  gr_group_lp.setTopLeftPosition (gr_group_analog.getWidth() + XFILLER * 2, y);
+  gr_group_lp.setTopLeftPosition (gr_group_analog.getWidth() + XFILLER * 2, YFILLER);
   gr_group_lp.setSize (bt_lp.getWidth() + XFILLER + sl_lp_reso.getWidth() + XFILLER + sl_lp_reso.getWidth() + XFILLER ,
                        bt_lp.getHeight() + YFILLER * 2);
 
@@ -184,8 +175,6 @@ CFx::CFx()
 
   gr_group_hp.setVisible (true);
 
-
-
   setSize (gr_group_analog.getWidth() + XFILLER + gr_group_lp.getWidth() + XFILLER * 2,
            gr_group_lp.getHeight() + gr_group_lp.getHeight() + YFILLER * 3);
 
@@ -238,45 +227,35 @@ CDrumLine::CDrumLine()
 
 
   addAndMakeVisible (label);
+
   label.setTopLeftPosition (xoffs, YFILLER);
   label.setSize (160, 32);
-
   label.setColour (juce::Label::textColourId, juce::Colours::black);
   label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
-
 //  label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
   label.setFont (f_samplename_font);
-
   label.setText ("EMPTY CELL", juce::dontSendNotification);
 
   xoffs += label.getWidth();
   xoffs += XFILLER;
-
 
   wnd_fx = 0;
 
   addAndMakeVisible (bt_fx);
 
   bt_fx.setButtonText ("FX");
-
   bt_fx.setColour (TextButton::ColourIds::buttonColourId,  Colours::darkslategrey);
-
   bt_fx.setTopLeftPosition (xoffs, YFILLER);
   bt_fx.setSize (42, 32);
 
-
   xoffs += bt_fx.getWidth();
   xoffs += XFILLER;
-
-
 
   addAndMakeVisible (sl_pan);
   sl_pan.setTopLeftPosition (xoffs, YFILLER);
   sl_pan.setSize (68, 32);
   sl_pan.setRange (0.0f, 1.0f, 0.01f);
-
   sl_pan.setSliderStyle (juce::Slider::LinearHorizontal);
-
   sl_pan.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
   sl_pan.setTooltip ("Pan");
 
@@ -287,16 +266,13 @@ CDrumLine::CDrumLine()
 
   sl_vol.setTopLeftPosition (xoffs, YFILLER);
   sl_vol.setSize (104, 32);
-
   sl_vol.setSliderStyle (juce::Slider::LinearHorizontal);
   sl_vol.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
-
   sl_vol.setRange (-96, 12, 1);
   sl_vol.setSkewFactor (4);
+  sl_vol.setTooltip ("Volume");
 
     //sl_gain.addListener (this);
-
-  sl_vol.setTooltip ("Volume");
 
   xoffs += sl_vol.getWidth();
   xoffs += XFILLER;
@@ -306,10 +282,8 @@ CDrumLine::CDrumLine()
   bt_mute.setTopLeftPosition (xoffs, YFILLER);
   bt_mute.setSize (48, 32);
 
-
   xoffs += bt_mute.getWidth();
   xoffs += XFILLER;
-
 
   gr_group.setVisible (true);
   gr_group.setSize (xoffs, 32 + YFILLER + YFILLER);
@@ -319,7 +293,6 @@ CDrumLine::CDrumLine()
 
 
   bt_fx.onClick = [this] {
-
                           if (! wnd_fx)
                              {
                               wnd_fx = new CDocumentWindow ("FX", Colours::darkslategrey, DocumentWindow::TitleBarButtons::closeButton, false);
@@ -433,7 +406,7 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 
   for (size_t i = 0; i < k->v_samples.size(); i++)
       {
-        drumlines[i].set_name (k->v_samples[i]->name);
+       drumlines[i].set_name (k->v_samples[i]->name);
       }
 
    juce::String kitname = k->kit_name.c_str();
@@ -464,10 +437,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
                                                audioProcessor (parent),
                                                valueTreeState (vts)
 {
-
-//   getLookAndFeel ().setColour (TextButton::ColourIds::buttonColourId, juce::Colour (77, 102, 139));
-   getLookAndFeel ().setColour (TextButton::ColourIds::buttonColourId, juce::Colour (87, 110, 113));
-
+  getLookAndFeel ().setColour (TextButton::ColourIds::buttonColourId, juce::Colour (87, 110, 113));
 
   kits_scanner.scan();
 
@@ -475,9 +445,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
       {
        cmb_drumkit_selector.addItem (kits_scanner.v_kits_names[i], i + 1);
       }
-
- // getLookAndFeel().setColour (juce::LookAndFeel::backgroundColourId, juce::Colours::red);
-
 
   int yoffs = 0;
   int xoffs = XFILLER;
@@ -487,18 +454,13 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   */
 
   cmb_drumkit_selector.setText	("CLICK HERE TO SELECT THE DRUMKIT", juce::NotificationType::dontSendNotification );
-
   cmb_drumkit_selector.setScrollWheelEnabled (true);
-
   cmb_drumkit_selector.setTooltip ("Select from installed drum kits");
-
 
   cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
   cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, Colours::white);
 
-
   addAndMakeVisible (cmb_drumkit_selector);
-
 
    //cmb_drumkit_selector.onChange = [this] { kit_changed(); };
   cmb_drumkit_selector.addListener (this);
@@ -536,7 +498,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   cmb_drumkit_selector.setSize (drumlines_group.getWidth(), 48);
 
-
   addAndMakeVisible (drumlines_viewer);
 
 
@@ -546,22 +507,17 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   gr_kitinfo.setSize (332, 264);
   gr_kitinfo.setTopLeftPosition (drumlines_viewer.getX() + drumlines_viewer.getWidth() + (XFILLER * 3), 0);
 
-
   addAndMakeVisible (l_kitinfo);
   l_kitinfo.setFont (f_kitname_font);
   l_kitinfo.setTopLeftPosition (gr_kitinfo.getX() + XFILLER, gr_kitinfo.getY());
   l_kitinfo.setSize (300, 48);
 
-
   addAndMakeVisible (kit_image);
   kit_image.setSize (300, 200);
   kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2));
 
-
   addAndMakeVisible (gr_options);
   gr_options.setTopLeftPosition (gr_kitinfo.getX(), gr_kitinfo.getY() + gr_kitinfo.getHeight());
-
-
 
   //BASE NOTE
 
@@ -572,17 +528,12 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   l_base_note.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
 
   addAndMakeVisible (sl_base_note);
-
-
   sl_base_note.setSliderStyle (juce::Slider::SliderStyle::IncDecButtons);
   sl_base_note.setTopLeftPosition (l_base_note.getX() + l_base_note.getWidth() + XFILLER, l_base_note.getY());
-
-
   sl_base_note.setSize (120, 48);
   sl_base_note.setRange (0, 127, 1.0);
   sl_base_note.setValue (audioProcessor.base_note_number, dontSendNotification );
   sl_base_note.addListener (this);
-
   sl_base_note.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
 
 
@@ -591,7 +542,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   addAndMakeVisible (l_pan_mode);
   l_pan_mode.setTopLeftPosition (l_base_note.getX(), sl_base_note.getBottom() + YFILLER);
   l_pan_mode.setSize (100, 32);
-
   cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
   cmb_pan_mode.setColour (juce::ComboBox::textColourId, Colours::white);
 
@@ -601,7 +551,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
       //  cmb_pan_mode.onChange = [this] { panner_modeMenuChanged(); };
   cmb_pan_mode.setSize (180 + XFILLER, 42);
   cmb_pan_mode.setTopLeftPosition (sl_base_note.getX(), sl_base_note.getBottom() + YFILLER);
-
   cmb_pan_mode.addItem ("sin/cos panner, law: -3 dB", PANMODE01);
   cmb_pan_mode.addItem ("square root panner, law: -3 dB", PANMODE02);
   cmb_pan_mode.addItem ("linear panner, law: 0 dB", PANMODE03);
@@ -615,10 +564,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   addAndMakeVisible (bt_ignore_midi_velocity);
   bt_ignore_midi_velocity.setButtonText ("Ignore MIDI velocity");
-
   bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
-
-
   bt_ignore_midi_velocity.setSize (180 + XFILLER, 48);
   bt_ignore_midi_velocity.setTopLeftPosition (l_pan_mode.getX(), cmb_pan_mode.getBottom());
 
@@ -655,13 +601,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   tmr_leds.uplink = this;
   tmr_leds.startTimer (1000 / 15); //15 FPS
 
-
-   /*
-   addAndMakeVisible (bt_test);
-   bt_test.setButtonText ("Test");
-   bt_test.addListener (this);
-*/
-
 //bt_test.setBounds (drumlines[0].getWidth() + 50, 400, 50, 50);
 }
 
@@ -678,6 +617,7 @@ void CAudioProcessorEditor::paint (juce::Graphics& g)
   g.fillAll (juce::Colour::fromRGB(103, 97, 114)	);
 }
 
+
 void CAudioProcessorEditor::resized()
 {
 
@@ -693,63 +633,47 @@ void CAudioProcessorEditor::buttonClicked (juce::Button* button)
 }
 
 
-
 void CAudioProcessorEditor::kit_changed()
-    {
-        //(cmb_drumkit_selector.getSelectedId()
-      std::cout << cmb_drumkit_selector.getSelectedId() - 1<< std::endl;
-
-    }
-
-
-
-
-void CAudioProcessorEditor::comboBoxChanged(juce::ComboBox *comboBox)
 {
+ //(cmb_drumkit_selector.getSelectedId()
+  std::cout << cmb_drumkit_selector.getSelectedId() - 1<< std::endl;
+}
 
-    std::cout << "CAudioProcessorEditor::comboBoxChanged" << std::endl;
 
-
-   if (comboBox == &cmb_drumkit_selector)
-    {
-
-      std::cout << cmb_drumkit_selector.getSelectedId() - 1<< std::endl;
+void CAudioProcessorEditor::comboBoxChanged (juce::ComboBox *comboBox)
+{
+   //std::cout << "CAudioProcessorEditor::comboBoxChanged" << std::endl;
+  if (comboBox == &cmb_drumkit_selector)
+     {
+//      std::cout << cmb_drumkit_selector.getSelectedId() - 1<< std::endl;
 
       int id = cmb_drumkit_selector.getSelectedId();
       if (id == 0)
          return;
 
-
       std::string full = kits_scanner.map_kits[kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1]];
-      std::cout << "FULL: " << full << std::endl;
+//      std::cout << "FULL: " << full << std::endl;
 
       audioProcessor.drumkit_path = full;
-
       tmr_leds.stopTimer();
-
       audioProcessor.load_kit (full);
 
       //update GUI
       load_kit (full);
       tmr_leds.startTimer (1000 / 15); //15 FPS
-
     }
-
-
 }
 
 
 void CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
-    {
-      std::cout << "CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)"  << std::endl;
+{
+//      std::cout << "CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)"  << std::endl;
 
-        if (slider == &sl_base_note)
-           {
-             std::cout << "sl_base_note.getValue()" << std::endl;
-             audioProcessor.base_note_number = sl_base_note.getValue();
-
-
-              std::cout << "audioProcessor.int_base_note_number: " << audioProcessor.base_note_number << std::endl;
+  if (slider == &sl_base_note)
+     {
+//      std::cout << "sl_base_note.getValue()" << std::endl;
+      audioProcessor.base_note_number = sl_base_note.getValue();
+//      std::cout << "audioProcessor.int_base_note_number: " << audioProcessor.base_note_number << std::endl;
 
             // juce::AudioProcessorParameterWithID* pParam = audioProcessor.parameters.getParameter ( "base_note_number"  );
             // pParam->setValueNotifyingHost( sl_base_note.getValue() );
@@ -759,10 +683,8 @@ void CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
              //p->setValue (sl_base_note.getValue());
            //v.setValue (sl_base_note.getValue());
            // *audioProcessor.base_note_number = sl_base_note.getValue();
-          }
-
-
-    }
+     }
+}
 
 /*
 void CToggleButton.paintButton 	( 	Graphics &  	g,
@@ -779,30 +701,24 @@ void CToggleButton.paintButton 	( 	Graphics &  	g,
 void CTimer::hiResTimerCallback()
 {
  // std::cout << "CTimer::timerCallback -1" << std::endl;
+  if (! uplink)
+      return;
 
-
-   if (! uplink)
-       return;
-
-   if (! uplink->isVisible())
-       return;
-
-
+  if (! uplink->isVisible())
+     return;
 
 //  std::cout << "CTimer::timerCallback - 2" << std::endl;
 
-   if (! uplink->audioProcessor.drumkit)
-      return;
+  if (! uplink->audioProcessor.drumkit)
+     return;
 
  // std::cout << "CTimer::timerCallback - 3" << std::endl;
 
-
-   for (int i = 0; i < uplink->audioProcessor.drumkit->v_samples.size(); i++)
-        {
-         bool actv = uplink->audioProcessor.drumkit->v_samples[i]->active;
-         uplink->drumlines[i].led.is_on = actv;
-         uplink->drumlines[i].led.velocity = uplink->audioProcessor.drumkit->v_samples[i]->velocity;
-         uplink->drumlines[i].led.repaint();
-        }
-
+  for (int i = 0; i < uplink->audioProcessor.drumkit->v_samples.size(); i++)
+      {
+       bool actv = uplink->audioProcessor.drumkit->v_samples[i]->active;
+       uplink->drumlines[i].led.is_on = actv;
+       uplink->drumlines[i].led.velocity = uplink->audioProcessor.drumkit->v_samples[i]->velocity;
+       uplink->drumlines[i].led.repaint();
+      }
 }
