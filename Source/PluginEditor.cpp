@@ -386,6 +386,8 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
   for (size_t i = 0; i < 36; i++)
       {
        drumlines[i].set_name ("EMPTY CELL");
+
+       drumlines[i].label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
       }
 
   if (kits_scanner.v_scanned_kits.size() == 0)
@@ -407,6 +409,7 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
   for (size_t i = 0; i < k->v_samples.size(); i++)
       {
        drumlines[i].set_name (k->v_samples[i]->name);
+       drumlines[i].label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
       }
 
    juce::String kitname = k->kit_name.c_str();
