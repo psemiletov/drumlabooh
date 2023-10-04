@@ -63,26 +63,35 @@ $HOME/drumlabooh-kits</pre>
 
 <h3>Built-in mixer</h3>
 
-<p>Below the drumkit selector you see the cells with loaded samples. Here the layout of each cell:</p>
+<p>Below the drumkit selector you see the cells (or slots) with loaded samples. Here the layout of each cell:</p>
 
-<p>1 Led - lights when note plays.<br>
+<p>1 <b>Led</b> - lights when note plays.<br><br>
 
-2 Instrument name - taken from the kit xml file, or in another way.<br>
+2 <b>Instrument name</b> - taken from the kit xml file, or in another way.<br><br>
 
-3 Pan control - values from 0 to 1, 0.5 is a middle.<br>
+3 <b>FX</b> - button to call FX window for this instrument. You can close window by "close" button or Escape key. All effects in that window can be turned on and off, so they works only when enabled.
+<br>There are <b>LP</b> (Low pass filter, allow the frequences only below the <b>cutoff</b> value), HP (High pass filter, allow the frequences only upper the <b>cutoff</b> value). To simplify the code and performance, the cutoff parameter value is not it HZ, but in floating point number within the range 0..1.<br>
+Both filters are resonance filters and have the <b>resonance</b> parameter. Play with the sliders to make new interesting sounds. HP filter is best for hihats, LP for the kick, HP or LP can make cool effect with the snare. If you feel that your drum samples sounds weak and thin, try the <b>Analog</b> slider to add some warmness.<br> 
 
-4. Volume slider - non-linear, values from -96 to +6 dB.<br>
+<i>Note: at Atdour, when FX window becomes active, the plugin window hides, and when you close FX window, you will see the plugin window again. At Reaper and Muse both windows visible as intended.</i>
+<br><br>
 
-5. Mute switch - mutes instrument.
+3 <b>Pan control</b> - values from 0 to 1, 0.5 is a middle. See the <b>Pan mode</b> option to know the algorhytm of the paning. It is important that different DAWs have different pan modes for its tracks, sometimes DAW give you an option to select that. Dramlabooh internally acts like a DAW mixer and provides such flexibility too.
+<br><br>
+
+4. <b>Volume slider</b> - non-linear, values from -96 to +6 dB.<br><br>
+
+5. <b>Mute switch</b> - mutes the instrument.
 </p>
 
 <h3> Built-in options</h3>
 
 <p>By the right side of the plugin window you see, below the drumkit info section, the Options.</p>
 
-<p>Base MIDI note - default 36, means at witch MIDI note number we map the first instrument at the kit. MIDI note 36 = C at 1-st octave.</p>
+<p><b>Base MIDI note</b> - default 36, means at witch MIDI note number we map the first instrument at the kit. MIDI note 36 = C at 1-st octave.</p>
 
-<p>Pan mode - allow to select the pan mode for Drumlabooh's internal mixer engine. See the <a href="https://en.wikipedia.org/wiki/Panning_law">article</a>. Defaul panner is sin/cos panner, law: -3 dB.
+<p><b>Pan mode</b> - allow to select the pan mode for Drumlabooh's internal mixer. See the <a href="https://en.wikipedia.org/wiki/Panning_law">article</a>. Defaul panner is sin/cos panner, law: -3 dB.<br>
+By the way, the pan mode is the significant factor of how DAW "sounds".
 </p>
 
 </td>
@@ -139,24 +148,31 @@ $HOME/drumlabooh-kits</pre>
 
 <p>Под списком выбора драмкита расположены ячейки инструментов. Каждая из них состоит из:</p>
 
-<p>1 Светодиод - загорается когда играет  инструмент, загруженный в ячейку.<br>
+<p>1 <b>Светодиод</b> - загорается когда играет инструмент, загруженный в ячейку.<br><br>
 
-2 Название инструмента - берется из XML-файла кита или другим способом.<br>
+2 <b>Название инструмента</b> - берется из XML-файла кита или другим способом.<br><br>
 
-3 Регулятор панорамы - значения от 0 до 1, 0.5 середина.<br>
+3 <b>FX</b> - вызывает окно эффектов для текущего инструмента. Окно можно закрыть кнопкой с крестиком либо клавишей Esc. Используйте эффекты, если привычный звук драмкита надоел.
+Имеем два резонансных фильтра - <b>LP</b> (низкочастотный, пропускает только частоты ниже определенного значения) и <b>HP</b> (высокочастотный). Значение (частота) среза регулируется параметром <b>cutoff</b> (первый ползунок фильтра). Также есть параметр резонанса - <b>resonance</b>. Играйтесь ими, чтобы на лету делать новые звуки из исходных сэмплов. Если же звучание сэмплов кажется тусклым или убогим, попробуйте включить блок <b>Analog</b> и вращать крутилку, чтобы придать сигналу теплое, аналоговое звучание.<br>
+<i>Заметка: в Ardour при вызове окна FX исчезает из виду само окно плагина, и появляется, когда вы закрываете окно FX. В Reaper или Muse такого не происходит.</i>
+<br>
+<br>
 
-4. Регулятор громкости - нелинейный, значения от -96 до +6 dB.<br>
+3 <b>Регулятор панорамы</b> - значения от 0 до 1, 0.5 середина. Помещает инструмент левее или правее, при по алгоритму, заданному опцией <b>Pan mode</b> (см. ниже). Разные DAW применяют к дорожкам разные режимы панорамы, а некоторые позволяют выбрать режим - собственно, во многом именно алгоритмы панорамы влияют на "фирменное" звучание DAW. Драмлабух, имея внутри себя полноценный микшер, как в DAW, тоже дает возможность выбрать режим панорамы.
+<br><br>
 
-5. Переключатель "Mute" (молчать, заглушить) - если стоит галочка, инструмент не играет, т.е. временно исключается из микса.
+4. <b>Регулятор громкости</b> - нелинейный, значения от -96 до +6 dB.<br><br>
+
+5. Переключатель <b>Mute</b> (молчать, заглушить) - если стоит галочка, инструмент не играет, т.е. временно исключается из микса.
 </p>
 
 <h3>Настройки плагина</h3>
 
 <p>В правой части окна плагина, под разделом сведений о драмките, находятся настройки.</p>
 
-<p>Base MIDI note - по умолчанию 36, задает MIDI номер ноты, с которой начинается  "раскладка" инструментов из драмкита. MIDI нота 36 это "До" первой октавы.</p>
+<p><b>Base MIDI note</b> - по умолчанию 36, задает MIDI номер ноты, с которой начинается  "раскладка" инструментов из драмкита. MIDI нота 36 это "До" первой октавы.</p>
 
-<p>Pan mode - выбор режима панорамы для микшера Драмлабуха. Подробнее <a href="https://en.wikipedia.org/wiki/Panning_law">в этой статье</a>. По умолчанию стоит паннер на основе синуса/косинуса, -3 dB.
+<p><b>Pan mode</b> - выбор режима панорамы для микшера Драмлабуха. Подробнее <a href="https://en.wikipedia.org/wiki/Panning_law">в этой статье</a>. По умолчанию стоит паннер на основе синуса/косинуса, -3 dB.
 </p>
 
 </td>
