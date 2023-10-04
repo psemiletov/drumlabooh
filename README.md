@@ -9,11 +9,13 @@ For all details, docs and drumkits see the [Drumlabooh site](https://psemiletov.
 
 * Linux LV2/VSTi, Windows VSTi plugin format
 
+* Supported sample kit formats: Hydrogen, Drumlabooh/Drumrox, SFZ
+
 * Stereo (with built-in mixer) output
 
-* Built-in mixer with Pan, Volume, mute controls and pan mode option
+* Built-in mixer with Pan, Volume, mute controls and Pan mode option
 
-* Supported sample kit formats: Hydrogen, Drumlabooh/Drumrox, SFZ
+* FX for each instrument slot: LP, HP resonance filters and Analog knob to make the sound warmer
 
 * Up to 36 instruments with layers (max 127 layers)
 
@@ -21,7 +23,7 @@ For all details, docs and drumkits see the [Drumlabooh site](https://psemiletov.
 
 * Drumkit image (if provided) at plugin window
 
-* Written in C++. based on JUSE toolkit
+* Written in C++, based on JUSE toolkit
 
 
 ## Linux: Build from the source
