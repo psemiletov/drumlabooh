@@ -210,7 +210,7 @@ void CLed::paint(Graphics& g)
 }
 
 
-CDrumLine::CDrumLine()
+CDrumCell::CDrumCell()
 {
   addChildComponent (fx);
 
@@ -226,17 +226,17 @@ CDrumLine::CDrumLine()
   xoffs += XFILLER;
 
 
-  addAndMakeVisible (label);
+  addAndMakeVisible (cell_label);
 
-  label.setTopLeftPosition (xoffs, YFILLER);
-  label.setSize (160, 32);
-  label.setColour (juce::Label::textColourId, juce::Colours::black);
-  label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+  cell_label.setTopLeftPosition (xoffs, YFILLER);
+  cell_label.setSize (160, 32);
+  cell_label.setColour (juce::Label::textColourId, juce::Colours::black);
+  cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
 //  label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
-  label.setFont (f_samplename_font);
-  label.setText ("EMPTY CELL", juce::dontSendNotification);
+  cell_label.setFont (f_samplename_font);
+  cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
 
-  xoffs += label.getWidth();
+  xoffs += cell_label.getWidth();
   xoffs += XFILLER;
 
   wnd_fx = 0;
@@ -296,6 +296,7 @@ CDrumLine::CDrumLine()
                           if (! wnd_fx)
                              {
                               wnd_fx = new CDocumentWindow ("FX", Colours::darkslategrey, DocumentWindow::TitleBarButtons::closeButton, false);
+                             // wnd_fx = new CDocumentWindow ("FX", juce::Colour (246, 226, 206), DocumentWindow::TitleBarButtons::closeButton, false);
                               wnd_fx->setContentNonOwned (&fx, true);
                              }
 
@@ -307,7 +308,6 @@ CDrumLine::CDrumLine()
                           else
                               wnd_fx->addToDesktop();//ComponentPeer::StyleFlags::windowIsTemporary | ComponentPeer::StyleFlags::windowHasTitleBar | ComponentPeer::StyleFlags::windowHasCloseButton);
 
-
                           wnd_fx->setVisible (! wnd_fx->isVisible());
                           wnd_fx->setTopLeftPosition (bt_fx.getScreenX() + bt_fx.getWidth(), bt_fx.getScreenY() + bt_fx.getHeight());
                          };
@@ -315,25 +315,25 @@ CDrumLine::CDrumLine()
 }
 
 
-CDrumLine::~CDrumLine()
+CDrumCell::~CDrumCell()
 {
   if (wnd_fx)
     delete wnd_fx;
 }
 
-
-void CDrumLine::paint (juce::Graphics& g)
+/*
+void CDrumCell::paint (juce::Graphics& g)
 {
   // g.fillAll (juce::Colour (0xff323e44));
 }
 
 
-void CDrumLine::resized()
+void CDrumCell::resized()
 {
 }
+*/
 
-
-void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
+void CDrumCell::attach_params (CAudioProcessorEditor *ed, int cellno)
 {
   cell_number = cellno;
 
@@ -372,10 +372,10 @@ void CDrumLine::attach_params (CAudioProcessorEditor *ed, int cellno)
 }
 
 
-void CDrumLine::set_name (const std::string &n)
+void CDrumCell::set_name (const std::string &n)
 {
   juce::String s (juce::CharPointer_UTF8((n.c_str())));
-  label.setText (s, juce::dontSendNotification);
+  cell_label.setText (s, juce::dontSendNotification);
 }
 
 
@@ -385,9 +385,8 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 
   for (size_t i = 0; i < 36; i++)
       {
-       drumlines[i].set_name ("EMPTY CELL");
-
-       drumlines[i].label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
+       drumcells[i].set_name ("EMPTY CELL");
+       drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
       }
 
   if (kits_scanner.v_scanned_kits.size() == 0)
@@ -408,8 +407,8 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 
   for (size_t i = 0; i < k->v_samples.size(); i++)
       {
-       drumlines[i].set_name (k->v_samples[i]->name);
-       drumlines[i].label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+       drumcells[i].set_name (k->v_samples[i]->name);
+       drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
       }
 
    juce::String kitname = k->kit_name.c_str();
@@ -440,7 +439,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
                                                audioProcessor (parent),
                                                valueTreeState (vts)
 {
-  getLookAndFeel ().setColour (TextButton::ColourIds::buttonColourId, juce::Colour (87, 110, 113));
+  getLookAndFeel().setColour (TextButton::ColourIds::buttonColourId, juce::Colour (87, 110, 113));
 
   kits_scanner.scan();
 
@@ -471,44 +470,44 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   yoffs += 52;
 
-  drumlines_container.setSize (drumlines[0].getWidth() + XFILLER, drumlines[0].getHeight() * 36);
+  drumcells_container.setSize (drumcells[0].getWidth() + XFILLER, drumcells[0].getHeight() * 36);
 
   for (size_t i = 0; i < 36; i++)
       {
-       drumlines[i].setTopLeftPosition (0, i * drumlines[i].getHeight());
-       drumlines_container.addAndMakeVisible (drumlines[i]);
-       drumlines[i].attach_params (this, i);
+       drumcells[i].setTopLeftPosition (0, i * drumcells[i].getHeight());
+       drumcells_container.addAndMakeVisible (drumcells[i]);
+       drumcells[i].attach_params (this, i);
       }
 
 
   load_kit (audioProcessor.drumkit_path);
 
-  addAndMakeVisible (drumlines_group);
+  addAndMakeVisible (drumcells_group);
 
-  drumlines_viewer.setViewedComponent (&drumlines_container, false);
-  drumlines_viewer.setScrollBarsShown	(true, false);
-  drumlines_viewer.setSize (drumlines_container.getWidth() + (XFILLER * 5), 480);
-  drumlines_viewer.setScrollBarThickness (24);
+  drumcells_viewer.setViewedComponent (&drumcells_container, false);
+  drumcells_viewer.setScrollBarsShown	(true, false);
+  drumcells_viewer.setSize (drumcells_container.getWidth() + (XFILLER * 5), 480);
+  drumcells_viewer.setScrollBarThickness (24);
 
 
-  drumlines_group.setTopLeftPosition (xoffs, yoffs);
-  drumlines_group.setSize (drumlines_viewer.getWidth() + (XFILLER * 3), 480 + (YFILLER * 2));
+  drumcells_group.setTopLeftPosition (xoffs, yoffs);
+  drumcells_group.setSize (drumcells_viewer.getWidth() + (XFILLER * 3), 480 + (YFILLER * 2));
 
   xoffs += XFILLER;
   yoffs += YFILLER;
 
-  drumlines_viewer.setTopLeftPosition (xoffs, yoffs);
+  drumcells_viewer.setTopLeftPosition (xoffs, yoffs);
 
-  cmb_drumkit_selector.setSize (drumlines_group.getWidth(), 48);
+  cmb_drumkit_selector.setSize (drumcells_group.getWidth(), 48);
 
-  addAndMakeVisible (drumlines_viewer);
+  addAndMakeVisible (drumcells_viewer);
 
 
   //KIT INFO
 
   addAndMakeVisible (gr_kitinfo);
   gr_kitinfo.setSize (332, 264);
-  gr_kitinfo.setTopLeftPosition (drumlines_viewer.getX() + drumlines_viewer.getWidth() + (XFILLER * 3), 0);
+  gr_kitinfo.setTopLeftPosition (drumcells_viewer.getX() + drumcells_viewer.getWidth() + (XFILLER * 3), 0);
 
   addAndMakeVisible (l_kitinfo);
   l_kitinfo.setFont (f_kitname_font);
@@ -599,12 +598,12 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   hl_homepage.setColour (juce::HyperlinkButton::textColourId, juce::Colour (121, 164, 103));
   //make link color 121 164 103
 
-  setSize (gr_options.getX() + gr_options.getWidth() + XFILLER * 2, drumlines_viewer.getBottom() + YFILLER * 2);
+  setSize (gr_options.getX() + gr_options.getWidth() + XFILLER * 2, drumcells_viewer.getBottom() + YFILLER * 2);
 
   tmr_leds.uplink = this;
   tmr_leds.startTimer (1000 / 15); //15 FPS
 
-//bt_test.setBounds (drumlines[0].getWidth() + 50, 400, 50, 50);
+//bt_test.setBounds (drumcells[0].getWidth() + 50, 400, 50, 50);
 }
 
 
@@ -648,21 +647,20 @@ void CAudioProcessorEditor::comboBoxChanged (juce::ComboBox *comboBox)
    //std::cout << "CAudioProcessorEditor::comboBoxChanged" << std::endl;
   if (comboBox == &cmb_drumkit_selector)
      {
-//      std::cout << cmb_drumkit_selector.getSelectedId() - 1<< std::endl;
-
       int id = cmb_drumkit_selector.getSelectedId();
       if (id == 0)
          return;
 
       std::string full = kits_scanner.map_kits[kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1]];
-//      std::cout << "FULL: " << full << std::endl;
 
       audioProcessor.drumkit_path = full;
       tmr_leds.stopTimer();
+
       audioProcessor.load_kit (full);
 
       //update GUI
       load_kit (full);
+
       tmr_leds.startTimer (1000 / 15); //15 FPS
     }
 }
@@ -670,24 +668,12 @@ void CAudioProcessorEditor::comboBoxChanged (juce::ComboBox *comboBox)
 
 void CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
 {
-//      std::cout << "CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)"  << std::endl;
-
   if (slider == &sl_base_note)
      {
-//      std::cout << "sl_base_note.getValue()" << std::endl;
       audioProcessor.base_note_number = sl_base_note.getValue();
-//      std::cout << "audioProcessor.int_base_note_number: " << audioProcessor.base_note_number << std::endl;
-
-            // juce::AudioProcessorParameterWithID* pParam = audioProcessor.parameters.getParameter ( "base_note_number"  );
-            // pParam->setValueNotifyingHost( sl_base_note.getValue() );
-             //durationSlider.setValue (1.0 / c, juce::dontSendNotification);
-            //juce::Value v = audioProcessor.parameters.getParameterAsValue ("base_note_number");
-             //juce::RangedAudioParameter *p = audioProcessor.parameters.getParameter("base_note_number");
-             //p->setValue (sl_base_note.getValue());
-           //v.setValue (sl_base_note.getValue());
-           // *audioProcessor.base_note_number = sl_base_note.getValue();
      }
 }
+
 
 /*
 void CToggleButton.paintButton 	( 	Graphics &  	g,
@@ -703,25 +689,21 @@ void CToggleButton.paintButton 	( 	Graphics &  	g,
 
 void CTimer::hiResTimerCallback()
 {
- // std::cout << "CTimer::timerCallback -1" << std::endl;
   if (! uplink)
       return;
 
   if (! uplink->isVisible())
      return;
 
-//  std::cout << "CTimer::timerCallback - 2" << std::endl;
-
   if (! uplink->audioProcessor.drumkit)
      return;
 
- // std::cout << "CTimer::timerCallback - 3" << std::endl;
 
   for (int i = 0; i < uplink->audioProcessor.drumkit->v_samples.size(); i++)
       {
        bool actv = uplink->audioProcessor.drumkit->v_samples[i]->active;
-       uplink->drumlines[i].led.is_on = actv;
-       uplink->drumlines[i].led.velocity = uplink->audioProcessor.drumkit->v_samples[i]->velocity;
-       uplink->drumlines[i].led.repaint();
+       uplink->drumcells[i].led.is_on = actv;
+       uplink->drumcells[i].led.velocity = uplink->audioProcessor.drumkit->v_samples[i]->velocity;
+       uplink->drumcells[i].led.repaint();
       }
 }

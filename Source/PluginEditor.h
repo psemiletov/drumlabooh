@@ -73,117 +73,70 @@ public:
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_analog_amount;
 
 
+  juce::GroupComponent gr_group_lp;
+  juce::GroupComponent gr_group_hp;
+  juce::GroupComponent gr_group_analog;
 
- juce::GroupComponent gr_group_lp;
- juce::GroupComponent gr_group_hp;
- juce::GroupComponent gr_group_analog;
+  juce::ToggleButton bt_lp;
+  juce::Slider sl_lp_cutoff;
+  juce::Slider sl_lp_reso;
 
+  juce::ToggleButton bt_hp;
+  juce::Slider sl_hp_cutoff;
+  juce::Slider sl_hp_reso;
 
-// juce::Label l_test;
-
- juce::ToggleButton bt_lp;
- juce::Slider sl_lp_cutoff;
- juce::Slider sl_lp_reso;
-
- juce::ToggleButton bt_hp;
- juce::Slider sl_hp_cutoff;
- juce::Slider sl_hp_reso;
-
-
- juce::ToggleButton bt_analog;
- juce::Slider sl_analog_amount;
+  juce::ToggleButton bt_analog;
+  juce::Slider sl_analog_amount;
 
 
- CFx();
- ~CFx() override;
-
+  CFx();
+  ~CFx() override;
 
 // void resized() override;
-
 };
 
 
 
-class CDrumLine: public juce::Component/*,
+class CDrumCell: public juce::Component/*,
                  public juce::Slider::Listener*/
 {
 public:
 
+  juce::Font f_samplename_font { 14.0f, juce::Font::bold};
 
-    //FX
-/*
-   std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_lp;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_cutoff;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_reso;
-*/
-/*
- juce::Label l_test;
+  juce::GroupComponent gr_group;
+  juce::Slider sl_pan;
+  juce::Slider sl_vol;
 
- juce::ToggleButton bt_lp;
- juce::Slider sl_lp_cutoff;
- juce::Slider sl_lp_reso;
+  juce::ToggleButton bt_mute;
+  CLed led;
 
-*/
- //juce::Component fx;
+  CDocumentWindow *wnd_fx;
+
+  CFx fx;
 
 
-    //
+  juce::TextButton bt_fx;
+  juce::Button *bt_fx_close;
 
+  juce::Label cell_label;
 
-    // juce::Component main;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_vol;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_pan;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_mute;
 
+  int cell_number;
 
+  CDrumCell();
+  ~CDrumCell() override;
 
-    juce::Font f_samplename_font { 14.0f, juce::Font::bold};
+  void attach_params (CAudioProcessorEditor *ed, int cellno);
+  void set_name (const std::string &n);
 
-    juce::GroupComponent gr_group;
-    juce::Slider sl_pan;
-    juce::Slider sl_vol;
+// void paint (juce::Graphics& g) override;
+//  void resized() override;
 
-    juce::ToggleButton bt_mute;
-    CLed led;
-
-    //CFx wnd_fx;
-
-    //juce::ResizableWindow *wnd_fx;
-
-    CDocumentWindow *wnd_fx;
-
-    CFx fx;
-
-    //std::unique_ptr <CFx> fx;
-
-    juce::TextButton bt_fx;
-
-    juce::Button *bt_fx_close;
-
-
-    juce::Label label;
-
-    //juce::CallOutBox *dsp_box;
-
-    //juce::Label testlabel;
-
-   // juce::CallOutBox *callout_box;
-
-
-
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_vol;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_pan;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_mute;
-
-    int cell_number;
-
-    CDrumLine ();
-    ~CDrumLine() override;
-
-    void attach_params (CAudioProcessorEditor *ed, int cellno);
-    void set_name (const std::string &n);
-
-    void paint (juce::Graphics& g) override;
-    void resized() override;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CDrumLine)
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CDrumCell)
 };
 
 
@@ -233,9 +186,9 @@ public:
     juce::Font f_kitname_font { 20.0f, juce::Font::bold};
     juce::ImageComponent kit_image;
 
-    juce::GroupComponent drumlines_group;
-    juce::Component drumlines_container;
-    juce::Viewport drumlines_viewer;
+    juce::GroupComponent drumcells_group;
+    juce::Component drumcells_container;
+    juce::Viewport drumcells_viewer;
 
 
     juce::Label l_drumkit_name;
@@ -247,7 +200,7 @@ public:
     juce::Label l_drumkit_selector { {}, "Drumkit selector" };
     juce::ComboBox cmb_drumkit_selector;
 
-    CDrumLine drumlines [36];
+    CDrumCell drumcells [36];
 
 
     CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts);
