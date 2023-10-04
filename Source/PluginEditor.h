@@ -148,88 +148,69 @@ class CAudioProcessorEditor: public juce::AudioProcessorEditor,
 {
 public:
 
-    CAudioProcessor& audioProcessor;
+  CAudioProcessor& audioProcessor;
 
-    CDrumKitsScanner kits_scanner;
+  CDrumKitsScanner kits_scanner;
+  CTimer tmr_leds;
+  CDrumCell drumcells [36];
 
-    juce::AudioProcessorValueTreeState& valueTreeState;
+  juce::AudioProcessorValueTreeState& valueTreeState;
 
-    juce::TooltipWindow tooltip_window;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_ignore_midi_velocity;
+  juce::ToggleButton bt_ignore_midi_velocity;
 
-    CTimer tmr_leds;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_pan_mode;
+  juce::Label l_pan_mode { {}, "Pan mode" };
+  juce::ComboBox cmb_pan_mode;
 
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_ignore_midi_velocity;
-    juce::ToggleButton bt_ignore_midi_velocity;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_base_note;
+  juce::Label l_base_note { {}, "Base MIDI note" };
+  juce::Slider sl_base_note;
 
+  juce::TooltipWindow tooltip_window;
 
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_pan_mode;
-    juce::Label l_pan_mode { {}, "Pan mode" };
-    juce::ComboBox cmb_pan_mode;
+  juce::GroupComponent gr_kitinfo;
+  juce::Label l_kitinfo;
 
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_base_note;
-    juce::Label l_base_note { {}, "Base MIDI note" };
-    juce::Slider sl_base_note;
+  juce::Label l_plugin_name;
+  juce::Label l_plugin_author;
 
-
-    juce::GroupComponent gr_kitinfo;
-    juce::Label l_kitinfo;
-
-    juce::Label l_plugin_name;
-    juce::Label l_plugin_author;
-
-    juce::HyperlinkButton hl_homepage;
+  juce::HyperlinkButton hl_homepage;
 
 
-    juce::Font f_sitelink { 20.0f, juce::Font::bold};
-    juce::Font f_logo { 36.0f, juce::Font::bold};
+  juce::Font f_sitelink { 20.0f, juce::Font::bold};
+  juce::Font f_logo { 36.0f, juce::Font::bold};
 
-    juce::Font f_kitname_font { 20.0f, juce::Font::bold};
-    juce::ImageComponent kit_image;
+  juce::Font f_kitname_font { 20.0f, juce::Font::bold};
+  juce::ImageComponent kit_image;
 
-    juce::GroupComponent drumcells_group;
-    juce::Component drumcells_container;
-    juce::Viewport drumcells_viewer;
-
-
-    juce::Label l_drumkit_name;
-    juce::TextButton bt_drumkit_info;
-
-    juce::GroupComponent gr_options;
+  juce::GroupComponent drumcells_group;
+  juce::Component drumcells_container;
+  juce::Viewport drumcells_viewer;
 
 
-    juce::Label l_drumkit_selector { {}, "Drumkit selector" };
-    juce::ComboBox cmb_drumkit_selector;
+  juce::Label l_drumkit_name;
+  juce::TextButton bt_drumkit_info;
 
-    CDrumCell drumcells [36];
+  juce::GroupComponent gr_options;
 
-
-    CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts);
-    ~CAudioProcessorEditor() override;
-
+  juce::Label l_drumkit_selector { {}, "Drumkit selector" };
+  juce::ComboBox cmb_drumkit_selector;
 
 
-    void buttonClicked (juce::Button* button) override;
+  CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts);
+  ~CAudioProcessorEditor() override;
 
-    void load_kit (const std::string &kitpath);
-    void kit_changed();
+  void load_kit (const std::string &kitpath);
 
-    void paint (juce::Graphics&) override;
-    void resized() override;
+  void paint (juce::Graphics&) override;
+  void resized() override;
 
-//    void panner_modeMenuChanged();
+  void kit_changed();
+  void sliderValueChanged (juce::Slider* slider) override;
+  void comboBoxChanged(juce::ComboBox *comboBox) override;
 
-    void sliderValueChanged (juce::Slider* slider) override;
-
-    void comboBoxChanged(juce::ComboBox *comboBox) override;
-
-    // These methods handle callbacks from the midi device + on-screen keyboard..
-    /*void handleIncomingMidiMessage (juce::MidiInput* source, const juce::MidiMessage& message) override
-    {
-        const juce::ScopedValueSetter<bool> scopedInputFlag (isAddingFromMidiInput, true);
-        keyboardState.processNextMidiEvent (message);
-        postMessageToList (message, source->getName());
-    }
-*/
+  void buttonClicked (juce::Button* button) override;
 
 
    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CAudioProcessorEditor)
