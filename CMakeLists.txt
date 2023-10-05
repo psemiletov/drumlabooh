@@ -7,6 +7,10 @@ project(DRUMLABOOH LANGUAGES CXX C VERSION 1.0.0)
 
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 ")
 
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 -ffast-math")
+
+
+
 option(BUILD_MULTI "Build with multy-channel support" OFF)
 
 

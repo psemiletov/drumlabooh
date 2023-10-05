@@ -1,7 +1,11 @@
 #include "fx-resofilter.h"
 
 /*
+Peter Semiletov, 2023
+*/
 
+
+/*
 this code based on Martin Finke's filter tutorial,
 where the filter itself based on the resonant filter 
 by Paul Kellett http://www.musicdsp.org/showone.php?id=29

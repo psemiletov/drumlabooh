@@ -59,7 +59,14 @@ $HOME/drumlabooh-kits</pre>
 <pre>$HOME/sfz-kits</pre>
 
 
-<p>When Drumlabooh loads the kit samples, it converts them (if needed) to the DAW's project session rate, so the conversion can take some time. Please note that any resampling changes how samples sounds, at some degree.</p>
+<p><b>Notes:</b></p>
+
+<p>When Drumlabooh loads the kit samples, it converts them before use, on the fly, to the DAW's project session rate (if needed), so the conversion can take some time. Please note that any resampling changes how samples sounds, at some degree.</p>
+
+<p>Drumlabooh loads pre-panned stereo samples as mono, using the left channel. There are not so much stereo drumkits exits, and the pre-panning makes the actual panning on the mixing just weird. So Drumlabooh with it's own stereo mixer treats all source samples as mono.
+</p>
+
+
 
 <h3>Built-in mixer</h3>
 
@@ -140,13 +147,14 @@ $HOME/drumlabooh-kits</pre>
 
 <pre>$HOME/sfz-kits</pre>
 
+<p><b>Примечания:</b></p>
 
 <p>Когда Драмлабух загружает сэмплы из кита в память, то, если частота оцифровки текущей сессии/проекта DAW отлична от частоты сэмплов, сэмплы ресэмплируются (в оперативной памяти) к частоте сессии, что может занять некоторое время в зависимости от количества сэмплов, мощности процессора и т.д.</p>
 
 
 <h3>Встроенный микшер</h3>
 
-<p>Под списком выбора драмкита расположены ячейки инструментов. Каждая из них состоит из:</p>
+<p>Под списком выбора драмкита расположены ячейки инструментов. Каждая из них состоит из следующих частей:</p>
 
 <p>1 <b>Светодиод</b> - загорается когда играет инструмент, загруженный в ячейку.<br><br>
 

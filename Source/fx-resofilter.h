@@ -1,6 +1,11 @@
 #ifndef FXRESOFILTER_H
 #define FXRESOFILTER_H
 
+
+/*
+Peter Semiletov, 2023
+*/
+
 /*
 this code based on Martin Finke's filter tutorial, https://www.martin-finke.de/articles/audio-plugins-013-filter/
 

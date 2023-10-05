@@ -1,5 +1,14 @@
+/*
+Peter Semiletov, 2023
+*/
+
+
 #ifndef DSP_H
 #define DSP_H
+
+
+#define MXCSR_DAZ (1<<6)    /* Включить режим приведения денормализованных чисел к нулю */
+#define MXCSR_FTZ (1<<15)   /* Включить режим сброса значений в ноль */
 
 //#define _USE_MATH_DEFINES
 

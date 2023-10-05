@@ -1,3 +1,9 @@
+/*
+written at 2023 by Peter Semiletov
+this code is the public domain
+ */
+
+
 #ifndef UTL_H
 #define UTL_H
 

@@ -1,3 +1,7 @@
+/*
+Peter Semiletov, 2023
+*/
+
 #include <vector>
 #include <cmath>
 
@@ -12,6 +16,23 @@ float db_scale;
 void init_db()
 {
   db_scale = log (10.0) * 0.05;
+
+
+
+// Check if SSE is available
+  unsigned int eax, ebx, ecx, edx;
+  asm volatile ("xchgl %%ebx, %1; cpuid; xchgl %%ebx, %1"
+		        : "=a" (eax), "=r" (ebx), "=c" (ecx), "=d" (edx)
+		        : "0" (1));
+
+  if (edx & (1 << 25))
+     {
+      unsigned int mxcsr = __builtin_ia32_stmxcsr();
+      mxcsr |= MXCSR_DAZ | MXCSR_FTZ;
+      __builtin_ia32_ldmxcsr (mxcsr);
+     }
+
+
 }
 
 
