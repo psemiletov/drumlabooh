@@ -4,6 +4,7 @@ include(FetchContent)
 
 project(DRUMLABOOH LANGUAGES CXX C VERSION 1.0.0)
 
+message("Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 ")
 

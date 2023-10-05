@@ -15,7 +15,24 @@ float db_scale;
 
 void init_db()
 {
+
+  #if defined(__clang__)
+//
+#elif defined(__GNUC__) || defined(__GNUG__)
+
+  unsigned int mxcsr = __builtin_ia32_stmxcsr ();
+  mxcsr |= MXCSR_DAZ | MXCSR_FTZ;
+  __builtin_ia32_ldmxcsr (mxcsr);
+
+#elif defined(_MSC_VER)
+//
+#endif
+
+
+
   db_scale = log (10.0) * 0.05;
+
+
 }
 
 

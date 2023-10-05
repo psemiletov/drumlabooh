@@ -6,9 +6,17 @@ Peter Semiletov, 2023
 #ifndef DSP_H
 #define DSP_H
 
+#if defined(__clang__)
+//
+#elif defined(__GNUC__) || defined(__GNUG__)
 
-//#define MXCSR_DAZ (1<<6)    /* Включить режим приведения денормализованных чисел к нулю */
-//#define MXCSR_FTZ (1<<15)   /* Включить режим сброса значений в ноль */
+#define MXCSR_DAZ (1<<6)    /* Включить режим приведения денормализованных чисел к нулю */
+#define MXCSR_FTZ (1<<15)   /* Включить режим сброса значений в ноль */
+
+#elif defined(_MSC_VER)
+//
+#endif
+
 
 //#define _USE_MATH_DEFINES
 
@@ -37,21 +45,24 @@ static inline float db2lin (float db)
 }
 */
 
-
+/*
 inline float float2db (float v)
 {
   if (v == 0.0f)
      return 0.0f;
 
   if (v > 0.0f)
-     return (float) 20 * log10 (v / 1.0);
+     return (float) 20 * log10 (v / 1.0f);
 
-  return (float) 20 * log10 (v / -1.0);
+  return (float) 20 * log10 (v / -1.0f);
 }
-
+*/
 
 void init_db();
 
+
+
+///
 
 inline bool float_greater_than (float a, float b)
 {
@@ -70,7 +81,7 @@ inline bool float_equal (float x, float y)
   return std::abs(x - y) <= std::numeric_limits<double>::epsilon() * std::abs(x);
 }
 
-
+/*
 inline float conv (float v, float middle, float max)
 {
   if (v == middle)
@@ -102,7 +113,7 @@ inline float conv_to_db (float v, float v_min, float v_max, float range_negative
        return v / (y * x);
       }
 }
-
+*/
 
 inline float scale_val (float val, float from_min, float from_max, float to_min, float to_max)
 {
@@ -122,7 +133,7 @@ inline float scale_val (float val, float from_min, float from_max, float to_min,
 #define PANMODE01 1
 inline void pan_sincos (float &l, float& r, float p)
 {
-  float pan = 0.5 * M_PI * p;
+  float pan = 0.5f * M_PI * p;
   l = cos (pan);
   r = sin (pan);
 }
@@ -141,8 +152,8 @@ inline void pan_sqrt (float &l, float& r, float p)
 #define PANMODE03 3
 inline void pan_linear0 (float &l, float& r, float p)
 {
-  l = 0.5 + (1 - p);
-  r = 0.5 + p;
+  l = 0.5f + (1 - p);
+  r = 0.5f + p;
 }
 
 
