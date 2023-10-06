@@ -2,7 +2,7 @@
 
    Hello! The first major release ever. All known bugs were fixed, but let's talk about interesting things.
    The most cool one is FX section for each instrument. You can call/hide FX with the button "FX". There are two resonance filters (Low pass and High pass) to change the sound, and the magic "Analog" knob that warms up the sample.
-  Other changes are more GUI-related - palette, drum cells highlighing, etc.
+  Other changes are more GUI-related - palette, drum cells highlighting, etc.
   A new "Wooden" drum kit has been added.  
   Other significant changes:
   Documentation updated.
