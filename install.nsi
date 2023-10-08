@@ -36,22 +36,14 @@ UninstallSubCaption 0 ": Confirmation"
 UninstallSubCaption 1 ": Removing files"
 UninstallSubCaption 2 ": Done"
 
-;C:\Program Files\Common Files\VST3\drumlabooh.vst3
-
 ; The file to write
 OutFile "drumlabooh-installer.exe"
 
 ; The default installation directory
 InstallDir "$PROGRAMFILES\Common Files\VST3\drumlabooh.vst3"
 
-
-; The text to prompt the user to enter a directory
-;DirText "Select VSTi folder please"
-;ComponentText "Select the compoments to install"
-
-
 ; The stuff to install
-Section "Files (mandatory)"
+Section "Drumlabooh (Stereo)"
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   ; Put file there
@@ -61,6 +53,24 @@ Section "Files (mandatory)"
   WriteRegStr HKLM SOFTWARE\Drumlabooh "Install_Dir" "$INSTDIR"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Drumlabooh" "DisplayName" "Drumlabooh (remove)"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Drumlabooh" "UninstallString" '"$INSTDIR\nsUninst.exe"'
+  WriteUninstaller "nsUninst.exe"
+
+;  ExecShell "open" '"$INSTDIR\doc\note_for_users.html"'
+
+SectionEnd
+
+
+; The stuff to install
+Section "Drumlabooh (Multi)"
+  ; Set output path to the installation directory.
+  SetOutPath "$PROGRAMFILES\Common Files\VST3\drumlabooh-multi.vst3"
+  ; Put file there
+  File /r "D:\a\drumlabooh\drumlabooh\build\drumlabooh-multi_artefacts\Release\VST3\drumlabooh-multi.vst3\Contents\Resources\moduleinfo.json"
+  File /r "D:\a\drumlabooh\drumlabooh\build\drumlabooh-multi_artefacts\Release\VST3\drumlabooh-multi.vst3\Contents\x86_64-win\drumlabooh-multi.vst3"
+
+  WriteRegStr HKLM SOFTWARE\Drumlabooh_multi "Install_Dir" "$PROGRAMFILES\Common Files\VST3\drumlabooh-multi.vst3"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Drumlabooh-multi" "DisplayName" "Drumlabooh-multi (remove)"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Drumlabooh-multi" "UninstallString" '"$PROGRAMFILES\Common Files\VST3\drumlabooh-multi.vst3\nsUninst.exe"'
   WriteUninstaller "nsUninst.exe"
 
 ;  ExecShell "open" '"$INSTDIR\doc\note_for_users.html"'
@@ -80,26 +90,9 @@ Section "Basic drumkits"
 SectionEnd
 
 
-;Section "Ярлыки в Главном меню (выборочно)"
-
-;  CreateDirectory "$SMPROGRAMS\TEA"
-;  CreateShortCut "$SMPROGRAMS\TEA\Tea.lnk" "$INSTDIR\tea.exe"
-;  CreateShortCut "$SMPROGRAMS\TEA\Удалить Tea.lnk" "$INSTDIR\nsUninst.exe"
-
-;SectionEnd
-
-;Section "Создать ярлык на Рабочем столе"
-
-  ;CreateShortCut "$DESKTOP\Tea(Win32).lnk" "$INSTDIR\tea.exe"
-
-;SectionEnd
-
 
 Section "Uninstall"
 
-;          Delete $DESKTOP\Tea.lnk
-;          Delete $SMPROGRAMS\TEA\*.*
-;          RMDir $SMPROGRAMS\TEA
           Delete $INSTDIR\nsUninst.exe
           Delete $INSTDIR\*.*
           Delete "C:\drumlabooh-kits\*.*"
