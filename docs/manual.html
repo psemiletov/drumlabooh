@@ -144,13 +144,13 @@ By the way, the pan mode is the significant factor of how DAW "sounds".
 
 <p>3. By default, Drumlabooh-multi sounds at stereo-output. We don't need that. Let's create the individual channels or buses for each drum/precussion sample.</p>
 
-<p>4. Right click <b>on the top of the channel strip</b> and select <b>Fan out to tracks</b> or <b>Fan out to buses</b>. Now you have one track or bus per channel to control each of 32 drumkit channels. Please note that tracks and buses are mono, so to use stereo FX on them, do the right click on the effect, select **Pin connection** and connect pins to make stereo:
+<p>4. Right click <b>on the top of the channel strip</b> and select <b>Fan out to tracks</b> or <b>Fan out to buses</b>. Now you have one track or bus per channel to control each of 36 drumkit channels. Please note that tracks and buses are mono, so to use stereo FX on them, do the right click on the effect, select **Pin connection** and connect pins to make stereo:
 </p>
 
 <p>
 <a href="./mono2stereo.png"><img src="mono2stereo-small.jpg" alt="" width="346" height="156"></a></p>
 
-<p>5. All new tracks/channels are in the group now. To make them properly being muted, soloed, etc, do the right click at the group header, and select Remove group:</p>
+<p>5. All new tracks/channels are in the group now. To make them properly being muted, soloed, etc, do the right click at the group header, and select <b>Remove group</b>:</p>
 
 <a href="/.remove-group.png"><img src="remove-group-small.jpg" alt="" width="444" height="222"></a>
 
@@ -178,7 +178,33 @@ By the way, the pan mode is the significant factor of how DAW "sounds".
 <p>Драмлабух старается не мешать творчеству. Всё что вам нужно, дабы создать с его помощью партию ударных, это создать новую MIDI-дорожку в вашей любимой программе звукозаписи, затем выбрать в Драмлабухе один из установленных драмкитов, и начать играть с клавиатуры, дрампадов или прописывать квадратики в секвенсере. Драмлабух это не синтезатор, а сэмплер, поэтому надо установить какие-то оцифрованные драмкиты.
 </p>
 
-<h3>Скачайте драмкиты</h3>
+
+<a href="#mni_modesru">1. Стерео и Многоканальный режимы</a><br>
+<a href="#mni_getkitsru">2. Установка драмкитов</a><br>
+<a href="#mni_mixerru">3. Встроенный микшер</a><br>
+<a href="#mni_optionsru">4. Настройки</a><br>
+<a href="#multiru">5. О многоканальном режиме подобно</a><br>
+<a href="#multiardru">5.1 В Ardour</a><br>
+<a href="#multirearu">5.2 В Reaper</a><br>
+
+
+
+<a name="mni_modesru"></a>
+<h3>1. Стерео и Многоканальный режимы</h3>
+
+<p>Драмлабух идет в двух версиях плагина - стерео (называется просто <b>Drumlabooh</b>) и многоканальной (<b>Drumlabooh-stereo</b>). Последняя выводит каждый инструмент из драм-кита в свой отдельный моно-канал, всего их может быть 36. Чтобы использовать стерео-версию, надо подключить к дорожке <b>Drumlabooh</b>), а для многоканальной - <b>Drumlabooh-stereo</b>.
+</p>
+
+<p>Если в стерео-версии микширование (уровень, панорама, кнопка mute) происходит на уровне плагина, то в многоканальной всё это в плагине излишне и возложено на вашу программу звукозаписи, в микшере которой вы и будете управлять вышеперечисленным.
+</p>
+
+<p>
+Читайте <a name="mni_multiru">ПОДРОБНОСТИ</a> об использовании многоканьного режима, как подключать инструменты драмкита к разным дорожкам или шинам.
+</p>
+
+
+<a name="mni_getkitsru"></a>
+<h3>2. Скачайте драмкиты</h3>
 
 <p>Драмкиты для Hydrogen проще скачать так - запустите Hydrogen, а в нем пойдите в меню <b>Drumkits - Online import</b> и скачайте драмкиты по вкусу из предложенных хранилищ.</p>
 
@@ -219,7 +245,8 @@ $HOME/drumlabooh-kits</pre>
 <p>Когда Драмлабух загружает сэмплы из кита в память, то, если частота оцифровки текущей сессии/проекта DAW отлична от частоты сэмплов, сэмплы ресэмплируются (в оперативной памяти) к частоте сессии, что может занять некоторое время в зависимости от количества сэмплов, мощности процессора и т.д.</p>
 
 
-<h3>Встроенный микшер</h3>
+<a name="mni_mixerru"></a>
+<h3>3. Встроенный микшер</h3>
 
 <p>Под списком выбора драмкита расположены ячейки инструментов. Каждая из них состоит из следующих частей:</p>
 
@@ -241,6 +268,7 @@ $HOME/drumlabooh-kits</pre>
 5. Переключатель <b>Mute</b> (молчать, заглушить) - если стоит галочка, инструмент не играет, т.е. временно исключается из микса.
 </p>
 
+<a name="mni_optionsru"></a>
 <h3>Настройки плагина</h3>
 
 <p>В правой части окна плагина, под разделом сведений о драмките, находятся настройки.</p>
@@ -249,6 +277,52 @@ $HOME/drumlabooh-kits</pre>
 
 <p><b>Pan mode</b> - выбор режима панорамы для микшера Драмлабуха. Подробнее <a href="https://en.wikipedia.org/wiki/Panning_law">в этой статье</a>. По умолчанию стоит паннер на основе синуса/косинуса, -3 dB.
 </p>
+
+
+<a name="multi"></a>
+<h3>5. О многоканальном режиме подробно</h3>
+
+<p>Повторюсь, что в многоканальной версии плагина нет ползунков панорамы, громкости и кнопки Mute - всё это возложено на микшер DAW.</p>
+
+<p>Драмлабух предоставляет 36 выводных моно-каналов, по одному на каждый инструмент из драмкита.</p>
+
+
+<a name="multiardru"></a>
+<h3>5.1 Как использовать многоканальность с Ардором?</h3>
+
+
+<p>1. Создайте MIDI-дорожку и добавьте туда инструмент <b>Drumlabooh-muiti</b>.</p>
+
+<p>2. Загрузите в <b>Drumlabooh-multi</b> драмкит. Например, GMRockKit из состава Hydrogen . В нем 18 инструментов. Таким образом, нам нужно только 18 выходных каналов из имеющихся 36.</p>
+
+<p>3. По умолчанию, Drumlabooh-multi "звучит" на два канала, как стерео. Нам это не нужно. Мы хотим разбросать инструменты по отдельным дорожкам либо шинам. Как это сделать?
+</p>
+
+<p>4. Правый клик <b>в верхней части микшерного канала дорожки</b> и выберите <b>Fan out to tracks</b> или <b>Fan out to buses</b>. Подождите немного - и появится группа с моно-дорожками или шинами, в зависимости от того, куда вы распределяли - в дорожки или шины. Чтобы использовать на такой стерео-эффект, надо сделать правый клик на добавленном эффекте, выбрать в появившемя меню пункт <b>Pin connection</b> и соединить порты следующим образом:
+</p>
+
+<p>
+<a href="./mono2stereo.png"><img src="mono2stereo-small.jpg" alt="" width="346" height="156"></a></p>
+
+<p>5. Теперь все новые дорожки-каналы в группе. Объединены. Чтобы нормально работать с ними по отдельности, надо сделать правый клик на заголовке группы, и выбрать пункт меню <b>Remove group</b>:</p>
+
+
+<a href="/.remove-group.png"><img src="remove-group-small.jpg" alt="" width="444" height="222"></a>
+
+<p>6. Теперь осталось удалить ненужные дорожки - например, в драмките только 8 инструментов, а у нас 36 дорожек!
+</p>
+
+<a name="multireaper"></a>
+<h3>5.2 Многоканальность в Reaper</h3>
+
+<p>1. <b>Insert</b> - <b>Virtual Instrument on track</b>, добавить <b>Drumlabooh-multi</b>.</p>
+
+<p>2. Подтвердить в <b>Build routing confirmation window.</b></p>
+
+<p>3. Готово!</p>
+
+
+
 
 </td>
 
