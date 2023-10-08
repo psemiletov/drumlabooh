@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 include(FetchContent)
 
 
-project(DRUMLABOOH LANGUAGES CXX C VERSION 1.0.0)
+project(DRUMLABOOH LANGUAGES CXX C VERSION 2.0.0)
 
 message("Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 
@@ -10,7 +10,7 @@ message("Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 -ffast-math")
 
 
-option(MULTI "Build with multy-channel support" OFF)
+option(MULTI "Build with multy-channel support" ON)
 
 
 set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should be installed")

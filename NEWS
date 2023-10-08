@@ -1,12 +1,7 @@
-   Drumlabooh 1.0.0
+   Drumlabooh 2.0.0
 
-   Hello! The first major release ever. All known bugs were fixed, but let's talk about interesting things.
-   The most cool one is FX section for each instrument. You can call/hide FX with the button "FX". There are two resonance filters (Low pass and High pass) to change the sound, and the magic "Analog" knob that warms up the sample.
-  Other changes are more GUI-related - palette, drum cells highlighting, etc.
-  A new "Wooden" drum kit has been added.  
-  Other significant changes:
-  Documentation updated.
-  Stereo samples from kits now loaded as mono to simplify internal mixing. Pre-panned drums are evil. 
+   This release introduces the multi-channel (36 outs) version of the plugin. See the comprehensive documentation at the Drumlabooh site.
+   Also, some Reaper-related things has been fixed.
 
    Peter Semiletov, 
-   Kiev, October 06, 2013
+   Kiev, October 08, 2013

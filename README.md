@@ -11,7 +11,7 @@ For all details, docs and drumkits see the [Drumlabooh site](https://psemiletov.
 
 * Supported sample kit formats: Hydrogen, Drumlabooh/Drumrox, SFZ
 
-* Stereo (with built-in mixer) output
+ * Stereo (with built-in mixer) or multi (36 channels) output
 
 * Built-in mixer with Pan, Volume, mute controls and Pan mode option
 

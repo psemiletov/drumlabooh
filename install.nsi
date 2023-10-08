@@ -68,10 +68,10 @@ Section "Drumlabooh (Multi)"
   File /r "D:\a\drumlabooh\drumlabooh\build\drumlabooh-multi_artefacts\Release\VST3\drumlabooh-multi.vst3\Contents\Resources\moduleinfo.json"
   File /r "D:\a\drumlabooh\drumlabooh\build\drumlabooh-multi_artefacts\Release\VST3\drumlabooh-multi.vst3\Contents\x86_64-win\drumlabooh-multi.vst3"
 
-  WriteRegStr HKLM SOFTWARE\Drumlabooh_multi "Install_Dir" "$PROGRAMFILES\Common Files\VST3\drumlabooh-multi.vst3"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Drumlabooh-multi" "DisplayName" "Drumlabooh-multi (remove)"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Drumlabooh-multi" "UninstallString" '"$PROGRAMFILES\Common Files\VST3\drumlabooh-multi.vst3\nsUninst.exe"'
-  WriteUninstaller "nsUninst.exe"
+;  WriteRegStr HKLM SOFTWARE\Drumlabooh_multi "Install_Dir" "$PROGRAMFILES\Common Files\VST3\drumlabooh-multi.vst3"
+  ;WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Drumlabooh-multi" "DisplayName" "Drumlabooh-multi (remove)"
+  ;WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Drumlabooh-multi" "UninstallString" '"$PROGRAMFILES\Common Files\VST3\drumlabooh-multi.vst3\nsUninst.exe"'
+  ;WriteUninstaller "nsUninst.exe"
 
 ;  ExecShell "open" '"$INSTDIR\doc\note_for_users.html"'
 
@@ -96,6 +96,7 @@ Section "Uninstall"
           Delete $INSTDIR\nsUninst.exe
           Delete $INSTDIR\*.*
           Delete "C:\drumlabooh-kits\*.*"
+          Delete "$PROGRAMFILES\Common Files\VST3\drumlabooh-multi.vst3\*.*"
 
           RMDir /r $INSTDIR
 
