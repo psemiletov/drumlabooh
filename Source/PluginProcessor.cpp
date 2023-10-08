@@ -20,6 +20,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
   for (size_t i = 0; i < 36; i++)
       {
+
     #ifndef MULTICHANNEL
 
        pans[i] = nullptr;
@@ -60,6 +61,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
   for (size_t i = 0; i < 36; i++)
       {
+
 #ifndef MULTICHANNEL
 
        layout.add (std::make_unique <juce::AudioParameterFloat> ("vol" + std::to_string(i), // parameter ID
@@ -74,6 +76,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                                 0, 1, 0));
 
 #endif
+
        layout.add (std::make_unique<juce::AudioParameterFloat> ("lp" + std::to_string(i),      // parameterID
                                                                 "lp" + std::to_string(i),     // parameter name
                                                                 0, 1, 0));
@@ -90,29 +93,29 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
        layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_cutoff" + std::to_string(i),
                                                                 "lp_cutoff" + std::to_string(i),
                                                                  juce::NormalisableRange<float> (0, 0.999f, 0.001f), // parameter range
-                                                                  0.999f));
+                                                                 0.999f));
 
        layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_reso" + std::to_string(i),
                                                                 "lp_reso" + std::to_string(i),
-                                                                  juce::NormalisableRange<float> (0, 1.0f, 0.001f), // parameter range
-                                                                  0.001f));
+                                                                 juce::NormalisableRange<float> (0, 1.0f, 0.001f), // parameter range
+                                                                 0.001f));
 
 
        layout.add (std::make_unique<juce::AudioParameterFloat> ("hp_cutoff" + std::to_string(i),
                                                                 "hp_cutoff" + std::to_string(i),
                                                                  juce::NormalisableRange<float> (0, 0.999f, 0.001f), // parameter range
-                                                                  0.999f));
+                                                                 0.999f));
 
        layout.add (std::make_unique<juce::AudioParameterFloat> ("hp_reso" + std::to_string(i),
                                                                 "hp_reso" + std::to_string(i),
-                                                                  juce::NormalisableRange<float> (0, 1.0f, 0.001f), // parameter range
-                                                                  0.001f));
+                                                                 juce::NormalisableRange<float> (0, 1.0f, 0.001f), // parameter range
+                                                                 0.001f));
 
 
        layout.add (std::make_unique<juce::AudioParameterFloat> ("analog_amount" + std::to_string(i),
                                                                 "analog_amount" + std::to_string(i),
-                                                                  juce::NormalisableRange<float> (0.001f, 1.0f, 0.001f), // parameter range
-                                                                  0.001f));
+                                                                 juce::NormalisableRange<float> (0.001f, 1.0f, 0.001f), // parameter range
+                                                                 0.001f));
       }
 
   return layout;
@@ -142,10 +145,6 @@ CAudioProcessor::CAudioProcessor()
 
   for (size_t i = 0; i < 36; i++)
       {
-      // vols[i]  = parameters.getRawParameterValue ("vol" + std::to_string(i));
-     //  pans[i]  = parameters.getRawParameterValue ("pan" + std::to_string(i));
-     //  mutes[i]  = parameters.getRawParameterValue ("mute" + std::to_string(i));
-
        lps[i]  = parameters.getRawParameterValue ("lp" + std::to_string(i));
        lp_cutoff[i]  = parameters.getRawParameterValue ("lp_cutoff" + std::to_string(i));
        lp_reso[i]  = parameters.getRawParameterValue ("lp_reso" + std::to_string(i));
@@ -164,7 +163,7 @@ CAudioProcessor::CAudioProcessor()
 
 
 #else
-
+//STEREO
 
 CAudioProcessor::CAudioProcessor()
                                   :AudioProcessor (BusesProperties()
@@ -208,7 +207,6 @@ CAudioProcessor::CAudioProcessor()
   ignore_midi_velocity = parameters.getRawParameterValue ("ignore_midi_velocity");
 }
 
-
 #endif
 
 
@@ -251,20 +249,20 @@ bool CAudioProcessor::isMidiEffect() const
 
 double CAudioProcessor::getTailLengthSeconds() const
 {
-    return 0.0;
+  return 0.0;
 }
 
 
 int CAudioProcessor::getNumPrograms()
 {
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
+  return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
 
 int CAudioProcessor::getCurrentProgram()
 {
-    return 0;
+  return 0;
 }
 
 
@@ -275,7 +273,7 @@ void CAudioProcessor::setCurrentProgram (int index)
 
 const juce::String CAudioProcessor::getProgramName (int index)
 {
-    return {};
+  return {};
 }
 
 void CAudioProcessor::changeProgramName (int index, const juce::String& newName)
@@ -341,6 +339,7 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 }
 
 #else
+//STEREO
 
 bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
@@ -351,8 +350,6 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 }
 
 #endif
-
-
 
 
 // Map MIDI velocity 0-127 onto gain
@@ -390,6 +387,15 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
          }
      }
 
+  int out_buf_length = buffer.getNumSamples();
+  int num_channels = buffer.getNumChannels();
+
+  if (num_channels < 1)
+     return;
+
+  for (size_t i = 0; i < num_channels; i++)
+      buffer.clear (i, 0, out_buf_length);
+
 
   if (! drumkit)
       return;
@@ -421,8 +427,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
            if (nn < 0 || nn > v_samples_size - 1)
               continue;
 
-           //float gn = db2lin(*(vols[nn]));
-
            CDrumSample *s = drumkit->v_samples[nn];
 
            if (! s)
@@ -430,8 +434,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
            s->trigger_sample (velocity);
 
-             //also untrigger open hihat if closed hihat triggering
-             // so find the open hihat
+           //also untrigger open hihat if closed hihat triggering
+           // so find the open hihat
            if (s->hihat_close)
                {
                 for (size_t i = 0; i < v_samples_size; i++)
@@ -448,22 +452,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
     float *channel_data [36];
 
-    int num_channels = buffer.getNumChannels();
-
-    //std::cout << "num_channels: " << num_channels << std::endl;
-
-    if (num_channels < 1)
+    if (v_samples_size > num_channels)
        return;
 
-    if (v_samples_size > num_channels)
-      return;
-
-
-    int out_buf_length = buffer.getNumSamples();
-
-
-    for (size_t i = 0; i < num_channels; i++)
-         buffer.clear (i, 0, out_buf_length);
 
     for (size_t i = 0; i < num_channels; i++)
         channel_data[i] = buffer.getWritePointer(i);
@@ -501,16 +492,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                   continue;
                  }
 
-/*
-              bool mute = *(mutes[drum_sample_index]) > 0.5f;
-
-              if (mute)
-                 {
-                  l->sample_offset++;
-                  continue;
-                 }
-*/
-
             // if (l->channels == 1)
                 {
                  float fl = l->channel_data[0][l->sample_offset++];
@@ -518,8 +499,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                 // float fl = 0.5f;
 
                  //DSP
-
-
                  bool analog_on = *(analog[drum_sample_index]) > 0.5f;
 
                  if (analog_on)
@@ -577,6 +556,13 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
           //return;
          }
      }
+
+
+  int num_channels = buffer.getNumChannels();
+  int out_buf_length = buffer.getNumSamples();
+
+  for (int i = 0; i < num_channels; ++i)
+       buffer.clear (i, 0, out_buf_length);
 
 
   if (! drumkit)
@@ -653,36 +639,13 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
     float *channel_data [2];
 
-    int num_channels = buffer.getNumChannels();
 
     if (num_channels > 0)
-       channel_data [0] = buffer.getWritePointer (0);
+        channel_data [0] = buffer.getWritePointer (0);
 
     if (num_channels > 1)
        channel_data [1] = buffer.getWritePointer (1);
 
-
-
- //   juce::ScopedNoDenormals noDenormals;
-//    auto totalNumInputChannels  = getTotalNumInputChannels();
-    //auto totalNumOutputChannels = getTotalNumOutputChannels();
-
-   //  std::cout << "buffer.getNumSamples():" << buffer.getNumSamples() << std::endl;
-
-
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-  // this code if your algorithm always overwrites all the output channels.
-
-
-    int out_buf_length = buffer.getNumSamples();
-
-
-    for (int i = 0; i < 2; ++i)
-         buffer.clear (i, 0, out_buf_length);
 
 
 
