@@ -770,7 +770,7 @@ void CAudioProcessorEditor::buttonClicked (juce::Button* button)
 void CAudioProcessorEditor::kit_changed()
 {
  //(cmb_drumkit_selector.getSelectedId()
-  std::cout << cmb_drumkit_selector.getSelectedId() - 1<< std::endl;
+//  std::cout << cmb_drumkit_selector.getSelectedId() - 1<< std::endl;
 }
 
 

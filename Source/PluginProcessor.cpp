@@ -128,7 +128,7 @@ CAudioProcessor::CAudioProcessor()
    parameters (*this, 0, "Drumlabooh-multi", createParameterLayout())
 
 {
- std::cout << "CAudioProcessor::CAudioProcessor()36 - 1" << std::endl;
+ //std::cout << "CAudioProcessor::CAudioProcessor()36 - 1" << std::endl;
   formatManager = new juce::AudioFormatManager();
   formatManager->registerBasicFormats();
 
@@ -174,7 +174,7 @@ CAudioProcessor::CAudioProcessor()
    parameters (*this, 0, "Drumlabooh", createParameterLayout())
 
 {
-std::cout << "CAudioProcessor::CAudioProcessor() - 1" << std::endl;
+//std::cout << "CAudioProcessor::CAudioProcessor() - 1" << std::endl;
   formatManager = new juce::AudioFormatManager();
   formatManager->registerBasicFormats();
 

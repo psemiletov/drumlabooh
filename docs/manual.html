@@ -26,8 +26,31 @@
 
 <p>Drumlabooh is aimed to not interfere with creativity. All that you need is to create a new MIDI track at your DAW, select the drumkit from the list, and play. Yes indeed, Drumlabooh is not for inventors of new, synthesized drum sounds. Drumlabooh uses the existing, sampled drumkits, so you need to install them first.</p>
 
+<a href="#mni_modes">1. Stereo vs Multi-channel modes</a><br>
+<a href="#mni_getkits">2. Get kits</a><br>
+<a href="#mni_mixer">3. Mixer</a><br>
+<a href="#mni_options">4. Options</a><br>
+<a href="#multi">5. Multi-channel explained</a><br>
+<a href="#multiard">5.1 Ardour</a><br>
+<a href="#multirea">5.2 Reaper</a><br>
 
-<h3>Get kits</h3>
+
+
+<a name="mni_modes"></a>
+<h3>1. Stereo vs Multi-channel modes</h3>
+
+<p>The first thing that you should know that there are two versions of Drumlabooh - <b>Stereo </b>and <b>Multi</b> (Multi-channel or Multi-outputs), that gives you the separated output mono channel for each instrument from the drum kit (36 channels at all).  
+To use the Stereo version, add to track Drumlabooh plugin. And for Multi-channel version, add Drumlabooh-multi.</p>
+
+<p>At Multi-channel version, the plugin's pan, volume and mute controls) <b>are disabled</b>, because you can control them via tracks or buses in DAW.</p>
+
+<p>
+Read the <a name="mni_multi">DETAILS</a> how to use Multi-mode in DAW, to attach each drum to the individual track or the bus.
+</p>
+
+
+<a name="mni_getkits"></a>
+<h3>2. Get kits</h3>
 
 <p>For Hydrogen drumkits, run Hydrogen, then go there to <b>Drumkits - Online import</b> menu and download kits from Hydrogen or Musical Artifacts repositories. To install Drumlabooh format kits, download them from [<a href="https://github.com/psemiletov/drum_sklad">Drum sklad</a> and <a href="https://t.me/drum_sklad">Drumlabooh kits at Telegram</a>, then copy or unpack drumkits folders to <i>$HOME/drumlabooh-kits</i>. Each kit = one folder.</p>
 
@@ -67,8 +90,8 @@ $HOME/drumlabooh-kits</pre>
 </p>
 
 
-
-<h3>Built-in mixer</h3>
+<a name="mni_mixer"></a>
+<h3>3. Built-in mixer</h3>
 
 <p>Below the drumkit selector you see the cells (or slots) with loaded samples. Here the layout of each cell:</p>
 
@@ -91,7 +114,9 @@ Both filters are resonance filters and have the <b>resonance</b> parameter. Play
 5. <b>Mute switch</b> - mutes the instrument.
 </p>
 
-<h3> Built-in options</h3>
+
+<a name="mni_options"></a>
+<h3>4. Built-in options</h3>
 
 <p>By the right side of the plugin window you see, below the drumkit info section, the Options.</p>
 
@@ -100,6 +125,48 @@ Both filters are resonance filters and have the <b>resonance</b> parameter. Play
 <p><b>Pan mode</b> - allow to select the pan mode for Drumlabooh's internal mixer. See the <a href="https://en.wikipedia.org/wiki/Panning_law">article</a>. Defaul panner is sin/cos panner, law: -3 dB.<br>
 By the way, the pan mode is the significant factor of how DAW "sounds".
 </p>
+
+<a name="multi"></a>
+<h3>5. Multi-channel explained</h3>
+
+<p>At Multi-channel version, the plugin's pan, volume and mute controls <b>are disabled</b>, because you can control them via tracks or buses in DAW.</p>
+
+<p>Drumlabooh provides 36 output mono channels, one per sample of the drumkit.</p>
+
+
+<a name="multiard"></a>
+<h3>5.1 How to use Multi-out with Ardour?</h3>
+
+
+<p>1. Create MIDI track with Drumlabooh-muiti as the instrument.</p>
+
+<p>2. Load drumkit into the Drumlabooh-multi. For example, Hydrogen's GMRockKit. It has 18 instruments inside. Thus, we need just 18 output channels from the 36 available.</p>
+
+<p>3. By default, Drumlabooh-multi sounds at stereo-output. We don't need that. Let's create the individual channels or buses for each drum/precussion sample.</p>
+
+<p>4. Right click <b>on the top of the channel strip</b> and select <b>Fan out to tracks</b> or <b>Fan out to buses</b>. Now you have one track or bus per channel to control each of 32 drumkit channels. Please note that tracks and buses are mono, so to use stereo FX on them, do the right click on the effect, select **Pin connection** and connect pins to make stereo:
+</p>
+
+<p>
+<a href="./mono2stereo.png"><img src="mono2stereo-small.jpg" alt="" width="346" height="156"></a></p>
+
+<p>5. All new tracks/channels are in the group now. To make them properly being muted, soloed, etc, do the right click at the group header, and select Remove group:</p>
+
+<a href="/.remove-group.png"><img src="remove-group-small.jpg" alt="" width="444" height="222"></a>
+
+<p>
+6. Now, remove unneeded tracks (for example, the kit has only 8 instruments, but you have 36 tracks from Drumlabooh!)
+</p>
+
+<a name="multireaper"></a>
+<h3>5.2 How to use Multi-out with Reaper?</h3>
+
+<p>1. <b>Insert</b> - <b>Virtual Instrument on track</b>, add <b>Drumlabooh-multi</b>.</p>
+
+<p>2. Confirm at <b>Build routing confirmation window.</b></p>
+
+<p>3. Voila!</p>
+
 
 </td>
 
