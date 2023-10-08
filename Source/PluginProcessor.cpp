@@ -20,9 +20,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
   for (size_t i = 0; i < 36; i++)
       {
+    #ifndef MULTICHANNEL
+
        pans[i] = nullptr;
        vols[i] = nullptr;
        mutes[i] = nullptr;
+
+    #endif
 
        lps[i] = nullptr;
        hps[i] = nullptr;
@@ -38,11 +42,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
       }
 
 
+#ifndef MULTICHANNEL
+
   layout.add (std::make_unique<juce::AudioParameterFloat> ("panner_mode",            // parameterID
                                                            "panner_mode",            // parameter name
                                                            1.0f,              // minimum value
                                                            4.0f,              // maximum value
                                                            1.0f)); //default
+
+#endif
 
   layout.add (std::make_unique<juce::AudioParameterFloat> ("ignore_midi_velocity",      // parameterID
                                                            "ignore_midi_velocity",     // parameter name
@@ -52,6 +60,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
   for (size_t i = 0; i < 36; i++)
       {
+#ifndef MULTICHANNEL
+
        layout.add (std::make_unique <juce::AudioParameterFloat> ("vol" + std::to_string(i), // parameter ID
                                                                  "vol" + std::to_string(i), // parameter name
                                                                   juce::NormalisableRange<float> (-96, 6, 0.1, 5), // parameter range
@@ -63,6 +73,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                                 "mute" + std::to_string(i),     // parameter name
                                                                 0, 1, 0));
 
+#endif
        layout.add (std::make_unique<juce::AudioParameterFloat> ("lp" + std::to_string(i),      // parameterID
                                                                 "lp" + std::to_string(i),     // parameter name
                                                                 0, 1, 0));
@@ -74,13 +85,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
        layout.add (std::make_unique<juce::AudioParameterFloat> ("analog" + std::to_string(i),      // parameterID
                                                                 "analog" + std::to_string(i),     // parameter name
                                                                 0, 1, 0));
-
-/*
-        layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_cutoff" + std::to_string(i),
-                                                                  "lp_cutoff" + std::to_string(i),
-                                                                  juce::NormalisableRange<float> (1, 22100.0f, 1.0f), // parameter range
-                                                                  48000.0f));
-*/
 
 
        layout.add (std::make_unique<juce::AudioParameterFloat> ("lp_cutoff" + std::to_string(i),
@@ -138,9 +142,9 @@ CAudioProcessor::CAudioProcessor()
 
   for (size_t i = 0; i < 36; i++)
       {
-       vols[i]  = parameters.getRawParameterValue ("vol" + std::to_string(i));
-       pans[i]  = parameters.getRawParameterValue ("pan" + std::to_string(i));
-       mutes[i]  = parameters.getRawParameterValue ("mute" + std::to_string(i));
+      // vols[i]  = parameters.getRawParameterValue ("vol" + std::to_string(i));
+     //  pans[i]  = parameters.getRawParameterValue ("pan" + std::to_string(i));
+     //  mutes[i]  = parameters.getRawParameterValue ("mute" + std::to_string(i));
 
        lps[i]  = parameters.getRawParameterValue ("lp" + std::to_string(i));
        lp_cutoff[i]  = parameters.getRawParameterValue ("lp_cutoff" + std::to_string(i));
@@ -154,7 +158,7 @@ CAudioProcessor::CAudioProcessor()
        analog_amount[i] = parameters.getRawParameterValue ("analog_amount" + std::to_string(i));
       }
 
-  panner_mode = parameters.getRawParameterValue ("panner_mode");
+  //panner_mode = parameters.getRawParameterValue ("panner_mode");
   ignore_midi_velocity = parameters.getRawParameterValue ("ignore_midi_velocity");
 }
 
@@ -282,18 +286,12 @@ void CAudioProcessor::changeProgramName (int index, const juce::String& newName)
 //==============================================================================
 void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-//  std::cout << "CAudioProcessor::prepareToPlay - 1" << std::endl;
-//  std::cout << "sampleRate: " <<  sampleRate << std::endl;
+  session_samplerate = (int) sampleRate;
 
-
-   session_samplerate = (int) sampleRate;
-
-   //RELOAD IF SRATE CHANGED DURING SESSION, AS REAPER CAN
-   if (drumkit)
-      if (drumkit->samplerate != session_samplerate)
-         load_kit (drumkit_path);
-
-   //std::cout << "CAudioProcessor::prepareToPlay - 2" << std::endl;
+  //RELOAD IF SRATE CHANGED DURING SESSION, AS REAPER CAN
+  if (drumkit)
+     if (drumkit->samplerate != session_samplerate)
+        load_kit (drumkit_path);
 }
 
 
@@ -357,7 +355,6 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 
 
 
-
 // Map MIDI velocity 0-127 onto gain
 // 0.0-1.0
 
@@ -371,9 +368,9 @@ float VelocityToLevel (int velocity)
 // velocity should logarithmically map onto [min..1]
 
   float logrange = logf( 1.0f / min );
-  float vcurve = powf ((float (velocity-1) / 126.0f), 0.8f );
+  float vcurve = powf ((float (velocity - 1) / 126.0f), 0.8f );
 
-  return min * expf( logrange * vcurve );
+  return min * expf (logrange * vcurve);
 }
 
 
@@ -424,7 +421,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
            if (nn < 0 || nn > v_samples_size - 1)
               continue;
 
-           float gn = db2lin(*(vols[nn]));
+           //float gn = db2lin(*(vols[nn]));
 
            CDrumSample *s = drumkit->v_samples[nn];
 
@@ -462,10 +459,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       return;
 
 
-
-//   std::cout << "ok 1 " << std::endl;
-
-
     int out_buf_length = buffer.getNumSamples();
 
 
@@ -476,13 +469,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
         channel_data[i] = buffer.getWritePointer(i);
 
 
-
         //for each drum instrument
     for (int drum_sample_index = 0; drum_sample_index < v_samples_size; drum_sample_index++)
         {
-         //std::cout << "drum_sample_index:" << drum_sample_index << std::endl;
-
-           //for each sample out_buf_offs
+         //for each sample out_buf_offs
          for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
              {
               CDrumSample *s = drumkit->v_samples[drum_sample_index];
@@ -511,7 +501,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                   continue;
                  }
 
-
+/*
               bool mute = *(mutes[drum_sample_index]) > 0.5f;
 
               if (mute)
@@ -519,7 +509,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                   l->sample_offset++;
                   continue;
                  }
-
+*/
 
             // if (l->channels == 1)
                 {
@@ -661,12 +651,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       }
 
 
-     //if (! drumkit)
-        //return;
-
-    // std::cout << "CAudioProcessor::processBlock -2 " << std::endl;
-
-
     float *channel_data [2];
 
     int num_channels = buffer.getNumChannels();
@@ -678,7 +662,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
        channel_data [1] = buffer.getWritePointer (1);
 
 
-  //std::cout << "CAudioProcessor::processBlock -3 " << std::endl;
 
  //   juce::ScopedNoDenormals noDenormals;
 //    auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -709,14 +692,12 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
         for (int drum_sample_index = 0; drum_sample_index < v_samples_size; drum_sample_index++)
             {
              CDrumSample *s = drumkit->v_samples[drum_sample_index];
+
              if (! s)
                 {
                  std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
                  break;
                 }
-
-
-             // std::cout << s->name << std::endl;
 
              if (! s->active)
                 continue;
@@ -752,43 +733,12 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
                  //DSP
 
-/*
-                 bool saturator_on = *(saturator[drum_sample_index]) > 0.5f;
-
-                 if (saturator_on)
-                    {
-                     fl = guitarDistortion (fl, *(saturator_amount[drum_sample_index]));
-                     fr = fl;
-
-                    }
-
-
-                 */
-
-
-/*
-                 bool saturator_on = *(saturator[drum_sample_index]) > 0.5f;
-
-                 if (saturator_on)
-                    {
-                     fl = soft_saturate (fl,*(saturator_amount[drum_sample_index]));
-                    fr = fl;
-
-                    }
-
-*/
-
-
-               bool analog_on = *(analog[drum_sample_index]) > 0.5f;
+                 bool analog_on = *(analog[drum_sample_index]) > 0.5f;
 
                  if (analog_on)
                     {
-                     //shaper.attackTime_ = *(saturator_amount[drum_sample_index]);
                      fl = warmify (fl,*(analog_amount[drum_sample_index]));
-
-                     //fl = soft_saturate (fl,*(saturator_amount[drum_sample_index]));
                      fr = fl;
-
                     }
 
 
@@ -802,27 +752,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      fl = softLimit (lp[drum_sample_index].process (fl));
                      fr = fl;
                     }
-
-
-
-
-/*
-                 bool lp_on = *(lps[drum_sample_index]) > 0.5f;
-
-                 if (lp_on)
-                    {
-                     moog_filter[drum_sample_index].setParams (*(lp_cutoff[drum_sample_index]),
-                     *(lp_reso[drum_sample_index]));
-
-
-                     fl = moog_filter[drum_sample_index].process (fl);
-                     fr = fl;
-
-                     std::cout << "fl:" << fl << std::endl;
-                    }
-*/
-
-
 
 
                  bool hp_on = *(hps[drum_sample_index]) > 0.5f;
@@ -903,9 +832,6 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
   save_string_keyval ("drumkit_path", drumkit_path);
   save_int_keyval ("base_note_number", base_note_number);
-
-//  std::cout << "get int_base_note_number: " << base_note_number << std::endl;
-
   auto state = parameters.copyState();
   std::unique_ptr <juce::XmlElement> xml (state.createXml());
   copyXmlToBinary (*xml, destData);
@@ -924,9 +850,6 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
          parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
          base_note_number = load_int_keyval ("base_note_number", 36);
          drumkit_path = load_string_keyval ("drumkit_path");
-        // std::cout << "drumkit_path : " << drumkit_path  << std::endl;
-         //std::cout << "set base_note_number: " << _base_note_number << std::endl;
-         //std::cout << "AudioProcessor::getSampleRate: << " <<  getSampleRate() << std::endl;
          session_samplerate = getSampleRate();
         }
 
@@ -973,14 +896,8 @@ int CAudioProcessor::load_int_keyval (const std::string &key, int defval)
 
 bool CAudioProcessor::load_kit (const std::string &fullpath)
 {
-  //std::cout << "CAudioProcessor::load_kit: " << fullpath << std::endl;
-
-  //std::cout << "CAudioProcessor::load_kit - 1" << std::endl;
-  //std::cout << "fullpath: " << fullpath << std::endl;
-  //std::cout << "session samplerate: " << session_samplerate << std::endl;
-
-    if (fullpath.empty())
-       return false;
+  if (fullpath.empty())
+      return false;
 
 //STOP PLAY
 
@@ -1001,8 +918,6 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
        hp[i].mode = FILTER_MODE_HIGHPASS;
        hp[i].reset();
       }
-
-
 
 //resume
 

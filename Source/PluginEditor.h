@@ -78,7 +78,6 @@ public:
   std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_analog;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_analog_amount;
 
-
   juce::GroupComponent gr_group_lp;
   juce::GroupComponent gr_group_hp;
   juce::GroupComponent gr_group_analog;
@@ -97,10 +96,10 @@ public:
 
   CFx();
   ~CFx() override;
-
-// void resized() override;
 };
 
+
+#ifndef MULTICHANNEL
 
 
 class CDrumCell: public juce::Component/*,
@@ -121,7 +120,6 @@ public:
 
   CFx fx;
 
-
   juce::TextButton bt_fx;
   juce::Button *bt_fx_close;
 
@@ -139,13 +137,47 @@ public:
   void attach_params (CAudioProcessorEditor *ed, int cellno);
   void set_name (const std::string &n);
 
-// void paint (juce::Graphics& g) override;
-//  void resized() override;
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CDrumCell)
+};
+
+
+#else
+
+
+class CDrumCell: public juce::Component/*,
+                 public juce::Slider::Listener*/
+{
+public:
+
+  juce::Font f_samplename_font { 14.0f, juce::Font::bold};
+
+  juce::GroupComponent gr_group;
+
+  CLed led;
+
+  CDocumentWindow *wnd_fx;
+
+  CFx fx;
+
+  juce::TextButton bt_fx;
+  juce::Button *bt_fx_close;
+
+  juce::Label cell_label;
+
+  int cell_number;
+
+  CDrumCell();
+  ~CDrumCell() override;
+
+  void attach_params (CAudioProcessorEditor *ed, int cellno);
+  void set_name (const std::string &n);
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CDrumCell)
 };
 
 
+
+#endif
 
 class CAudioProcessorEditor: public juce::AudioProcessorEditor,
                              public juce::Button::Listener,
@@ -165,9 +197,15 @@ public:
   std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_ignore_midi_velocity;
   juce::ToggleButton bt_ignore_midi_velocity;
 
+
+#ifndef MULTICHANNEL
+
   std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_pan_mode;
   juce::Label l_pan_mode { {}, "Pan mode" };
   juce::ComboBox cmb_pan_mode;
+
+#endif
+
 
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_base_note;
   juce::Label l_base_note { {}, "Base MIDI note" };
@@ -219,5 +257,5 @@ public:
   void buttonClicked (juce::Button* button) override;
 
 
-   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CAudioProcessorEditor)
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CAudioProcessorEditor)
 };

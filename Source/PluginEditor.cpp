@@ -15,8 +15,8 @@ this code is the public domain
 #define XFILLER 4
 #define YFILLER 16
 
-#define WINDOW_HEIGHT 580
-#define WINDOW_WIDTH 790
+//#define WINDOW_HEIGHT 580
+//#define WINDOW_WIDTH 790
 
 
 
@@ -73,8 +73,6 @@ CFx::CFx()
   //sl_analog_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
   //sl_analog_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
   sl_analog_amount.setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
-
-
   sl_analog_amount.setTooltip ("Amount");
 
   gr_group_analog.setTopLeftPosition (XFILLER, YFILLER);
@@ -216,6 +214,8 @@ void CLed::paint(Graphics& g)
 }
 
 
+#ifndef MULTICHANNEL
+
 CDrumCell::CDrumCell()
 {
   addChildComponent (fx);
@@ -320,6 +320,84 @@ CDrumCell::CDrumCell()
 
 }
 
+#else
+//MULTICHANNEL VERSION
+
+CDrumCell::CDrumCell()
+{
+  addChildComponent (fx);
+
+  addChildComponent (gr_group);
+
+  int xoffs = XFILLER * 2;
+
+  addAndMakeVisible (led);
+  led.setTopLeftPosition (xoffs, YFILLER);
+  led.setSize (16, 32);
+
+  xoffs += led.getWidth();
+  xoffs += XFILLER;
+
+
+  addAndMakeVisible (cell_label);
+
+  cell_label.setTopLeftPosition (xoffs, YFILLER);
+  cell_label.setSize (160, 32);
+  cell_label.setColour (juce::Label::textColourId, juce::Colours::black);
+  cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+//  label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
+  cell_label.setFont (f_samplename_font);
+  cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
+
+  xoffs += cell_label.getWidth();
+  xoffs += XFILLER;
+
+  wnd_fx = 0;
+
+  addAndMakeVisible (bt_fx);
+
+  bt_fx.setButtonText ("FX");
+  bt_fx.setColour (TextButton::ColourIds::buttonColourId,  Colours::darkslategrey);
+  bt_fx.setTopLeftPosition (xoffs, YFILLER);
+  bt_fx.setSize (42, 32);
+
+  xoffs += bt_fx.getWidth();
+  xoffs += XFILLER;
+
+  gr_group.setVisible (true);
+  gr_group.setSize (xoffs, 32 + YFILLER + YFILLER);
+
+  setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
+
+
+  bt_fx.onClick = [this] {
+                          if (! wnd_fx)
+                             {
+                              wnd_fx = new CDocumentWindow ("FX", Colours::darkslategrey, DocumentWindow::TitleBarButtons::closeButton, false);
+                             // wnd_fx = new CDocumentWindow ("FX", juce::Colour (246, 226, 206), DocumentWindow::TitleBarButtons::closeButton, false);
+                              wnd_fx->setContentNonOwned (&fx, true);
+                             }
+
+                          if (! wnd_fx)
+                              return;
+
+                          if (wnd_fx->isOnDesktop())
+                              wnd_fx->removeFromDesktop();
+                          else
+                              wnd_fx->addToDesktop();//ComponentPeer::StyleFlags::windowIsTemporary | ComponentPeer::StyleFlags::windowHasTitleBar | ComponentPeer::StyleFlags::windowHasCloseButton);
+
+                          wnd_fx->setVisible (! wnd_fx->isVisible());
+                          wnd_fx->setTopLeftPosition (bt_fx.getScreenX() + bt_fx.getWidth(), bt_fx.getScreenY() + bt_fx.getHeight());
+                         };
+
+}
+
+
+#endif
+
+
+
+
 
 CDrumCell::~CDrumCell()
 {
@@ -338,6 +416,8 @@ void CDrumCell::resized()
 {
 }
 */
+
+#ifndef MULTICHANNEL
 
 void CDrumCell::attach_params (CAudioProcessorEditor *ed, int cellno)
 {
@@ -376,6 +456,41 @@ void CDrumCell::attach_params (CAudioProcessorEditor *ed, int cellno)
   param_name = "analog_amount" + std::to_string (cell_number);
   fx.att_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_analog_amount));
 }
+
+
+#else
+//MULTICHANNEL VERSION
+
+void CDrumCell::attach_params (CAudioProcessorEditor *ed, int cellno)
+{
+  cell_number = cellno;
+
+
+  std::string param_name = "lp" + std::to_string (cell_number);
+  fx.att_lp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx.bt_lp));
+
+  param_name = "lp_cutoff" + std::to_string (cell_number);
+  fx.att_lp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_lp_cutoff));
+
+  param_name = "lp_reso" + std::to_string (cell_number);
+  fx.att_lp_reso.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_lp_reso));
+
+  param_name = "hp" + std::to_string (cell_number);
+  fx.att_hp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx.bt_hp));
+
+  param_name = "hp_cutoff" + std::to_string (cell_number);
+  fx.att_hp_cutoff.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_hp_cutoff));
+
+  param_name = "hp_reso" + std::to_string (cell_number);
+  fx.att_hp_reso.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_hp_reso));
+
+  param_name = "analog" + std::to_string (cell_number);
+  fx.att_analog.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx.bt_analog));
+
+  param_name = "analog_amount" + std::to_string (cell_number);
+  fx.att_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_analog_amount));
+}
+#endif
 
 
 void CDrumCell::set_name (const std::string &n)
@@ -431,13 +546,6 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
        kit_image.setImage(juce::Image ());
 }
 
-/*
-void CAudioProcessorEditor::panner_modeMenuChanged()
-{
-       std::cout << "cmb_panner_mode.getSelectedId(): " <<  cmb_pan_mode.getSelectedId() << std::endl;
-       std::cout << "cmb_panner_mode.getSelectedItemIndex(): " <<  cmb_pan_mode.getSelectedItemIndex() << std::endl;
-}
-*/
 
 
 CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts)
@@ -491,7 +599,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   addAndMakeVisible (drumcells_group);
 
   drumcells_viewer.setViewedComponent (&drumcells_container, false);
-  drumcells_viewer.setScrollBarsShown	(true, false);
+  drumcells_viewer.setScrollBarsShown (true, false);
   drumcells_viewer.setSize (drumcells_container.getWidth() + (XFILLER * 5), 480);
   drumcells_viewer.setScrollBarThickness (24);
 
@@ -546,13 +654,12 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
   // PAN MODE
-
+#ifndef MULTICHANNEL
   addAndMakeVisible (l_pan_mode);
   l_pan_mode.setTopLeftPosition (l_base_note.getX(), sl_base_note.getBottom() + YFILLER);
   l_pan_mode.setSize (100, 32);
   cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
   cmb_pan_mode.setColour (juce::ComboBox::textColourId, Colours::white);
-
 
 
   addAndMakeVisible (cmb_pan_mode);
@@ -569,7 +676,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
 
-
   addAndMakeVisible (bt_ignore_midi_velocity);
   bt_ignore_midi_velocity.setButtonText ("Ignore MIDI velocity");
   bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
@@ -579,8 +685,28 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   att_ignore_midi_velocity.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "ignore_midi_velocity", bt_ignore_midi_velocity));
 
 
-  gr_options.setSize (gr_kitinfo.getWidth(), l_pan_mode.getHeight() + YFILLER + cmb_pan_mode.getHeight() + bt_ignore_midi_velocity.getHeight() +
-  YFILLER * 2);
+  //gr_options.setSize (gr_kitinfo.getWidth(), l_pan_mode.getHeight() + YFILLER + cmb_pan_mode.getHeight() + bt_ignore_midi_velocity.getHeight() +   YFILLER * 2);
+
+  gr_options.setSize (gr_kitinfo.getWidth(), sl_base_note.getHeight()  + YFILLER + cmb_pan_mode.getHeight() + bt_ignore_midi_velocity.getHeight()
+                    + YFILLER);
+
+
+#else
+//MULTI
+
+  addAndMakeVisible (bt_ignore_midi_velocity);
+  bt_ignore_midi_velocity.setButtonText ("Ignore MIDI velocity");
+  bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
+  bt_ignore_midi_velocity.setSize (180 + XFILLER, 48);
+  bt_ignore_midi_velocity.setTopLeftPosition (l_base_note.getX(), sl_base_note.getBottom() + YFILLER);
+
+  att_ignore_midi_velocity.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "ignore_midi_velocity", bt_ignore_midi_velocity));
+
+
+  gr_options.setSize (gr_kitinfo.getWidth(), sl_base_note.getHeight() + YFILLER + bt_ignore_midi_velocity.getHeight() +  YFILLER * 2);
+
+
+#endif
 
 
   addAndMakeVisible (l_plugin_name);

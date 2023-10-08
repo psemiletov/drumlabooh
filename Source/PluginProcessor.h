@@ -28,9 +28,13 @@ public:
 
   //all mixer strip (drumcell) params
 
+#ifndef MULTICHANNEL
+
   std::atomic<float>* pans[36];
   std::atomic<float>* vols[36];
   std::atomic<float>* mutes[36]; //bool
+
+#endif
 
   //FX LP, HP, Analog on/off
 
@@ -49,7 +53,13 @@ public:
   std::atomic<float>* analog_amount[36]; //
 
 
+#ifndef MULTICHANNEL
+
   std::atomic<float>* panner_mode = nullptr;
+
+#endif
+
+
   std::atomic<float>* ignore_midi_velocity = nullptr;
 
 
