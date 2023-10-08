@@ -16,7 +16,7 @@ float db_scale;
 void init_db()
 {
 
-  #if defined(__clang__)
+#if defined(__clang__)
 //
 #elif defined(__GNUC__) || defined(__GNUG__)
 

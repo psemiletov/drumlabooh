@@ -115,21 +115,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 }
 
 
+#if defined(MULTICHANNEL)
 
 CAudioProcessor::CAudioProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
                                   :AudioProcessor (BusesProperties()
-                                  #if ! JucePlugin_IsMidiEffect
-                                      #if ! JucePlugin_IsSynth
-                                          .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                                       #endif
-                                      .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                                  #endif
+                                    .withOutput ("Output", juce::AudioChannelSet::canonicalChannelSet (36), true)
                                  ),
-#endif
-parameters (*this, 0, "Drumlabooh", createParameterLayout())
+   parameters (*this, 0, "Drumlabooh-multi", createParameterLayout())
+
 {
-//std::cout << "CAudioProcessor::CAudioProcessor() - 1" << std::endl;
+ std::cout << "CAudioProcessor::CAudioProcessor()36 - 1" << std::endl;
   formatManager = new juce::AudioFormatManager();
   formatManager->registerBasicFormats();
 
@@ -162,6 +157,55 @@ parameters (*this, 0, "Drumlabooh", createParameterLayout())
   panner_mode = parameters.getRawParameterValue ("panner_mode");
   ignore_midi_velocity = parameters.getRawParameterValue ("ignore_midi_velocity");
 }
+
+
+#else
+
+
+CAudioProcessor::CAudioProcessor()
+                                  :AudioProcessor (BusesProperties()
+                                      .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+                                 ),
+
+   parameters (*this, 0, "Drumlabooh", createParameterLayout())
+
+{
+std::cout << "CAudioProcessor::CAudioProcessor() - 1" << std::endl;
+  formatManager = new juce::AudioFormatManager();
+  formatManager->registerBasicFormats();
+
+  init_db();
+
+  fresh_start = true;
+  drumkit = 0;
+  drumkit_path = "";
+  base_note_number = 36;
+  session_samplerate = 0;
+
+  for (size_t i = 0; i < 36; i++)
+      {
+       vols[i]  = parameters.getRawParameterValue ("vol" + std::to_string(i));
+       pans[i]  = parameters.getRawParameterValue ("pan" + std::to_string(i));
+       mutes[i]  = parameters.getRawParameterValue ("mute" + std::to_string(i));
+
+       lps[i]  = parameters.getRawParameterValue ("lp" + std::to_string(i));
+       lp_cutoff[i]  = parameters.getRawParameterValue ("lp_cutoff" + std::to_string(i));
+       lp_reso[i]  = parameters.getRawParameterValue ("lp_reso" + std::to_string(i));
+
+       hps[i]  = parameters.getRawParameterValue ("hp" + std::to_string(i));
+       hp_cutoff[i]  = parameters.getRawParameterValue ("hp_cutoff" + std::to_string(i));
+       hp_reso[i]  = parameters.getRawParameterValue ("hp_reso" + std::to_string(i));
+
+       analog[i] = parameters.getRawParameterValue ("analog" + std::to_string(i));
+       analog_amount[i] = parameters.getRawParameterValue ("analog_amount" + std::to_string(i));
+      }
+
+  panner_mode = parameters.getRawParameterValue ("panner_mode");
+  ignore_midi_velocity = parameters.getRawParameterValue ("ignore_midi_velocity");
+}
+
+
+#endif
 
 
 CAudioProcessor::~CAudioProcessor()
@@ -288,6 +332,18 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 */
 
 
+#if defined(MULTICHANNEL)
+
+bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+{
+  if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::canonicalChannelSet (36))
+      return true;
+  else
+      return false;
+}
+
+#else
+
 bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
@@ -295,6 +351,12 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
   else
       return false;
 }
+
+#endif
+
+
+
+
 
 // Map MIDI velocity 0-127 onto gain
 // 0.0-1.0
@@ -313,6 +375,202 @@ float VelocityToLevel (int velocity)
 
   return min * expf( logrange * vcurve );
 }
+
+
+#if defined(MULTICHANNEL)
+
+void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+{
+  //this code allow Ardour load kit properly when session rate is ready
+  if (fresh_start)
+     {
+      session_samplerate = getSampleRate();
+
+      if (! drumkit_path.empty())
+         {
+          load_kit (drumkit_path);
+          fresh_start = false;
+         }
+     }
+
+
+  if (! drumkit)
+      return;
+
+  size_t v_samples_size = drumkit->v_samples.size();
+
+  if (v_samples_size == 0)
+      return;
+
+  for (const juce::MidiMessageMetadata metadata: midiMessages)
+      {
+       juce::MidiMessage msg = metadata.getMessage();
+
+       bool isNoteOn = msg.isNoteOn();
+       bool isNoteOff = msg.isNoteOff();
+
+       //float velocity = msg.getFloatVelocity();
+       float velocity = VelocityToLevel (msg.getVelocity());
+
+       if (*ignore_midi_velocity > 0.5)
+           velocity = 1;
+
+       int note_number = msg.getNoteNumber(); //36 starting note
+
+       if (isNoteOn )
+          {
+           int nn = note_number - base_note_number;
+
+           if (nn < 0 || nn > v_samples_size - 1)
+              continue;
+
+           float gn = db2lin(*(vols[nn]));
+
+           CDrumSample *s = drumkit->v_samples[nn];
+
+           if (! s)
+              continue;
+
+           s->trigger_sample (velocity);
+
+             //also untrigger open hihat if closed hihat triggering
+             // so find the open hihat
+           if (s->hihat_close)
+               {
+                for (size_t i = 0; i < v_samples_size; i++)
+                    {
+                     CDrumSample *s2 = drumkit->v_samples[i]; //point to the sample
+                     if (s2->hihat_open)
+                         s2->untrigger_sample();
+                   }
+               }
+           }
+
+      }
+
+
+    float *channel_data [36];
+
+    int num_channels = buffer.getNumChannels();
+
+    //std::cout << "num_channels: " << num_channels << std::endl;
+
+    if (num_channels < 1)
+       return;
+
+    if (v_samples_size > num_channels)
+      return;
+
+
+
+//   std::cout << "ok 1 " << std::endl;
+
+
+    int out_buf_length = buffer.getNumSamples();
+
+
+    for (size_t i = 0; i < num_channels; i++)
+         buffer.clear (i, 0, out_buf_length);
+
+    for (size_t i = 0; i < num_channels; i++)
+        channel_data[i] = buffer.getWritePointer(i);
+
+
+
+        //for each drum instrument
+    for (int drum_sample_index = 0; drum_sample_index < v_samples_size; drum_sample_index++)
+        {
+         //std::cout << "drum_sample_index:" << drum_sample_index << std::endl;
+
+           //for each sample out_buf_offs
+         for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
+             {
+              CDrumSample *s = drumkit->v_samples[drum_sample_index];
+              if (! s)
+                 {
+                  std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
+                  break;
+                 }
+
+              if (! s->active)
+                continue;
+
+
+              CDrumLayer *l = s->v_layers[s->current_layer];
+
+              if (! l)
+                 {
+                  std::cout << "!l at s->current_layer:" << s->current_layer << std::endl;
+                  break;
+                 }
+
+
+              if (l->sample_offset + 1 == l->length_in_samples)
+                 {
+                  s->untrigger_sample();
+                  continue;
+                 }
+
+
+              bool mute = *(mutes[drum_sample_index]) > 0.5f;
+
+              if (mute)
+                 {
+                  l->sample_offset++;
+                  continue;
+                 }
+
+
+            // if (l->channels == 1)
+                {
+                 float fl = l->channel_data[0][l->sample_offset++];
+
+                // float fl = 0.5f;
+
+                 //DSP
+
+
+                 bool analog_on = *(analog[drum_sample_index]) > 0.5f;
+
+                 if (analog_on)
+                    {
+                     fl = warmify (fl,*(analog_amount[drum_sample_index]));
+                    }
+
+
+                 bool lp_on = *(lps[drum_sample_index]) > 0.5f;
+
+                 if (lp_on)
+                    {
+                     lp[drum_sample_index].set_cutoff (*(lp_cutoff[drum_sample_index]));
+                     lp[drum_sample_index].set_resonance (*(lp_reso[drum_sample_index]));
+
+                     fl = softLimit (lp[drum_sample_index].process (fl));
+                    }
+
+
+                 bool hp_on = *(hps[drum_sample_index]) > 0.5f;
+
+                 if (hp_on)
+                    {
+                     hp[drum_sample_index].set_cutoff (*(hp_cutoff[drum_sample_index]));
+                     hp[drum_sample_index].set_resonance (*(hp_reso[drum_sample_index]));
+
+                     fl = softLimit (hp[drum_sample_index].process (fl));
+                    }
+
+
+                 channel_data[drum_sample_index][out_buf_offs] = fl;
+
+                }
+
+             }
+        }
+ //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
+  //}
+}
+
+#else
 
 
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -457,7 +715,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  break;
                 }
 
-             bool mute = *(mutes[drum_sample_index]) > 0.5f;
 
              // std::cout << s->name << std::endl;
 
@@ -479,10 +736,12 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  continue;
                 }
 
+             bool mute = *(mutes[drum_sample_index]) > 0.5f;
+
              if (mute)
                 {
-                 continue;
                  l->sample_offset++;
+                 continue;
                 }
 
              if (l->channels == 1)
@@ -616,53 +875,15 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  channel_data[0][out_buf_offs] += fl * coef_left;
                  channel_data[1][out_buf_offs] += fl * coef_right;
                 }
-/*
-             if (l->channels == 2)
-                {
-                 float fl = l->channel_data[0][l->sample_offset++];
-                 float fr = l->channel_data[1][l->sample_offset];
 
-//                 float gain = db2lin(*(gains[drum_sample_index]));
-//                 float vol = juce::Decibels::decibelsToGain ((float)*(vols[drum_sample_index]));
-                 float vol = db2lin(*(vols[drum_sample_index]));
-
-                 float pan_right = 0;
-                 float pan_left = 0;
-
-                 float pan = *(pans[drum_sample_index]);
-
-                 if (*panner_mode == PANMODE01)
-                     pan_sincos (pan_left, pan_right, pan);
-                 else
-                 if (*panner_mode == PANMODE02)
-                     pan_sqrt (pan_left, pan_right, pan);
-                 else
-                 if (*panner_mode == PANMODE03)
-                     pan_linear0 (pan_left, pan_right, pan);
-                 else
-                 if (*panner_mode == PANMODE04)
-                     pan_linear6 (pan_left, pan_right, pan);
-                 else
-                 if (*panner_mode == PANMODE05)
-                     pan_power45 (pan_left, pan_right, pan);
-                 else
-                 if (*panner_mode == PANMODE06)
-                     pan_power15 (pan_left, pan_right, pan);
-                 else
-                 if (*panner_mode == PANMODE07)
-                     pan_equal_power3 (pan_left, pan_right, pan);
-
-
-                 float coef_right = pan_right * vol * s->velocity;
-                 float coef_left = pan_left * vol * s->velocity;
-
-                 channel_data[0][out_buf_offs] += fl * coef_left;
-                 channel_data[1][out_buf_offs] += fr * coef_right;
-                }*/
              }
 
  //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
 }
+
+
+
+#endif
 
 //==============================================================================
 bool CAudioProcessor::hasEditor() const

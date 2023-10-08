@@ -7,12 +7,10 @@ project(DRUMLABOOH LANGUAGES CXX C VERSION 1.0.0)
 message("Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 ")
-
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 -ffast-math")
 
 
-
-option(BUILD_MULTI "Build with multy-channel support" OFF)
+option(MULTI "Build with multy-channel support" OFF)
 
 
 set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should be installed")
@@ -67,7 +65,6 @@ FetchContent_GetProperties(drum_sklad)
 if(NOT drum_sklad_POPULATED)
   FetchContent_Populate(drum_sklad)
 #  add_subdirectory(${drum_sklad_SOURCE_DIR} ${drum_sklad_BINARY_DIR} EXCLUDE_FROM_ALL)
-  message ("WOW!")
   message (${drum_sklad_SOURCE_DIR})
 endif()
 
@@ -91,41 +88,6 @@ if(NOT juce_POPULATED)
 endif()
 
 
-#include (FetchContent)
-
-#FetchContent_Declare (melatonin_perfetto
-#  GIT_REPOSITORY https://github.com/sudara/melatonin_perfetto.git
-  #GIT_TAG origin/main)
-
-#FetchContent_MakeAvailable (melatonin_perfetto)
-
-
-#target_link_libraries (yourTarget PRIVATE Melatonin::Perfetto)
-
-
-# include JUCE *AFTER* the MSVC runtime and so on is set up
-
-# If you've installed JUCE somehow (via a package manager, or directly using the CMake install
-# target), you'll need to tell this project that it depends on the installed copy of JUCE. If you've
-# included JUCE directly in your source tree (perhaps as a submodule), you'll need to tell CMake to
-# include that subdirectory as part of the build.
-
-# find_package(JUCE CONFIG REQUIRED)        # If you've installed JUCE to your system
-# or
-#add_subdirectory(${juce_SOURCE_DIR} ${juce_BINARY_DIR})
-
-# If you are building a VST2 or AAX plugin, CMake needs to be told where to find these SDKs on your
-# system. This setup should be done before calling `juce_add_plugin`.
-
-# juce_set_vst2_sdk_path(...)
-# juce_set_aax_sdk_path(...)
-
-# `juce_add_plugin` adds a static library target with the name passed as the first argument
-# (AudioPluginExample here). This target is a normal CMake target, but has a lot of extra properties set
-# up by default. As well as this shared code static library, this function adds targets for each of
-# the formats specified by the FORMATS arguments. This function accepts many optional arguments.
-# Check the readme at `docs/CMake API.md` in the JUCE repo for the full list.
-
 
 # default plugin formats
 #set(JUCE_FORMATS AU VST3 Standalone)
@@ -137,6 +99,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 add_definitions(-DJUCE_DISPLAY_SPLASH_SCREEN=0)
+
 
 juce_add_plugin(drumlabooh
     # VERSION ...                               # Set this if the plugin version is different to the project version
@@ -187,16 +150,6 @@ target_sources(drumlabooh
         ./Source/speex_resampler.c
 )
 
-# `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
-# project, these might be passed in the 'Preprocessor Definitions' field. JUCE modules also make use
-# of compile definitions to switch certain features on/off, so if there's a particular feature you
-# need that's not on by default, check the module header for the correct flag to set here. These
-# definitions will be visible both to your code, and also the JUCE module code, so for new
-# definitions, pick unique names that are unlikely to collide! This is a standard CMake command.
-
-
-#target_compile_options (drumlabooh
-#PRIVATE -Wno-switch-enum -Wsign-compare -Wsign-conversion -Wzero-as-null-pointer-constant)
 
 target_compile_definitions(drumlabooh
     PUBLIC
@@ -207,24 +160,7 @@ target_compile_definitions(drumlabooh
         JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
         JUCE_VST3_CAN_REPLACE_VST2=0)
 
-# If your target needs extra binary assets, you can add them here. The first argument is the name of
-# a new static library target that will include all the binary resources. There is an optional
-# `NAMESPACE` argument that can specify the namespace of the generated binary data class. Finally,
-# the SOURCES argument should be followed by a list of source files that should be built into the
-# static library. These source files can be of any kind (wav data, images, fonts, icons etc.).
-# Conversion to binary-data will happen when your target is built.
-
-# juce_add_binary_data(AudioPluginData SOURCES ...)
-
-# `target_link_libraries` links libraries and JUCE modules to other libraries or executables. Here,
-# we're linking our executable target to the `juce::juce_audio_utils` module. Inter-module
-# dependencies are resolved automatically, so `juce_core`, `juce_events` and so on will also be
-# linked automatically. If we'd generated a binary data target above, we would need to link to it
-# here too. This is a standard CMake command.
-
-
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
-
 
 
 target_link_libraries(drumlabooh
@@ -234,7 +170,8 @@ target_link_libraries(drumlabooh
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
-        juce::juce_recommended_warning_flags)
+#        juce::juce_recommended_warning_flags
+        )
 
 
 install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/LV2/drumlabooh.lv2 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/lv2)
@@ -243,37 +180,50 @@ install (DIRECTORY ${drum_sklad_SOURCE_DIR}/ DESTINATION ${CMAKE_INSTALL_PREFIX}
 
 
 
-if(BUILD_MULTI)
-  add_definitions(-DMULTICHANNEL=1)
+
+if(MULTI)
+#  add_definitions(-DMULTICHANNEL=1)
   message("+ Build with multi channel support")
 
   juce_add_plugin(drumlabooh-multi
-    # VERSION ...                               # Set this if the plugin version is different to the project version
-    # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
-    # ICON_SMALL ...
      JUCE_DISPLAY_SPLASH_SCREEN=0
      LV2URI https://github.com/psemiletov/drumlabooh-multi
-     LV2_SHARED_LIBRARY_NAME drumlabooh-drumlabooh-multi
+     LV2_SHARED_LIBRARY_NAME drumlabooh-multi
      COMPANY_NAME Semiletov                     # Specify the name of the plugin's author
      IS_SYNTH TRUE                       # Is this a synth or an effect?
      NEEDS_MIDI_INPUT TRUE               # Does the plugin need midi input?
      VST3_CATEGORIES Instrument Sampler Synth Drum
-    # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
-    # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
      EDITOR_WANTS_KEYBOARD_FOCUS TRUE    # Does the editor need keyboard focus?
-    # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE        # Should the plugin be installed to a default location after building?
-    PLUGIN_MANUFACTURER_CODE PetR               # A four-character manufacturer id with at least one upper-case character
-    PLUGIN_CODE Petr                            # A unique four-character plugin id with exactly one upper-case character
+    PLUGIN_MANUFACTURER_CODE PEtR               # A four-character manufacturer id with at least one upper-case character
+    PLUGIN_CODE PetR                            # A unique four-character plugin id with exactly one upper-case character
                                                 # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
-    FORMATS VST LV2                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+    FORMATS ${JUCE_FORMATS}                     # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
     PRODUCT_NAME "drumlabooh-multi")        # The name of the final executable, which can differ from the target name
 
 juce_generate_juce_header(drumlabooh-multi)
 
 
+
+
+target_sources(drumlabooh-multi
+    PRIVATE
+        ./Source/PluginEditor.cpp
+        ./Source/PluginProcessor.cpp
+        ./Source/pugixml.cpp
+        ./Source/dsp.cpp
+        ./Source/kits.cpp
+        ./Source/utl.cpp
+        ./Source/fx-resofilter.cpp
+        ./Source/exceptions.cpp
+        ./Source/resampler_class.cpp
+        ./Source/resampler_function.cpp
+        ./Source/speex_resampler.c
+)
+
   target_compile_definitions(drumlabooh-multi
     PUBLIC
         # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
+        -DMULTICHANNEL=1
         JUCE_JACK=0
         JUCE_PLUGINHOST_LADSPA=0
         JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
@@ -283,27 +233,16 @@ juce_generate_juce_header(drumlabooh-multi)
 
 target_link_libraries(drumlabooh-multi
     PRIVATE
-#        libsamplerate
-        # AudioPluginData           # If we'd created a binary data target, we'd link to it here
         juce::juce_audio_utils
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
-        juce::juce_recommended_warning_flags)
+#        juce::juce_recommended_warning_flags
+        )
 
 
 install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh-multi_artefacts/LV2/drumlabooh-multi.lv2 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/lv2)
 install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh-multi_artefacts/VST3/drumlabooh-multi.vst3 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/vst3)
 
-endif(BUILD_MULTI)
+endif(MULTI)
 
-
-# config install
-#install(TARGETS drumrox drumrox_ui
-#  LIBRARY
-#  DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/drumrox.lv2
-#)
-
-#install (FILES ttl/manifest.ttl ttl/drumrox.ttl knob.png
-#  DESTINATION ${CMAKE_INSTALL_PREFIX}/${LV2_INSTALL_DIR}/drumrox.lv2
-#)
