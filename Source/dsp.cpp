@@ -15,7 +15,7 @@ float db_scale;
 
 void init_db()
 {
-
+/*
 #if defined(__clang__)
 //
 #elif defined(__GNUC__) || defined(__GNUG__)
@@ -27,7 +27,7 @@ void init_db()
 #elif defined(_MSC_VER)
 //
 #endif
-
+*/
 
 
   db_scale = log (10.0) * 0.05;

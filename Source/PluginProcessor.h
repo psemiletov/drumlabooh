@@ -69,7 +69,6 @@ public:
   CResoFilter hp[36];
 
 
-
   int base_note_number; //default 36, the base for note number mapping to array index (i.e. MIDI note minus base note to get the array index)
 
   bool fresh_start; //need to determine when we need to load the kit

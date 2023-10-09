@@ -170,7 +170,7 @@ target_link_libraries(drumlabooh
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
-#        juce::juce_recommended_warning_flags
+        juce::juce_recommended_warning_flags
         )
 
 
@@ -237,7 +237,7 @@ target_link_libraries(drumlabooh-multi
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
-#        juce::juce_recommended_warning_flags
+        juce::juce_recommended_warning_flags
         )
 
 

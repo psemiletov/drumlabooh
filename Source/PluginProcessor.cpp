@@ -221,7 +221,22 @@ CAudioProcessor::~CAudioProcessor()
 
 const juce::String CAudioProcessor::getName() const
 {
-  return JucePlugin_Name;
+
+ // return JucePlugin_Name;
+
+#ifndef MULTICHANNEL
+
+ juce::String s = "drumlabooh";
+
+#else
+
+ juce::String s = "drumlabooh-multi";
+
+
+#endif
+
+ return s;
+
 }
 
 
@@ -275,6 +290,7 @@ const juce::String CAudioProcessor::getProgramName (int index)
 {
   return {};
 }
+
 
 void CAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {

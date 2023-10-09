@@ -5,18 +5,18 @@ Peter Semiletov, 2023
 
 #ifndef DSP_H
 #define DSP_H
-
+/*
 #if defined(__clang__)
 //
 #elif defined(__GNUC__) || defined(__GNUG__)
 
-#define MXCSR_DAZ (1<<6)    /* Включить режим приведения денормализованных чисел к нулю */
-#define MXCSR_FTZ (1<<15)   /* Включить режим сброса значений в ноль */
+#define MXCSR_DAZ (1<<6)
+#define MXCSR_FTZ (1<<15)
 
 #elif defined(_MSC_VER)
 //
 #endif
-
+*/
 
 //#define _USE_MATH_DEFINES
 
