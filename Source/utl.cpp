@@ -197,10 +197,18 @@ std::vector <std::string> files_get_list (const std::string &path)
 
 std::vector <std::string> files_get_list (const std::string &path, const std::string &ext) //ext with dot: ".txt"
 {
+
+  std::vector<std::string> result;
+
+  if (path.empty())
+     return result;
+
+
+
     WIN32_FIND_DATAA findData;
     HANDLE hFind = INVALID_HANDLE_VALUE;
     std::string full_path = path + "\\*";
-    std::vector<std::string> result;
+
 
     hFind = FindFirstFileA (full_path.c_str(), &findData);
 
