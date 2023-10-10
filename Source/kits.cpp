@@ -755,6 +755,7 @@ CDrumKitsScanner::~CDrumKitsScanner()
 void CDrumKitsScanner::scan()
 {
   std::vector <std::string> v_kits_locations;
+  v_kits_dirs.clear();
 
 #if !defined(_WIN32) || !defined(_WIN64)
 
