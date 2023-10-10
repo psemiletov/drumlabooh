@@ -475,6 +475,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     for (size_t i = 0; i < num_channels; i++)
         channel_data[i] = buffer.getWritePointer(i);
 
+ // juce::ScopedNoDenormals();
+
 
         //for each drum instrument
     for (int drum_sample_index = 0; drum_sample_index < v_samples_size; drum_sample_index++)
@@ -663,6 +665,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
        channel_data [1] = buffer.getWritePointer (1);
 
 
+ // juce::ScopedNoDenormals();
+  //juce::FloatVectorOperations::disableDenormalisedNumberSupport();
 
 
    //for each sample out_buf_offs
