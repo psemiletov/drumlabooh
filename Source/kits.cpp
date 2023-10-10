@@ -559,7 +559,7 @@ void CDrumKit::load_sfz (const std::string &data)
          if (! scan_mode && multi_layered && v_samples.back()->v_layers.size() != 0)
             {
              float part_size = (float) 1 / v_samples.back()->v_layers.size();
-             CDrumLayer *l;
+             CDrumLayer *l = 0;
               //evaluate min and max velocities by the file position in the vector
              for (size_t i = 0; i < v_samples.back()->v_layers.size(); i++)
                  {
