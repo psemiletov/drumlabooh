@@ -777,11 +777,6 @@ void CDrumKitsScanner::scan()
   sfnm += "\\";
   */
 #else
-/*
-  v_kits_locations.push_back (get_home_dir() + "/drumlabooh-kits");
-  v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
-  v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
-*/
 
  // juce::File home_location = File::getSpecialLocation	(juce::File::SpecialLocationType::userHomeDirectory);
 
@@ -792,7 +787,6 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back ("d:\\sfz-kits");
 
   //v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
-
 
   juce::File home_location = File::getSpecialLocation (juce::File::SpecialLocationType::userHomeDirectory);
   const String & fnm = home_location.getFullPathName();
@@ -816,7 +810,8 @@ void CDrumKitsScanner::scan()
   for (std::string i: v_kits_locations)
       {
        std::vector <std::string> v_kits_dirs_t = files_get_list (i);
-       v_kits_dirs.insert (v_kits_dirs.end(), v_kits_dirs_t.begin(), v_kits_dirs_t.end());
+       if (v_kits_dirs_t.size() > 0)
+          v_kits_dirs.insert (v_kits_dirs.end(), v_kits_dirs_t.begin(), v_kits_dirs_t.end());
       }
 
   std::sort (v_kits_dirs.begin(), v_kits_dirs.end());

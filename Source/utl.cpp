@@ -95,10 +95,13 @@ std::string resolve_symlink (const std::string &path)
 
 std::vector <std::string> files_get_list (const std::string &path)
 {
+  std::vector <std::string> result;
+
+  if (path.empty())
+     return result;
+
   DIR *directory;
   struct dirent *dir_entry;
-
-  std::vector <std::string> result;
 
   directory = opendir (path.c_str());
   if (! directory)
@@ -122,12 +125,16 @@ std::vector <std::string> files_get_list (const std::string &path)
 
 std::vector <std::string> files_get_list (const std::string &path, const std::string &ext) //ext with dot: ".txt"
 {
+  std::vector <std::string> result;
+
+  if (path.empty())
+     return result;
+
   DIR *directory;
   struct dirent *dir_entry;
 
-  std::vector <std::string> result;
 
-  directory = opendir(path.c_str());
+  directory = opendir (path.c_str());
   if (! directory)
       return result;
 
