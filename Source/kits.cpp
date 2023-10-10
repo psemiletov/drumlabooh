@@ -805,7 +805,7 @@ void CDrumKitsScanner::scan()
 
 #endif
 
-  std::vector <std::string> v_kits_dirs;
+//  std::vector <std::string> v_kits_dirs;
 
   for (std::string i: v_kits_locations)
       {
