@@ -101,7 +101,7 @@ std::vector <std::string> files_get_list (const std::string &path)
      return result;
 
   DIR *directory;
-  struct dirent *dir_entry;
+  struct dirent *dir_entry = NULL;
 
   directory = opendir (path.c_str());
   if (! directory)
@@ -131,15 +131,15 @@ std::vector <std::string> files_get_list (const std::string &path, const std::st
      return result;
 
   DIR *directory;
-  struct dirent *dir_entry;
 
 
   directory = opendir (path.c_str());
   if (! directory)
       return result;
 
-  std::string t = dir_entry->d_name;
+  std::string t;// = dir_entry->d_name;
 
+  struct dirent *dir_entry = NULL;
 
    while (dir_entry = readdir (directory))
          {
@@ -160,6 +160,13 @@ std::vector <std::string> files_get_list (const std::string &path, const std::st
 
 std::vector <std::string> files_get_list (const std::string &path)
 {
+
+  std::vector<std::string> result;
+
+  if (path.empty())
+     return result;
+
+
     WIN32_FIND_DATAA findData;
     HANDLE hFind = INVALID_HANDLE_VALUE;
     std::string full_path = path + "\\*";
