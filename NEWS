@@ -1,7 +1,6 @@
-   Drumlabooh 2.0.0
+   Drumlabooh 2.0.1
 
-   This release introduces the multi-channel (36 outs) version of the plugin. See the comprehensive documentation at the Drumlabooh site.
-   Also, some Reaper-related things has been fixed.
+   Drum kits list initialization fixed.
 
    Peter Semiletov, 
-   Kiev, October 08, 2013
+   Kiev, October 10, 2013
