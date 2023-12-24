@@ -378,16 +378,16 @@ CDrumCell::CDrumCell()
                               wnd_fx->setContentNonOwned (&fx, true);
                              }
 
-                          if (! wnd_fx)
+                           if (! wnd_fx)
                               return;
 
-                          if (wnd_fx->isOnDesktop())
+                           if (wnd_fx->isOnDesktop())
                               wnd_fx->removeFromDesktop();
-                          else
+                           else
                               wnd_fx->addToDesktop();//ComponentPeer::StyleFlags::windowIsTemporary | ComponentPeer::StyleFlags::windowHasTitleBar | ComponentPeer::StyleFlags::windowHasCloseButton);
 
-                          wnd_fx->setVisible (! wnd_fx->isVisible());
-                          wnd_fx->setTopLeftPosition (bt_fx.getScreenX() + bt_fx.getWidth(), bt_fx.getScreenY() + bt_fx.getHeight());
+                           wnd_fx->setVisible (! wnd_fx->isVisible());
+                           wnd_fx->setTopLeftPosition (bt_fx.getScreenX() + bt_fx.getWidth(), bt_fx.getScreenY() + bt_fx.getHeight());
                          };
 
 }
@@ -582,6 +582,40 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   cmb_drumkit_selector.addListener (this);
   cmb_drumkit_selector.setTopLeftPosition (xoffs, 8);
 
+
+  bt_file_open.setButtonText ("Or select file");
+  addAndMakeVisible (bt_file_open);
+
+  bt_file_open.onClick = [this] {
+
+
+                                 dlg_fileopen = std::make_unique<juce::FileChooser> ("Select file to load...",
+                                               File::getSpecialLocation (juce::File::userHomeDirectory));
+
+                                  auto folderChooserFlags = juce::FileBrowserComponent::openMode;
+
+                                  dlg_fileopen->launchAsync (folderChooserFlags, [this] (const juce::FileChooser& chooser)
+                                    {
+                                     juce::File f (dlg_fileopen->getResult());
+                                     if (! f.exists())
+                                        return;
+
+
+                                     std::string full (f.getFullPathName().toRawUTF8());
+                                     audioProcessor.drumkit_path = full;
+                                     tmr_leds.stopTimer();
+
+                                     audioProcessor.load_kit (full);
+
+                                      //update GUI
+                                     load_kit (full);
+
+                                     tmr_leds.startTimer (1000 / 15); //15 FPS
+                                    });
+
+                            };
+
+
   yoffs += 52;
 
   drumcells_container.setSize (drumcells[0].getWidth() + XFILLER, drumcells[0].getHeight() * 36);
@@ -612,7 +646,13 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   drumcells_viewer.setTopLeftPosition (xoffs, yoffs);
 
-  cmb_drumkit_selector.setSize (drumcells_group.getWidth(), 48);
+  cmb_drumkit_selector.setSize (drumcells_group.getWidth() - (64 + XFILLER), 48);
+
+  bt_file_open.setTopLeftPosition (cmb_drumkit_selector.getRight() + XFILLER, 8);
+  bt_file_open.setSize (64 + XFILLER, 48);
+
+
+
 
   addAndMakeVisible (drumcells_viewer);
 

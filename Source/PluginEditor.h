@@ -211,6 +211,10 @@ public:
   juce::Label l_base_note { {}, "Base MIDI note" };
   juce::Slider sl_base_note;
 
+  juce::TextButton bt_file_open;
+  std::unique_ptr<juce::FileChooser> dlg_fileopen;
+
+
   juce::TooltipWindow tooltip_window;
 
   juce::GroupComponent gr_kitinfo;
