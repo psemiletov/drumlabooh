@@ -588,9 +588,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   bt_file_open.onClick = [this] {
 
-
-                                 dlg_fileopen = std::make_unique<juce::FileChooser> ("Select file to load...",
-                                               File::getSpecialLocation (juce::File::userHomeDirectory));
+                                  dlg_fileopen = std::make_unique<juce::FileChooser> ("Select file to load...",
+                                                 File::getSpecialLocation (juce::File::userHomeDirectory));
 
                                   auto folderChooserFlags = juce::FileBrowserComponent::openMode;
 
@@ -602,6 +601,21 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
                                      std::string full (f.getFullPathName().toRawUTF8());
+
+                                     bool supported = false;
+
+                                     if (ends_with (full, ".xml"))
+                                        supported = true;
+
+                                     if (ends_with (full, ".sfz"))
+                                        supported = true;
+
+                                     if (ends_with (full, "drumkit.txt"))
+                                        supported = true;
+
+                                     if (! supported)
+                                        return;
+
                                      audioProcessor.drumkit_path = full;
                                      tmr_leds.stopTimer();
 
@@ -649,7 +663,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   cmb_drumkit_selector.setSize (drumcells_group.getWidth() - (64 + XFILLER), 48);
 
   bt_file_open.setTopLeftPosition (cmb_drumkit_selector.getRight() + XFILLER, 8);
-  bt_file_open.setSize (64 + XFILLER, 48);
+  bt_file_open.setSize (64, 48);
 
 
 
