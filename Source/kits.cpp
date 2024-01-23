@@ -50,10 +50,10 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
 
   if (ext == "ogg")
     reader = OggVorbisAudioFormat().createReaderFor (fs, true);
-/*
+
   if (ext == "mp3")
     reader = MP3AudioFormat().createReaderFor (fs, true);
-*/
+
   if (ext == "aiff")
      reader = AiffAudioFormat().createReaderFor (fs, true);
 
@@ -604,6 +604,9 @@ void CDrumKit::load_txt (const std::string &data)
 
   if (file_exists (kitimg))
       image_fname = kitimg;
+
+ cout << "void CDrumKit::load_txt 5\n";
+
 }
 
 
