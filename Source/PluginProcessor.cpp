@@ -708,7 +708,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  continue;
                 }
 
-             if (l->channels == 1)
+        //    if (l->channels == 1)
                 {
                  float fl = l->channel_data[0][l->sample_offset++];
                  float fr = fl;
@@ -882,17 +882,30 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
   if (fullpath.empty())
       return false;
 
+
+  std::cout << "CAudioProcessor::load_kit: " << fullpath << std::endl;
+  std::cout << session_samplerate << std::endl;
+
 //STOP PLAY
 
   suspendProcessing (true);
 
 //THEN
 
+
   if (drumkit)
       delete drumkit;
 
+
+
   drumkit = new CDrumKit;
+
+  std::cout << "3" << std::endl;
+
   drumkit->load (fullpath, session_samplerate);
+
+  std::cout << "4" << std::endl;
+
 
   for (size_t i = 0; i < 36; i++)
       {
@@ -902,11 +915,17 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
        hp[i].reset();
       }
 
+
+std::cout << "5" << std::endl;
+
 //resume
 
   suspendProcessing (false);
 
  //std::cout << "CAudioProcessor::load_kit - 2" << std::endl;
+
+  std::cout << "6" << std::endl;
+
 
   return true;
 }

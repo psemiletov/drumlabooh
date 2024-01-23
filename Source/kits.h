@@ -34,7 +34,7 @@ public:
 
   std::string file_name; //name of the loaded file
 
-  int channels; //channels at this layer
+ // int channels; //channels at this layer
   int samplerate; //samplerate of this layer
   int length_in_samples;// i.e frames, the amount of samples per channel
   int sample_offset; //to play inc until < length_in_samples
