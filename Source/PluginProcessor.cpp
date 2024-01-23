@@ -10,7 +10,7 @@
 
 
 
-extern juce::AudioFormatManager *formatManager;
+//extern juce::AudioFormatManager *formatManager;
 
 
 
@@ -132,8 +132,8 @@ CAudioProcessor::CAudioProcessor()
 
 {
  //std::cout << "CAudioProcessor::CAudioProcessor()36 - 1" << std::endl;
-  formatManager = new juce::AudioFormatManager();
-  formatManager->registerBasicFormats();
+// formatManager = new juce::AudioFormatManager();
+ // formatManager->registerBasicFormats();
 
   init_db();
 
@@ -174,8 +174,8 @@ CAudioProcessor::CAudioProcessor()
 
 {
 //std::cout << "CAudioProcessor::CAudioProcessor() - 1" << std::endl;
-  formatManager = new juce::AudioFormatManager();
-  formatManager->registerBasicFormats();
+ // formatManager = new juce::AudioFormatManager();
+ // formatManager->registerBasicFormats();
 
   init_db();
 
@@ -215,7 +215,7 @@ CAudioProcessor::~CAudioProcessor()
   if (drumkit)
       delete drumkit;
 
-  delete formatManager;
+ // delete formatManager;
 }
 
 

@@ -25,7 +25,7 @@ using namespace std;
 
 #define MAX_SAMPLES 36
 
-juce::AudioFormatManager *formatManager;
+//juce::AudioFormatManager *formatManager;
 
 
 
