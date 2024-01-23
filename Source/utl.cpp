@@ -265,6 +265,17 @@ std::string get_home_dir()
 }
 
 
+
+std::string get_file_ext (const std::string &fname)
+{
+  std::string::size_type i = fname.rfind('.');
+  if (i != std::string::npos)
+     return fname.substr (i+1);
+  else
+      return string();
+}
+
+
 std::string get_file_path (const std::string &path)
 {
   size_t i = path.rfind ("/", path.length());

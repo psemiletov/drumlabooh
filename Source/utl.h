@@ -18,6 +18,8 @@ std::string get_home_dir();
 std::vector <std::string> files_get_list (const std::string &path);
 std::vector <std::string> files_get_list (const std::string &path, const std::string &ext); //ext with dot: ".txt"
 
+std::string get_file_ext (const std::string &fname);
+
 std::string get_file_path (const std::string &path);
 std::string string_file_load (const std::string &fname);
 std::string string_to_lower (const std::string &s);

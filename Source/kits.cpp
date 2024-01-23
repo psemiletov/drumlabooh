@@ -28,17 +28,45 @@ using namespace std;
 juce::AudioFormatManager *formatManager;
 
 
+
 //WE READ JUST LEFT CHANNEL IF STEREO
 juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fname)
 {
   std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
 
   juce::File fl (fname);
+  juce::InputStream *fs = new juce::FileInputStream (fl);
+
+  juce::AudioFormatReader *reader = 0;
+
+  std::string ext = get_file_ext (fname);
+  ext =  string_to_lower (ext);
+
+  if (ext == "wav")
+    reader = WavAudioFormat().createReaderFor (fs, true);
+
+  if (ext == "flac")
+    reader = FlacAudioFormat().createReaderFor (fs, true);
+
+  if (ext == "ogg")
+    reader = OggVorbisAudioFormat().createReaderFor (fs, true);
+/*
+  if (ext == "mp3")
+    reader = MP3AudioFormat().createReaderFor (fs, true);
+*/
+  if (ext == "aiff")
+     reader = AiffAudioFormat().createReaderFor (fs, true);
+
+
+  //juce::String ext = fl.getFileExtension (fname);
 
 
   //std::unique_ptr<juce::AudioFormatReader> reader (formatManager->createReaderFor (fl));
 
-  juce::AudioFormatReader *reader (formatManager->createReaderFor (fl));
+  //juce::AudioFormatReader *reader = new juce::AudioFormatReader (new juce::FileInputStream (fl, fl.getFileExtension ());
+
+
+  //juce::AudioFormatReader *reader (formatManager->createReaderFor (fl));
 
   if (reader)
 
@@ -528,7 +556,7 @@ void CDrumKit::load_txt (const std::string &data)
                  {
                   cout << "a6\n";
 
-                   v_samples.back()->v_layers.back()->load (filename.c_str());
+                  v_samples.back()->v_layers.back()->load (filename.c_str());
 
                  }
 
