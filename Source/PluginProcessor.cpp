@@ -302,7 +302,7 @@ void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
   session_samplerate = (int) sampleRate;
 
-  //RELOAD IF SRATE CHANGED DURING SESSION, AS REAPER CAN
+  //RELOAD IF SRATE CHANGED DURING SESSION
   if (drumkit)
      if (drumkit->samplerate != session_samplerate)
         load_kit (drumkit_path);
@@ -380,8 +380,8 @@ float VelocityToLevel (int velocity)
   float min = 0.1f;
 // velocity should logarithmically map onto [min..1]
 
-  float logrange = logf( 1.0f / min );
-  float vcurve = powf ((float (velocity - 1) / 126.0f), 0.8f );
+  float logrange = logf (1.0f / min);
+  float vcurve = powf ((float (velocity - 1) / 126.0f), 0.8f);
 
   return min * expf (logrange * vcurve);
 }
@@ -466,7 +466,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       }
 
 
-    float *channel_data [36];
+    float *channel_data [36]; //output channels
 
     if (v_samples_size > num_channels)
        return;
@@ -478,7 +478,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
  // juce::ScopedNoDenormals();
 
 
-        //for each drum instrument
+    //for each drum instrument
     for (int drum_sample_index = 0; drum_sample_index < v_samples_size; drum_sample_index++)
         {
          //for each sample out_buf_offs
@@ -520,9 +520,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  bool analog_on = *(analog[drum_sample_index]) > 0.5f;
 
                  if (analog_on)
-                    {
                      fl = warmify (fl,*(analog_amount[drum_sample_index]));
-                    }
 
 
                  bool lp_on = *(lps[drum_sample_index]) > 0.5f;
@@ -548,7 +546,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
 
                  channel_data[drum_sample_index][out_buf_offs] = fl;
-
                 }
 
              }
@@ -571,13 +568,15 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
          {
           load_kit (drumkit_path);
           fresh_start = false;
-          //return;
          }
      }
 
 
   int num_channels = buffer.getNumChannels();
   int out_buf_length = buffer.getNumSamples();
+
+
+  //clearing input buffer, good for Reaper
 
   for (int i = 0; i < num_channels; ++i)
        buffer.clear (i, 0, out_buf_length);
@@ -586,9 +585,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   if (! drumkit)
       return;
 
-
-  //dst.fs = 44100;
- // shaper.fs_ = getSampleRate();
 
   size_t v_samples_size = drumkit->v_samples.size();
 
@@ -630,7 +626,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
 //             std::cout << "GO ON with n: " << nn << std::endl;
 
-            float gn = db2lin(*(vols[nn]));
+            float gn = db2lin (*(vols[nn]));
             // std::cout << "gn: " << gn << std::endl;
 
             CDrumSample *s = drumkit->v_samples[nn];
@@ -655,8 +651,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       }
 
 
-    float *channel_data [2];
-
+    float *channel_data[2]; //output channels
 
     if (num_channels > 0)
         channel_data [0] = buffer.getWritePointer (0);
@@ -710,9 +705,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
         //    if (l->channels == 1)
                 {
+
+                 //take mono audio data from the current layer with incremented offset
                  float fl = l->channel_data[0][l->sample_offset++];
                  float fr = fl;
-
 
                  //DSP
 
@@ -747,8 +743,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      fl = softLimit (hp[drum_sample_index].process (fl));
                      fr = fl;
                     }
-
-
 
                  //AFTER DSP
 
@@ -882,9 +876,8 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
   if (fullpath.empty())
       return false;
 
-
-  std::cout << "CAudioProcessor::load_kit: " << fullpath << std::endl;
-  std::cout << session_samplerate << std::endl;
+//  std::cout << "CAudioProcessor::load_kit: " << fullpath << std::endl;
+//  std::cout << session_samplerate << std::endl;
 
 //STOP PLAY
 
@@ -897,15 +890,9 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
       delete drumkit;
 
 
-
   drumkit = new CDrumKit;
 
-  std::cout << "3" << std::endl;
-
   drumkit->load (fullpath, session_samplerate);
-
-  std::cout << "4" << std::endl;
-
 
   for (size_t i = 0; i < 36; i++)
       {
@@ -915,17 +902,11 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
        hp[i].reset();
       }
 
-
-std::cout << "5" << std::endl;
-
 //resume
 
   suspendProcessing (false);
 
  //std::cout << "CAudioProcessor::load_kit - 2" << std::endl;
-
-  std::cout << "6" << std::endl;
-
 
   return true;
 }
