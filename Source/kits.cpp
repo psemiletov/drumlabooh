@@ -1,5 +1,5 @@
 /*
-written at 2023 by Peter Semiletov
+written at 2023-24 by Peter Semiletov
 this code is the public domain
  */
 
@@ -32,15 +32,15 @@ using namespace std;
 //WE READ JUST LEFT CHANNEL IF STEREO
 juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fname)
 {
-  std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
+//  std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
 
   juce::File fl (fname);
-  juce::InputStream *fs = new juce::FileInputStream (fl);
+  juce::InputStream *fs = new juce::FileInputStream (fl); //will be deleted by reader
 
   juce::AudioFormatReader *reader = 0;
 
   std::string ext = get_file_ext (fname);
-  ext =  string_to_lower (ext);
+  ext = string_to_lower (ext);
 
   if (ext == "wav")
     reader = WavAudioFormat().createReaderFor (fs, true);
@@ -57,23 +57,21 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
   if (ext == "aiff")
      reader = AiffAudioFormat().createReaderFor (fs, true);
 
+  if (! reader)
+      return 0;
+
 
   //juce::String ext = fl.getFileExtension (fname);
 
-
   //std::unique_ptr<juce::AudioFormatReader> reader (formatManager->createReaderFor (fl));
-
   //juce::AudioFormatReader *reader = new juce::AudioFormatReader (new juce::FileInputStream (fl, fl.getFileExtension ());
-
-
   //juce::AudioFormatReader *reader (formatManager->createReaderFor (fl));
 
-  if (reader)
+//  if (reader)
 
   //if (reader.get() != nullptr)
-     {
-      std::cout << "reader.get() != nullptr\n";
 
+     // std::cout << "reader.get() != nullptr\n";
 
       juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float>;
 
@@ -85,6 +83,8 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
       if (! reader->read (buffer,  0, bufsize, 0,  true, false)) //read just left channel
          {
           std::cout << "! reader->read " << std::endl;
+
+          delete reader;
           delete buffer;
           return 0;
          }
@@ -95,40 +95,34 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
       //hardcode 1 channel please :)
       //channels = 1;//reader->numChannels;
 
-      std::cout << "samplerate: " << samplerate << std::endl;
-      std::cout << "length_in_samples: " << length_in_samples << std::endl;
+   //   std::cout << "samplerate: " << samplerate << std::endl;
+//      std::cout << "length_in_samples: " << length_in_samples << std::endl;
      //std::cout << "channels: " << channels << std::endl;
 
-     std::cout << "@@@@@ CDrumLayer::load_whole_sample GOOD END" << std::endl;
+  //   std::cout << "@@@@@ CDrumLayer::load_whole_sample GOOD END" << std::endl;
+
+      //delete fs;
+
+   //else
+     //  std::cout << "reader.get() IS nullptr\n";
 
 
       delete reader;
       return buffer;
-     }
-   else
-       std::cout << "reader.get() IS nullptr\n";
 
-
-  std::cout << "@@@@@ CDrumLayer::load_whole_sample BAD END" << std::endl;
-
-  return 0;
+  //std::cout << "@@@@@ CDrumLayer::load_whole_sample BAD END" << std::endl;
+  //delete fs;
 }
 
 
 juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::string &fname, int sess_samplerate)
 {
-
-  std::cout << "CDrumLayer::load_whole_sample_resampled - 1\n";
-
   juce::AudioBuffer<float> *buffer = load_whole_sample (fname);
   if (! buffer)
      {
       cout << "load error: " << fname << endl;
       return 0;
      }
-
-  std::cout << "CDrumLayer::load_whole_sample_resampled - 2\n";
-
 
   if (samplerate == sess_samplerate)
       return buffer;
@@ -143,24 +137,20 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
          return 0;
        }
 
-
-  std::cout << "CDrumLayer::load_whole_sample_resampled - 3\n";
-
   //else we need to resample
 
   float ratio = (float) sess_samplerate / samplerate;
   size_t output_frames_count = ratio * length_in_samples;
 
-  std::cout << "CDrumLayer::load_whole_sample_resampled - 4\n";
 
  // std::cout << "channels: " << channels << std::endl;
-  std::cout << "output_frames_count: " << output_frames_count << std::endl;
+//  std::cout << "output_frames_count: " << output_frames_count << std::endl;
 
 //  juce::AudioBuffer<float> * out_buf = new juce::AudioBuffer <float> (channels, output_frames_count);
-  juce::AudioBuffer<float> * out_buf = new juce::AudioBuffer <float> (1, output_frames_count);
 
+  //make mono (1-channel) buffer out_buf
+  juce::AudioBuffer<float> *out_buf = new juce::AudioBuffer <float> (1, output_frames_count);
 
-  std::cout << "CDrumLayer::load_whole_sample_resampled - 5\n";
 
 /*
   for (int i = 0; i < channels; i++)
@@ -176,11 +166,9 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
 
 */
 
-    std::shared_ptr<speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
-     rs->read (input_buffer);
-     rs->write (out_buf->getWritePointer(0), output_frames_count);
-
-  std::cout << "CDrumLayer::load_whole_sample_resampled - 6\n";
+   std::shared_ptr<speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
+   rs->read (input_buffer);
+   rs->write (out_buf->getWritePointer(0), output_frames_count);
 
 
   samplerate = sess_samplerate;
@@ -188,17 +176,14 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
 
   delete buffer;
 
-  std::cout << "CDrumLayer::load_whole_sample_resampled - 7\n";
-
-
   return out_buf;
 }
 
 
 void CDrumLayer::load (const std::string &fname)
 {
-  std::cout << "void CDrumLayer::load (const std::string &fname)" <<
-              fname << " : " << session_samplerate << std::endl;
+//  std::cout << "void CDrumLayer::load (const std::string &fname)" <<
+  //            fname << " : " << session_samplerate << std::endl;
 
   audio_buffer = load_whole_sample_resampled (fname, session_samplerate);
 
@@ -211,14 +196,14 @@ void CDrumLayer::load (const std::string &fname)
   file_name = fname;
 
  // if (channels > 0)
-      channel_data [0] = audio_buffer->getReadPointer (0);
+   channel_data [0] = audio_buffer->getReadPointer (0);
 
   //altough we have just mono sample, this "stereo" code is a legacy
 
   //if (channels > 1)
     //  channel_data [1] = audio_buffer->getReadPointer (1);
 
-  std::cout << "void CDrumLayer::load  -end;\n";
+ // std::cout << "void CDrumLayer::load  -end;\n";
 
 }
 
@@ -430,32 +415,23 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
 
 void CDrumKit::load_txt (const std::string &data)
 {
-  cout << "void CDrumKit::load_txt (const std::string data)\n";
+  //cout << "void CDrumKit::load_txt (const std::string data)\n";
 
   if (data.empty())
       return;
 
-  cout << "void CDrumKit::load_txt 1\n";
-
-
   size_t i = kit_dir.rfind ("/");
   kit_name = kit_dir.substr (i + 1);
-
-  cout << "void CDrumKit::load_txt 2\n";
-
 
   stringstream st (data);
   string line;
 
-  cout << "void CDrumKit::load_txt 3\n";
-
-
-// вылет в цикле!!!
 
   /*
-
+  was
    terminate called after throwing an instance of 'std::bad_alloc'
   what():  std::bad_alloc
+FIXED
 
    */
 
@@ -463,8 +439,6 @@ void CDrumKit::load_txt (const std::string &data)
         {
          if (line.empty())
             continue;
-
-
 
          if (v_samples.size() == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 32 SAMPLES
             break;
@@ -478,15 +452,11 @@ void CDrumKit::load_txt (const std::string &data)
              continue;
 
 
-
          string sample_name = line.substr (0, pos);
          string fname = line.substr (pos + 1, line.size() - pos);
 
          if (fname.empty())
             continue;
-
-
-         cout << "cyckle 01\n";
 
          size_t check_for_list = fname.find (",");
 
@@ -527,45 +497,17 @@ void CDrumKit::load_txt (const std::string &data)
             }
          else
              {
-              cout << "else\n";
-
-              cout << "a1\n";
-
-
               string filename = kit_dir + "/" + fname;
-
-              cout << "a2\n";
-
 
               add_sample();
 
-              cout << "a3\n";
-
-
               v_samples.back()->name = sample_name;
-
-              cout << "a4\n";
-
 
               v_samples.back()->add_layer(); //add default layer
 
-              cout << "a5\n";
-
-
               if (file_exists (filename) && ! scan_mode)
-                 {
-                  cout << "a6\n";
-
                   v_samples.back()->v_layers.back()->load (filename.c_str());
-
-                 }
-
-               cout << "a7\n";
-
              }
-
-        cout << "cyckle 2\n";
-
 
 
          for (auto signature: v_hat_open_signatures)
@@ -577,8 +519,6 @@ void CDrumKit::load_txt (const std::string &data)
                  }
              }
 
-        cout << "cyckle 03\n";
-
 
          for (auto signature: v_hat_close_signatures)
              {
@@ -589,13 +529,7 @@ void CDrumKit::load_txt (const std::string &data)
                  }
              }
 
-         cout << "cyckle 04\n";
-
-
         }
-
-  cout << "void CDrumKit::load_txt 4\n";
-
 
   std::string kitimg = kit_dir + "/image.jpg";
 
@@ -604,8 +538,6 @@ void CDrumKit::load_txt (const std::string &data)
 
   if (file_exists (kitimg))
       image_fname = kitimg;
-
- cout << "void CDrumKit::load_txt 5\n";
 
 }
 
@@ -760,34 +692,19 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 //  if (! scan_mode)
   //   cout << "@@@@@@@@@@@@ void CDrumKit::load: " << fname << "samplerate: " << sample_rate << endl;
 
-
-  std::cout << "CDrumKit::load 1" << std::endl;
-
   auto start = chrono::high_resolution_clock::now();
 
-  std::cout << "CDrumKit::load 2" << std::endl;
-
-
   samplerate = sample_rate;
-
-  std::cout << "CDrumKit::load 3" << std::endl;
 
 
   string filename = resolve_symlink (fname.c_str());
   kit_filename = filename;
   kit_dir = get_file_path (kit_filename);
 
-  std::cout << "CDrumKit::load 4" << std::endl;
-
 
   std::string source = string_file_load (filename);
   if (source.empty())
       return;
-
-  std::cout << "CDrumKit::load 4.1" << std::endl;
-
-
-
 
   if (ends_with (kit_filename, ".txt"))
      {
@@ -795,16 +712,12 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
       return;
      }
 
-  std::cout << "CDrumKit::load 4.2" << std::endl;
-
 
   if (ends_with (kit_filename, ".sfz"))
      {
       load_sfz (source);
       return;
      }
-
-   std::cout << "CDrumKit::load 5" << std::endl;
 
 
   //else Hydrogen format
@@ -856,10 +769,6 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
  // std::cout << "loaded at: " << duration_msecs.count() << " msecs" << std::endl;
 
   //seconds_counter_ev = duration_s.count();
-
-  std::cout << "CDrumKit::load 5" << std::endl;
-
-
 }
 
 

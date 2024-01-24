@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 include(FetchContent)
 
 
-project(DRUMLABOOH LANGUAGES CXX C VERSION 2.1.0)
+project(DRUMLABOOH LANGUAGES CXX C VERSION 2.2.0)
 
 message("Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 

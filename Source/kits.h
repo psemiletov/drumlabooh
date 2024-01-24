@@ -1,5 +1,5 @@
 /*
-written at 2023 by Peter Semiletov
+written at 2023-24 by Peter Semiletov
 this code is the public domain
  */
 
@@ -35,6 +35,8 @@ public:
   std::string file_name; //name of the loaded file
 
  // int channels; //channels at this layer
+ //channels veariable has been removed as we have mono only
+
   int samplerate; //samplerate of this layer
   int length_in_samples;// i.e frames, the amount of samples per channel
   int sample_offset; //to play inc until < length_in_samples
@@ -50,7 +52,6 @@ public:
 
   juce::AudioBuffer<float> * load_whole_sample (const std::string &fname); //called from load_whole_sample_resampled
   juce::AudioBuffer<float> * load_whole_sample_resampled (const std::string &fname, int sess_samplerate);
-  juce::AudioBuffer<float> * load_whole_sample_resampled2 (const std::string &fname, int sess_samplerate);
 
 };
 
