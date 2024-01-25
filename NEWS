@@ -1,7 +1,4 @@
-   Drumlabooh 2.2.0
+   Drumlabooh 2.2.0 is out - https://psemiletov.github.io/drumlabooh/
 
    Recently I've discovered a strange issue - the crash when Reaper rendered the project (that have the Drumlabooh track) with the samplerate differerent than session's sample rate. The investigation led me to the mystic behavior of the underlying libraries, so I rewrote sample loader a lot. As far I tested, it works well with Reaper, Ardour, Muse and Bitwig. And as the bonus - samples are loaded a bit faster now.
    P.S. +MP3 samples support
-
-   Peter Semiletov, 
-   Kiev, December, 2024.
