@@ -766,7 +766,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   addAndMakeVisible (l_plugin_name);
   l_plugin_name.setSize (180 + XFILLER, 48);
   l_plugin_name.setTopLeftPosition (gr_options.getX(), gr_options.getBottom() + YFILLER);
-  l_plugin_name.setText (juce::CharPointer_UTF8("DRUMЛАБУХ"), juce::NotificationType::dontSendNotification);
+  l_plugin_name.setText (juce::CharPointer_UTF8("DRUMLABOOH"), juce::NotificationType::dontSendNotification);
   l_plugin_name.setFont	(f_logo);
 
   addAndMakeVisible (l_plugin_author);
