@@ -1,3 +1,3 @@
-   Drumlabooh 2.3.0 is out - https://psemiletov.github.io/drumlabooh/
+   Drumlabooh 2.4.0 is out - https://psemiletov.github.io/drumlabooh/
 
-   Some GUI fixes, the build is synced to JUCE 7.0.10.
+   MIDI velocity fix for the Multi-channel mode
