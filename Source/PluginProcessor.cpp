@@ -544,7 +544,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      fl = softLimit (hp[drum_sample_index].process (fl));
                     }
 
-
+//NEW
+                 fl *= s->velocity;
                  channel_data[drum_sample_index][out_buf_offs] = fl;
                 }
 
