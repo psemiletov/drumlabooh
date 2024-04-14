@@ -11,7 +11,7 @@ For all details, docs and drumkits see the [Drumlabooh site](https://psemiletov.
 
 * Supported sample kit formats: Hydrogen, Drumlabooh/Drumrox, SFZ
 
- * Stereo (with built-in mixer) or multi (36 channels) output
+* Stereo (with built-in mixer) or multi (36 channels) output
 
 * Built-in mixer with Pan, Volume, mute controls and Pan mode option
 
@@ -23,7 +23,7 @@ For all details, docs and drumkits see the [Drumlabooh site](https://psemiletov.
 
 * Drumkit image (if provided) at plugin window
 
-* Written in C++, based on JUSE toolkit
+* Written in C++, based on JUCE toolkit
 
 
 ## Linux: Build from the source
