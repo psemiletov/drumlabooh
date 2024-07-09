@@ -129,12 +129,12 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
 
 
 
-    float *input_buffer = buffer->getWritePointer(0);
-    if (! input_buffer)
-         // continue;
-        {
-         delete buffer;
-         return 0;
+   float *input_buffer = buffer->getWritePointer(0);
+   if (! input_buffer)
+       // continue;
+       {
+        delete buffer;
+        return 0;
        }
 
   //else we need to resample
@@ -166,10 +166,9 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
 
 */
 
-   std::shared_ptr<speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
-   rs->read (input_buffer);
-   rs->write (out_buf->getWritePointer(0), output_frames_count);
-
+  std::shared_ptr<speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
+  rs->read (input_buffer);
+  rs->write (out_buf->getWritePointer(0), output_frames_count);
 
   samplerate = sess_samplerate;
   length_in_samples = output_frames_count;
@@ -196,7 +195,7 @@ void CDrumLayer::load (const std::string &fname)
   file_name = fname;
 
  // if (channels > 0)
-   channel_data [0] = audio_buffer->getReadPointer (0);
+  channel_data [0] = audio_buffer->getReadPointer (0);
 
   //altough we have just mono sample, this "stereo" code is a legacy
 
@@ -696,13 +695,20 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
   samplerate = sample_rate;
 
+  std::string initial_fname = transform_kit_path_to_local (fname);
+    
+  //std::string filename = resolve_symlink (fname.c_str());
+  std::string filename = resolve_symlink (initial_fname.c_str());
 
-  string filename = resolve_symlink (fname.c_str());
+   if (! scan_mode)
+     cout << "@@@@@@@@@@@@ void CDrumKit::load: " << filename << endl;
+
+  
   kit_filename = filename;
   kit_dir = get_file_path (kit_filename);
 
-
-  std::string source = string_file_load (filename);
+  
+  std::string source = string_file_load (kit_filename);
   if (source.empty())
       return;
 

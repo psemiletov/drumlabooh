@@ -504,6 +504,8 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 {
   //make all drum labels empty
 
+  std::string real_kitpath = transform_kit_path_to_local (kitpath);
+  
   for (size_t i = 0; i < 36; i++)
       {
        drumcells[i].set_name ("EMPTY CELL");
@@ -519,7 +521,7 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 
   for (size_t i = 0; i < kits_scanner.v_scanned_kits.size() ; i++)
       {
-       if (kits_scanner.v_scanned_kits[i]->kit_filename == kitpath)
+       if (kits_scanner.v_scanned_kits[i]->kit_filename == real_kitpath)
           k = kits_scanner.v_scanned_kits[i];
       }
 

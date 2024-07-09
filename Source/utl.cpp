@@ -374,3 +374,35 @@ string string_replace_all (const string &s, const string &from, const string &to
   return result;
 }
 
+
+std::string replace_string (std::string subject, const std::string& search, const std::string& replace) 
+{
+    size_t pos = 0;
+    while ((pos = subject.find(search, pos)) != std::string::npos) {
+         subject.replace(pos, search.length(), replace);
+         pos += replace.length();
+    }
+    return subject;
+}
+
+
+std::string transform_kit_path_to_local (const std::string &path) 
+{
+  std::string result = path;
+  if (result.rfind ("$HOME", 0) == 0)
+     result = replace_string (result, "$HOME", get_home_dir()); 
+    
+  return result;  
+   
+}
+
+
+std::string transform_kit_path_from_local (const std::string &path) 
+{
+  std::string result = path;
+  if (result.rfind (get_home_dir(), 0) == 0)
+     result = replace_string (result, get_home_dir(), "$HOME"); 
+    
+  return result;  
+  
+}

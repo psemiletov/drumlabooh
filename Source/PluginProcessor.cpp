@@ -145,13 +145,13 @@ CAudioProcessor::CAudioProcessor()
 
   for (size_t i = 0; i < 36; i++)
       {
-       lps[i]  = parameters.getRawParameterValue ("lp" + std::to_string(i));
-       lp_cutoff[i]  = parameters.getRawParameterValue ("lp_cutoff" + std::to_string(i));
-       lp_reso[i]  = parameters.getRawParameterValue ("lp_reso" + std::to_string(i));
+       lps[i] = parameters.getRawParameterValue ("lp" + std::to_string(i));
+       lp_cutoff[i] = parameters.getRawParameterValue ("lp_cutoff" + std::to_string(i));
+       lp_reso[i] = parameters.getRawParameterValue ("lp_reso" + std::to_string(i));
 
-       hps[i]  = parameters.getRawParameterValue ("hp" + std::to_string(i));
-       hp_cutoff[i]  = parameters.getRawParameterValue ("hp_cutoff" + std::to_string(i));
-       hp_reso[i]  = parameters.getRawParameterValue ("hp_reso" + std::to_string(i));
+       hps[i] = parameters.getRawParameterValue ("hp" + std::to_string(i));
+       hp_cutoff[i] = parameters.getRawParameterValue ("hp_cutoff" + std::to_string(i));
+       hp_reso[i] = parameters.getRawParameterValue ("hp_reso" + std::to_string(i));
 
        analog[i] = parameters.getRawParameterValue ("analog" + std::to_string(i));
        analog_amount[i] = parameters.getRawParameterValue ("analog_amount" + std::to_string(i));
@@ -808,7 +808,16 @@ juce::AudioProcessorEditor* CAudioProcessor::createEditor()
 //save
 void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-  save_string_keyval ("drumkit_path", drumkit_path);
+  //std::string  get_home_dir
+  
+  std::string drumkitpath_to_save = transform_kit_path_from_local (drumkit_path); 
+  
+  std::cout << "SAVE PATH drumkitpath_to_save: " << drumkitpath_to_save << std::endl;
+  std::cout << "SAVE PATH drumkit_path: " << drumkit_path << std::endl;
+  
+  //save_string_keyval ("drumkit_path", drumkit_path);
+  save_string_keyval ("drumkit_path", drumkitpath_to_save);
+  
   save_int_keyval ("base_note_number", base_note_number);
   auto state = parameters.copyState();
   std::unique_ptr <juce::XmlElement> xml (state.createXml());

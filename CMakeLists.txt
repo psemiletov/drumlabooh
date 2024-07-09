@@ -32,62 +32,86 @@ set(FETCHCONTENT_QUIET FALSE)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 
+if(CMAKE_VERSION VERSION_LESS "3.2.8") 
 
-#FetchContent_Declare(
-#  drumkits
-  #GIT_REPOSITORY https://github.com/psemiletov/drum_sklad.git
-  #GIT_TAG        master # last one
-  #GIT_PROGRESS TRUE
-#)
-
-
-
-#FetchContent_GetProperties(drumkits)
-#if(NOT drumkits_POPULATED)
-  #FetchContent_Populate(drumkits
-  #CONFIGURE_COMMAND ""
-  #BUILD_COMMAND ""
-  #)
-  #add_subdirectory(${drumkits_SOURCE_DIR} ${drumkits_BINARY_DIR} EXCLUDE_FROM_ALL)
-#endif()
-
-
+message("CMake less than 3.2.8")
 
 FetchContent_Declare(
   drum_sklad
   URL https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
   GIT_PROGRESS TRUE
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+#since cmake 3.28
+#  EXCLUDE_FROM_ALL
+#  
 )
-
 
 FetchContent_GetProperties(drum_sklad)
 if(NOT drum_sklad_POPULATED)
   FetchContent_Populate(drum_sklad)
-#  add_subdirectory(${drum_sklad_SOURCE_DIR} ${drum_sklad_BINARY_DIR} EXCLUDE_FROM_ALL)
   message (${drum_sklad_SOURCE_DIR})
 endif()
 
-#FetchContent_MakeAvailable(drum_sklad)
 
+else()    
+
+FetchContent_Declare(
+  drum_sklad
+  URL https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
+  GIT_PROGRESS TRUE
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+#since cmake 3.28
+  EXCLUDE_FROM_ALL
+#  
+)
+
+FetchContent_MakeAvailable(drum_sklad)
+
+
+endif()
+
+
+
+
+if(CMAKE_VERSION VERSION_LESS "3.2.8") 
 
 FetchContent_Declare(
   juce
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
 #  GIT_TAG        2a27ebcfae7ca7f6eb62b29d5f002ceefdaadbdb # release-7.0.7
   GIT_TAG         7.0.10 # release-7.0.10
-
+#since cmake 3.28
+#  EXCLUDE_FROM_ALL
+#  
   GIT_PROGRESS TRUE
 )
-
-
-#FetchContent_MakeAvailable(juce)
 
 FetchContent_GetProperties(juce)
 if(NOT juce_POPULATED)
   FetchContent_Populate(juce)
   add_subdirectory(${juce_SOURCE_DIR} ${juce_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
+
+
+else()
+
+FetchContent_Declare(
+  juce
+  GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
+#  GIT_TAG        2a27ebcfae7ca7f6eb62b29d5f002ceefdaadbdb # release-7.0.7
+  GIT_TAG         7.0.10 # release-7.0.10
+#since cmake 3.28
+  EXCLUDE_FROM_ALL
+#  
+  GIT_PROGRESS TRUE
+)
+
+
+FetchContent_MakeAvailable(juce)
+
+endif()
+
+
 
 
 

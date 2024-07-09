@@ -28,6 +28,10 @@ bool findStringIC(const std::string & strHaystack, const std::string & strNeedle
 
 std::vector <std::string> split_string_to_vector (const std::string& s, const std::string& delimeter, const bool keep_empty);
 std::string string_replace_all (const std::string &s, const std::string &from, const std::string &to);
+std::string replace_string(std::string subject, const std::string& search, const std::string& replace); 
+
+std::string transform_kit_path_to_local (const std::string &path);
+std::string transform_kit_path_from_local (const std::string &path);
 
 
 #endif
