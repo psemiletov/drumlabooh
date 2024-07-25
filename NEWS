@@ -1,3 +1,11 @@
-   Drumlabooh 2.4.0 is out - https://psemiletov.github.io/drumlabooh/
+   Drumlabooh 3.0.0
 
-   MIDI velocity fix for the Multi-channel mode
+   What's new?
+
+   Drumlabooh cmake-project for the build subsystem now supports old and modern cmake versions. Also, JUCE version 8 library is used instead of JUCE 7.
+   Some good old drumkits were been added: ELI CompuRhythm CR 7030, SoundMaster SR-88, Technics PCM DP50, Cheetah SpecDrum Afro, Cheetah SpecDrum Electro, Cheetah SpecDrum Latin, Cheetah SpecDrum Standard.
+   At DAW project, Drumlabooh now saves the drumkit path in the portable way, i.e., if your drumkit is located at some subdirectory of $HOME, that "home" part of the path will be saved as the macro. Here is a simple example.
+   1. On Computer A, you have the drumkit "test" located at /home/userA/drumlabooh_kits/test.
+   2. On Computer B, you have the drumkit "test" located at /home/userB/drumlabooh_kits/test.
+   3. You can freely interchange DAW project that uses Drumlabooh with the drumkit "test", between Computer A and Computer B. Drumlabooh will load the kit "test" anyway, evaluating the actual home directory of the user.
+
