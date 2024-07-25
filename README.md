@@ -23,7 +23,7 @@ For all details, docs and drumkits see the [Drumlabooh site](https://psemiletov.
 
 * Drumkit image (if provided) at plugin window
 
-* Written in C++, based on JUSE toolkit
+* Written in C++, based on JUCE toolkit
 
 
 ## Linux: Build from the source
