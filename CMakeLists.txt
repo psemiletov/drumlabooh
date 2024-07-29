@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 include(FetchContent)
 
 
-project(DRUMLABOOH LANGUAGES CXX C VERSION 3.0.0)
+project(DRUMLABOOH LANGUAGES CXX C VERSION 3.0.1)
 
 message("Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 
@@ -80,7 +80,7 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
 #  GIT_TAG        2a27ebcfae7ca7f6eb62b29d5f002ceefdaadbdb # release-7.0.7
 #  GIT_TAG         7.0.10 # release-7.0.10
-  GIT_TAG         8.0.0 # release-7.0.10
+  GIT_TAG         8.0.0 
 
 #since cmake 3.28
 #  EXCLUDE_FROM_ALL
@@ -101,7 +101,7 @@ FetchContent_Declare(
   juce
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
 #  GIT_TAG        2a27ebcfae7ca7f6eb62b29d5f002ceefdaadbdb # release-7.0.7
-  GIT_TAG         7.0.10 # release-7.0.10
+  GIT_TAG         8.0.0 
 #since cmake 3.28
   EXCLUDE_FROM_ALL
 #  
