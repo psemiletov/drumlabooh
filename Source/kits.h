@@ -70,7 +70,12 @@ public:
 
   bool active;
 
-  bool use_rnd;
+  //bool use_rnd;
+  //bool use_robin;
+  
+  int layer_index_mode; //0 - velocity, 1 - rnd, 2 - round robin
+  
+  size_t robin_counter;
   
   float velocity;
 

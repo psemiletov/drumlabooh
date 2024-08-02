@@ -27,6 +27,10 @@ using namespace std;
 
 #define MAX_SAMPLES 36
 
+#define LAYER_INDEX_MODE_VEL 0
+#define LAYER_INDEX_MODE_RND 1
+#define LAYER_INDEX_MODE_ROBIN 2
+
 //juce::AudioFormatManager *formatManager;
 
 
@@ -253,7 +257,11 @@ CDrumSample::CDrumSample (int sample_rate)
   hihat_open = false;
   hihat_close = false;
   active = false;
-  use_rnd = false;
+ // use_rnd = false;
+  //use_robin = false;
+  robin_counter = -1;
+  layer_index_mode = LAYER_INDEX_MODE_VEL;
+  
 }
 
 
@@ -469,13 +477,22 @@ FIXED
             continue;
 
          size_t check_for_list = fname.find (",");
+         
          bool check_for_rnd = false;
+         bool check_for_robin = false;
          
          if (fname.rfind ("*", 0) == 0) 
             { 
              check_for_rnd = true; 
              fname.erase(0, 1);
             } 
+            
+         if (fname.rfind (">", 0) == 0) 
+            { 
+             check_for_robin = true; 
+             fname.erase(0, 1);
+            } 
+    
 
          if (check_for_list != string::npos)
             {
@@ -484,8 +501,15 @@ FIXED
              add_sample();
              v_samples.back()->name = sample_name;
 
-             
-             v_samples.back()->use_rnd = check_for_rnd; 
+             if (check_for_rnd)
+                v_samples.back()->layer_index_mode = LAYER_INDEX_MODE_RND; 
+              
+             if (check_for_robin)
+                {
+                 v_samples.back()->layer_index_mode = LAYER_INDEX_MODE_ROBIN; 
+                // std::cout << "LAYER_INDEX_MODE_ROBIN\n";
+                 
+                } 
              
              for (auto f: v_fnames)
                  {
@@ -497,6 +521,7 @@ FIXED
                  }
 
              float part_size = (float) 1 / v_samples.back()->v_layers.size();
+             
              CDrumLayer *l;
               //evaluate min and max velocities by the file position in the vector
              for (size_t i = 0; i < v_samples.back()->v_layers.size(); i++)
@@ -1014,6 +1039,10 @@ void CDrumSample::untrigger_sample()
    //   v_layers[i]->sample_offset = 0;
 
   current_layer = 0;
+  
+  //if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
+    // current_layer = -1;
+     
 }
 
 
@@ -1035,13 +1064,34 @@ void CDrumSample::trigger_sample (float vel)
   active = true;
 
   velocity = vel;
+
   
+  if (v_layers.size() > 1)
+     {
   
-  if (! use_rnd)
-      current_layer = map_velo_to_layer_number (velocity);
-   else
-       if (v_layers.size() > 1)
-          current_layer = get_rnd (0, v_layers.size() - 1);//random layer
+     if (layer_index_mode == LAYER_INDEX_MODE_VEL)
+         current_layer = map_velo_to_layer_number (velocity);
+
+     if (layer_index_mode == LAYER_INDEX_MODE_RND)
+         current_layer = get_rnd (0, v_layers.size() - 1);//random layer
+       
+     if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
+        {
+         //if (current_layer == v_layers.size() - 1)
+          ///   current_layer = -1;
+          
+         //std::cout << "trigger\n"; 
+          
+         robin_counter++;
+
+         if (robin_counter == v_layers.size())
+             robin_counter = 0;
+         
+         current_layer = robin_counter;
+        } 
+     }
+   else 
+       current_layer = 0; //if layers count == 1
   
 
   //std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
