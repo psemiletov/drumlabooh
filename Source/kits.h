@@ -70,6 +70,8 @@ public:
 
   bool active;
 
+  bool use_rnd;
+  
   float velocity;
 
   bool hihat_open;
@@ -108,7 +110,7 @@ public:
   int samplerate; //session srate
 
   bool layers_supported;
-
+  
   std::vector <CDrumSample*> v_samples;
   std::vector <std::string> v_hat_open_signatures;
   std::vector <std::string> v_hat_close_signatures;
@@ -158,6 +160,9 @@ public:
   CHydrogenXMLWalker (CDrumKit *hkit);
   bool for_each (pugi::xml_node& node);
 };
+
+
+void rnd_init();
 
 
 #endif

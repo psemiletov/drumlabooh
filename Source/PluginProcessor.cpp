@@ -136,7 +136,8 @@ CAudioProcessor::CAudioProcessor()
  // formatManager->registerBasicFormats();
 
   init_db();
-
+  rnd_init();
+  
   fresh_start = true;
   drumkit = 0;
   drumkit_path = "";
@@ -178,6 +179,7 @@ CAudioProcessor::CAudioProcessor()
  // formatManager->registerBasicFormats();
 
   init_db();
+  rnd_init();
 
   fresh_start = true;
   drumkit = 0;
@@ -556,7 +558,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 }
 
 #else
-
+//STEREO
 
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {

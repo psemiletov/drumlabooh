@@ -10,6 +10,8 @@ this code is the public domain
 #include <algorithm>
 #include <string>
 #include <chrono>
+#include <random>
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,6 +29,14 @@ using namespace std;
 
 //juce::AudioFormatManager *formatManager;
 
+
+std::mt19937 rnd_mt19937;
+
+
+void rnd_init()
+{
+  rnd_mt19937.seed (std::chrono::system_clock::now().time_since_epoch().count());
+}
 
 
 //WE READ JUST LEFT CHANNEL IF STEREO
@@ -129,13 +139,13 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
 
 
 
-   float *input_buffer = buffer->getWritePointer(0);
-   if (! input_buffer)
-       // continue;
-       {
-        delete buffer;
-        return 0;
-       }
+  float *input_buffer = buffer->getWritePointer(0);
+  if (! input_buffer)
+      // continue;
+     {
+      delete buffer;
+      return 0;
+     }
 
   //else we need to resample
 
@@ -243,6 +253,7 @@ CDrumSample::CDrumSample (int sample_rate)
   hihat_open = false;
   hihat_close = false;
   active = false;
+  use_rnd = false;
 }
 
 
@@ -458,6 +469,13 @@ FIXED
             continue;
 
          size_t check_for_list = fname.find (",");
+         bool check_for_rnd = false;
+         
+         if (fname.rfind ("*", 0) == 0) 
+            { 
+             check_for_rnd = true; 
+             fname.erase(0, 1);
+            } 
 
          if (check_for_list != string::npos)
             {
@@ -466,6 +484,9 @@ FIXED
              add_sample();
              v_samples.back()->name = sample_name;
 
+             
+             v_samples.back()->use_rnd = check_for_rnd; 
+             
              for (auto f: v_fnames)
                  {
                   string filename = kit_dir + "/" + f;
@@ -996,6 +1017,15 @@ void CDrumSample::untrigger_sample()
 }
 
 
+
+
+int get_rnd (int ta, int tb)
+{
+  std::uniform_int_distribution <> distrib (ta, tb);
+  return distrib (rnd_mt19937);
+}
+
+
 void CDrumSample::trigger_sample (float vel)
 {
 //  std::cout << "CDrumSample::trigger_sample: " << name << std::endl;
@@ -1005,7 +1035,14 @@ void CDrumSample::trigger_sample (float vel)
   active = true;
 
   velocity = vel;
-  current_layer = map_velo_to_layer_number (velocity);
+  
+  
+  if (! use_rnd)
+      current_layer = map_velo_to_layer_number (velocity);
+   else
+       if (v_layers.size() > 1)
+          current_layer = get_rnd (0, v_layers.size() - 1);//random layer
+  
 
   //std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
 
