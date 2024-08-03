@@ -44,9 +44,12 @@ void rnd_init()
 
 
 //WE READ JUST LEFT CHANNEL IF STEREO
-juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fname)
+juce::AudioBuffer <float>*  CDrumLayer::load_whole_sample (const std::string &fname)
 {
 //  std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
+  
+  if (! file_exists (fname))
+     return 0;
 
   juce::File fl (fname);
   juce::InputStream *fs = new juce::FileInputStream (fl); //will be deleted by reader
@@ -129,9 +132,9 @@ juce::AudioBuffer<float> *  CDrumLayer::load_whole_sample (const std::string &fn
 }
 
 
-juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::string &fname, int sess_samplerate)
+juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::string &fname, int sess_samplerate)
 {
-  juce::AudioBuffer<float> *buffer = load_whole_sample (fname);
+  juce::AudioBuffer <float>* buffer = load_whole_sample (fname);
   if (! buffer)
      {
       cout << "load error: " << fname << endl;
@@ -140,7 +143,6 @@ juce::AudioBuffer<float> * CDrumLayer::load_whole_sample_resampled (const std::s
 
   if (samplerate == sess_samplerate)
       return buffer;
-
 
 
   float *input_buffer = buffer->getWritePointer(0);
@@ -209,7 +211,9 @@ void CDrumLayer::load (const std::string &fname)
   file_name = fname;
 
  // if (channels > 0)
-  channel_data [0] = audio_buffer->getReadPointer (0);
+  
+  if (audio_buffer->getNumSamples() > 0)
+     channel_data [0] = audio_buffer->getReadPointer (0);
 
   //altough we have just mono sample, this "stereo" code is a legacy
 
@@ -229,6 +233,7 @@ CDrumLayer::CDrumLayer (CDrumSample *s)
   audio_buffer = 0;
   length_in_samples = 0;
   //channels = 1;
+  channel_data[0] = 0;
 }
 
 
@@ -257,11 +262,8 @@ CDrumSample::CDrumSample (int sample_rate)
   hihat_open = false;
   hihat_close = false;
   active = false;
- // use_rnd = false;
-  //use_robin = false;
   robin_counter = -1;
   layer_index_mode = LAYER_INDEX_MODE_VEL;
-  
 }
 
 
@@ -832,10 +834,13 @@ CDrumKit::CDrumKit()
   v_hat_open_signatures.push_back ("hat_o");
   v_hat_open_signatures.push_back ("open");
   v_hat_open_signatures.push_back ("swish");
+  v_hat_open_signatures.push_back ("HHO");
 
   v_hat_close_signatures.push_back ("close");
   v_hat_close_signatures.push_back ("choke");
   v_hat_close_signatures.push_back ("hat_c");
+  v_hat_close_signatures.push_back ("HHC");
+
 }
 
 

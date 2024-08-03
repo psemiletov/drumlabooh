@@ -513,6 +513,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  }
 
             // if (l->channels == 1)
+             if (l->channel_data[0])
                 {
                  float fl = l->channel_data[0][l->sample_offset++];
 
@@ -707,6 +708,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                 }
 
         //    if (l->channels == 1)
+             if (l->channel_data[0])
                 {
 
                  //take mono audio data from the current layer with incremented offset

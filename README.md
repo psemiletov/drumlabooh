@@ -19,6 +19,8 @@ For all details, docs and drumkits see the [Drumlabooh site](https://psemiletov.
 
 * Up to 36 instruments with layers (max 127 layers)
 
+* Round Robin and Cycle Random modes for each instrument
+
 * Automatic open hihat mute on hihat close
 
 * Drumkit image (if provided) at plugin window
