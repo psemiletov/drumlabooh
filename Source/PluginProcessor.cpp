@@ -548,7 +548,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                     }
 
 //NEW
-                 fl *= s->velocity;
+               //  if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
+                   fl *= s->velocity;
+                  
                  channel_data[drum_sample_index][out_buf_offs] = fl;
                 }
 
@@ -779,10 +781,25 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  else
                  if (*panner_mode == PANMODE07)
                      pan_equal_power3 (pan_left, pan_right, pan);
+                  
+                  
+ 
+                 float coef_right;                    
+                 float coef_left;  
 
-                 float coef_right = pan_right * vol * s->velocity;
-                 float coef_left = pan_left * vol * s->velocity;
 
+                //if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
+                 //{
+                 coef_right = pan_right * vol * s->velocity;
+                 coef_left = pan_left * vol * s->velocity;
+                 //}
+                /* else
+                 {
+                 coef_right = pan_right * vol;
+                 coef_left = pan_left * vol;
+                 }
+                  */                                   
+                 
                  channel_data[0][out_buf_offs] += fl * coef_left;
                  channel_data[1][out_buf_offs] += fl * coef_right;
                 }

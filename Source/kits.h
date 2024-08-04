@@ -18,6 +18,12 @@ this code is the public domain
 #include "pugixml.hpp"
 //JUCE_END_IGNORE_WARNINGS_GCC_LIKE
 
+#define LAYER_INDEX_MODE_VEL 0
+#define LAYER_INDEX_MODE_RND 1
+#define LAYER_INDEX_MODE_ROBIN 2
+#define LAYER_INDEX_MODE_NOVELOCITY 3
+
+
 class CDrumSample;
 
 class CDrumLayer

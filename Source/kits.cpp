@@ -27,10 +27,6 @@ using namespace std;
 
 #define MAX_SAMPLES 36
 
-#define LAYER_INDEX_MODE_VEL 0
-#define LAYER_INDEX_MODE_RND 1
-#define LAYER_INDEX_MODE_ROBIN 2
-
 //juce::AudioFormatManager *formatManager;
 
 
@@ -482,20 +478,26 @@ FIXED
          
          bool check_for_rnd = false;
          bool check_for_robin = false;
+         bool check_for_novelocity = false;
          
-         if (fname.rfind ("*", 0) == 0) 
+         if (sample_name.rfind ("*", 0) == 0) 
             { 
              check_for_rnd = true; 
-             fname.erase(0, 1);
+             sample_name.erase(0, 1);
             } 
             
-         if (fname.rfind (">", 0) == 0) 
+         if (sample_name.rfind (">", 0) == 0) 
             { 
              check_for_robin = true; 
-             fname.erase(0, 1);
+             sample_name.erase(0, 1);
             } 
     
-
+    /*     if (sample_name.rfind ("^", 0) == 0) 
+            { 
+             check_for_novelocity = true; 
+             sample_name.erase(0, 1);
+            } 
+*/
          if (check_for_list != string::npos)
             {
              vector <string> v_fnames = split_string_to_vector (fname, ",", false);
@@ -507,12 +509,12 @@ FIXED
                 v_samples.back()->layer_index_mode = LAYER_INDEX_MODE_RND; 
               
              if (check_for_robin)
-                {
                  v_samples.back()->layer_index_mode = LAYER_INDEX_MODE_ROBIN; 
-                // std::cout << "LAYER_INDEX_MODE_ROBIN\n";
-                 
-                } 
-             
+
+ //            if (check_for_novelocity)
+   //              v_samples.back()->layer_index_mode = LAYER_INDEX_MODE_NOVELOCITY; 
+
+              
              for (auto f: v_fnames)
                  {
                   string filename = kit_dir + "/" + f;
