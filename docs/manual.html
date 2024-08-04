@@ -24,7 +24,7 @@
 
 <td class="table_top_cell">
 
-<p>Drumlabooh is aimed to not interfere with the creativity. All that you need is to create a new MIDI track at your DAW, select the drumkit from the list, and play. Yes indeed, Drumlabooh is not for inventors of new, synthesized drum sounds. Drumlabooh uses the existing, sampled drumkits, so you need to install them first.</p>
+<p>Drumlabooh is aimed to not interfere with the creativity. All that you need is to create a new MIDI track at your DAW, select the drumkit from the list, and play. Yes indeed, Drumlabooh is not for inventors of new, synthesized drum sounds. Drumlabooh uses the existing, sampled drumkits, so you need to install them first. Some of them are installed with Drumlabooh.</p>
 
 <a href="#mni_modes">1. Stereo vs Multi-channel modes</a><br>
 <a href="#mni_getkits">2. Get kits</a><br>
@@ -39,10 +39,9 @@
 <a name="mni_modes"></a>
 <h3>1. Stereo vs Multi-channel modes</h3>
 
-<p>The first thing that you should know that there are two versions of Drumlabooh - <b>Stereo </b>and <b>Multi</b> (Multi-channel or Multi-outputs), that gives you the separated output mono channel for each instrument from the drum kit (36 channels at all).  
-To use the Stereo version, add to track Drumlabooh plugin. And for Multi-channel version, add Drumlabooh-multi.</p>
+<p>The first thing that you should know that there are two versions of Drumlabooh - <b>Stereo </b>and <b>Multi</b> (Multi-channel or Multi-outputs), that gives you the separated output mono channel for each instrument from the drum kit (36 channels at all).  To use the Stereo version, add to track Drumlabooh plugin. And for Multi-channel version, add Drumlabooh-multi.</p>
 
-<p>At Multi-channel version, the plugin's pan, volume and mute controls) <b>are disabled</b>, because you can control them via tracks or buses in DAW.</p>
+<p>At Multi-channel version, the plugin's pan, volume and mute controls <b>are disabled</b>, because you can control them via tracks or buses in DAW.</p>
 
 <p>
 Read the <a name="mni_multi">DETAILS</a> how to use Multi-mode in DAW, to attach each drum to the individual track or the bus.
@@ -52,16 +51,25 @@ Read the <a name="mni_multi">DETAILS</a> how to use Multi-mode in DAW, to attach
 <a name="mni_getkits"></a>
 <h3>2. Get kits</h3>
 
-<p>For Hydrogen drumkits, run Hydrogen, then go there to <b>Drumkits - Online import</b> menu and download kits from Hydrogen or Musical Artifacts repositories. To install Drumlabooh format kits, download them from [<a href="https://github.com/psemiletov/drum_sklad">Drum sklad</a> and <a href="https://t.me/drum_sklad">Drumlabooh kits at Telegram</a>, then copy or unpack drumkits folders to <i>$HOME/drumlabooh-kits</i>. Each kit = one folder.</p>
+<p>For Hydrogen drumkits, run Hydrogen, then go there to <b>Drumkits - Online import</b> menu and download kits from Hydrogen or Musical Artifacts repositories.</p> 
+
+<p>To install or update Drumlabooh format kits, download them from <a href="https://github.com/psemiletov/drum_sklad">Drum sklad</a> (usually installed with the plugins by default) and <a href="https://t.me/drum_sklad">Drumlabooh kits at Telegram</a>, then copy or unpack drumkits folders to <i>$HOME/drumlabooh-kits</i>. Each kit = one folder.</p>
 
 <p>Similary, Dramlabooh searches SFZ kits at <i>$HOME/sfz-kits</i></p>
 
 <p>All kits those found will be available from the menu (drop-down list) at the top left corner of the plugin.</p>
 
-<p>Note: actually, Drumalbooh searches kits at many locations.</p>
-
 <p>You can also select the drumkit at any directory, using the <b>Or select file</b> button near the drumkits dropdown list. Select xml (Hydrogen formet), sfz (SFZ) or drumkit.txt (Drumlabooh format) file at the drumkit's folder.
 </p>
+
+<p>Note: actually, Drumalbooh searches kits at many locations.</p>
+
+<p>Drumlabooh/Drumrox format:</p>
+
+<pre>/usr/share/drumrox-kits
+$HOME/drumrox-kits
+/usr/share/drumlabooh-kits
+$HOME/drumlabooh-kits</pre>
 
 <p>Hydrogen format:</p>
 
@@ -70,14 +78,6 @@ Read the <a name="mni_multi">DETAILS</a> how to use Multi-mode in DAW, to attach
 /usr/share/drmr/drumkits
 $HOME/.hydrogen/data/drumkits
 $HOME/.drmr/drumkits</pre>
-
-
-<p>Drumlabooh/Drumrox format:</p>
-
-<pre>/usr/share/drumrox-kits
-$HOME/drumrox-kits
-/usr/share/drumlabooh-kits
-$HOME/drumlabooh-kits</pre>
 
 <p>SFZ format:</p>
 
@@ -88,8 +88,7 @@ $HOME/drumlabooh-kits</pre>
 
 <p>When Drumlabooh loads the kit samples, it converts them before use, on the fly, to the DAW's project session rate (if needed), so the conversion can take some time. Please note that any resampling changes how samples sounds, at some degree.</p>
 
-<p>Drumlabooh loads pre-panned stereo samples as mono, using the left channel. There are not so much stereo drumkits exits, and the pre-panning makes the actual panning on the mixing just weird. So Drumlabooh with it's own stereo mixer treats all source samples as mono.
-</p>
+<p>Drumlabooh loads pre-panned stereo samples as mono, using the left channel. The pre-panning makes the actual panning on the mixing just weird. So Drumlabooh with it's own stereo mixer treats all source samples as mono.</p>
 
 
 <a name="mni_mixer"></a>
@@ -101,11 +100,11 @@ $HOME/drumlabooh-kits</pre>
 
 2 <b>Instrument name</b> - taken from the kit xml file, or in another way.<br><br>
 
-3 <b>FX</b> - button to call FX window for this instrument. You can close window by "close" button or Escape key. All effects in that window can be turned on and off, so they works only when enabled.
-<br>There are <b>LP</b> (Low pass filter, allow the frequences only below the <b>cutoff</b> value), HP (High pass filter, allow the frequences only upper the <b>cutoff</b> value). To simplify the code and performance, the cutoff parameter value is not it HZ, but in floating point number within the range 0..1.<br>
+3 <b>FX</b> - button to call FX window for this instrument. You can close window by "close" button or Escape key. All effects in that window can be turned on and off, so they works only when enabled.<br>
+There are <b>LP</b> (Low pass filter, allow the frequences only below the <b>cutoff</b> value), HP (High pass filter, allow the frequences only upper the <b>cutoff</b> value). To simplify the code and performance, the cutoff parameter value is not it HZ, but in floating point number within the range 0..1.<br>
 Both filters are resonance filters and have the <b>resonance</b> parameter. Play with the sliders to make new interesting sounds. HP filter is best for hihats, LP for the kick, HP or LP can make cool effect with the snare. If you feel that your drum samples sounds weak and thin, try the <b>Analog</b> slider to add some warmness.<br> 
 
-<i>Note: at Atdour, when FX window becomes active, the plugin window hides, and when you close FX window, you will see the plugin window again. At Reaper and Muse both windows visible as intended.</i>
+<i>Note: at Ardour, when FX window becomes active, the plugin window hides, and when you close FX window, you will see the plugin window again. At Reaper and Muse both windows are visible as intended.</i>
 <br><br>
 
 3 <b>Pan control</b> - values from 0 to 1, 0.5 is a middle. See the <b>Pan mode</b> option to know the algorhytm of the paning. It is important that different DAWs have different pan modes for its tracks, sometimes DAW give you an option to select that. Dramlabooh internally acts like a DAW mixer and provides such flexibility too.
@@ -122,7 +121,7 @@ Both filters are resonance filters and have the <b>resonance</b> parameter. Play
 
 <p>By the right side of the plugin window you see, below the drumkit info section, the Options.</p>
 
-<p><b>Base MIDI note</b> - default 36, means at witch MIDI note number we map the first instrument at the kit. MIDI note 36 = C at 1-st octave.</p>
+<p><b>Base MIDI note</b> - default 36, means at which MIDI note number we map the first instrument at the kit. MIDI note 36 = C at 1-st octave.</p>
 
 <p><b>Pan mode</b> - allow to select the pan mode for Drumlabooh's internal mixer. See the <a href="https://en.wikipedia.org/wiki/Panning_law">article</a>. Defaul panner is sin/cos panner, law: -3 dB.<br>
 By the way, the pan mode is the significant factor of how DAW "sounds".
