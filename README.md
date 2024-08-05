@@ -1,6 +1,6 @@
 # Drumlabooh: LV2/VSTi drum machine
 
-Drumlabooh is an easy way to write drum tracks as MIDI at your DAW, using Hydrogen, Drumlabooh/Drumrox kits or SFZ.
+Drumlabooh is an easy way to write drum tracks as MIDI at your DAW, using Hydrogen kits, Drumlabooh/Drumrox kits or SFZ.
 
 For all details, docs and drumkits see the [Drumlabooh site](https://psemiletov.github.io/drumlabooh/)
 

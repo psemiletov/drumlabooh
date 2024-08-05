@@ -1,5 +1,14 @@
-   Drumlabooh 3.0.1
+   Drumlabooh 3.1.0
 
-   VST3i build fix
+   Hello! 
+   Drumlabooh now supports (currently in Drumlabooh kit format only) Round Robin and Random Order options for the sample layers. This features are used at two new drum kits those are bundled with the plugin:
 
+   1. Ludwig Sixties (based on free Scott McLean's Ludwig Oyster Blue Pearl Drum Kit for Reaper). It contains samples from: Ludwig 5"x14" snare drum (1965), Ludwig 5"x14" snare drum (1967), Ludwig 14"x22" kick drum (1968), Ludwig 8"x12" tom tom drum (1969), Ludwig 9"x13" tom tom drum (1969), Ludwig 14"x14" floor tom drum (1969), 13" Zildjian Thin Crash,
+14" Zildjian New Beat Hihats, 15" Zildjian Thin Crash, 15" Wuhan China Cymbal, 16" Zildjian Thin Crash, 17" Zildjian Thin Crash, 
+20" Zildjian Ping Ride.
+    
+   2. Ludwig Basic (based on free "Ludwig whole kit with Cymbals" by M-Rose Productions/Gyom Amphoux, plus hihats from Scott McLean).
 
+   Other changes/fixes: the documentation update, engine fix to handle non-existed files, etc.
+
+   Stay tuned, Peter Semiletov!
