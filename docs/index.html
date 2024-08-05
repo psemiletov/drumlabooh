@@ -29,57 +29,18 @@
 <h3>NEWS</h3>
 
 
-<p>July 29 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/3.0.1">3.0.1 release</a>.  * VST3i build fix
-.</p>
+<p>August 05 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/3.1.0">3.1.0 release</a></p>
 
-<p>April 05 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/2.4.0">2.4.0 release</a>.  * MIDI velocity at Multi-channel fix
-.</p>
+<p>  Drumlabooh now supports (currently in Drumlabooh kit format only) Round Robin and Random Order options for the sample layers. This features are used at two new drum kits those are bundled with the plugin:</p>
 
+<p>   1. Ludwig Sixties (based on free Scott McLean's Ludwig Oyster Blue Pearl Drum Kit for Reaper). It contains samples from: Ludwig 5"x14" snare drum (1965), Ludwig 5"x14" snare drum (1967), Ludwig 14"x22" kick drum (1968), Ludwig 8"x12" tom tom drum (1969), Ludwig 9"x13" tom tom drum (1969), Ludwig 14"x14" floor tom drum (1969), 13" Zildjian Thin Crash,
+14" Zildjian New Beat Hihats, 15" Zildjian Thin Crash, 15" Wuhan China Cymbal, 16" Zildjian Thin Crash, 17" Zildjian Thin Crash, 
+20" Zildjian Ping Ride.
+</p>    
+<p>   2. Ludwig Basic (based on free "Ludwig whole kit with Cymbals" by M-Rose Productions/Gyom Amphoux, plus hihats from Scott McLean).</p>
 
-<p>March 11 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/2.3.0">2.3.0 release</a>.  Some GUI fixes, the build is synced to JUCE 7.0.10.</p>
-
-
-<p>January 24 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/2.2.0">2.2.0 release</a>.</p>
-
-<p> Recently I've discovered a strange issue - the crash when Reaper rendered the project (that have the Drumlabooh track) with the samplerate differerent than session's sample rate. The investigation led me to the mystic behavior of the underlying libraries, so I rewrote sample loader a lot. As far I tested, it works well with Reaper, Ardour, Muse and Bitwig. And as the bonus - samples are loaded a bit faster now.</p>
-<p>   P.S. +MP3 samples support
-</p>
-
-<p>December 24 2023 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/2.1.0">2.1.0 release</a> - The file open button has been added that allows to open the drumkit outside of the pre-defined location.</p>
-
-
-
-<p>October 10 2023 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/2.0.2">2.0.2 release</a> - Drum kits list initialization fixed.</p>
-
-
-<p>October 08 2023 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/2.0.0">2.0.0 release</a><br>
-
-   This release introduces the multi-channel (36 outs) version of the plugin. See the comprehensive documentation at the Drumlabooh site.<br>
-   Also, some Reaper-related things has been fixed.
-</p>
-
-<p>October 06 2023 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/1.0.0">1.0.0 release</a><br>
-
-
-   Hello! The first major release ever. All known bugs were fixed, but let's talk about interesting things.<br>
-   The most cool one is FX section for each instrument. You can call/hide FX with the button "FX". There are two resonance filters (Low pass and High pass) to change the sound, and the magic "Analog" knob that warms up the sample.<br>
-  Other changes are more GUI-related - palette, drum cells highlighting, etc.<br>
-  A new "Wooden" drum kit has been added.  <br>
-  Other significant changes:<br>
-  Documentation updated.<br>
-  Stereo samples from kits now loaded as mono to simplify internal mixing. Pre-panned drums are evil.
-
-</p>
-
-
-<p>September 07 2023 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/0.0.4">0.0.4 release</a><br>
-
-* fixed the drumkit loading at Ardour session after opened <br>
-* LEDs are velocity-depended now
-</p>
-
-
-<p>September 03 2023 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/0.0.3">0.0.3 release</a>
+<p>
+   Other changes/fixes: the documentation update, engine fix to handle non-existed files, etc.
 </p>
 
 </td>
@@ -90,53 +51,18 @@
 <h3>НОВОСТИ</h3>
 
 
+<p>05 августа 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/3.1.0">версия 3.1.0</a></p>
 
-<p>29 июля 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/3.0.1">3.0.1 release</a>. Починена сборка VST3i.</p>
-
-<p>5 апреля 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/2.4.0">2.4.0 release</a>.  Починена сила нажатия клавиш в многоканальном режиме.</p>
-
-
-<p>11 марта 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/2.3.0">2.3.0 release</a>.  Некоторые исправления интерфейса, сборка выполняется теперь с JUCE 7.0.10.</p>
-
-
-
-
-<p>24 января 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/2.2.0">релиз 2.2.0</a>.</p>
-
-<p>Недавно я обнаружил в Рипере вылет проектов с Драмлабухом при рендеринге в случае если частота оцифровки проекта не равна частоте оцифровки рендеринга. Исследование привело меня к выявлению странных особенностей нижележащих библиотек. Я переписал код загрузки сэмплов и проверил на Рипере, Ардоре, Muse и Bitwig - всё работает, насколько мне удалось проверить. В качестве бонуса еще и некоторое ускорение загрузки сэмплов. Также - добавлена поддержка сэмплов в формате MP3.
+<p>Драмлабух стал поддерживать опции для слоев сэмплов Round Robin и Random Order, что используется в двух новых китах: 
 </p>
 
-<p>24 декабря 2023 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/2.1.0">2.1.0 release</a> - Добавлена кнопка для выбора драмкита в произвольном, а не только в предустановленном каталоге.</p>
+<p>   1. Ludwig Sixties (основан на свободном ките Scott McLean's Ludwig Oyster Blue Pearl Drum Kit for Reaper). Содержит сэмплы: Ludwig 5"x14" snare drum (1965), Ludwig 5"x14" snare drum (1967), Ludwig 14"x22" kick drum (1968), Ludwig 8"x12" tom tom drum (1969), Ludwig 9"x13" tom tom drum (1969), Ludwig 14"x14" floor tom drum (1969), 13" Zildjian Thin Crash, 14" Zildjian New Beat Hihats, 15" Zildjian Thin Crash, 15" Wuhan China Cymbal, 16" Zildjian Thin Crash, 17" Zildjian Thin Crash, 20" Zildjian Ping Ride.
+</p>    
 
+<p>   2. Ludwig Basic (основа на ките "Ludwig whole kit with Cymbals" от M-Rose Productions/Gyom Amphoux, плюс хайхеты от Scott McLean).</p>
 
-<p>10 октября 2023 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/2.0.2">2.0.2 release</a> - Исправление инициализации списка драмкитов.</p>
-
-<p>8 октября 2023 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/1.0.0">выпуск 2.0.0</a><br>
-
-Добавлен многоканальный (36 выходов) вариант плагина, подробности об ипсользовании читайте в руководстве на сайте. Также подправлено кое-что для Рипера.
-</p>
-
-<p>6 октября 2023 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/1.0.0">выпуск 1.0.0</a><br>
-
-   Первый крупный релиз! Об исправлениях глюков не будем, давайте про интересное.<br>
-  Самая классная штука из нового это раздел FX для каждого инструмента. Вызывается кнопкой FX, ею же и прячется. FX открывает окошко с двумя резонансными фильтрами (низкочастотный и высокочастотный), а также волшебной кнопкой "Аналог", которая подогревает звук.
-<br>
-Прочие новинки да изменения больше относятся к графическому интерфейсу, сами увидите.<br>
-Также добавлен "Деревянный" драмкит.<br>
-Еще важное:<br>
-Документация обновлена.<br>
-Стерео-сэмплы загружаются как моно, чтобы упросить внутреннее сведение.</p>
-
-
-<p>07 сентября 2023 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/0.0.4">выпуск 0.0.4</a><br>
-
-* исправлена загрузка драмкита в Ардоре после открытия проекта<br>
-* светодиоды теперь загораются в зависимости от MIDI velocity
-
-</p>
-
-
-<p>03 сентября 2023 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/0.0.3">выпуск 0.0.3</a>
+<p>
+Прочие исправления - документация, движок.
 </p>
 
 
