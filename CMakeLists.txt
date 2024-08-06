@@ -11,6 +11,7 @@ message("Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 
 
 option(MULTI "Build with multy-channel support" ON)
+option(INSTALLKITS "Bundle and install kits" ON)
 
 
 set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should be installed")
@@ -31,6 +32,8 @@ set(FETCHCONTENT_QUIET FALSE)
 #static linking in Windows
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+
+if (INSTALLKITS)
 
 if(CMAKE_VERSION VERSION_LESS "3.2.8") 
 
@@ -67,10 +70,9 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(drum_sklad)
 
-
 endif()
 
-
+endif()
 
 
 if(CMAKE_VERSION VERSION_LESS "3.2.8") 
@@ -204,8 +206,10 @@ target_link_libraries(drumlabooh
 
 install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/LV2/drumlabooh.lv2 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/lv2)
 install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/VST3/drumlabooh.vst3 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/vst3)
-install (DIRECTORY ${drum_sklad_SOURCE_DIR}/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/drumlabooh-kits)
 
+if (INSTALLKITS)
+install (DIRECTORY ${drum_sklad_SOURCE_DIR}/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/drumlabooh-kits)
+endif()
 
 
 
