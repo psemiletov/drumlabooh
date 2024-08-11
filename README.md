@@ -74,8 +74,16 @@ This installs LV2 and VSTi versions of the plugin to ``/usr/local/lib/LV2`` and 
 cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 ```
 
-Drumlabooh uses:
+## Notes for packagers/maintainers
+
+By default, Drumlabooh cmake file fetches and installs the all drumkits from https://github.com/psemiletov/drum_sklad. You can turn this behavior off using ```cmake .. -DINSTALLKITS=OFF``` option, and make the separated data package with drum kits from 
+```https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip```
+
+
+## Drumlabooh uses:
 
 [JUCE](https://juce.com) (GPL3)
 
 [speex_resampler_cpp](https://github.com/libaudioverse/speex_resampler_cpp) (Public Domain + Speex License, Copyright (C) 2007 Jean-Marc Valin)
+
+

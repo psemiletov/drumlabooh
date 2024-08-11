@@ -29,8 +29,8 @@ using namespace std;
 
 //juce::AudioFormatManager *formatManager;
 
-
 std::mt19937 rnd_mt19937;
+
 
 
 void rnd_init()
@@ -260,6 +260,9 @@ CDrumSample::CDrumSample (int sample_rate)
   active = false;
   robin_counter = -1;
   layer_index_mode = LAYER_INDEX_MODE_VEL;
+//  random_number = 0.0;
+ // use_random_noice = false;
+//  noise_level = 0.001f; 
 }
 
 
@@ -479,25 +482,33 @@ FIXED
          bool check_for_rnd = false;
          bool check_for_robin = false;
          bool check_for_novelocity = false;
+         bool check_for_random_noice = false;
          
          if (sample_name.rfind ("*", 0) == 0) 
             { 
              check_for_rnd = true; 
-             sample_name.erase(0, 1);
+             sample_name.erase (0, 1);
             } 
             
          if (sample_name.rfind (">", 0) == 0) 
             { 
              check_for_robin = true; 
-             sample_name.erase(0, 1);
+             sample_name.erase (0, 1);
             } 
     
-    /*     if (sample_name.rfind ("^", 0) == 0) 
+         if (sample_name.rfind ("^", 0) == 0) 
             { 
              check_for_novelocity = true; 
-             sample_name.erase(0, 1);
+             sample_name.erase (0, 1);
             } 
-*/
+
+    /*     if (sample_name.rfind ("~", 0) == 0) 
+            { 
+             check_for_random_noice = true; 
+             sample_name.erase (0, 1);
+            } 
+  */
+            
          if (check_for_list != string::npos)
             {
              vector <string> v_fnames = split_string_to_vector (fname, ",", false);
@@ -511,9 +522,12 @@ FIXED
              if (check_for_robin)
                  v_samples.back()->layer_index_mode = LAYER_INDEX_MODE_ROBIN; 
 
- //            if (check_for_novelocity)
-   //              v_samples.back()->layer_index_mode = LAYER_INDEX_MODE_NOVELOCITY; 
+             if (check_for_novelocity)
+                 v_samples.back()->layer_index_mode = LAYER_INDEX_MODE_NOVELOCITY; 
 
+//              if (check_for_random_noice)
+  //               v_samples.back()->use_random_noice = true;
+              
               
              for (auto f: v_fnames)
                  {
@@ -1072,11 +1086,13 @@ void CDrumSample::trigger_sample (float vel)
 
   velocity = vel;
 
+  ///if (use_random_noice)
+  //    random_number = std::uniform_real_distribution<float> distrib(-noiseLevel, noiseLevel);
   
   if (v_layers.size() > 1)
      {
   
-     if (layer_index_mode == LAYER_INDEX_MODE_VEL)
+     if (layer_index_mode == LAYER_INDEX_MODE_VEL || layer_index_mode == LAYER_INDEX_MODE_NOVELOCITY)
          current_layer = map_velo_to_layer_number (velocity);
 
      if (layer_index_mode == LAYER_INDEX_MODE_RND)

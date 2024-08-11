@@ -62,6 +62,9 @@ public:
 
   std::atomic<float>* ignore_midi_velocity = nullptr;
 
+  
+  std::atomic<float>* global_analog_on = nullptr;
+  std::atomic<float>* global_analog_amount = nullptr;
 
   //Filters
 

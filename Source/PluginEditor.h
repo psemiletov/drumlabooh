@@ -198,6 +198,13 @@ public:
   juce::ToggleButton bt_ignore_midi_velocity;
 
 
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_global_analog_on = nullptr;
+  juce::ToggleButton bt_global_analog_on;
+
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_global_analog_amount = nullptr;
+  juce::Slider sl_global_analog_amount;
+
+  
 #ifndef MULTICHANNEL
 
   std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_pan_mode;
@@ -227,7 +234,7 @@ public:
 
 
   juce::Font f_sitelink { 20.0f, juce::Font::bold};
-  juce::Font f_logo { 36.0f, juce::Font::bold};
+  juce::Font f_logo { 30.0f, juce::Font::bold};
 
   juce::Font f_kitname_font { 20.0f, juce::Font::bold};
   juce::ImageComponent kit_image;

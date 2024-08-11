@@ -668,8 +668,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   bt_file_open.setSize (64, 48);
 
 
-
-
   addAndMakeVisible (drumcells_viewer);
 
 
@@ -764,22 +762,53 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 #endif
 
+  
+  //////////////NEW GLOBAL ANALOG
+  addAndMakeVisible (bt_global_analog_on);
+  bt_global_analog_on.setButtonText ("Analog");
+  //bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
+  bt_global_analog_on.setSize (80, 48);
+  bt_global_analog_on.setTopLeftPosition (l_base_note.getX(), gr_options.getBottom() + YFILLER);
 
+  att_global_analog_on.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "global_analog_on", bt_global_analog_on));
+  
+ 
+  addAndMakeVisible (sl_global_analog_amount);
+  sl_global_analog_amount.setTopLeftPosition (l_base_note.getX() + bt_global_analog_on.getWidth() + XFILLER, gr_options.getBottom() + YFILLER);
+  sl_global_analog_amount.setSize (192, 48);
+  sl_global_analog_amount.setRange (0.0f, 1.0f, 0.01f);
+  sl_global_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_global_analog_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_global_analog_amount.setColour (juce::Slider::thumbColourId, juce::Colours::orange);
+  
+  
+  att_global_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "global_analog_amount", sl_global_analog_amount));
+
+  
+  
+  //sl_global_analog_amount.setTooltip ("Pan");
+  
+  
+  
+  //////////////
+  
   addAndMakeVisible (l_plugin_name);
-  l_plugin_name.setSize (180 + XFILLER, 48);
-  l_plugin_name.setTopLeftPosition (gr_options.getX(), gr_options.getBottom() + YFILLER);
+  l_plugin_name.setSize (180 + XFILLER, 36);
+  l_plugin_name.setTopLeftPosition (gr_options.getX(), bt_global_analog_on.getBottom() + YFILLER);
   l_plugin_name.setText (juce::CharPointer_UTF8("DRUMLABOOH"), juce::NotificationType::dontSendNotification);
   l_plugin_name.setFont	(f_logo);
 
   addAndMakeVisible (l_plugin_author);
   l_plugin_author.setSize (180 + XFILLER, 24);
-  l_plugin_author.setTopLeftPosition (l_plugin_name.getX(), l_plugin_name.getBottom());
+  l_plugin_author.setTopLeftPosition (gr_options.getX() + l_plugin_name.getWidth() + XFILLER, /*l_plugin_name.getBottom()*/bt_global_analog_on.getBottom() + YFILLER);
+
+//  l_plugin_author.setTopLeftPosition (l_plugin_name.getX(), /*l_plugin_name.getBottom()*/bt_global_analog_on.getBottom() + YFILLER);
   l_plugin_author.setText (juce::CharPointer_UTF8("by Peter Semiletov"), juce::NotificationType::dontSendNotification);
   //l_plugin_author.setFont (f_logo);
 
   addAndMakeVisible (hl_homepage);
   hl_homepage.setSize (280 + XFILLER, 24);
-  hl_homepage.setTopLeftPosition (l_plugin_author.getX() + XFILLER, l_plugin_author.getBottom() + YFILLER);
+  hl_homepage.setTopLeftPosition (gr_options.getX() + XFILLER, l_plugin_author.getBottom() + YFILLER);
   hl_homepage.setURL (juce::URL("https://psemiletov.github.io/drumlabooh"));
   hl_homepage.setButtonText ("psemiletov.github.io/drumlabooh");
   hl_homepage.setFont (f_sitelink, false, juce::Justification::left);
@@ -797,6 +826,17 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 CAudioProcessorEditor::~CAudioProcessorEditor()
 {
+  
+  att_global_analog_amount = nullptr;
+  att_ignore_midi_velocity = nullptr;
+  att_global_analog_on = nullptr;
+  att_base_note = nullptr;
+  
+  #ifndef MULTICHANNEL
+
+  att_pan_mode = nullptr;
+
+#endif
 }
 
 //==============================================================================

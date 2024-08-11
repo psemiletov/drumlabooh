@@ -2,6 +2,9 @@
 2023-24, Peter Semiletov
 */
 
+#include <random>
+
+
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -12,6 +15,7 @@
 
 //extern juce::AudioFormatManager *formatManager;
 
+extern std::mt19937 rnd_mt19937;
 
 
 juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParameterLayout()
@@ -118,6 +122,18 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                                  0.001f));
       }
 
+
+      
+     layout.add (std::make_unique<juce::AudioParameterFloat> ("global_analog_on",      // parameterID
+                                                              "global_analog_on",     // parameter name
+                                                               0, 1, 0));
+     
+     layout.add (std::make_unique<juce::AudioParameterFloat> ("global_analog_amount",
+                                                              "global_analog_amount",
+                                                               juce::NormalisableRange<float> (0.001f, 1.0f, 0.001f), // parameter range
+                                                               0.001f));
+      
+      
   return layout;
 }
 
@@ -160,6 +176,9 @@ CAudioProcessor::CAudioProcessor()
 
   //panner_mode = parameters.getRawParameterValue ("panner_mode");
   ignore_midi_velocity = parameters.getRawParameterValue ("ignore_midi_velocity");
+  global_analog_on = parameters.getRawParameterValue ("global_analog_on");
+  global_analog_amount = parameters.getRawParameterValue ("global_analog_amount");
+
 }
 
 
@@ -189,17 +208,17 @@ CAudioProcessor::CAudioProcessor()
 
   for (size_t i = 0; i < 36; i++)
       {
-       vols[i]  = parameters.getRawParameterValue ("vol" + std::to_string(i));
-       pans[i]  = parameters.getRawParameterValue ("pan" + std::to_string(i));
-       mutes[i]  = parameters.getRawParameterValue ("mute" + std::to_string(i));
+       vols[i] = parameters.getRawParameterValue ("vol" + std::to_string(i));
+       pans[i] = parameters.getRawParameterValue ("pan" + std::to_string(i));
+       mutes[i] = parameters.getRawParameterValue ("mute" + std::to_string(i));
 
-       lps[i]  = parameters.getRawParameterValue ("lp" + std::to_string(i));
-       lp_cutoff[i]  = parameters.getRawParameterValue ("lp_cutoff" + std::to_string(i));
-       lp_reso[i]  = parameters.getRawParameterValue ("lp_reso" + std::to_string(i));
+       lps[i] = parameters.getRawParameterValue ("lp" + std::to_string(i));
+       lp_cutoff[i] = parameters.getRawParameterValue ("lp_cutoff" + std::to_string(i));
+       lp_reso[i] = parameters.getRawParameterValue ("lp_reso" + std::to_string(i));
 
-       hps[i]  = parameters.getRawParameterValue ("hp" + std::to_string(i));
-       hp_cutoff[i]  = parameters.getRawParameterValue ("hp_cutoff" + std::to_string(i));
-       hp_reso[i]  = parameters.getRawParameterValue ("hp_reso" + std::to_string(i));
+       hps[i] = parameters.getRawParameterValue ("hp" + std::to_string(i));
+       hp_cutoff[i] = parameters.getRawParameterValue ("hp_cutoff" + std::to_string(i));
+       hp_reso[i] = parameters.getRawParameterValue ("hp_reso" + std::to_string(i));
 
        analog[i] = parameters.getRawParameterValue ("analog" + std::to_string(i));
        analog_amount[i] = parameters.getRawParameterValue ("analog_amount" + std::to_string(i));
@@ -207,6 +226,11 @@ CAudioProcessor::CAudioProcessor()
 
   panner_mode = parameters.getRawParameterValue ("panner_mode");
   ignore_midi_velocity = parameters.getRawParameterValue ("ignore_midi_velocity");
+  
+  global_analog_on = parameters.getRawParameterValue ("global_analog_on");
+  global_analog_amount = parameters.getRawParameterValue ("global_analog_amount");
+
+  
 }
 
 #endif
@@ -517,6 +541,14 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                 {
                  float fl = l->channel_data[0][l->sample_offset++];
 
+                 /*
+                 if (s->use_random_noice)
+                    {
+                      std::uniform_int_distribution <> distrib (-0.001f, 0.001f); 
+                     fl = fl + distrib (rnd_mt19937);
+                     
+                    } 
+                    */
                 // float fl = 0.5f;
 
                  //DSP
@@ -548,14 +580,28 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                     }
 
 //NEW
-               //  if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
-                   fl *= s->velocity;
+                 if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
+                    fl *= s->velocity;
                   
                  channel_data[drum_sample_index][out_buf_offs] = fl;
                 }
 
+                     
+            if (*global_analog_on > 0.5f)
+                {
+                channel_data[drum_sample_index][out_buf_offs] = warmify (channel_data[0][out_buf_offs],*(global_analog_amount));
+            //    channel_data[1][out_buf_offs] = warmify (channel_data[1][out_buf_offs],*(global_analog_amount));
+               }
+       
+                
              }
-        }
+      
+             
+        
+        
+        
+        
+        } 
  //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
   //}
 }
@@ -673,7 +719,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
    //for each sample out_buf_offs
     for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
         //for each drum instrument
-        for (int drum_sample_index = 0; drum_sample_index < v_samples_size; drum_sample_index++)
+    {
+      for (int drum_sample_index = 0; drum_sample_index < v_samples_size; drum_sample_index++)
             {
              CDrumSample *s = drumkit->v_samples[drum_sample_index];
 
@@ -715,6 +762,16 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
                  //take mono audio data from the current layer with incremented offset
                  float fl = l->channel_data[0][l->sample_offset++];
+                 
+                 /*
+                if (s->use_random_noice)
+                    {
+                      std::uniform_int_distribution <> distrib (-0.001f, 0.001f); 
+                     fl = fl + distrib (rnd_mt19937);
+                     
+                    } 
+*/
+                 
                  float fr = fl;
 
                  //DSP
@@ -784,28 +841,39 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                   
                   
  
-                 float coef_right;                    
-                 float coef_left;  
+                 float coef_right = 0;                    
+                 float coef_left = 0;  
 
 
-                //if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
-                 //{
-                 coef_right = pan_right * vol * s->velocity;
-                 coef_left = pan_left * vol * s->velocity;
-                 //}
-                /* else
-                 {
-                 coef_right = pan_right * vol;
-                 coef_left = pan_left * vol;
-                 }
-                  */                                   
+                if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
+                   {
+                    coef_right = pan_right * vol * s->velocity;
+                    coef_left = pan_left * vol * s->velocity;
+                   }
+                else
+                    {
+                     coef_right = pan_right * vol;
+                     coef_left = pan_left * vol;
+                    }
+                                                     
+                 
+             
                  
                  channel_data[0][out_buf_offs] += fl * coef_left;
                  channel_data[1][out_buf_offs] += fl * coef_right;
                 }
 
+                
              }
-
+             
+             
+             if (*global_analog_on > 0.5f)
+                {
+                channel_data[0][out_buf_offs] = warmify (channel_data[0][out_buf_offs],*(global_analog_amount));
+                channel_data[1][out_buf_offs] = warmify (channel_data[1][out_buf_offs],*(global_analog_amount));
+               }
+      
+    }
  //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
 }
 
