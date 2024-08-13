@@ -1,12 +1,11 @@
 /*
-written at 2023 by Peter Semiletov
+written at 2023-24 by Peter Semiletov
 this code is the public domain
- */
+*/
 
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
 
 #include "kits.h"
 #include "utl.h"
@@ -14,9 +13,6 @@ this code is the public domain
 
 #define XFILLER 4
 #define YFILLER 16
-
-//#define WINDOW_HEIGHT 580
-//#define WINDOW_WIDTH 790
 
 
 
@@ -54,8 +50,6 @@ CFx::CFx()
   int yoffs = YFILLER * 2;
 
 
-  //ANALOG ///////////////////////////////
-
   addChildComponent (gr_group_analog);
   gr_group_analog.setText ("ANALOG");
 
@@ -81,10 +75,8 @@ CFx::CFx()
 
   gr_group_analog.setVisible (true);
 
-
   xoffs = gr_group_analog.getWidth() + XFILLER * 2;
   yoffs = YFILLER * 2;
-
 
   //LP ///////////////////////////////
 
@@ -103,22 +95,18 @@ CFx::CFx()
 
   sl_lp_cutoff.setTopLeftPosition (xoffs, yoffs);
   sl_lp_cutoff.setSize (68, 32);
-
   sl_lp_cutoff.setSliderStyle (juce::Slider::LinearHorizontal);
   sl_lp_cutoff.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
-
   sl_lp_cutoff.setTooltip ("Cutoff");
 
   xoffs += sl_lp_cutoff.getWidth();
   xoffs += XFILLER;
 
-
   addAndMakeVisible (sl_lp_reso);
+  
   sl_lp_reso.setTopLeftPosition (xoffs, yoffs);
   sl_lp_reso.setSize (68, 32);
-
   sl_lp_reso.setSliderStyle (juce::Slider::LinearHorizontal);
-
   sl_lp_reso.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
   sl_lp_reso.setTooltip ("Reso");
 
@@ -152,21 +140,18 @@ CFx::CFx()
 
   sl_hp_cutoff.setTopLeftPosition (xoffs, yoffs);
   sl_hp_cutoff.setSize (68, 32);
-
   sl_hp_cutoff.setSliderStyle (juce::Slider::LinearHorizontal);
   sl_hp_cutoff.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
-
   sl_hp_cutoff.setTooltip ("Cutoff");
 
   xoffs += sl_hp_cutoff.getWidth();
   xoffs += XFILLER;
 
-
   addAndMakeVisible (sl_hp_reso);
+  
   sl_hp_reso.setTopLeftPosition (xoffs, yoffs);
   sl_hp_reso.setSize (68, 32);
   sl_hp_reso.setSliderStyle (juce::Slider::LinearHorizontal);
-
   sl_hp_reso.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
   sl_hp_reso.setTooltip ("Reso");
 
@@ -181,7 +166,6 @@ CFx::CFx()
 
   setSize (gr_group_analog.getWidth() + XFILLER + gr_group_lp.getWidth() + XFILLER * 2,
            gr_group_lp.getHeight() + gr_group_lp.getHeight() + YFILLER * 3);
-
 
   //setAlwaysOnTop(true);
 }
@@ -201,7 +185,6 @@ CFx::~CFx()
 
   att_analog = nullptr;
   att_analog_amount = nullptr;
-
 }
 
 
@@ -219,7 +202,6 @@ void CLed::paint(Graphics& g)
 CDrumCell::CDrumCell()
 {
   addChildComponent (fx);
-
   addChildComponent (gr_group);
 
   int xoffs = XFILLER * 2;
@@ -294,9 +276,7 @@ CDrumCell::CDrumCell()
   gr_group.setVisible (true);
   gr_group.setSize (xoffs, 32 + YFILLER + YFILLER);
 
-
   setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
-
 
   bt_fx.onClick = [this] {
                           if (! wnd_fx)
@@ -317,7 +297,6 @@ CDrumCell::CDrumCell()
                           wnd_fx->setVisible (! wnd_fx->isVisible());
                           wnd_fx->setTopLeftPosition (bt_fx.getScreenX() + bt_fx.getWidth(), bt_fx.getScreenY() + bt_fx.getHeight());
                          };
-
 }
 
 #else
@@ -337,7 +316,6 @@ CDrumCell::CDrumCell()
 
   xoffs += led.getWidth();
   xoffs += XFILLER;
-
 
   addAndMakeVisible (cell_label);
 
@@ -378,25 +356,20 @@ CDrumCell::CDrumCell()
                               wnd_fx->setContentNonOwned (&fx, true);
                              }
 
-                           if (! wnd_fx)
+                          if (! wnd_fx)
                               return;
 
-                           if (wnd_fx->isOnDesktop())
+                          if (wnd_fx->isOnDesktop())
                               wnd_fx->removeFromDesktop();
-                           else
+                          else
                               wnd_fx->addToDesktop();//ComponentPeer::StyleFlags::windowIsTemporary | ComponentPeer::StyleFlags::windowHasTitleBar | ComponentPeer::StyleFlags::windowHasCloseButton);
 
                            wnd_fx->setVisible (! wnd_fx->isVisible());
                            wnd_fx->setTopLeftPosition (bt_fx.getScreenX() + bt_fx.getWidth(), bt_fx.getScreenY() + bt_fx.getHeight());
                          };
-
 }
 
-
 #endif
-
-
-
 
 
 CDrumCell::~CDrumCell()
@@ -457,14 +430,12 @@ void CDrumCell::attach_params (CAudioProcessorEditor *ed, int cellno)
   fx.att_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_analog_amount));
 }
 
-
 #else
 //MULTICHANNEL VERSION
 
 void CDrumCell::attach_params (CAudioProcessorEditor *ed, int cellno)
 {
   cell_number = cellno;
-
 
   std::string param_name = "lp" + std::to_string (cell_number);
   fx.att_lp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx.bt_lp));
@@ -549,7 +520,6 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 }
 
 
-
 CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts)
                                              : AudioProcessorEditor (&parent),
                                                audioProcessor (parent),
@@ -571,7 +541,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   cmb_drumkit_selector.setTextWhenNoChoicesAvailable ("NO DRUMKITS FOUND");
   */
 
-  cmb_drumkit_selector.setText	("CLICK HERE TO SELECT THE DRUMKIT", juce::NotificationType::dontSendNotification );
+  cmb_drumkit_selector.setText ("CLICK HERE TO SELECT THE DRUMKIT", juce::NotificationType::dontSendNotification);
   cmb_drumkit_selector.setScrollWheelEnabled (true);
   cmb_drumkit_selector.setTooltip ("Select from installed drum kits");
 
@@ -584,18 +554,17 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   cmb_drumkit_selector.addListener (this);
   cmb_drumkit_selector.setTopLeftPosition (xoffs, 8);
 
-
   bt_file_open.setButtonText ("Or select file");
   addAndMakeVisible (bt_file_open);
 
   bt_file_open.onClick = [this] {
 
-                                  dlg_fileopen = std::make_unique<juce::FileChooser> ("Select file to load...",
-                                                 File::getSpecialLocation (juce::File::userHomeDirectory));
+                                 dlg_fileopen = std::make_unique<juce::FileChooser> ("Select file to load...",
+                                                File::getSpecialLocation (juce::File::userHomeDirectory));
 
-                                  auto folderChooserFlags = juce::FileBrowserComponent::openMode;
+                                 auto folderChooserFlags = juce::FileBrowserComponent::openMode;
 
-                                  dlg_fileopen->launchAsync (folderChooserFlags, [this] (const juce::FileChooser& chooser)
+                                 dlg_fileopen->launchAsync (folderChooserFlags, [this] (const juce::FileChooser& chooser)
                                     {
                                      juce::File f (dlg_fileopen->getResult());
                                      if (! f.exists())
@@ -653,7 +622,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   drumcells_viewer.setSize (drumcells_container.getWidth() + (XFILLER * 5), 480);
   drumcells_viewer.setScrollBarThickness (24);
 
-
   drumcells_group.setTopLeftPosition (xoffs, yoffs);
   drumcells_group.setSize (drumcells_viewer.getWidth() + (XFILLER * 3), 480 + (YFILLER * 2));
 
@@ -666,7 +634,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   bt_file_open.setTopLeftPosition (cmb_drumkit_selector.getRight() + XFILLER, 8);
   bt_file_open.setSize (64, 48);
-
 
   addAndMakeVisible (drumcells_viewer);
 
@@ -759,9 +726,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   gr_options.setSize (gr_kitinfo.getWidth(), sl_base_note.getHeight() + YFILLER + bt_ignore_midi_velocity.getHeight() +  YFILLER * 2);
 
-
 #endif
 
+#ifndef MULTICHANNEL
   
   //////////////NEW GLOBAL ANALOG
   addAndMakeVisible (bt_global_analog_on);
@@ -781,16 +748,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   sl_global_analog_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
   sl_global_analog_amount.setColour (juce::Slider::thumbColourId, juce::Colours::orange);
   
-  
   att_global_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "global_analog_amount", sl_global_analog_amount));
-
-  
-  
-  //sl_global_analog_amount.setTooltip ("Pan");
-  
-  
-  
-  //////////////
+   
   
   addAndMakeVisible (l_plugin_name);
   l_plugin_name.setSize (180 + XFILLER, 36);
@@ -800,11 +759,31 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   addAndMakeVisible (l_plugin_author);
   l_plugin_author.setSize (180 + XFILLER, 24);
-  l_plugin_author.setTopLeftPosition (gr_options.getX() + l_plugin_name.getWidth() + XFILLER, /*l_plugin_name.getBottom()*/bt_global_analog_on.getBottom() + YFILLER);
+  l_plugin_author.setTopLeftPosition (gr_options.getX() + l_plugin_name.getWidth() + XFILLER, bt_global_analog_on.getBottom() + YFILLER);
 
 //  l_plugin_author.setTopLeftPosition (l_plugin_name.getX(), /*l_plugin_name.getBottom()*/bt_global_analog_on.getBottom() + YFILLER);
   l_plugin_author.setText (juce::CharPointer_UTF8("by Peter Semiletov"), juce::NotificationType::dontSendNotification);
   //l_plugin_author.setFont (f_logo);
+
+#else
+
+  addAndMakeVisible (l_plugin_name);
+  l_plugin_name.setSize (180 + XFILLER, 36);
+  l_plugin_name.setTopLeftPosition (gr_options.getX(), gr_options.getBottom() + YFILLER);
+  l_plugin_name.setText (juce::CharPointer_UTF8("DRUMLABOOH"), juce::NotificationType::dontSendNotification);
+  l_plugin_name.setFont	(f_logo);
+
+  addAndMakeVisible (l_plugin_author);
+  l_plugin_author.setSize (180 + XFILLER, 24);
+  l_plugin_author.setTopLeftPosition (gr_options.getX() + l_plugin_name.getWidth() + XFILLER, l_plugin_name.getY());
+
+//  l_plugin_author.setTopLeftPosition (l_plugin_name.getX(), /*l_plugin_name.getBottom()*/bt_global_analog_on.getBottom() + YFILLER);
+  l_plugin_author.setText (juce::CharPointer_UTF8("by Peter Semiletov"), juce::NotificationType::dontSendNotification);
+  //l_plugin_author.setFont (f_logo);
+  
+#endif
+  
+  
 
   addAndMakeVisible (hl_homepage);
   hl_homepage.setSize (280 + XFILLER, 24);
@@ -826,15 +805,14 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 CAudioProcessorEditor::~CAudioProcessorEditor()
 {
-  
-  att_global_analog_amount = nullptr;
   att_ignore_midi_velocity = nullptr;
-  att_global_analog_on = nullptr;
   att_base_note = nullptr;
   
-  #ifndef MULTICHANNEL
+#ifndef MULTICHANNEL
 
   att_pan_mode = nullptr;
+  att_global_analog_amount = nullptr;
+  att_global_analog_on = nullptr;
 
 #endif
 }
@@ -925,7 +903,6 @@ void CTimer::hiResTimerCallback()
 
   if (! uplink->audioProcessor.drumkit)
      return;
-
 
   for (int i = 0; i < uplink->audioProcessor.drumkit->v_samples.size(); i++)
       {

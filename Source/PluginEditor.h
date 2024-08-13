@@ -175,9 +175,8 @@ public:
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CDrumCell)
 };
 
-
-
 #endif
+
 
 class CAudioProcessorEditor: public juce::AudioProcessorEditor,
                              public juce::Button::Listener,
@@ -198,6 +197,9 @@ public:
   juce::ToggleButton bt_ignore_midi_velocity;
 
 
+  
+#ifndef MULTICHANNEL
+
   std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_global_analog_on = nullptr;
   juce::ToggleButton bt_global_analog_on;
 
@@ -205,8 +207,6 @@ public:
   juce::Slider sl_global_analog_amount;
 
   
-#ifndef MULTICHANNEL
-
   std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_pan_mode;
   juce::Label l_pan_mode { {}, "Pan mode" };
   juce::ComboBox cmb_pan_mode;
@@ -232,7 +232,6 @@ public:
 
   juce::HyperlinkButton hl_homepage;
 
-
   juce::Font f_sitelink { 20.0f, juce::Font::bold};
   juce::Font f_logo { 30.0f, juce::Font::bold};
 
@@ -242,7 +241,6 @@ public:
   juce::GroupComponent drumcells_group;
   juce::Component drumcells_container;
   juce::Viewport drumcells_viewer;
-
 
   juce::Label l_drumkit_name;
   juce::TextButton bt_drumkit_info;
@@ -263,8 +261,7 @@ public:
 
   void kit_changed();
   void sliderValueChanged (juce::Slider* slider) override;
-  void comboBoxChanged(juce::ComboBox *comboBox) override;
-
+  void comboBoxChanged(juce::ComboBox* comboBox) override;
   void buttonClicked (juce::Button* button) override;
 
 

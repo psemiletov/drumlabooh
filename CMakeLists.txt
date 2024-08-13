@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 include(FetchContent)
 
 
-project(DRUMLABOOH LANGUAGES CXX C VERSION 3.1.0)
+project(DRUMLABOOH LANGUAGES CXX C VERSION 4.0.0)
 
 message("Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 
@@ -16,7 +16,6 @@ option(INSTALLKITS "Bundle and install kits" ON)
 
 set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should be installed")
 set(VST3_INSTALL_DIR lib/vst3 CACHE PATH "Specifies where the VST3 libraries should be installed")
-
 
 
 set(FETCHCONTENT_QUIET FALSE)
@@ -117,8 +116,6 @@ endif()
 
 
 
-
-
 # default plugin formats
 #set(JUCE_FORMATS AU VST3 Standalone)
 set(JUCE_FORMATS VST3 Standalone)
@@ -146,11 +143,11 @@ juce_add_plugin(drumlabooh
     # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
      EDITOR_WANTS_KEYBOARD_FOCUS TRUE    # Does the editor need keyboard focus?
     # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE        # Should the plugin be installed to a default location after building?
-    PLUGIN_MANUFACTURER_CODE PetR               # A four-character manufacturer id with at least one upper-case character
-    PLUGIN_CODE Petr                            # A unique four-character plugin id with exactly one upper-case character
+     PLUGIN_MANUFACTURER_CODE PetR               # A four-character manufacturer id with at least one upper-case character
+     PLUGIN_CODE Petr                            # A unique four-character plugin id with exactly one upper-case character
                                                 # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
-    FORMATS ${JUCE_FORMATS}                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
-    PRODUCT_NAME "drumlabooh")        # The name of the final executable, which can differ from the target name
+     FORMATS ${JUCE_FORMATS}                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+     PRODUCT_NAME "drumlabooh")        # The name of the final executable, which can differ from the target name
 
 # `juce_generate_juce_header` will create a JuceHeader.h for a given target, which will be generated
 # into your build tree. This should be included with `#include <JuceHeader.h>`. The include path for
@@ -226,8 +223,8 @@ if(MULTI)
      NEEDS_MIDI_INPUT TRUE               # Does the plugin need midi input?
      VST3_CATEGORIES Instrument Sampler Synth Drum
      EDITOR_WANTS_KEYBOARD_FOCUS TRUE    # Does the editor need keyboard focus?
-    PLUGIN_MANUFACTURER_CODE PEtR               # A four-character manufacturer id with at least one upper-case character
-    PLUGIN_CODE PetR                            # A unique four-character plugin id with exactly one upper-case character
+     PLUGIN_MANUFACTURER_CODE PEtR               # A four-character manufacturer id with at least one upper-case character
+     PLUGIN_CODE PetR                            # A unique four-character plugin id with exactly one upper-case character
                                                 # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
     FORMATS ${JUCE_FORMATS}                     # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
     PRODUCT_NAME "drumlabooh-multi")        # The name of the final executable, which can differ from the target name

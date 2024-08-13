@@ -247,7 +247,6 @@ CAudioProcessor::~CAudioProcessor()
 
 const juce::String CAudioProcessor::getName() const
 {
-
  // return JucePlugin_Name;
 
 #ifndef MULTICHANNEL
@@ -258,11 +257,9 @@ const juce::String CAudioProcessor::getName() const
 
  juce::String s = "drumlabooh-multi";
 
-
 #endif
 
  return s;
-
 }
 
 
@@ -485,7 +482,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      CDrumSample *s2 = drumkit->v_samples[i]; //point to the sample
                      if (s2->hihat_open)
                          s2->untrigger_sample();
-                   }
+                    }
                }
            }
 
@@ -586,21 +583,11 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  channel_data[drum_sample_index][out_buf_offs] = fl;
                 }
 
-                     
+#ifndef MULTICHANNEL                     
             if (*global_analog_on > 0.5f)
-                {
                 channel_data[drum_sample_index][out_buf_offs] = warmify (channel_data[0][out_buf_offs],*(global_analog_amount));
-            //    channel_data[1][out_buf_offs] = warmify (channel_data[1][out_buf_offs],*(global_analog_amount));
-               }
-       
-                
+#endif                
              }
-      
-             
-        
-        
-        
-        
         } 
  //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
   //}
@@ -839,39 +826,34 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  if (*panner_mode == PANMODE07)
                      pan_equal_power3 (pan_left, pan_right, pan);
                   
-                  
  
                  float coef_right = 0;                    
                  float coef_left = 0;  
 
 
-                if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
-                   {
-                    coef_right = pan_right * vol * s->velocity;
-                    coef_left = pan_left * vol * s->velocity;
-                   }
-                else
+                 if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
                     {
-                     coef_right = pan_right * vol;
-                     coef_left = pan_left * vol;
+                     coef_right = pan_right * vol * s->velocity;
+                     coef_left = pan_left * vol * s->velocity;
                     }
-                                                     
-                 
-             
+                 else
+                     {
+                      coef_right = pan_right * vol;
+                      coef_left = pan_left * vol;
+                     }
                  
                  channel_data[0][out_buf_offs] += fl * coef_left;
                  channel_data[1][out_buf_offs] += fl * coef_right;
                 }
-
-                
              }
              
-             
+#ifndef MULTICHANNEL                     
              if (*global_analog_on > 0.5f)
                 {
-                channel_data[0][out_buf_offs] = warmify (channel_data[0][out_buf_offs],*(global_analog_amount));
-                channel_data[1][out_buf_offs] = warmify (channel_data[1][out_buf_offs],*(global_analog_amount));
-               }
+                 channel_data[0][out_buf_offs] = warmify (channel_data[0][out_buf_offs],*(global_analog_amount));
+                 channel_data[1][out_buf_offs] = warmify (channel_data[1][out_buf_offs],*(global_analog_amount));
+                }
+#endif               
       
     }
  //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;

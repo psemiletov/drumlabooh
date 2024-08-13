@@ -938,6 +938,8 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back (get_home_dir() + "/.drmr/drumkits");
   v_kits_locations.push_back (get_home_dir() + "/drumrox-kits");
   v_kits_locations.push_back (get_home_dir() + "/drumlabooh-kits");
+  v_kits_locations.push_back (get_home_dir() + "/drum_sklad");
+
   v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
 /*
   juce::File home_location = File::getSpecialLocation	(juce::File::SpecialLocationType::userHomeDirectory);

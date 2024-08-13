@@ -36,22 +36,24 @@
 
 * Built-in mixer with Pan, Volume, mute controls and pan mode option<br>
 
-* FX for each instrument slot: LP, HP resonance filters and Analog knob to make the sound warmer<br>
+* FX for each instrument slot: LP, HP resonance filters and Analog knob to make the sound warmer (per-instrument or/and for the whole mix)<br>
 
 * Up to 36 instrument slots with layers (max 127 layers)<br>
+
+* Layer change by MIDI velocity, Round Robin or Random order<br>
 
 * Automatic open hihat mute on hihat close<br>
 
 * Drumkit image (if provided) at plugin window<br>
 
-* Written in C++, based on <a href="https://juce.com">JUSE toolkit</a>
+* Written in C++, based on <a href="https://juce.com">JUCE toolkit</a>
 
 
 <h3>Some history</h3>
 
 Drumlabooh was written as the replacement of <a href="https://github.com/psemiletov/drumrox">Drumrox</a>, my fork of DrMr (see <a href="https://github.com/nicklan/drmr">Nicklan's DrMr</a>  and <a href="https://github.com/falkTX/drmr">Filipe Coelho's fork</a>.
 
-<p>DrMr is cool C/Gtk+2 LV2 plugin that I used for a years, but then it stopped support current Hydrogen's drumkit format. First I "fixed" kits XML files manually, and at the some point I made a fork of DrMr called Drumrox and fix it at the XML parsing level.
+<p>DrMr is cool C/GTK+2 LV2 plugin that I used for a years, but then it stopped support current Hydrogen's drumkit format. First I "fixed" kits XML files manually, and at the some point I made a fork of DrMr called Drumrox and fix it at the XML parsing level.
 </p>
 
 <p>It was a spring 2023.</p>
@@ -80,15 +82,17 @@ I spend many time to play with small toolkits that produces X-based GUI, then (o
 
 * Встроенный микшер с регуляторами панорамы, громкости, заглушения, и выбором режима панорамы<br>
 
-* Эффекты для каждого инструмента: фильтры низких и высоких частот, а также регулятор Аналог для придания звуку теплоты<br>
+* Эффекты для каждого инструмента: фильтры низких и высоких частот, а также регулятор Аналог для придания звуку теплоты (отдельно для инструмента либо всего микса)<br>
 
 * Сэмплер на 36 инструментов с поддержкой 127 слоев в каждом<br>
+
+* Режимы выбора слоя: MIDI velocity, Round Robin, Random Order<br>
 
 * Автоматические заглушение открытого хайхета если играется закрытый<br>
 
 * Отображение картинки драмкита, если таковая включена в его состав<br>
 
-* Плагин написан на C++ с использованием <a href="https://juce.com">тулкита JUSE</a>
+* Плагин написан на C++ с использованием <a href="https://juce.com">тулкита JUCE</a>
 
 
 <h3>История создания</h3>
@@ -111,11 +115,9 @@ Drumlabooh был написан как замена<a href="https://github.com/
 </td>
 
 
-
 </tr>
 
 </table>
-
 
 </body>
 </html>

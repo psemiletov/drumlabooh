@@ -53,7 +53,7 @@ Read the <a name="mni_multi">DETAILS</a> how to use Multi-mode in DAW, to attach
 
 <p>For Hydrogen drumkits, run Hydrogen, then go there to <b>Drumkits - Online import</b> menu and download kits from Hydrogen or Musical Artifacts repositories.</p> 
 
-<p>To install or update Drumlabooh format kits, download them from <a href="https://github.com/psemiletov/drum_sklad">Drum sklad</a> (usually installed with the plugins by default) and <a href="https://t.me/drum_sklad">Drumlabooh kits at Telegram</a>, then copy or unpack drumkits folders to <i>$HOME/drumlabooh-kits</i>. Each kit = one folder.</p>
+<p>To install or update Drumlabooh format kits, download them from <a href="https://github.com/psemiletov/drum_sklad">Drum sklad</a> (usually installed with the plugins by default) and <a href="https://t.me/drum_sklad">Drumlabooh kits at Telegram</a> (additional kits), then copy or unpack drumkits folders to <i>$HOME/drumlabooh-kits</i> or <i>$HOME/drum_sklad</i> (you may git clone to $HOME). Each kit = one folder.</p>
 
 <p>Similary, Dramlabooh searches SFZ kits at <i>$HOME/sfz-kits</i></p>
 
@@ -68,6 +68,7 @@ Read the <a name="mni_multi">DETAILS</a> how to use Multi-mode in DAW, to attach
 
 <pre>/usr/share/drumrox-kits
 $HOME/drumrox-kits
+$HOME/drum_sklad
 /usr/share/drumlabooh-kits
 $HOME/drumlabooh-kits</pre>
 
@@ -86,7 +87,7 @@ $HOME/.drmr/drumkits</pre>
 
 <p><b>Notes:</b></p>
 
-<p>When Drumlabooh loads the kit samples, it converts them before use, on the fly, to the DAW's project session rate (if needed), so the conversion can take some time. Please note that any resampling changes how samples sounds, at some degree.</p>
+<p>When Drumlabooh loads the kit samples, it converts them before use, on the fly, to the DAW's project session rate (if needed), so the conversion can take some time with big kits. Please note that any resampling changes how samples sounds, at some degree.</p>
 
 <p>Drumlabooh loads pre-panned stereo samples as mono, using the left channel. The pre-panning makes the actual panning on the mixing just weird. So Drumlabooh with it's own stereo mixer treats all source samples as mono.</p>
 
@@ -211,8 +212,8 @@ By the way, the pan mode is the significant factor of how DAW "sounds".
 
 <p>Драмкиты для Hydrogen проще скачать так - запустите Hydrogen, а в нем пойдите в меню <b>Drumkits - Online import</b> и скачайте драмкиты по вкусу из предложенных хранилищ, их есть два - Hydrogen и Musicak Artifacts.</p>
 
-<p>Чтобы установить драмкиты формата Драмлабуха, скачайте их с <a href="https://github.com/psemiletov/drum_sklad">Drum sklad</a> или <a href="https://t.me/drum_sklad">Драмсклад в Телеге</a>, а затем скопируйте распакованные папки драмкитов в  
-<i>$HOME/drumlabooh-kits</i>. Каждый кит = одна папка.</p>
+<p>Чтобы установить драмкиты формата Драмлабуха, скачайте их с <a href="https://github.com/psemiletov/drum_sklad">Drum sklad</a> (эти обычно устанавливаются по умолчанию) или <a href="https://t.me/drum_sklad">Драмсклад в Телеге</a> (дополнительные киты), а затем скопируйте распакованные папки драмкитов в  
+<i>$HOME/drumlabooh-kits</i> или в <i>$HOME/drum_sklad</i> (сюда удобно сделать git clone, находясь в $HOME). Каждый кит = одна папка.</p>
 
 <p>При установке самого Драмлабуха обычно устанавливаются киты с гитхаба Драмсклада, а в его тележной части лежат дополнительные киты.</p>
 
@@ -233,7 +234,8 @@ By the way, the pan mode is the significant factor of how DAW "sounds".
 <pre>/usr/share/drumrox-kits
 $HOME/drumrox-kits
 /usr/share/drumlabooh-kits
-$HOME/drumlabooh-kits</pre>
+$HOME/drumlabooh-kits
+$HOME/drum_sklad</pre>
 
 
 <p>Киты в формате Hydrogen:</p>
