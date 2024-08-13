@@ -29,18 +29,24 @@
 <h3>NEWS</h3>
 
 
-<p>August 05 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/3.1.0">3.1.0 release</a></p>
+<p>August 13 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/4.0.0">4.0.0 release</a></p>
 
-<p>  Drumlabooh now supports (currently in Drumlabooh kit format only) Round Robin and Random Order options for the sample layers. This features are used at two new drum kits those are bundled with the plugin:</p>
+<p>   What's new?
+</p><p>   The first and visible one - "Analog" saturator slider at the main screen, applied to the whole mix at the end of the signal flow. Move the slider to make tiny and weak drums bigger and stronger, if that you need.
+</p><p>    This version also introduces new multi-sampling mode, where the engine plays sample layers according to MIDI velocity, but the velocity's value is not included to the final signal calculation formula. It's useful when we have too quiet sampled layers. Read https://github.com/psemiletov/drum_sklad for the details of such option at the drumkit.
+</p><p>    New compilation flag for the packagers - use cmake -DINSTALLKITS=OFF to disable fetching and installing the drumkits, so now you can build just the package with the binaries, and make separated package with kits from https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
+</p><p>    Speaking of the kits. Now you can place them also to $HOME/drum_sklad (to simpilify keeping them up-to-date in the case of the manual installing/updating via git). 
+</p><p>   And, the new kits:
+</p> 
+<p>  1. Gretch Jazzkit - sampled from famous  Gretch drums and cymbals, compiled from C0 sample packs of Bigjoedrummer and Shpira, and includes, among others: Gretsch Cat Maple 22 Bass Drum, Premier Artist Maple snare 14x5.5,
+Gretsch Catalina Maple floor tom 14 inch
+Gretsch Catalina Maple tom 12 inch, Gretsch Catalina Maple tom 10 inch, Gretsch Catalina Maple tom 8 inch.
+</p>
+<p>   2. The Almighty Sound Drumkit - another acoustic drumkit at this update, sampled by the member rock band The Almighty Sound, Paul Xavier Luke. Includes samples: 1966 Ludwig Acrolite snare drum, 20" Zildjian Ride Cymbal, 16" Yamaha DP Floor Tom, 22" Yamaha DP Kick Drum, 13" Yamaha DP Riding Tom, Paiste 18" Crash Cymbal, Sabian B8 Pro Hi Hat/
 
-<p>   1. Ludwig Sixties (based on free Scott McLean's Ludwig Oyster Blue Pearl Drum Kit for Reaper). It contains samples from: Ludwig 5"x14" snare drum (1965), Ludwig 5"x14" snare drum (1967), Ludwig 14"x22" kick drum (1968), Ludwig 8"x12" tom tom drum (1969), Ludwig 9"x13" tom tom drum (1969), Ludwig 14"x14" floor tom drum (1969), 13" Zildjian Thin Crash,
-14" Zildjian New Beat Hihats, 15" Zildjian Thin Crash, 15" Wuhan China Cymbal, 16" Zildjian Thin Crash, 17" Zildjian Thin Crash, 
-20" Zildjian Ping Ride.
-</p>    
-<p>   2. Ludwig Basic (based on free "Ludwig whole kit with Cymbals" by M-Rose Productions/Gyom Amphoux, plus hihats from Scott McLean).</p>
+</p>  3. Kits of sampled rare old drum machines: MTI AO-1, GEM Drum15</p>
 
-<p>
-   Other changes/fixes: the documentation update, engine fix to handle non-existed files, etc.
+<p>   Stay tuned, Peter Semiletov!
 </p>
 
 </td>
@@ -51,20 +57,28 @@
 <h3>НОВОСТИ</h3>
 
 
-<p>05 августа 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/3.1.0">версия 3.1.0</a></p>
+<p>13 августа 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/4.0.0">версия 4.0.0</a></p>
 
-<p>Драмлабух стал поддерживать опции для слоев сэмплов Round Robin и Random Order, что используется в двух новых китах: 
+<p>Что нового?</p>
+
+<p>Первое и самое заметное - ползунок "Аналог" для всего микса, влияющий на  насыщенность звучания в конце цепочки обработки сигнала. Полезно для тихих, слабых барабанов, если вы хотите сделать их более драйвовыми.</p>
+
+<p>В этой версии Лабуха появляется также новый режим мультисэмплинга, подробности см. на сайте <a href="https://github.com/psemiletov/drum_sklad">Драмсклад</a>, они заинтересуют только создателей драмкитов. </p>
+
+<p>Для ведущих пакетов, появилась опция сборки cmake -DINSTALLKITS=OFF - она отключает скачивание и установку драмкитов при сборке cmake, таким образом можно сделать пакет чисто с исполняемыми файлами, а драмкиты вынести в отдельный пакет на основе архива https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
 </p>
 
-<p>   1. Ludwig Sixties (основан на свободном ките Scott McLean's Ludwig Oyster Blue Pearl Drum Kit for Reaper). Содержит сэмплы: Ludwig 5"x14" snare drum (1965), Ludwig 5"x14" snare drum (1967), Ludwig 14"x22" kick drum (1968), Ludwig 8"x12" tom tom drum (1969), Ludwig 9"x13" tom tom drum (1969), Ludwig 14"x14" floor tom drum (1969), 13" Zildjian Thin Crash, 14" Zildjian New Beat Hihats, 15" Zildjian Thin Crash, 15" Wuhan China Cymbal, 16" Zildjian Thin Crash, 17" Zildjian Thin Crash, 20" Zildjian Ping Ride.
-</p>    
+<p>Драмкиты теперь можно размещать еще и в папке $HOME/drum_sklad, для более удобной синхронизации с Драмскладом, если вы устанавливали киты оттуда вручную по гиту.</p>
 
-<p>   2. Ludwig Basic (основа на ките "Ludwig whole kit with Cymbals" от M-Rose Productions/Gyom Amphoux, плюс хайхеты от Scott McLean).</p>
+<p>   Наконец, новые драмкиты!</p> 
 
-<p>
-Прочие исправления - документация, движок.
+<p>  1. Gretch Jazzkit - сэмплирован со знаменитых джазовых барабанов и перкуссий  Gretch, собран из пакетов сэмплов от  Bigjoedrummer и Shpira, и содержит, кроме прочего: Gretsch Cat Maple 22 Bass Drum, Premier Artist Maple snare 14x5.5,
+Gretsch Catalina Maple floor tom 14 inch
+Gretsch Catalina Maple tom 12 inch, Gretsch Catalina Maple tom 10 inch, Gretsch Catalina Maple tom 8 inch.
 </p>
+<p>   2. The Almighty Sound Drumkit - еще один акустический драмкит, сэмплированный участником группы The Almighty Sound, Paul Xavier Luke. Содержит сэмплы: 1966 Ludwig Acrolite snare drum, 20" Zildjian Ride Cymbal, 16" Yamaha DP Floor Tom, 22" Yamaha DP Kick Drum, 13" Yamaha DP Riding Tom, Paiste 18" Crash Cymbal, Sabian B8 Pro Hi Hat/
 
+</p>  3. Киты редких старых драм машин: MTI AO-1, GEM Drum15</p>
 
 </td>
 
