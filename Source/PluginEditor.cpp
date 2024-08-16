@@ -692,8 +692,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   cmb_pan_mode.addItem ("linear panner, law: 0 dB", PANMODE03);
   cmb_pan_mode.addItem ("linear panner, law: -6 dB", PANMODE04);
   cmb_pan_mode.addItem ("power panner, law: -4.5 dB", PANMODE05);
-  cmb_pan_mode.addItem ("power panner, law: -1.5 dB", PANMODE06);
-  cmb_pan_mode.addItem ("equal power panner, law: -1.3 dB", PANMODE07);
+  cmb_pan_mode.addItem ("power panner, law: -6 dB", PANMODE06);
+  cmb_pan_mode.addItem ("sinus panner, law: -1.3 dB", PANMODE07);
 
   att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
 

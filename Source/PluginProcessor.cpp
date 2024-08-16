@@ -817,14 +817,13 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      pan_linear6 (pan_left, pan_right, pan);
                  else
                  if (int_panner_mode == PANMODE05)
-                     pan_power45 (pan_left, pan_right, pan);
-                     //pan_sincos (pan_left, pan_right, pan);
+                     pan_powsin_45 (pan_left, pan_right, pan); //ok
                  else
-                 if (int_panner_mode == PANMODE06)
-                     pan_power15 (pan_left, pan_right, pan);
+                 if (int_panner_mode == PANMODE06) // на деле - -4.5
+                     pan_powsin_6 (pan_left, pan_right, pan);
                  else
-                 if (int_panner_mode == PANMODE07)
-                     pan_equal_power_13 (pan_left, pan_right, pan);
+                 if (int_panner_mode == PANMODE07) //на деле -4.3
+                     pan_sin_1_3 (pan_left, pan_right, pan);
                   
  
                  float coef_right = 0.000f;                    
