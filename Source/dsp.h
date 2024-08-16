@@ -26,6 +26,8 @@ Peter Semiletov, 2023
 #include <iostream>
 #include <vector>
 
+#include <algorithm>
+
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
 #endif
@@ -121,13 +123,13 @@ inline float scale_val (float val, float from_min, float from_max, float to_min,
           (from_max - from_min) + to_min;
 }
 
-
+/*
 #define PANLAW_SINCOS 0
 #define PANLAW_SQRT 1
 #define PANLAW_LINEAR0 2
 #define PANLAW_LINEAR6 3
 #define PANLAW_SINCOSV2 4
-
+*/
 
 //sin/cos panner, law: -3 dB
 #define PANMODE01 1
@@ -147,7 +149,17 @@ inline void pan_sqrt (float &l, float& r, float p)
   r = sqrt (p);
 }
 
-
+//-6!
+/*inline void pan_sqrt(float &l, float &r, float p) {
+    p = std::clamp(p, 0.0f, 1.0f);  // Ограничение p в диапазоне [0, 1]
+    
+    // Нормализация коэффициентом sqrt(2) для закона -3 дБ
+    float norm_factor = sqrt(2.0f);
+    
+    l = sqrt(1.0f - p) / norm_factor;
+    r = sqrt(p) / norm_factor;
+}
+*/
 //linear panner, law: 0 dB
 #define PANMODE03 3
 inline void pan_linear0 (float &l, float& r, float p)
@@ -177,20 +189,47 @@ inline void pan_sincos_v2 (float &l, float& r, float p)
 
 //power panner, law: -4.5 dB
 #define PANMODE05 5
-inline void pan_power45 (float &l, float& r, float p)
+/*inline void pan_power45 (float &l, float& r, float p)
 {
-  l  = powf ((1 - p), 0.75) * l;
+  l = powf ((1 - p), 0.75) * l;
   r = powf (p, 0.75) * r;
 }
+*/
+
+inline void pan_power45(float &l, float &r, float p) {
+    p = std::clamp(p, 0.0f, 1.0f);  // Ограничение p в диапазоне [0, 1]
+
+    // Нормализация для закона -4.5 дБ в центре
+    float norm_factor = powf(10.0f, -4.5f / 20.0f);  // ≈ 0.5946
+
+    // Применение panning формулы с нормализацией для закона -4.5 дБ
+    l = sqrt(1.0f - p) * norm_factor;
+    r = sqrt(p) * norm_factor;
+}
+
 
 //power panner, law: -1.5 dB
 //  -1.5dB = 10^(-1.5/20) = 0.841395142 (power taper)
 #define PANMODE06 6
-inline void pan_power15 (float &l, float& r, float p)
+/*inline void pan_power15 (float &l, float& r, float p)
 {
   l  = powf ((1 - p), 0.25) * l;
   r = powf (p, 025) * r;
 }
+*/
+
+
+inline void pan_power15(float &l, float &r, float p) {
+    p = std::clamp(p, 0.0f, 1.0f);  // Ограничение p в диапазоне [0, 1]
+
+    // Нормализация для закона -1.5 дБ в центре
+    float norm_factor = powf(10.0f, -1.5f / 20.0f);  // ≈ 0.8414
+
+    // Применение panning формулы с нормализацией для закона -1.5 дБ
+    l = sqrt(1.0f - p) * norm_factor;
+    r = sqrt(p) * norm_factor;
+}
+
 
 //equal power panner, law: -3 dB
 //  -3dB = 10^(-3/20) = 0.707945784
@@ -199,6 +238,29 @@ inline void pan_equal_power3 (float &l, float& r, float p)
 {
   l  = sqrt (1 - p) * l; // = power((1-pan),0.5) * MonoIn;
   r = sqrt(p) * r; // = power(pan,0.5) * MonoIn
+}
+
+
+inline void pan_equal_power_13(float &l, float &r, float p) {
+    p = std::clamp(p, 0.0f, 1.0f);  // Ограничение p в диапазоне [0, 1]
+
+    // Преобразование p в угол (радианы) для синуса/косинуса
+    float angle = p * 0.5f * M_PI;  // M_PI — это значение числа π (π радиан = 180 градусов)
+
+    // Нормализация для закона -1.3 дБ
+ float norm_factor = powf(10.0f, -1.3f / 20.0f);  // ≈ 0.8698
+
+    // Вычисление громкости для левого и правого каналов с учетом нормализации
+    l = cos(angle) * norm_factor;  // Левая громкость
+    r = sin(angle) * norm_factor;  // Правая громкость
+}
+
+#define PANMODE08 8
+//square root panner, law: -6 dB
+inline void pan_sqrt6(float &l, float &r, float p) {
+    p = std::clamp(p, 0.0f, 1.0f);  // Ограничение p в диапазоне [0, 1]
+    l = sqrt(1.0f - p);
+    r = sqrt(p);
 }
 
 

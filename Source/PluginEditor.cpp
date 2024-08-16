@@ -822,7 +822,7 @@ void CAudioProcessorEditor::paint (juce::Graphics& g)
 {
 
 //        g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-  g.fillAll (juce::Colour::fromRGB(103, 97, 114)	);
+  g.fillAll (juce::Colour::fromRGB (103, 97, 114)	);
 }
 
 

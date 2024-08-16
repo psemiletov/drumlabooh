@@ -52,7 +52,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
   layout.add (std::make_unique<juce::AudioParameterFloat> ("panner_mode",            // parameterID
                                                            "panner_mode",            // parameter name
                                                            1.0f,              // minimum value
-                                                           4.0f,              // maximum value
+                                                           7.0f,              // maximum value
                                                            1.0f)); //default
 
 #endif
@@ -583,10 +583,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  channel_data[drum_sample_index][out_buf_offs] = fl;
                 }
 
-#ifndef MULTICHANNEL                     
-            if (*global_analog_on > 0.5f)
-                channel_data[drum_sample_index][out_buf_offs] = warmify (channel_data[0][out_buf_offs],*(global_analog_amount));
-#endif                
              }
         } 
  //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
@@ -800,35 +796,39 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 //                 float vol = juce::Decibels::decibelsToGain ((float)*(vols[drum_sample_index]));
                  float vol = db2lin(*(vols[drum_sample_index]));
 
-                 float pan_right = 0;
-                 float pan_left = 0;
-
+                 float pan_right = 0.000f;
+                 float pan_left = 0.000f;
+                 
+                 
                  float pan = *(pans[drum_sample_index]);
+                 
+                 int int_panner_mode = *panner_mode;
 
-                 if (*panner_mode == PANMODE01)
+                 if (int_panner_mode == PANMODE01)
                       pan_sincos (pan_left, pan_right, pan);
                  else
-                 if (*panner_mode == PANMODE02)
+                 if (int_panner_mode == PANMODE02)
                      pan_sqrt (pan_left, pan_right, pan);
                  else
-                 if (*panner_mode == PANMODE03)
+                 if (int_panner_mode == PANMODE03)
                      pan_linear0 (pan_left, pan_right, pan);
                  else
-                 if (*panner_mode == PANMODE04)
+                 if (int_panner_mode == PANMODE04)
                      pan_linear6 (pan_left, pan_right, pan);
                  else
-                 if (*panner_mode == PANMODE05)
+                 if (int_panner_mode == PANMODE05)
                      pan_power45 (pan_left, pan_right, pan);
+                     //pan_sincos (pan_left, pan_right, pan);
                  else
-                 if (*panner_mode == PANMODE06)
+                 if (int_panner_mode == PANMODE06)
                      pan_power15 (pan_left, pan_right, pan);
                  else
-                 if (*panner_mode == PANMODE07)
-                     pan_equal_power3 (pan_left, pan_right, pan);
+                 if (int_panner_mode == PANMODE07)
+                     pan_equal_power_13 (pan_left, pan_right, pan);
                   
  
-                 float coef_right = 0;                    
-                 float coef_left = 0;  
+                 float coef_right = 0.000f;                    
+                 float coef_left = 0.000f;  
 
 
                  if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
@@ -843,17 +843,15 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      }
                  
                  channel_data[0][out_buf_offs] += fl * coef_left;
-                 channel_data[1][out_buf_offs] += fl * coef_right;
+                 channel_data[1][out_buf_offs] += fr * coef_right;
                 }
              }
              
-#ifndef MULTICHANNEL                     
              if (*global_analog_on > 0.5f)
                 {
                  channel_data[0][out_buf_offs] = warmify (channel_data[0][out_buf_offs],*(global_analog_amount));
                  channel_data[1][out_buf_offs] = warmify (channel_data[1][out_buf_offs],*(global_analog_amount));
                 }
-#endif               
       
     }
  //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;

@@ -106,7 +106,7 @@ juce::AudioBuffer <float>*  CDrumLayer::load_whole_sample (const std::string &fn
       length_in_samples = reader->lengthInSamples;
 
       //hardcode 1 channel please :)
-      //channels = 1;//reader->numChannels;
+    //  channels = 1;//reader->numChannels;
 
    //   std::cout << "samplerate: " << samplerate << std::endl;
 //      std::cout << "length_in_samples: " << length_in_samples << std::endl;
