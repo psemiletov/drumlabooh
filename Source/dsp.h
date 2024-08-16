@@ -195,80 +195,27 @@ inline void pan_sincos_v2 (float &l, float& r, float p)
 // Функция панорамирования с законом -4.5 дБ
 inline void pan_powsin_45(float &l, float &r, float p)
 {
-  l = pow( sin((1 - p)*MYHALF_PI) , 1.5);
-  r = pow( sin(p*MYHALF_PI), 1.5);
-  
+  l = pow (sin ((1 - p)*MYHALF_PI), 1.5);
+  r = pow (sin (p*MYHALF_PI), 1.5);
 }
 
 
-
-/*inline void pan_power45 (float &l, float& r, float p)
-{
-  l = powf ((1 - p), 0.75) * l;
-  r = powf (p, 0.75) * r;
-}
-*/
-//на деле - 7.5
-/*inline void pan_power45(float &l, float &r, float p) {
-    p = std::clamp(p, 0.0f, 1.0f);  // Ограничение p в диапазоне [0, 1]
-
-    // Нормализация для закона -4.5 дБ в центре
-    float norm_factor = powf(10.0f, -4.5f / 20.0f);  // ≈ 0.5946
-
-    // Применение panning формулы с нормализацией для закона -4.5 дБ
-    l = sqrt(1.0f - p) * norm_factor;
-    r = sqrt(p) * norm_factor;
-}
-*/
-
-//- 3.5
-/*inline void pan_power45(float &l, float &r, float p) {
-    p = std::clamp(p, 0.0f, 1.0f);  // Ограничение p в диапазоне [0, 1]
-
-    // Вычисление уровней громкости для левого и правого каналов
-    float left = sqrt(1.0f - p);
-    float right = sqrt(p);
-
-    // Применение коэффициента нормализации для закона -4.5 дБ в центре
-    // Важно: масштабируем уровни с учетом их квадратичной суммы, чтобы в центре было уменьшение на -4.5 дБ
-    float scale = 1.0f / sqrt(powf(left, 2) + powf(right, 2) * powf(10.0f, -4.5f / 10.0f));
-
-    l = left * scale;
-    r = right * scale;
-}
-*/
-
-
-//power panner, law: -1.5 dB
-//  -1.5dB = 10^(-1.5/20) = 0.841395142 (power taper)
+//power panner, law: -6 dB
 #define PANMODE06 6
-/*inline void pan_power15 (float &l, float& r, float p)
-{
-  l  = powf ((1 - p), 0.25) * l;
-  r = powf (p, 025) * r;
-}
-*/
 
 inline void pan_powsin_6(float &l, float &r, float p)
 {
-  l = pow( sin((1 - p)*MYHALF_PI) , 2);
-  r = pow( sin(p*MYHALF_PI), 2);
+  l = pow (sin ((1 - p) * MYHALF_PI), 2);
+  r = pow (sin (p * MYHALF_PI), 2);
   
 }
 
-//equal power panner, law: -3 dB
-//  -3dB = 10^(-3/20) = 0.707945784
+//equal power panner, law: -1.3 dB
 #define PANMODE07 7
-/*inline void pan_equal_power3 (float &l, float& r, float p)
+
+inline void pan_sin_1_3 (float &l, float &r, float p) 
 {
-  l  = sqrt (1 - p) * l; // = power((1-pan),0.5) * MonoIn;
-  r = sqrt(p) * r; // = power(pan,0.5) * MonoIn
-}
-
-*/
-
-inline void pan_sin_1_3(float &l, float &r, float p) {
-    p = std::clamp(p, 0.0f, 1.0f);  // Ограничение p в диапазоне [0, 1]
+//    p = std::clamp(p, 0.0f, 1.0f);  // Ограничение p в диапазоне [0, 1]
 
     // Вычисление амплитуд для левого и правого каналов
     float left = sinf((1.0f - p) * MYHALF_PI);
