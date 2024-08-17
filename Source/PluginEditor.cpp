@@ -687,7 +687,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
       //  cmb_pan_mode.onChange = [this] { panner_modeMenuChanged(); };
   cmb_pan_mode.setSize (180 + XFILLER, 42);
   cmb_pan_mode.setTopLeftPosition (sl_base_note.getX(), sl_base_note.getBottom() + YFILLER);
-  cmb_pan_mode.addItem ("sin/cos panner, law: -3 dB", PANMODE01);
+  cmb_pan_mode.addItem ("equal power panning, law: -3 dB", PANMODE01); //sin/cos panner
   cmb_pan_mode.addItem ("square root panner, law: -3 dB", PANMODE02);
   cmb_pan_mode.addItem ("linear panner, law: 0 dB", PANMODE03);
   cmb_pan_mode.addItem ("linear panner, law: -6 dB", PANMODE04);

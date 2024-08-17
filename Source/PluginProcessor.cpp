@@ -755,7 +755,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                     } 
 */
                  
-                 float fr = fl;
+                // float fr = fl;
 
                  //DSP
 
@@ -764,7 +764,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  if (analog_on)
                     {
                      fl = warmify (fl,*(analog_amount[drum_sample_index]));
-                     fr = fl;
+                  //   fr = fl;
                     }
 
 
@@ -776,7 +776,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      lp[drum_sample_index].set_resonance (*(lp_reso[drum_sample_index]));
 
                      fl = softLimit (lp[drum_sample_index].process (fl));
-                     fr = fl;
+                    // fr = fl;
                     }
 
 
@@ -788,7 +788,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      hp[drum_sample_index].set_resonance (*(hp_reso[drum_sample_index]));
 
                      fl = softLimit (hp[drum_sample_index].process (fl));
-                     fr = fl;
+                     //fr = fl;
                     }
 
                  //AFTER DSP
@@ -842,7 +842,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      }
                  
                  channel_data[0][out_buf_offs] += fl * coef_left;
-                 channel_data[1][out_buf_offs] += fr * coef_right;
+                 //channel_data[1][out_buf_offs] += fr * coef_right;
+                 channel_data[1][out_buf_offs] += fl * coef_right;
+
                 }
              }
              

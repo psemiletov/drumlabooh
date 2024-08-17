@@ -123,15 +123,9 @@ inline float scale_val (float val, float from_min, float from_max, float to_min,
           (from_max - from_min) + to_min;
 }
 
-/*
-#define PANLAW_SINCOS 0
-#define PANLAW_SQRT 1
-#define PANLAW_LINEAR0 2
-#define PANLAW_LINEAR6 3
-#define PANLAW_SINCOSV2 4
-*/
 
 //sin/cos panner, law: -3 dB
+//equal power panning
 #define PANMODE01 1
 inline void pan_sincos (float &l, float& r, float p)
 {
@@ -149,17 +143,7 @@ inline void pan_sqrt (float &l, float& r, float p)
   r = sqrt (p);
 }
 
-//-6!
-/*inline void pan_sqrt(float &l, float &r, float p) {
-    p = std::clamp(p, 0.0f, 1.0f);  // Ограничение p в диапазоне [0, 1]
-    
-    // Нормализация коэффициентом sqrt(2) для закона -3 дБ
-    float norm_factor = sqrt(2.0f);
-    
-    l = sqrt(1.0f - p) / norm_factor;
-    r = sqrt(p) / norm_factor;
-}
-*/
+
 //linear panner, law: 0 dB
 #define PANMODE03 3
 inline void pan_linear0 (float &l, float& r, float p)
@@ -177,32 +161,19 @@ inline void pan_linear6 (float &l, float& r, float p)
   r = p;
 }
 
-
-/*
-inline void pan_sincos_v2 (float &l, float& r, float p)
-{
-  float pan = p * M_PI / 2;
-  l = l * sin (pan);
-  r = r * cos (pan);
-}
-*/
-
 //power panner, law: -4.5 dB
 #define PANMODE05 5
-
 #define MYHALF_PI 1.5707964
 
-// Функция панорамирования с законом -4.5 дБ
-inline void pan_powsin_45(float &l, float &r, float p)
+inline void pan_powsin_45 (float &l, float &r, float p)
 {
-  l = pow (sin ((1 - p)*MYHALF_PI), 1.5);
-  r = pow (sin (p*MYHALF_PI), 1.5);
+  l = pow (sin ((1 - p) * MYHALF_PI), 1.5);
+  r = pow (sin (p * MYHALF_PI), 1.5);
 }
 
 
 //power panner, law: -6 dB
 #define PANMODE06 6
-
 inline void pan_powsin_6(float &l, float &r, float p)
 {
   l = pow (sin ((1 - p) * MYHALF_PI), 2);
@@ -210,63 +181,33 @@ inline void pan_powsin_6(float &l, float &r, float p)
   
 }
 
-//equal power panner, law: -1.3 dB
+//sinus panner, law: -1.3 dB
 #define PANMODE07 7
-
 inline void pan_sin_1_3 (float &l, float &r, float p) 
 {
-//    p = std::clamp(p, 0.0f, 1.0f);  // Ограничение p в диапазоне [0, 1]
+ // Вычисление амплитуд для левого и правого каналов
+  float left = sinf ((1.0f - p) * MYHALF_PI);
+  float right = sinf (p * MYHALF_PI);
 
-    // Вычисление амплитуд для левого и правого каналов
-    float left = sinf((1.0f - p) * MYHALF_PI);
-    float right = sinf(p * MYHALF_PI);
+ // Найдем максимальное значение из амплитуд для нормализации
+  float max_amp = std::max (fabs(left), fabs (right));
 
-    // Найдем максимальное значение из амплитуд для нормализации
-    float max_amp = std::max(fabs(left), fabs(right));
-
-    // Если max_amp равен нулю, устанавливаем значения в ноль
-    if (max_amp == 0.0f) {
-        l = 0.0f;
-        r = 0.0f;
-    } else {
-        // Нормализация амплитуд с учетом -1.3 dB
-        float norm_factor = powf(10.0f, -1.3f / 20.0f) / max_amp; // ≈ 0.943
-        l = left * norm_factor;
-        r = right * norm_factor;
-    }
+  if (max_amp == 0.0f) 
+     {
+      l = 0.0f;
+      r = 0.0f;
+     }
+  else 
+      {
+       // Нормализация амплитуд с учетом -1.3 dB
+       float norm_factor = powf (10.0f, -1.3f / 20.0f) / max_amp;
+       l = left * norm_factor;
+       r = right * norm_factor;
+     }
 }
 
 
 
-inline void pan_powsin_1_3(float &l, float &r, float p) {
-    p = std::clamp(p, 0.0f, 1.0f);  // Ограничение p в диапазоне [0, 1]
-
-    // Вычисление громкости для левого и правого каналов
-    float left = powf(sinf((1.0f - p) * MYHALF_PI), 2);
-    float right = powf(sinf(p * MYHALF_PI), 2);
-
-    // Коэффициент нормализации для обеспечения правильного уровня в центре
-    float norm_factor = powf(10.0f, -1.3f / 20.0f);  // ≈ 0.943
-
-    // Общая мощность до нормализации
-    float total_power = sqrtf(left * left + right * right);
-
-    // Нормализация так, чтобы уровень в центре соответствовал -1.3 дБ
-    float scale = norm_factor / total_power;
-
-    l = left * scale;
-    r = right * scale;
-}
-
-
-
-#define PANMODE08 8
-//square root panner, law: -6 dB
-inline void pan_sqrt6(float &l, float &r, float p) {
-    p = std::clamp(p, 0.0f, 1.0f);  // Ограничение p в диапазоне [0, 1]
-    l = sqrt(1.0f - p);
-    r = sqrt(p);
-}
 
 
 float warmify(float x, float warmth);

@@ -125,9 +125,11 @@ Both filters are resonance filters and have the <b>resonance</b> parameter. Play
 
 <p><b>Base MIDI note</b> - default 36, means at which MIDI note number we map the first instrument at the kit. MIDI note 36 = C at 2-st octave.</p>
 
-<p><b>Pan mode</b> - allow to select the pan mode for Drumlabooh's internal mixer. See the <a href="https://en.wikipedia.org/wiki/Panning_law">article</a>. Defaul panner is sin/cos panner, law: -3 dB.<br>
-By the way, the pan mode is the significant factor of how DAW "sounds".
+<p><b>Pan mode</b> - allow to select the pan mode for Drumlabooh's internal mixer. See the <a href="https://en.wikipedia.org/wiki/Panning_law">article</a>. Defaul panner is qual power panning, law: -3 dB (sin/cos taper).<br>
+By the way, the pan mode is the significant factor of how DAW "sounds". Pan mode, and/or pan law, is the algorithm that controls the total acoustic power output of 2 channels, making their level lower when paning position moves to the center. Otherwise, we have louder sound at the center, bacause two channels will play at the full power, and will be louder than the same mono sound. So, any stereo output must be reduced on some degree, when the pan position approaching to the center, to prevent the loudness increase.
 </p>
+
+<p>Maybe it's better to set Pan mode at Drumlabooh the same to your DAW's pan mode, to make all drum samples paned in the same method. Try what is best sounds in your mix.</p>
 
 <a name="multi"></a>
 <h3>5. Multi-channel explained</h3>
