@@ -47,6 +47,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
       }
 
 
+  layout.add (std::make_unique<juce::AudioParameterFloat> ("midimap_mode",            // parameterID
+                                                           "midimap_mode",            // parameter name
+                                                           1.0f,              // minimum value
+                                                           2.0f,              // maximum value
+                                                           1.0f)); //default
+    
+      
 #ifndef MULTICHANNEL
 
   layout.add (std::make_unique<juce::AudioParameterFloat> ("panner_mode",            // parameterID

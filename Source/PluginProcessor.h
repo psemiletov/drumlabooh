@@ -14,7 +14,8 @@ this code is the public domain
 #include "dsp.h"
 #include "fx-resofilter.h"
 
-
+#define MIDIMAPMODE_LABOOH 1
+#define MIDIMAPMODE_GM 2
 
 class CAudioProcessor: public juce::AudioProcessor
                             #if JucePlugin_Enable_ARA
@@ -60,6 +61,7 @@ public:
 #endif
 
 
+  std::atomic<float>* midimap_mode = nullptr;
   std::atomic<float>* ignore_midi_velocity = nullptr;
   std::atomic<float>* global_analog_on = nullptr;
   std::atomic<float>* global_analog_amount = nullptr;

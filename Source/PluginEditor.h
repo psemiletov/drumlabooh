@@ -17,6 +17,44 @@ typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
 class CAudioProcessorEditor;
 
+
+
+class CDrumkitsListBoxModel: //public Component,
+				     	     public ListBoxModel
+{
+public:
+  
+    CAudioProcessorEditor *editor;
+
+    juce::Font item_font { 14.0f, juce::Font::bold};
+  
+    std::vector <std::string> items;
+    std::vector <int> indexes;
+  
+	CDrumkitsListBoxModel();
+	~CDrumkitsListBoxModel();
+	int getNumRows();
+	void paintListBoxItem( int rowNumber, Graphics& g, int width, int height, bool rowIsSelected );
+    void selectedRowsChanged (int lastRowSelected) override;
+
+};
+
+
+class CDrumkitsListbox: public ListBox
+{
+public:  
+  
+  void paint	(Graphics&	g) override
+       {
+        g.setFont (32); 
+        ListBox::paint (g); 
+         
+       }
+
+  
+};
+
+
 class CTimer: public juce::HighResolutionTimer
 {
 public:
@@ -196,7 +234,13 @@ public:
   std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_ignore_midi_velocity;
   juce::ToggleButton bt_ignore_midi_velocity;
 
+  CDrumkitsListBoxModel drumkits_model;
+  ListBox drumkits_listbox;
 
+ // juce::Font f_listbox_font { 12.0f, juce::Font::bold};
+
+//////////////////////////////////
+//OPTIONS CONTROLS  
   
 #ifndef MULTICHANNEL
 
@@ -205,7 +249,6 @@ public:
 
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_global_analog_amount = nullptr;
   juce::Slider sl_global_analog_amount;
-
   
   std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_pan_mode;
   juce::Label l_pan_mode { {}, "Pan mode" };
@@ -213,28 +256,41 @@ public:
 
 #endif
 
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_midimap_mode;
+  juce::Label l_midimap_mode { {}, "MIDI map mode" };
+  juce::ComboBox cmb_midimap_mode;
+  
 
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_base_note;
   juce::Label l_base_note { {}, "Base MIDI note" };
   juce::Slider sl_base_note;
 
+
+//END OF OPTIONS CONTROLS  
+
   juce::TextButton bt_file_open;
   std::unique_ptr<juce::FileChooser> dlg_fileopen;
-
+  
 
   juce::TooltipWindow tooltip_window;
 
   juce::GroupComponent gr_kitinfo;
   juce::Label l_kitinfo;
 
+//TOP BAR  
+  juce::GroupComponent gr_topbar;
+  
   juce::Label l_plugin_name;
   juce::Label l_plugin_author;
-
   juce::HyperlinkButton hl_homepage;
-
   juce::Font f_sitelink { 20.0f, juce::Font::bold};
   juce::Font f_logo { 30.0f, juce::Font::bold};
+//END OF TOPBAR
+  
+  
+  juce::Font f_kits { 30.0f, juce::Font::bold};
 
+  
   juce::Font f_kitname_font { 20.0f, juce::Font::bold};
   juce::ImageComponent kit_image;
 
@@ -247,6 +303,12 @@ public:
 
   juce::GroupComponent gr_options;
 
+  juce::GroupComponent gr_drumkits;
+
+  juce::GroupComponent gr_kitbuttons;
+
+  
+  
   juce::Label l_drumkit_selector { {}, "Drumkit selector" };
   juce::ComboBox cmb_drumkit_selector;
 
