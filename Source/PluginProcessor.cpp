@@ -185,7 +185,7 @@ CAudioProcessor::CAudioProcessor()
   ignore_midi_velocity = parameters.getRawParameterValue ("ignore_midi_velocity");
   global_analog_on = parameters.getRawParameterValue ("global_analog_on");
   global_analog_amount = parameters.getRawParameterValue ("global_analog_amount");
-
+  midimap_mode = parameters.getRawParameterValue ("midimap_mode");
 }
 
 
@@ -231,12 +231,14 @@ CAudioProcessor::CAudioProcessor()
        analog_amount[i] = parameters.getRawParameterValue ("analog_amount" + std::to_string(i));
       }
 
+      
+      
   panner_mode = parameters.getRawParameterValue ("panner_mode");
   ignore_midi_velocity = parameters.getRawParameterValue ("ignore_midi_velocity");
   
   global_analog_on = parameters.getRawParameterValue ("global_analog_on");
   global_analog_amount = parameters.getRawParameterValue ("global_analog_amount");
-
+  midimap_mode = parameters.getRawParameterValue ("midimap_mode");
   
 }
 
@@ -617,6 +619,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   int num_channels = buffer.getNumChannels();
   int out_buf_length = buffer.getNumSamples();
 
+  
+  int int_midimap_mode = (int) *midimap_mode;
+
 
   //clearing input buffer, good for Reaper
 
@@ -660,21 +665,45 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 //          int nn = note_number - (int) *base_note_number;
             int nn = note_number - base_note_number;
 
-            if (nn < 0 || nn > v_samples_size - 1)
-               {
-  //              std::cout << "nn <> drumkit->v_samples.size(), nn is " << nn << std::endl;
-                continue;
-               }
+
+            if (int_midimap_mode == MIDIMAPMODE_LABOOH)
+                if (nn < 0 || nn > v_samples_size - 1)
+                   continue;
 
 //             std::cout << "GO ON with n: " << nn << std::endl;
 
             float gn = db2lin (*(vols[nn]));
             // std::cout << "gn: " << gn << std::endl;
 
-            CDrumSample *s = drumkit->v_samples[nn];
+/*            CDrumSample *s = drumkit->v_samples[nn];
             if (! s)
                continue;
 
+*/
+            CDrumSample *s = 0;
+
+            if (int_midimap_mode == MIDIMAPMODE_LABOOH)
+                s = drumkit->v_samples[nn];
+            else
+               {
+                //auto search = drumkit->map_samples[note_number];
+                 
+                 
+                //if (search == drumkit->map_samples.end())
+                if (drumkit->map_samples.count (note_number) > 0) 
+                  {
+                    s = drumkit->map_samples[note_number];
+                   std::cout << "play mapped note: " << note_number << std::endl;
+                    
+                  } 
+                 
+                 
+               }
+  
+            if (! s)
+               continue;
+  
+               
             s->trigger_sample (velocity);
 
              //also untrigger open hihat if closed hihat triggering

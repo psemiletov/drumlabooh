@@ -33,6 +33,29 @@ std::mt19937 rnd_mt19937;
 
 
 
+std::string get_part (std::string &s)
+{
+//  std::cout << "get_part, s:" << s << std::endl;
+  
+  size_t first = s.find("[");
+  size_t last = s.find("]", first);
+
+  if (first == std::string::npos)
+     return std::string("");
+
+  if (last == std::string::npos)
+     return std::string("");
+
+
+  
+
+  std::string result = s.substr (first + 1, last - first - 1);
+  s.erase(first,last-first+1);
+
+  return result;
+}
+
+
 void rnd_init()
 {
   rnd_mt19937.seed (std::chrono::system_clock::now().time_since_epoch().count());
@@ -260,6 +283,7 @@ CDrumSample::CDrumSample (int sample_rate)
   active = false;
   robin_counter = -1;
   layer_index_mode = LAYER_INDEX_MODE_VEL;
+  mapped_note = -1;
 //  random_number = 0.0;
  // use_random_noice = false;
 //  noise_level = 0.001f; 
@@ -476,7 +500,18 @@ FIXED
 
          if (fname.empty())
             continue;
-
+//////////////////////////////
+          
+         //scan sample_name for []
+         //if yes, take all between [] as the MIDI note number,
+         //add to map_samples 
+         //and delete [] with its contents 
+        
+         std::string str_note = get_part (sample_name);
+         
+       //  std::cout << "str_note:" << str_note << std::endl;
+          
+////////////////////// 
          size_t check_for_list = fname.find (",");
          
          bool check_for_rnd = false;
@@ -515,7 +550,18 @@ FIXED
 
              add_sample();
              v_samples.back()->name = sample_name;
-
+             
+            ///////////////////NEW 
+             if (! str_note.empty())
+                {
+                 v_samples.back()->mapped_note = std::stoi(str_note);
+                 map_samples[v_samples.back()->mapped_note] = v_samples.back();
+                 std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
+                } 
+         
+         /////////////////////
+         
+         
              if (check_for_rnd)
                 v_samples.back()->layer_index_mode = LAYER_INDEX_MODE_RND; 
               
@@ -569,7 +615,15 @@ FIXED
               v_samples.back()->add_layer(); //add default layer
 
               if (file_exists (filename) && ! scan_mode)
+                 {
                   v_samples.back()->v_layers.back()->load (filename.c_str());
+                  if (! str_note.empty())
+                     {
+                      v_samples.back()->mapped_note = std::stoi(str_note);
+                      map_samples[v_samples.back()->mapped_note] = v_samples.back();
+                      std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
+                     } 
+                 } 
              }
 
 

@@ -77,6 +77,8 @@ public:
 
   bool active;
 
+  int mapped_note;
+  
   //float random_number; //changes as sample triggers
   //float noise_level;
 
@@ -129,6 +131,8 @@ public:
   bool layers_supported;
   
   std::vector <CDrumSample*> v_samples;
+  std::map <int, CDrumSample*> map_samples; 
+  
   std::vector <std::string> v_hat_open_signatures;
   std::vector <std::string> v_hat_close_signatures;
 
