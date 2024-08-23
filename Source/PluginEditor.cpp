@@ -816,33 +816,16 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 #ifndef MULTICHANNEL
   
-  //////////////NEW GLOBAL ANALOG
-  addAndMakeVisible (bt_global_analog_on);
-  bt_global_analog_on.setButtonText ("Analog");
-  //bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
-  bt_global_analog_on.setSize (80, 48);
-  bt_global_analog_on.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER * 4, 
-                                          l_midimap_mode.getY());
-
-  att_global_analog_on.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "global_analog_on", bt_global_analog_on));
-  
- 
-  addAndMakeVisible (sl_global_analog_amount);
-  sl_global_analog_amount.setTopLeftPosition (bt_global_analog_on.getRight() + XFILLER, bt_global_analog_on.getY());
-  sl_global_analog_amount.setSize (192, 48);
-  sl_global_analog_amount.setRange (0.0f, 1.0f, 0.01f);
-  sl_global_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
-  sl_global_analog_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
-  sl_global_analog_amount.setColour (juce::Slider::thumbColourId, juce::Colours::orange);
-  
-  att_global_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "global_analog_amount", sl_global_analog_amount));
-   
-
-  
     // PAN MODE
   
   addAndMakeVisible (l_pan_mode);
-  l_pan_mode.setTopLeftPosition (bt_global_analog_on.getX(), bt_global_analog_on.getBottom() + YFILLER);
+//  l_pan_mode.setTopLeftPosition (bt_global_analog_on.getX(), bt_global_analog_on.getBottom() + YFILLER);
+  
+  
+  l_pan_mode.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER * 4, 
+                                 l_midimap_mode.getY());
+
+  
   l_pan_mode.setSize (100, 32);
   cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
   cmb_pan_mode.setColour (juce::ComboBox::textColourId, Colours::white);
@@ -865,7 +848,32 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   cmb_pan_mode.setTopLeftPosition (l_pan_mode.getRight(), l_pan_mode.getY());
 
   
+  
+  
+  //////////////NEW GLOBAL ANALOG
+  addAndMakeVisible (bt_global_analog_on);
+  bt_global_analog_on.setButtonText ("Analog");
+  //bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
+  bt_global_analog_on.setSize (80, 48);
+  bt_global_analog_on.setTopLeftPosition (l_pan_mode.getX(), 
+                                          l_pan_mode.getBottom() + YFILLER);
 
+  att_global_analog_on.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "global_analog_on", bt_global_analog_on));
+  
+ 
+  addAndMakeVisible (sl_global_analog_amount);
+  sl_global_analog_amount.setTopLeftPosition (bt_global_analog_on.getRight() + XFILLER, bt_global_analog_on.getY() + YFILLER);
+  sl_global_analog_amount.setSize (192, 48);
+  sl_global_analog_amount.setRange (0.0f, 1.0f, 0.01f);
+  sl_global_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_global_analog_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_global_analog_amount.setColour (juce::Slider::thumbColourId, juce::Colours::orange);
+  
+  att_global_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "global_analog_amount", sl_global_analog_amount));
+   
+
+  
+  
   
 #endif
   
@@ -874,14 +882,16 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 #ifndef MULTICHANNEL
   
   
-  gr_options.setSize (800, sl_base_note.getHeight() + YFILLER + 
-                           cmb_pan_mode.getHeight() + YFILLER + 
-                           cmb_midimap_mode.getHeight() + YFILLER);
+  gr_options.setSize (810, sl_base_note.getHeight() + 
+                           cmb_pan_mode.getHeight() + 
+                           cmb_midimap_mode.getHeight() + 
+                           bt_ignore_midi_velocity.getHeight());
 #else
 
 //  bt_ignore_midi_velocity.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER, gr_options.getY() + YFILLER);
   
-  gr_options.setSize (800, sl_base_note.getHeight() + YFILLER + bt_ignore_midi_velocity.getHeight() + YFILLER);
+  gr_options.setSize (810, sl_base_note.getHeight() + 
+                           bt_ignore_midi_velocity.getHeight());
   
 #endif  
 
@@ -896,7 +906,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   //         gr_options.getBottom() + YFILLER * 2);
 
    setSize (drumcells_viewer.getRight() + XFILLER * 2, 
-           gr_options.getBottom() + YFILLER * 2);
+           gr_options.getBottom());
 
  
   
@@ -1043,9 +1053,13 @@ int CDrumkitsListBoxModel::getNumRows()
 void CDrumkitsListBoxModel::paintListBoxItem (int rowNumber, Graphics &g, int width, int height, bool rowIsSelected)
 {
   if (rowIsSelected)
-	  g.fillAll (Colours::lightblue);
+	  g.fillAll (Colours::cornflowerblue);
+ 	  //g.fillAll (Colours::lightblue);
+ 
   else
-	  g.fillAll (Colours::orange);
+	  //g.fillAll (Colours::cornflowerblue);
+    //g.fillAll (Colours::plum);
+    g.fillAll (Colours::paleturquoise);
     
   g.setFont (20); 
 

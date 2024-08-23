@@ -448,6 +448,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   if (! drumkit)
       return;
 
+  int int_midimap_mode = (int) *midimap_mode;
+
+  
   size_t v_samples_size = drumkit->v_samples.size();
 
   if (v_samples_size == 0)
@@ -468,14 +471,31 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
        int note_number = msg.getNoteNumber(); //36 starting note
 
+       
        if (isNoteOn )
           {
            int nn = note_number - base_note_number;
 
-           if (nn < 0 || nn > v_samples_size - 1)
-              continue;
+           //if (nn < 0 || nn > v_samples_size - 1)
+              //continue;
+           
+           if (int_midimap_mode == MIDIMAPMODE_LABOOH)
+               if (nn < 0 || nn > v_samples_size - 1)
+                   continue;
 
-           CDrumSample *s = drumkit->v_samples[nn];
+
+           //CDrumSample *s = drumkit->v_samples[nn];
+            CDrumSample *s = 0;
+
+            if (int_midimap_mode == MIDIMAPMODE_LABOOH)
+                s = drumkit->v_samples[nn];
+            else
+                if (drumkit->map_samples.count (note_number) > 0) 
+                  {
+                   s = drumkit->map_samples[note_number];
+                   //std::cout << "play mapped note: " << note_number << std::endl;
+                  } 
+  
 
            if (! s)
               continue;
@@ -686,18 +706,11 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                 s = drumkit->v_samples[nn];
             else
                {
-                //auto search = drumkit->map_samples[note_number];
-                 
-                 
-                //if (search == drumkit->map_samples.end())
                 if (drumkit->map_samples.count (note_number) > 0) 
                   {
                     s = drumkit->map_samples[note_number];
                    std::cout << "play mapped note: " << note_number << std::endl;
-                    
                   } 
-                 
-                 
                }
   
             if (! s)
