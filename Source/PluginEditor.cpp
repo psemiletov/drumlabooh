@@ -788,35 +788,16 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   
   
-  // PAN MODE
-#ifndef MULTICHANNEL
+  addAndMakeVisible (bt_ignore_midi_velocity);
   
-  addAndMakeVisible (l_pan_mode);
-  l_pan_mode.setTopLeftPosition (l_base_note.getX(), sl_base_note.getBottom() + YFILLER);
-  l_pan_mode.setSize (100, 32);
-  cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
-  cmb_pan_mode.setColour (juce::ComboBox::textColourId, Colours::white);
-
-  addAndMakeVisible (cmb_pan_mode);
-      //  cmb_pan_mode.onChange = [this] { panner_modeMenuChanged(); };
-  cmb_pan_mode.setSize (180 + XFILLER, 42);
+  att_ignore_midi_velocity.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "ignore_midi_velocity", bt_ignore_midi_velocity));
+  bt_ignore_midi_velocity.setButtonText ("Ignore MIDI velocity");
+  bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
+  bt_ignore_midi_velocity.setSize (180 + XFILLER, 48);
+  bt_ignore_midi_velocity.setTopLeftPosition (l_base_note.getX(), sl_base_note.getBottom());
   
   
-  cmb_pan_mode.addItem ("equal power panning, law: -3 dB", PANMODE01); //sin/cos panner
-  cmb_pan_mode.addItem ("square root panner, law: -3 dB", PANMODE02);
-  cmb_pan_mode.addItem ("linear panner, law: 0 dB", PANMODE03);
-  cmb_pan_mode.addItem ("linear panner, law: -6 dB", PANMODE04);
-  cmb_pan_mode.addItem ("power panner, law: -4.5 dB", PANMODE05);
-  cmb_pan_mode.addItem ("power panner, law: -6 dB", PANMODE06);
-  cmb_pan_mode.addItem ("sinus panner, law: -1.3 dB", PANMODE07);
-
-  att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
-
-  cmb_pan_mode.setTopLeftPosition (cmb_midimap_mode.getX(), sl_base_note.getBottom() + YFILLER);
-
-  
-#endif
-  
+ 
   
 //MULTI
 /*
@@ -857,28 +838,48 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   att_global_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "global_analog_amount", sl_global_analog_amount));
    
 
+  
+    // PAN MODE
+  
+  addAndMakeVisible (l_pan_mode);
+  l_pan_mode.setTopLeftPosition (bt_global_analog_on.getX(), bt_global_analog_on.getBottom() + YFILLER);
+  l_pan_mode.setSize (100, 32);
+  cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
+  cmb_pan_mode.setColour (juce::ComboBox::textColourId, Colours::white);
+
+  addAndMakeVisible (cmb_pan_mode);
+      //  cmb_pan_mode.onChange = [this] { panner_modeMenuChanged(); };
+  cmb_pan_mode.setSize (180 + XFILLER, 42);
+  
+  
+  cmb_pan_mode.addItem ("equal power panning, law: -3 dB", PANMODE01); //sin/cos panner
+  cmb_pan_mode.addItem ("square root panner, law: -3 dB", PANMODE02);
+  cmb_pan_mode.addItem ("linear panner, law: 0 dB", PANMODE03);
+  cmb_pan_mode.addItem ("linear panner, law: -6 dB", PANMODE04);
+  cmb_pan_mode.addItem ("power panner, law: -4.5 dB", PANMODE05);
+  cmb_pan_mode.addItem ("power panner, law: -6 dB", PANMODE06);
+  cmb_pan_mode.addItem ("sinus panner, law: -1.3 dB", PANMODE07);
+
+  att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
+
+  cmb_pan_mode.setTopLeftPosition (l_pan_mode.getRight(), l_pan_mode.getY());
+
+  
+
+  
 #endif
   
-    
   
-  addAndMakeVisible (bt_ignore_midi_velocity);
-  
-  att_ignore_midi_velocity.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "ignore_midi_velocity", bt_ignore_midi_velocity));
-  bt_ignore_midi_velocity.setButtonText ("Ignore MIDI velocity");
-  bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
-  bt_ignore_midi_velocity.setSize (180 + XFILLER, 48);
-
 
 #ifndef MULTICHANNEL
   
-  bt_ignore_midi_velocity.setTopLeftPosition (bt_global_analog_on.getX(), bt_global_analog_on.getBottom());
   
   gr_options.setSize (800, sl_base_note.getHeight() + YFILLER + 
                            cmb_pan_mode.getHeight() + YFILLER + 
                            cmb_midimap_mode.getHeight() + YFILLER);
 #else
 
-  bt_ignore_midi_velocity.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER, gr_options.getY() + YFILLER);
+//  bt_ignore_midi_velocity.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER, gr_options.getY() + YFILLER);
   
   gr_options.setSize (800, sl_base_note.getHeight() + YFILLER + bt_ignore_midi_velocity.getHeight() + YFILLER);
   
@@ -889,8 +890,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
    
   
   
-
-//////////////END OF OPTIONS  
 ////////////////////////              
   
 //  setSize (drumcells_viewer.getRight() + XFILLER * 2, 
