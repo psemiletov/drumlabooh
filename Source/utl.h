@@ -33,5 +33,7 @@ std::string replace_string(std::string subject, const std::string& search, const
 std::string transform_kit_path_to_local (const std::string &path);
 std::string transform_kit_path_from_local (const std::string &path);
 
+std::string bytes_to_file_size (size_t val);
+
 
 #endif

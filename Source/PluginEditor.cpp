@@ -517,8 +517,21 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
       }
    else
        kit_image.setImage(juce::Image ());
+    
+
 }
 
+
+void CAudioProcessorEditor::log (const std::string &s)
+{
+   String v = s + "\n"; 
+   log_area.setFont (f_log);
+   log_area.setCaretPosition (0);
+   log_area.insertTextAtCaret (s);	
+   log_area.setCaretPosition (0);
+   
+}
+  
 
 CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts)
                                              : AudioProcessorEditor (&parent),
@@ -685,6 +698,10 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
                                       //update GUI
                                      load_kit (full);
 
+                                     
+                                     log (audioProcessor.drumkit->kit_name);
+                                     log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+                                     
                                      tmr_leds.startTimer (1000 / 15); //15 FPS
                                     });
 
@@ -713,6 +730,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
   load_kit (audioProcessor.drumkit_path);
+    
 
   addAndMakeVisible (drumcells_group);
 
@@ -784,9 +802,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   sl_base_note.addListener (this);
   sl_base_note.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
 
-  
-
-  
+   
   
   addAndMakeVisible (bt_ignore_midi_velocity);
   
@@ -797,21 +813,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   bt_ignore_midi_velocity.setTopLeftPosition (l_base_note.getX(), sl_base_note.getBottom());
   
   
- 
-  
-//MULTI
-/*
-  addAndMakeVisible (bt_ignore_midi_velocity);
-  bt_ignore_midi_velocity.setButtonText ("Ignore MIDI velocity");
-  bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
-  bt_ignore_midi_velocity.setSize (180 + XFILLER, 48);
-  bt_ignore_midi_velocity.setTopLeftPosition (l_base_note.getX(), sl_base_note.getBottom() + YFILLER);
-
-  att_ignore_midi_velocity.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "ignore_midi_velocity", bt_ignore_midi_velocity));
-
-
-  gr_options.setSize (gr_kitinfo.getWidth(), sl_base_note.getHeight() + YFILLER + bt_ignore_midi_velocity.getHeight() +  YFILLER * 2);
-*/
  
 
 #ifndef MULTICHANNEL
@@ -846,7 +847,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
 
   cmb_pan_mode.setTopLeftPosition (l_pan_mode.getRight(), l_pan_mode.getY());
-
   
   
   
@@ -862,7 +862,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   
  
   addAndMakeVisible (sl_global_analog_amount);
-  sl_global_analog_amount.setTopLeftPosition (bt_global_analog_on.getRight() + XFILLER, bt_global_analog_on.getY() + YFILLER);
+  sl_global_analog_amount.setTopLeftPosition (cmb_pan_mode.getX(), bt_global_analog_on.getY() + YFILLER);
   sl_global_analog_amount.setSize (192, 48);
   sl_global_analog_amount.setRange (0.0f, 1.0f, 0.01f);
   sl_global_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
@@ -873,6 +873,11 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
    
 
   
+  addAndMakeVisible (log_area);
+  log_area.setMultiLine (true, true);
+  log_area.setReadOnly (true);
+   log_area.setTopLeftPosition (sl_global_analog_amount.getRight(), l_midimap_mode.getY());
+  log_area.setSize (170, 148);
   
   
 #endif
@@ -888,7 +893,12 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
                            bt_ignore_midi_velocity.getHeight());
 #else
 
-//  bt_ignore_midi_velocity.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER, gr_options.getY() + YFILLER);
+  
+  addAndMakeVisible (log_area);
+  log_area.setFont (f_log);
+  log_area.setTopLeftPosition (cmb_midimap_mode.getRight(), l_midimap_mode.getY());
+  log_area.setSize (170, 148);
+
   
   gr_options.setSize (810, sl_base_note.getHeight() + 
                            bt_ignore_midi_velocity.getHeight());
@@ -908,7 +918,10 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
    setSize (drumcells_viewer.getRight() + XFILLER * 2, 
            gr_options.getBottom());
 
- 
+ if (audioProcessor.drumkit)
+ { log (audioProcessor.drumkit->kit_name);
+  log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+ }
   
   tmr_leds.uplink = this;
   tmr_leds.startTimer (1000 / 15); //15 FPS
@@ -981,6 +994,12 @@ void CAudioProcessorEditor::comboBoxChanged (juce::ComboBox *comboBox)
       //update GUI
       load_kit (full);
 
+      
+      if (audioProcessor.drumkit)
+      {log (audioProcessor.drumkit->kit_name);
+      log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+      }
+      
       tmr_leds.startTimer (1000 / 15); //15 FPS
     }
 }
@@ -1093,6 +1112,12 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
       //update GUI
   editor->load_kit (full);
 
+  if (editor->audioProcessor.drumkit)
+      {editor->log (editor->audioProcessor.drumkit->kit_name);
+      editor->log (bytes_to_file_size (editor->audioProcessor.drumkit->total_samples_size()));
+      }
+
+  
   editor->tmr_leds.startTimer (1000 / 15); //15 FPS  
   
 }

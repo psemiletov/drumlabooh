@@ -76,6 +76,8 @@ public:
   int session_samplerate; //session srate, taken from the upper object
 
   bool active;
+  
+  bool has_mapping;
 
   int mapped_note;
   
@@ -129,6 +131,9 @@ public:
   int samplerate; //session srate
 
   bool layers_supported;
+  bool has_mapping;
+
+  size_t total_samples_size();
   
   std::vector <CDrumSample*> v_samples;
   std::map <int, CDrumSample*> map_samples; 

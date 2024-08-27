@@ -1,32 +1,19 @@
 /*
-Peter Semiletov, 2023
+Peter Semiletov, 2023-24
 */
 
 
 #ifndef DSP_H
 #define DSP_H
-/*
-#if defined(__clang__)
-//
-#elif defined(__GNUC__) || defined(__GNUG__)
-
-#define MXCSR_DAZ (1<<6)
-#define MXCSR_FTZ (1<<15)
-
-#elif defined(_MSC_VER)
-//
-#endif
-*/
 
 //#define _USE_MATH_DEFINES
 
 #include <cmath>
 #include <limits>
-//#include <ostream>
 #include <iostream>
 #include <vector>
-
 #include <algorithm>
+
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -205,9 +192,6 @@ inline void pan_sin_1_3 (float &l, float &r, float p)
        r = right * norm_factor;
      }
 }
-
-
-
 
 
 float warmify(float x, float warmth);

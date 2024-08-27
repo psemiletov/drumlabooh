@@ -145,7 +145,7 @@ class CDrumCell: public juce::Component/*,
 {
 public:
 
-  juce::Font f_samplename_font { 14.0f, juce::Font::bold};
+  juce::Font f_samplename_font { 9.0f, juce::Font::bold};
 
   juce::GroupComponent gr_group;
   juce::Slider sl_pan;
@@ -236,6 +236,8 @@ public:
 
   CDrumkitsListBoxModel drumkits_model;
   ListBox drumkits_listbox;
+  
+  TextEditor log_area;
 
  // juce::Font f_listbox_font { 12.0f, juce::Font::bold};
 
@@ -287,7 +289,7 @@ public:
   juce::Font f_logo { 30.0f, juce::Font::bold};
 //END OF TOPBAR
   
-  
+  juce::Font f_log { 18.0f, juce::Font::bold};
   juce::Font f_kits { 30.0f, juce::Font::bold};
 
   
@@ -317,7 +319,8 @@ public:
   ~CAudioProcessorEditor() override;
 
   void load_kit (const std::string &kitpath);
-
+  void log (const std::string &s);
+  
   void paint (juce::Graphics&) override;
   void resized() override;
 

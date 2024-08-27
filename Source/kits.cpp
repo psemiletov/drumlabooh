@@ -35,8 +35,6 @@ std::mt19937 rnd_mt19937;
 
 std::string get_part (std::string &s)
 {
-//  std::cout << "get_part, s:" << s << std::endl;
-  
   size_t first = s.find("[");
   size_t last = s.find("]", first);
 
@@ -45,9 +43,6 @@ std::string get_part (std::string &s)
 
   if (last == std::string::npos)
      return std::string("");
-
-
-  
 
   std::string result = s.substr (first + 1, last - first - 1);
   s.erase(first,last-first+1);
@@ -207,6 +202,8 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
 
   samplerate = sess_samplerate;
   length_in_samples = output_frames_count;
+  
+//  std::cout << "length_in_samples: " << length_in_samples << std::endl;
 
   delete buffer;
 
@@ -557,6 +554,7 @@ FIXED
                  v_samples.back()->mapped_note = std::stoi(str_note);
                  map_samples[v_samples.back()->mapped_note] = v_samples.back();
                  std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
+                 has_mapping = true;
                 } 
          
          /////////////////////
@@ -622,6 +620,7 @@ FIXED
                       v_samples.back()->mapped_note = std::stoi(str_note);
                       map_samples[v_samples.back()->mapped_note] = v_samples.back();
                       std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
+                      has_mapping = true;
                      } 
                  } 
              }
@@ -900,6 +899,7 @@ CDrumKit::CDrumKit()
 {
   scan_mode = false;
   layers_supported = false;
+  has_mapping = false;
 
   v_hat_open_signatures.push_back ("hat_o");
   v_hat_open_signatures.push_back ("open");
@@ -929,6 +929,44 @@ void CDrumKit::add_sample()
   v_samples.push_back (s);
 }
 
+
+size_t CDrumKit::total_samples_size()
+{
+  if (v_samples.size() == 0)
+      return 0;
+  
+  std::cout << "CDrumKit::total_samples_size() - 1\n";
+  
+  size_t result = 0; 
+ 
+  for (size_t i = 0; i < v_samples.size(); i++)
+      { 
+       CDrumSample *s = v_samples[i];
+   
+       if (s->v_layers.size() == 0)
+          continue;
+        
+       //std::cout << "s->v_layers.size():" << s->v_layers.size() << std::endl; 
+ 
+       for (size_t j = 0; j < s->v_layers.size(); j++)
+           {
+            std::cout << "j:" << j << std::endl; 
+            
+            if (s->v_layers[j]->audio_buffer)
+               
+            {std::cout << "s->v_layers[j]->length_in_samples:" << s->v_layers[j]->audio_buffer->getNumSamples() << std::endl; 
+              result += s->v_layers[j]->audio_buffer->getNumSamples(); }
+            std::cout << result << std::endl;
+            
+           } 
+       
+      }
+
+  std::cout << "CDrumKit::total_samples_size() - 2\n";
+    
+      
+  return result * sizeof (float);    
+}
 
 void CDrumKit::print()
 {

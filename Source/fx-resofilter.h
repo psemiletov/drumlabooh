@@ -56,7 +56,7 @@ public:
 
                cutoff = v;
                calc_feedback_amount();
-             };
+              };
 
   inline void set_resonance (float v)
               {

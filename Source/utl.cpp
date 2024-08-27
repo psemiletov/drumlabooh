@@ -393,7 +393,6 @@ std::string transform_kit_path_to_local (const std::string &path)
      result = replace_string (result, "$HOME", get_home_dir()); 
     
   return result;  
-   
 }
 
 
@@ -404,5 +403,19 @@ std::string transform_kit_path_from_local (const std::string &path)
      result = replace_string (result, get_home_dir(), "$HOME"); 
     
   return result;  
-  
+}
+
+
+std::string bytes_to_file_size (size_t val)
+{
+  if (val >= 1073741824)
+     return std::to_string (val / 1073741824) + " gbytes";
+
+  if (val >= 1048576)
+     return std::to_string (val / 1048576) + " mbytes";
+
+  if (val >= 1024)
+     return std::to_string (val / 1024) + " kbytes";
+
+  return std::to_string (val) + " bytes";;
 }

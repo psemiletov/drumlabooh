@@ -475,16 +475,12 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
        if (isNoteOn )
           {
            int nn = note_number - base_note_number;
-
-           //if (nn < 0 || nn > v_samples_size - 1)
-              //continue;
            
            if (int_midimap_mode == MIDIMAPMODE_LABOOH)
                if (nn < 0 || nn > v_samples_size - 1)
                    continue;
 
 
-           //CDrumSample *s = drumkit->v_samples[nn];
             CDrumSample *s = 0;
 
             if (int_midimap_mode == MIDIMAPMODE_LABOOH)
@@ -493,6 +489,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                 if (drumkit->map_samples.count (note_number) > 0) 
                   {
                    s = drumkit->map_samples[note_number];
+                   
                    //std::cout << "play mapped note: " << note_number << std::endl;
                   } 
   
