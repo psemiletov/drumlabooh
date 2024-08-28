@@ -276,7 +276,7 @@ public:
   juce::Font f_logo { 30.0f, juce::Font::bold};
 //END OF TOPBAR
   
-  juce::Font f_log { 18.0f, juce::Font::bold};
+  juce::Font f_log { 14.0f, juce::Font::bold};
   juce::Font f_kits { 30.0f, juce::Font::bold};
 
   

@@ -511,12 +511,10 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 
 void CAudioProcessorEditor::log (const std::string &s)
 {
-   String v = s + "\n"; 
-   log_area.setFont (f_log);
-   log_area.setCaretPosition (0);
-   log_area.insertTextAtCaret (s);	
-   log_area.setCaretPosition (0);
-   
+  String v = s + "\n"; 
+  log_area.setFont (f_log);
+  log_area.insertTextAtCaret (s);
+  log_area.setCaretPosition (0);
 }
   
 
@@ -1101,9 +1099,14 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
   editor->load_kit (full);
 
   if (editor->audioProcessor.drumkit)
-      {editor->log (editor->audioProcessor.drumkit->kit_name);
-      editor->log (bytes_to_file_size (editor->audioProcessor.drumkit->total_samples_size()));
-      }
+     {
+      editor->log ("***\n");
+      editor->log ("\n");
+            editor->log (bytes_to_file_size (editor->audioProcessor.drumkit->total_samples_size()));
+      editor->log ("\n");
+      editor->log (editor->audioProcessor.drumkit->kit_name);
+      editor->log ("loaded:\n");
+     }
 
   
   editor->tmr_leds.startTimer (1000 / 15); //15 FPS  
