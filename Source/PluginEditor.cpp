@@ -64,8 +64,6 @@ CFx::CFx()
   sl_analog_amount.setSize (82, 82);
 
   sl_analog_amount.setSliderStyle (juce::Slider::Rotary);
-  //sl_analog_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
-  //sl_analog_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
   sl_analog_amount.setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
   sl_analog_amount.setTooltip ("Amount");
 
@@ -378,17 +376,6 @@ CDrumCell::~CDrumCell()
     delete wnd_fx;
 }
 
-/*
-void CDrumCell::paint (juce::Graphics& g)
-{
-  // g.fillAll (juce::Colour (0xff323e44));
-}
-
-
-void CDrumCell::resized()
-{
-}
-*/
 
 #ifndef MULTICHANNEL
 
@@ -483,17 +470,17 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
        drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
       }
 
-  if (kits_scanner.v_scanned_kits.size() == 0)
+  if (audioProcessor.scanner.v_scanned_kits.size() == 0)
       return;
 
   //find kit at v_scanned_kits
 
   CDrumKit *k = 0;
 
-  for (size_t i = 0; i < kits_scanner.v_scanned_kits.size() ; i++)
+  for (size_t i = 0; i < audioProcessor.scanner.v_scanned_kits.size() ; i++)
       {
-       if (kits_scanner.v_scanned_kits[i]->kit_filename == real_kitpath)
-          k = kits_scanner.v_scanned_kits[i];
+       if (audioProcessor.scanner.v_scanned_kits[i]->kit_filename == real_kitpath)
+          k = audioProcessor.scanner.v_scanned_kits[i];
       }
 
   if (! k)
@@ -542,13 +529,13 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   drumkits_model.editor = this;
   
-  kits_scanner.scan();
+  //kits_scanner.scan();
 
-  for (size_t i = 0; i < kits_scanner.v_kits_names.size(); i++)
+  for (size_t i = 0; i < audioProcessor.scanner.v_kits_names.size(); i++)
       {
-       cmb_drumkit_selector.addItem (kits_scanner.v_kits_names[i], i + 1);
+//       cmb_drumkit_selector.addItem (kits_scanner.v_kits_names[i], i + 1);
        
-       drumkits_model.items.push_back (kits_scanner.v_kits_names[i]);
+       drumkits_model.items.push_back (audioProcessor.scanner.v_kits_names[i]);
        drumkits_model.indexes.push_back (i);
       }
 
@@ -978,7 +965,7 @@ void CAudioProcessorEditor::kit_changed()
 void CAudioProcessorEditor::comboBoxChanged (juce::ComboBox *comboBox)
 {
    //std::cout << "CAudioProcessorEditor::comboBoxChanged" << std::endl;
-  if (comboBox == &cmb_drumkit_selector)
+/*  if (comboBox == &cmb_drumkit_selector)
      {
       int id = cmb_drumkit_selector.getSelectedId();
       if (id == 0)
@@ -1002,6 +989,7 @@ void CAudioProcessorEditor::comboBoxChanged (juce::ComboBox *comboBox)
       
       tmr_leds.startTimer (1000 / 15); //15 FPS
     }
+    */
 }
 
 
@@ -1102,7 +1090,7 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
       return;
   
   //std::string full = editor->kits_scanner.map_kits[kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1]];
-  std::string full = editor->kits_scanner.map_kits[editor->kits_scanner.v_kits_names [lastRowSelected]]; //why not direct index?
+  std::string full = editor->audioProcessor.scanner.map_kits[editor->audioProcessor.scanner.v_kits_names [lastRowSelected]]; //why not direct index?
 
   editor->audioProcessor.drumkit_path = full;
   editor->tmr_leds.stopTimer();

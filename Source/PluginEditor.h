@@ -40,21 +40,6 @@ public:
 };
 
 
-class CDrumkitsListbox: public ListBox
-{
-public:  
-  
-  void paint	(Graphics&	g) override
-       {
-        g.setFont (32); 
-        ListBox::paint (g); 
-         
-       }
-
-  
-};
-
-
 class CTimer: public juce::HighResolutionTimer
 {
 public:
@@ -145,7 +130,7 @@ class CDrumCell: public juce::Component/*,
 {
 public:
 
-  juce::Font f_samplename_font { 9.0f, juce::Font::bold};
+  juce::Font f_samplename_font { 16.0f, juce::Font::bold};
 
   juce::GroupComponent gr_group;
   juce::Slider sl_pan;
@@ -187,7 +172,7 @@ class CDrumCell: public juce::Component/*,
 {
 public:
 
-  juce::Font f_samplename_font { 14.0f, juce::Font::bold};
+  juce::Font f_samplename_font { 16.0f, juce::Font::bold};
 
   juce::GroupComponent gr_group;
 
@@ -225,7 +210,7 @@ public:
 
   CAudioProcessor& audioProcessor;
 
-  CDrumKitsScanner kits_scanner;
+ // CDrumKitsScanner kits_scanner;
   CTimer tmr_leds;
   CDrumCell drumcells [36];
 
@@ -239,7 +224,7 @@ public:
   
   TextEditor log_area;
 
- // juce::Font f_listbox_font { 12.0f, juce::Font::bold};
+
 
 //////////////////////////////////
 //OPTIONS CONTROLS  
@@ -266,6 +251,8 @@ public:
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_base_note;
   juce::Label l_base_note { {}, "Base MIDI note" };
   juce::Slider sl_base_note;
+
+  juce::GroupComponent gr_options;
 
 
 //END OF OPTIONS CONTROLS  
@@ -303,16 +290,12 @@ public:
   juce::Label l_drumkit_name;
   juce::TextButton bt_drumkit_info;
 
-  juce::GroupComponent gr_options;
-
   juce::GroupComponent gr_drumkits;
-
   juce::GroupComponent gr_kitbuttons;
 
   
-  
-  juce::Label l_drumkit_selector { {}, "Drumkit selector" };
-  juce::ComboBox cmb_drumkit_selector;
+//  juce::Label l_drumkit_selector { {}, "Drumkit selector" };
+//  juce::ComboBox cmb_drumkit_selector;
 
 
   CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts);

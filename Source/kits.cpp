@@ -553,7 +553,7 @@ FIXED
                 {
                  v_samples.back()->mapped_note = std::stoi(str_note);
                  map_samples[v_samples.back()->mapped_note] = v_samples.back();
-                 std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
+                // std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
                  has_mapping = true;
                 } 
          
@@ -619,7 +619,7 @@ FIXED
                      {
                       v_samples.back()->mapped_note = std::stoi(str_note);
                       map_samples[v_samples.back()->mapped_note] = v_samples.back();
-                      std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
+                    //  std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
                       has_mapping = true;
                      } 
                  } 

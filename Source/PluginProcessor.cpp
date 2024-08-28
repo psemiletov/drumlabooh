@@ -160,6 +160,9 @@ CAudioProcessor::CAudioProcessor()
 
   init_db();
   rnd_init();
+
+  scanner.scan();
+
   
   fresh_start = true;
   drumkit = 0;
@@ -207,6 +210,9 @@ CAudioProcessor::CAudioProcessor()
   init_db();
   rnd_init();
 
+  scanner.scan();
+
+  
   fresh_start = true;
   drumkit = 0;
   drumkit_path = "";
