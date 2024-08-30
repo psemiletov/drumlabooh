@@ -260,7 +260,9 @@ public:
   juce::TextButton bt_file_open;
   std::unique_ptr<juce::FileChooser> dlg_fileopen;
   
-
+  juce::TextButton bt_kit_adapt;
+  
+  
   juce::TooltipWindow tooltip_window;
 
   juce::GroupComponent gr_kitinfo;
@@ -303,6 +305,11 @@ public:
 
   void load_kit (const std::string &kitpath);
   void log (const std::string &s);
+  
+  
+  void adapt();
+  void update_kits_list();
+  
   
   void paint (juce::Graphics&) override;
   void resized() override;

@@ -1,7 +1,7 @@
 /*
-written at 2023 by Peter Semiletov
+written at 2023-24 by Peter Semiletov
 this code is the public domain
- */
+*/
 
 
 #include <iostream>
@@ -11,10 +11,10 @@ this code is the public domain
 #include <string>
 #include <cctype>
 
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
 
 #if !defined(_WIN32) || !defined(_WIN64)
 
@@ -25,12 +25,12 @@ this code is the public domain
 
 #include <Windows.h>
 #include <shlobj.h>
-
 //#include <shlobj_core.h>
 //#include <KnownFolders.h>
 //#include <wchar.h>
 
 #endif
+
 
 #include "utl.h"
 
@@ -50,10 +50,10 @@ bool file_exists (const string &name)
 
 bool ends_with (std::string const & value, std::string const & ending)
 {
-    if (ending.size() > value.size())
-       return false;
+  if (ending.size() > value.size())
+     return false;
 
-    return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+  return std::equal (ending.rbegin(), ending.rend(), value.rbegin());
 }
 
 

@@ -463,6 +463,8 @@ void CDrumKit::load_txt (const std::string &data)
   size_t i = kit_dir.rfind ("/");
   kit_name = kit_dir.substr (i + 1);
 
+  kit_type = KIT_TYPE_DRUMLABOOH;
+  
   stringstream st (data);
   string line;
 
@@ -705,6 +707,9 @@ void CDrumKit::load_sfz (const std::string &data)
 
   //change crlf in data to lf
 
+  kit_type = KIT_TYPE_SFZ;
+
+  
   std::string temp_data = string_replace_all (data, "\r\n", "\n");
   temp_data = string_replace_all (data, "\\", "/");
 
@@ -845,6 +850,9 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
   //else Hydrogen format
 
+  
+  kit_type = KIT_TYPE_HYDROGEN;
+
   pugi::xml_document doc;
 
  // cout << "loading kit: " << fname << endl;
@@ -935,7 +943,7 @@ size_t CDrumKit::total_samples_size()
   if (v_samples.size() == 0)
       return 0;
   
-  std::cout << "CDrumKit::total_samples_size() - 1\n";
+//  std::cout << "CDrumKit::total_samples_size() - 1\n";
   
   size_t result = 0; 
  
@@ -950,20 +958,20 @@ size_t CDrumKit::total_samples_size()
  
        for (size_t j = 0; j < s->v_layers.size(); j++)
            {
-            std::cout << "j:" << j << std::endl; 
+//            std::cout << "j:" << j << std::endl; 
             
             if (s->v_layers[j]->audio_buffer)
                
-            {std::cout << "s->v_layers[j]->length_in_samples:" << s->v_layers[j]->audio_buffer->getNumSamples() << std::endl; 
+            {
+             // std::cout << "s->v_layers[j]->length_in_samples:" << s->v_layers[j]->audio_buffer->getNumSamples() << std::endl; 
               result += s->v_layers[j]->audio_buffer->getNumSamples(); }
-            std::cout << result << std::endl;
+            //std::cout << result << std::endl;
             
            } 
        
       }
 
-  std::cout << "CDrumKit::total_samples_size() - 2\n";
-    
+//  std::cout << "CDrumKit::total_samples_size() - 2\n";
       
   return result * sizeof (float);    
 }
@@ -1015,8 +1023,17 @@ CDrumKitsScanner::~CDrumKitsScanner()
 void CDrumKitsScanner::scan()
 {
   std::vector <std::string> v_kits_locations;
-  v_kits_dirs.clear();
 
+  v_kits_dirs.clear();
+  v_kits_names.clear();
+  map_kits.clear();
+
+  if (v_scanned_kits.size() != 0)
+     for (size_t i = 0; i < v_scanned_kits.size(); i++)
+         {
+          delete v_scanned_kits[i];
+         }
+  
 #if !defined(_WIN32) || !defined(_WIN64)
 
   v_kits_locations.push_back ("/usr/share/hydrogen/data/drumkits");
@@ -1068,8 +1085,6 @@ void CDrumKitsScanner::scan()
 
 #endif
 
-//  std::vector <std::string> v_kits_dirs;
-
   for (std::string i: v_kits_locations)
       {
        std::vector <std::string> v_kits_dirs_t = files_get_list (i);
@@ -1117,7 +1132,6 @@ void CDrumKitsScanner::scan()
            kit->scan_mode = true;
            kit->load (fname.c_str(), 44100);
            v_scanned_kits.push_back (kit);
-//           v_kits_names.push_back (kit->kit_name);
            map_kits.insert (pair<string,string> (kit->kit_name, fname));
           }
 

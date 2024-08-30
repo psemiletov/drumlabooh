@@ -458,6 +458,7 @@ void CDrumCell::set_name (const std::string &n)
 }
 
 
+//load_kit just updates GUI, actual kit load is at CAudioProcessor::load_kit 
 void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 {
   //make all drum labels empty
@@ -516,7 +517,63 @@ void CAudioProcessorEditor::log (const std::string &s)
   log_area.insertTextAtCaret (s);
   log_area.setCaretPosition (0);
 }
+
+
+void CAudioProcessorEditor::update_kits_list()
+{
+ 
+  drumkits_model.items.clear();
   
+  for (size_t i = 0; i < audioProcessor.scanner.v_kits_names.size(); i++)
+      {
+       drumkits_model.items.push_back (audioProcessor.scanner.v_kits_names[i]);
+       drumkits_model.indexes.push_back (i);
+      }
+
+  
+}
+
+
+void CAudioProcessorEditor::adapt()
+{
+  if (! audioProcessor.drumkit)
+     return;
+    
+  if (audioProcessor.drumkit->kit_type != KIT_TYPE_DRUMLABOOH)
+     return;
+  
+  std::string new_path = get_home_dir() + "/drum_sklad/";
+  std::string srate = std::to_string (audioProcessor.session_samplerate);
+  
+  new_path += audioProcessor.drumkit->kit_name;
+  new_path += "-";
+  new_path += srate;
+  
+  File source_dir (audioProcessor.drumkit->kit_dir);
+  File dest_dir (new_path);
+  
+  if (source_dir.copyDirectoryTo (dest_dir)) 
+     {
+      audioProcessor.scanner.scan(); 
+      update_kits_list();
+      
+      audioProcessor.drumkit_path = new_path + "/drumkit.txt";
+      
+      tmr_leds.stopTimer();
+
+      audioProcessor.load_kit (audioProcessor.drumkit_path);
+
+      //update GUI
+      load_kit (audioProcessor.drumkit_path);
+               
+      log (audioProcessor.drumkit->kit_name);
+      log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+                                     
+      tmr_leds.startTimer (1000 / 15); //15 FPS
+     }
+  
+}
+
 
 CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts)
                                              : AudioProcessorEditor (&parent),
@@ -528,7 +585,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   drumkits_model.editor = this;
   
   //kits_scanner.scan();
-
+/*
   for (size_t i = 0; i < audioProcessor.scanner.v_kits_names.size(); i++)
       {
 //       cmb_drumkit_selector.addItem (kits_scanner.v_kits_names[i], i + 1);
@@ -536,6 +593,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
        drumkits_model.items.push_back (audioProcessor.scanner.v_kits_names[i]);
        drumkits_model.indexes.push_back (i);
       }
+*/
+   update_kits_list();
 
   //NamedValueSet& drumkits_listbox_props = drumkits_listbox.getProperties();   
   //drumkits_listbox_props.set ("fontSize", 24);
@@ -643,7 +702,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   addAndMakeVisible (bt_file_open);
 
   bt_file_open.setTopLeftPosition (gr_kitbuttons.getX() + XFILLER, gr_kitbuttons.getY() + YFILLER);
-  bt_file_open.setSize (52, 40);
+  bt_file_open.setSize (54, 40);
     
   bt_file_open.onClick = [this] {
 
@@ -692,6 +751,18 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
                             };
 
+                            
+  bt_kit_adapt.setButtonText ("ADAPT");
+  addAndMakeVisible (bt_kit_adapt);
+
+  bt_kit_adapt.setTopLeftPosition (bt_file_open.getRight() + XFILLER, gr_kitbuttons.getY() + YFILLER);
+  bt_kit_adapt.setSize (54, 40);
+    
+  bt_kit_adapt.onClick = [this] { 
+                                 adapt(); 
+
+  };                             
+                            
 //END KIT BUTTONS
 /////////////////////////////////                            
                        

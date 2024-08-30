@@ -24,6 +24,10 @@ this code is the public domain
 #define LAYER_INDEX_MODE_ROBIN 2
 #define LAYER_INDEX_MODE_NOVELOCITY 3
 
+#define KIT_TYPE_DRUMLABOOH 0
+#define KIT_TYPE_HYDROGEN 1
+#define KIT_TYPE_SFZ 2
+
 
 class CDrumSample;
 
@@ -39,8 +43,8 @@ public:
   float min;
   float max;
 
-  std::string file_name; //name of the loaded file
-
+  std::string file_name; //name of the loaded file, full path
+  
  // int channels; //channels at this layer
  //channels veariable has been removed as we have mono only
 
@@ -68,7 +72,6 @@ class CDrumSample
 {
 public:
 
-
   std::string name;
   int id;
   int current_layer;
@@ -83,11 +86,6 @@ public:
   
   //float random_number; //changes as sample triggers
   //float noise_level;
-
-//  bool use_random_noice;
-  
-  //bool use_rnd;
-  //bool use_robin;
   
   int layer_index_mode; //0 - velocity, 1 - rnd, 2 - round robin
   
@@ -125,7 +123,8 @@ public:
   std::string kit_name; //parsed from XML
   std::string kit_filename; //full path to the kit xml, txt or sfz file
   std::string kit_dir; //full path to the kit
-
+  int kit_type; 
+  
   std::string image_fname;
 
   int samplerate; //session srate
