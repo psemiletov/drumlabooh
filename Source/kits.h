@@ -150,6 +150,8 @@ public:
 
   void print();
   void print_stats();
+  
+  void save(); //for Adapt function
 };
 
 
@@ -159,7 +161,7 @@ public:
 
   std::vector <std::string> v_kits_dirs;
   std::vector <std::string> v_kits_names;
-  std::vector <CDrumKit*> v_scanned_kits;
+  //std::vector <CDrumKit*> v_scanned_kits;
   std::map <std::string, std::string> map_kits; //name = full path
 
   CDrumKitsScanner();

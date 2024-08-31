@@ -303,7 +303,10 @@ public:
   CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts);
   ~CAudioProcessorEditor() override;
 
-  void load_kit (const std::string &kitpath);
+  //void load_kit (const std::string &kitpath);
+  
+  void load_kit();
+
   void log (const std::string &s);
   
   

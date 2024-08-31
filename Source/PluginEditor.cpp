@@ -459,6 +459,50 @@ void CDrumCell::set_name (const std::string &n)
 
 
 //load_kit just updates GUI, actual kit load is at CAudioProcessor::load_kit 
+void CAudioProcessorEditor::load_kit()
+{
+  //make all drum labels empty
+
+  if (! audioProcessor.drumkit)
+     return;
+  
+  //std::string real_kitpath = transform_kit_path_to_local (kitpath);
+  
+  for (size_t i = 0; i < 36; i++)
+      {
+       drumcells[i].set_name ("EMPTY CELL");
+       drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
+      }
+
+  
+  //find kit at v_scanned_kits
+
+  //CDrumKit *k = audioProcessor.drumkit;
+
+  for (size_t i = 0; i < audioProcessor.drumkit->v_samples.size(); i++)
+      {
+       drumcells[i].set_name (audioProcessor.drumkit->v_samples[i]->name);
+       drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+      }
+
+   juce::String kitname = audioProcessor.drumkit->kit_name.c_str();
+
+   l_kitinfo.setText (kitname, juce::dontSendNotification );
+
+   if (file_exists (audioProcessor.drumkit->image_fname))
+      {
+       juce::File fl (audioProcessor.drumkit->image_fname);
+       juce::Image im = juce::ImageFileFormat::loadFrom (fl);
+       kit_image.setImage(im);
+      }
+   else
+       kit_image.setImage(juce::Image ());
+
+}
+
+
+/*
+//load_kit just updates GUI, actual kit load is at CAudioProcessor::load_kit 
 void CAudioProcessorEditor::load_kit (const std::string &kitpath)
 {
   //make all drum labels empty
@@ -505,10 +549,9 @@ void CAudioProcessorEditor::load_kit (const std::string &kitpath)
       }
    else
        kit_image.setImage(juce::Image ());
-    
 
 }
-
+*/
 
 void CAudioProcessorEditor::log (const std::string &s)
 {
@@ -564,7 +607,9 @@ void CAudioProcessorEditor::adapt()
       audioProcessor.load_kit (audioProcessor.drumkit_path);
 
       //update GUI
-      load_kit (audioProcessor.drumkit_path);
+    //  load_kit (audioProcessor.drumkit_path);
+      load_kit();
+    
                
       log (audioProcessor.drumkit->kit_name);
       log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
@@ -740,7 +785,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
                                      audioProcessor.load_kit (full);
 
                                       //update GUI
-                                     load_kit (full);
+                                     //load_kit (full);
+                                     load_kit ();
 
                                      
                                      log (audioProcessor.drumkit->kit_name);
@@ -785,8 +831,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
       }
 
 
-  load_kit (audioProcessor.drumkit_path);
-    
+//  load_kit (audioProcessor.drumkit_path);
+    load_kit();
+  
 
   addAndMakeVisible (drumcells_group);
 
@@ -1167,10 +1214,13 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
   editor->audioProcessor.load_kit (full);
 
       //update GUI
-  editor->load_kit (full);
+// editor->load_kit (full);
 
   if (editor->audioProcessor.drumkit)
      {
+      editor->load_kit ();
+ 
+       
       editor->log ("***\n");
       editor->log ("\n");
             editor->log (bytes_to_file_size (editor->audioProcessor.drumkit->total_samples_size()));

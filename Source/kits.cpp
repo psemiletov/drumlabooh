@@ -976,6 +976,36 @@ size_t CDrumKit::total_samples_size()
   return result * sizeof (float);    
 }
 
+
+void CDrumKit::save()
+{
+  if (v_samples.size() == 0)
+      return 0;
+  
+//  std::cout << "CDrumKit::total_samples_size() - 1\n";
+ 
+  for (size_t i = 0; i < v_samples.size(); i++)
+      { 
+       CDrumSample *s = v_samples[i];
+   
+       if (s->v_layers.size() == 0)
+          continue;
+       
+ 
+       for (size_t j = 0; j < s->v_layers.size(); j++)
+           {
+            if (s->v_layers[j]->audio_buffer)
+               {
+                
+               }
+            
+           } 
+       
+      }
+      
+}
+
+
 void CDrumKit::print()
 {
   cout << "void CDrumKit::print() -- start" << endl;
@@ -1013,10 +1043,10 @@ CDrumKitsScanner::CDrumKitsScanner()
 
 CDrumKitsScanner::~CDrumKitsScanner()
 {
-  for (size_t i = 0; i < v_scanned_kits.size(); i++)
+ /* for (size_t i = 0; i < v_scanned_kits.size(); i++)
       {
        delete v_scanned_kits[i];
-      }
+      }*/
 }
 
 
@@ -1028,12 +1058,6 @@ void CDrumKitsScanner::scan()
   v_kits_names.clear();
   map_kits.clear();
 
-  if (v_scanned_kits.size() != 0)
-     for (size_t i = 0; i < v_scanned_kits.size(); i++)
-         {
-          delete v_scanned_kits[i];
-         }
-  
 #if !defined(_WIN32) || !defined(_WIN64)
 
   v_kits_locations.push_back ("/usr/share/hydrogen/data/drumkits");
@@ -1131,30 +1155,40 @@ void CDrumKitsScanner::scan()
            CDrumKit *kit = new CDrumKit;
            kit->scan_mode = true;
            kit->load (fname.c_str(), 44100);
-           v_scanned_kits.push_back (kit);
+           //v_scanned_kits.push_back (kit);
            map_kits.insert (pair<string,string> (kit->kit_name, fname));
+           v_kits_names.push_back (kit->kit_name);
+           delete kit;
           }
 
       }
 
+      
+    std::sort (v_kits_names.begin(), v_kits_names.end());  
+   //CHANGE TO vector sort by ABC  filled v_kits_names 
+/*      
   std::sort (v_scanned_kits.begin(), v_scanned_kits.end(), [](CDrumKit* a, CDrumKit* b) {return a->kit_name < b->kit_name;});
 
   for (auto i : v_scanned_kits)
       {
        v_kits_names.push_back (i->kit_name);
+       ///NEWWWW
+       delete i;
+       ///
+       
       }
-
+*/
 }
 
 
 void CDrumKitsScanner::print()
 {
-  for (size_t i = 0; i < v_scanned_kits.size(); i++)
+ /* for (size_t i = 0; i < v_scanned_kits.size(); i++)
      {
       std::cout << i << ": ";
       v_scanned_kits[i]->print_stats();
       std::cout << v_scanned_kits[i]->kit_name << std::endl;
-     }
+     }*/
 }
 
 
