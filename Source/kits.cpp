@@ -980,7 +980,7 @@ size_t CDrumKit::total_samples_size()
 void CDrumKit::save()
 {
   if (v_samples.size() == 0)
-      return 0;
+      return;
   
 //  std::cout << "CDrumKit::total_samples_size() - 1\n";
  
@@ -996,8 +996,58 @@ void CDrumKit::save()
            {
             if (s->v_layers[j]->audio_buffer)
                {
+                juce::File fl (s->v_layers[j]->file_name);
                 
-               }
+                fl.deleteFile();
+                
+                std::cout << "save file: " << s->v_layers[j]->file_name << std::endl;
+                std::cout << "samplerate: " << s->v_layers[j]->samplerate << std::endl;
+                std::cout << "samples: " << s->v_layers[j]->audio_buffer->getNumSamples() << std::endl;
+                
+                juce::OutputStream *fs = new juce::FileOutputStream (fl); //will be deleted by writer?
+                
+                
+                //if (fs->failedToOpen())
+                  // std::cout << "fs->failedToOpen() " << std::endl;
+                   
+
+                
+
+                juce::AudioFormatWriter *writer = 0;
+                
+                std::string ext = get_file_ext (s->v_layers[j]->file_name);
+                ext = string_to_lower (ext);
+
+                if (ext == "wav")
+                   //writer = WavAudioFormat().createWriterFor (fs, true);
+                  	 writer = WavAudioFormat().createWriterFor (fs, s->v_layers[j]->samplerate, 
+                                                       1,
+                                                      32,//int bitsPerSample, 
+                                                      StringPairArray(), 
+                                                      0);
+                  
+
+//                if (ext == "flac")
+  //                  writer = FlacAudioFormat().createWriterFor (fs, true);
+
+               
+
+    //            if (ext == "aiff")
+      //             writer = AiffAudioFormat().createWriterFor (fs, true);
+
+                if (! writer)
+                   return;
+
+                 std::cout << "write!\n";
+                
+                 
+                 if (! writer->writeFromAudioSampleBuffer (*s->v_layers[j]->audio_buffer, 0, s->v_layers[j]->audio_buffer->getNumSamples()))
+                    std::cout << "NO write!\n";
+                   
+                //bool 	writeFromAudioSampleBuffer (const AudioBuffer< float > &source, int startSample, int numSamples)
+                 
+                 delete writer;
+ 	           }
             
            } 
        

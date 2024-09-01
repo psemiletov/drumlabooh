@@ -597,6 +597,8 @@ void CAudioProcessorEditor::adapt()
   
   if (source_dir.copyDirectoryTo (dest_dir)) 
      {
+       
+       
       audioProcessor.scanner.scan(); 
       update_kits_list();
       
@@ -610,6 +612,7 @@ void CAudioProcessorEditor::adapt()
     //  load_kit (audioProcessor.drumkit_path);
       load_kit();
     
+      audioProcessor.drumkit->save();
                
       log (audioProcessor.drumkit->kit_name);
       log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
