@@ -933,6 +933,8 @@ CDrumKit::~CDrumKit()
 
 void CDrumKit::add_sample()
 {
+  std::cout << "CDrumKit::add_sample()\n";
+  
   CDrumSample *s  = new CDrumSample (samplerate);
   v_samples.push_back (s);
 }

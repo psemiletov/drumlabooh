@@ -463,8 +463,15 @@ void CAudioProcessorEditor::load_kit()
 {
   //make all drum labels empty
 
+  std::cout << "CAudioProcessorEditor::load_kit() 1 \n";
+  
   if (! audioProcessor.drumkit)
      return;
+  
+  std::cout << "CAudioProcessorEditor::load_kit() 2\n";
+  
+  
+  
   
   //std::string real_kitpath = transform_kit_path_to_local (kitpath);
   
@@ -564,7 +571,6 @@ void CAudioProcessorEditor::log (const std::string &s)
 
 void CAudioProcessorEditor::update_kits_list()
 {
- 
   drumkits_model.items.clear();
   
   for (size_t i = 0; i < audioProcessor.scanner.v_kits_names.size(); i++)
@@ -572,8 +578,6 @@ void CAudioProcessorEditor::update_kits_list()
        drumkits_model.items.push_back (audioProcessor.scanner.v_kits_names[i]);
        drumkits_model.indexes.push_back (i);
       }
-
-  
 }
 
 
@@ -835,7 +839,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
 
 //  load_kit (audioProcessor.drumkit_path);
-    load_kit();
   
 
   addAndMakeVisible (drumcells_group);
@@ -1028,7 +1031,10 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
  { log (audioProcessor.drumkit->kit_name);
   log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
  }
-  
+
+     load_kit();
+
+ 
   tmr_leds.uplink = this;
   tmr_leds.startTimer (1000 / 15); //15 FPS
 
@@ -1222,8 +1228,7 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
   if (editor->audioProcessor.drumkit)
      {
       editor->load_kit ();
- 
-       
+        
       editor->log ("***\n");
       editor->log ("\n");
             editor->log (bytes_to_file_size (editor->audioProcessor.drumkit->total_samples_size()));
@@ -1234,5 +1239,4 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
 
   
   editor->tmr_leds.startTimer (1000 / 15); //15 FPS  
-  
 }
