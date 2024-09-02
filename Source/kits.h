@@ -37,7 +37,7 @@ public:
 
   int session_samplerate; //uplink's (session) samplerate
 
-  CDrumSample *drum_sample;
+  CDrumSample *drum_sample; //uplink sample class that holds this sample layer
 
   //for layer's velo range
   float min;
@@ -56,9 +56,7 @@ public:
   //const float *channel_data [2]; // pointers to channels of audio_buffer, 2 is legacy from stereo support
   //now we use just first channel
   const float *channel_data; // pointer to the first channel of audio_buffer
-
   
-
   CDrumLayer (CDrumSample *s);
   ~CDrumLayer();
 
@@ -66,27 +64,26 @@ public:
   void print();
 
   juce::AudioBuffer<float> * load_whole_sample (const std::string &fname); //called from load_whole_sample_resampled
-  juce::AudioBuffer<float> * load_whole_sample_resampled (const std::string &fname, int sess_samplerate);
+  juce::AudioBuffer<float> * load_whole_sample_resampled (const std::string &fname, int sess_samplerate); //main function to load the sample layer
 
 };
-
 
 
 class CDrumSample
 {
 public:
 
-  std::string name;
-  int id;
+  std::string name; //sample name, for example "Bass Drum"
+  int id; //Hydrogen's. For what? 
   int current_layer;
-  int midiOutNote;
+//  int midiOutNote;
   int session_samplerate; //session srate, taken from the upper object
 
-  bool active;
+  bool active; //is sample triggered to play? 
   
-  bool has_mapping;
+  bool has_mapping; //is the MIDI note defined for that instrument at drumkit file?
 
-  int mapped_note;
+  int mapped_note; //the assigned MIDI note, if defined
   
   //float random_number; //changes as sample triggers
   //float noise_level;
@@ -100,7 +97,7 @@ public:
   bool hihat_open;
   bool hihat_close;
 
-  std::vector <CDrumLayer*> v_layers;
+  std::vector <CDrumLayer*> v_layers; //container for the actual sounds 
 
   CDrumSample (int sample_rate);
   ~CDrumSample();
@@ -122,16 +119,17 @@ class CDrumKit
 {
 public:
 
-  bool scan_mode; //if false, we do not load kit' samples
+  bool scan_mode; //if false, we do not load kit's samples
 
-  std::string kit_name; //parsed from XML
+  std::string kit_name; //parsed from XML or evaluated in other way
   std::string kit_filename; //full path to the kit xml, txt or sfz file
-  std::string kit_dir; //full path to the kit
-  int kit_type; 
+  std::string kit_dir; //full path to the kit directory
+  
+  int kit_type;  //SFZ, Hydrogen of Drumlabooh?
   
   bool loaded; //is kit fully loaded?
   
-  std::string image_fname;
+  std::string image_fname; //full path to the kit's picture
 
   int samplerate; //session srate
 
@@ -141,12 +139,13 @@ public:
   size_t total_samples_size();
   
   std::vector <CDrumSample*> v_samples;
-  std::map <int, CDrumSample*> map_samples; 
+  std::map <int, CDrumSample*> map_samples; //just a map, actual samples are at v_samples
   
   std::vector <std::string> v_hat_open_signatures;
   std::vector <std::string> v_hat_close_signatures;
 
   void add_sample();
+  
   void load (const std::string &fname, int sample_rate);
   void load_txt (const std::string &fname);
   void load_sfz (const std::string & fname);

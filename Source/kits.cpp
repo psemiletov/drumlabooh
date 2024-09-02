@@ -27,10 +27,8 @@ using namespace std;
 
 #define MAX_SAMPLES 36
 
-//juce::AudioFormatManager *formatManager;
 
 std::mt19937 rnd_mt19937;
-
 
 
 std::string get_part (std::string &s)
@@ -58,7 +56,7 @@ void rnd_init()
 
 
 //WE READ JUST LEFT CHANNEL IF STEREO
-juce::AudioBuffer <float>*  CDrumLayer::load_whole_sample (const std::string &fname)
+juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fname)
 {
 //  std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
   
@@ -74,16 +72,16 @@ juce::AudioBuffer <float>*  CDrumLayer::load_whole_sample (const std::string &fn
   ext = string_to_lower (ext);
 
   if (ext == "wav")
-    reader = WavAudioFormat().createReaderFor (fs, true);
+     reader = WavAudioFormat().createReaderFor (fs, true);
 
   if (ext == "flac")
-    reader = FlacAudioFormat().createReaderFor (fs, true);
+     reader = FlacAudioFormat().createReaderFor (fs, true);
 
   if (ext == "ogg")
-    reader = OggVorbisAudioFormat().createReaderFor (fs, true);
+     reader = OggVorbisAudioFormat().createReaderFor (fs, true);
 
   if (ext == "mp3")
-    reader = MP3AudioFormat().createReaderFor (fs, true);
+     reader = MP3AudioFormat().createReaderFor (fs, true);
 
   if (ext == "aiff")
      reader = AiffAudioFormat().createReaderFor (fs, true);
@@ -104,24 +102,24 @@ juce::AudioBuffer <float>*  CDrumLayer::load_whole_sample (const std::string &fn
 
      // std::cout << "reader.get() != nullptr\n";
 
-      juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float>;
+   juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float>;
 
-      int bufsize = (int) reader->lengthInSamples;
-      //buffer->setSize ((int) reader->numChannels, bufsize);
-      buffer->setSize ((int) 1, bufsize);
+   int bufsize = (int) reader->lengthInSamples;
+   //buffer->setSize ((int) reader->numChannels, bufsize);
+   buffer->setSize ((int) 1, bufsize);
 
       // if (! reader->read (buffer,  0, bufsize, 0,  true, true))
-      if (! reader->read (buffer,  0, bufsize, 0,  true, false)) //read just left channel
-         {
-          std::cout << "! reader->read " << std::endl;
+   if (! reader->read (buffer,  0, bufsize, 0,  true, false)) //read just left channel
+      {
+       std::cout << "! reader->read " << std::endl;
 
-          delete reader;
-          delete buffer;
-          return 0;
-         }
+       delete reader;
+       delete buffer;
+       return 0;
+      }
 
-      samplerate = reader->sampleRate;
-      length_in_samples = reader->lengthInSamples;
+   samplerate = reader->sampleRate;
+   length_in_samples = reader->lengthInSamples;
 
       //hardcode 1 channel please :)
     //  channels = 1;//reader->numChannels;
@@ -138,8 +136,8 @@ juce::AudioBuffer <float>*  CDrumLayer::load_whole_sample (const std::string &fn
      //  std::cout << "reader.get() IS nullptr\n";
 
 
-      delete reader;
-      return buffer;
+   delete reader;
+   return buffer;
 
   //std::cout << "@@@@@ CDrumLayer::load_whole_sample BAD END" << std::endl;
   //delete fs;
@@ -149,6 +147,7 @@ juce::AudioBuffer <float>*  CDrumLayer::load_whole_sample (const std::string &fn
 juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::string &fname, int sess_samplerate)
 {
   juce::AudioBuffer <float>* buffer = load_whole_sample (fname);
+  
   if (! buffer)
      {
       cout << "load error: " << fname << endl;
@@ -158,10 +157,8 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   if (samplerate == sess_samplerate)
       return buffer;
 
-
   float *input_buffer = buffer->getWritePointer(0);
   if (! input_buffer)
-      // continue;
      {
       delete buffer;
       return 0;
@@ -171,7 +168,6 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
 
   float ratio = (float) sess_samplerate / samplerate;
   size_t output_frames_count = ratio * length_in_samples;
-
 
  // std::cout << "channels: " << channels << std::endl;
 //  std::cout << "output_frames_count: " << output_frames_count << std::endl;
@@ -196,7 +192,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
 
 */
 
-  std::shared_ptr<speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
+  std::shared_ptr <speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
   rs->read (input_buffer);
   rs->write (out_buf->getWritePointer(0), output_frames_count);
 
@@ -220,8 +216,8 @@ void CDrumLayer::load (const std::string &fname)
 
   if (! audio_buffer)
      {
-      return;
       std::cout << "CDrumLayer::load ERROR: " << fname << std::endl;
+      return;
      }
 
   file_name = fname;
@@ -229,7 +225,7 @@ void CDrumLayer::load (const std::string &fname)
  // if (channels > 0)
   
   if (audio_buffer->getNumSamples() > 0)
-     channel_data = audio_buffer->getReadPointer (0);
+      channel_data = audio_buffer->getReadPointer (0);
 
      //channel_data [0] = audio_buffer->getReadPointer (0);
 
@@ -239,7 +235,6 @@ void CDrumLayer::load (const std::string &fname)
     //  channel_data [1] = audio_buffer->getReadPointer (1);
 
  // std::cout << "void CDrumLayer::load  -end;\n";
-
 }
 
 
@@ -253,7 +248,6 @@ CDrumLayer::CDrumLayer (CDrumSample *s)
   //channels = 1;
   //channel_data[0] = 0;
   channel_data = 0;
-
 }
 
 
@@ -338,7 +332,7 @@ void CDrumSample::print()
 
   cout << "id: " << id << endl;
   cout << "name: " << name << endl;
-  cout << "midiOutNote: " << midiOutNote << endl;
+//  cout << "midiOutNote: " << midiOutNote << endl;
 
   for (auto l: v_layers)
       {
@@ -472,15 +466,6 @@ void CDrumKit::load_txt (const std::string &data)
   stringstream st (data);
   string line;
 
-
-  /*
-  was
-   terminate called after throwing an instance of 'std::bad_alloc'
-  what():  std::bad_alloc
-FIXED
-
-   */
-
   while (getline (st, line))
         {
          if (line.empty())
@@ -550,11 +535,13 @@ FIXED
          if (check_for_list != string::npos)
             {
              vector <string> v_fnames = split_string_to_vector (fname, ",", false);
+             
+             if (v_fnames.size() == 0)
+                continue;
 
              add_sample();
              v_samples.back()->name = sample_name;
              
-            ///////////////////NEW 
              if (! str_note.empty())
                 {
                  v_samples.back()->mapped_note = std::stoi(str_note);
@@ -562,8 +549,6 @@ FIXED
                 // std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
                  has_mapping = true;
                 } 
-         
-         /////////////////////
          
          
              if (check_for_rnd)
@@ -608,7 +593,7 @@ FIXED
 
              l->max = 1.0f;
             }
-         else
+         else //ONE LAYER PER SAMPLE
              {
               string filename = kit_dir + "/" + fname;
 
@@ -731,6 +716,8 @@ void CDrumKit::load_sfz (const std::string &data)
   stringstream st (temp_data);
   string line;
 
+  //add parse "key" (mapped MIDI note)
+  
   while (getline (st, line))
         {
          if (v_samples.size() == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 32 SAMPLES
@@ -753,6 +740,20 @@ void CDrumKit::load_sfz (const std::string &data)
 
          //parse filename for a layer
 
+         pos = line.find ("key=");
+         if (pos != string::npos)
+            {
+             size_t end = line.find (" ", pos);
+             if (end != string::npos)
+                {
+                 string str_note = line.substr (pos, end - pos);
+                 cout << "str_note:" << str_note << std::endl;
+               
+                } 
+             
+            }
+          
+         //parse sample 
          pos = line.find ("sample=");
 
          if (pos != string::npos)
