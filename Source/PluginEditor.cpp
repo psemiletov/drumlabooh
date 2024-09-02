@@ -636,6 +636,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   drumkits_model.editor = this;
   
+  need_to_update_cells = false;
+  
   //kits_scanner.scan();
 /*
   for (size_t i = 0; i < audioProcessor.scanner.v_kits_names.size(); i++)
@@ -1028,11 +1030,12 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
            gr_options.getBottom());
 
  if (audioProcessor.drumkit)
- { log (audioProcessor.drumkit->kit_name);
-  log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
- }
+    {
+     log (audioProcessor.drumkit->kit_name);
+     log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+    }
 
-     load_kit();
+  load_kit();
 
  
   tmr_leds.uplink = this;

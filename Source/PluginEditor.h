@@ -210,6 +210,8 @@ public:
 
   CAudioProcessor& audioProcessor;
 
+  bool need_to_update_cells;
+  
  // CDrumKitsScanner kits_scanner;
   CTimer tmr_leds;
   CDrumCell drumcells [36];

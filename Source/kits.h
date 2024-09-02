@@ -125,6 +125,8 @@ public:
   std::string kit_dir; //full path to the kit
   int kit_type; 
   
+  bool loaded; //is kit fully loaded?
+  
   std::string image_fname;
 
   int samplerate; //session srate

@@ -656,6 +656,8 @@ FIXED
 
   if (file_exists (kitimg))
       image_fname = kitimg;
+  
+  loaded = true;
 
 }
 
@@ -805,6 +807,8 @@ void CDrumKit::load_sfz (const std::string &data)
                 }
            }
         }
+        
+    loaded = true;    
 }
 
 
@@ -900,6 +904,8 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
  // std::cout << "loaded at: " << duration_msecs.count() << " msecs" << std::endl;
 
   //seconds_counter_ev = duration_s.count();
+  
+  loaded = true;
 }
 
 
@@ -908,7 +914,8 @@ CDrumKit::CDrumKit()
   scan_mode = false;
   layers_supported = false;
   has_mapping = false;
-
+  loaded = false;
+  
   v_hat_open_signatures.push_back ("hat_o");
   v_hat_open_signatures.push_back ("open");
   v_hat_open_signatures.push_back ("swish");
