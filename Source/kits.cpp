@@ -229,7 +229,9 @@ void CDrumLayer::load (const std::string &fname)
  // if (channels > 0)
   
   if (audio_buffer->getNumSamples() > 0)
-     channel_data [0] = audio_buffer->getReadPointer (0);
+     channel_data = audio_buffer->getReadPointer (0);
+
+     //channel_data [0] = audio_buffer->getReadPointer (0);
 
   //altough we have just mono sample, this "stereo" code is a legacy
 
@@ -249,7 +251,9 @@ CDrumLayer::CDrumLayer (CDrumSample *s)
   audio_buffer = 0;
   length_in_samples = 0;
   //channels = 1;
-  channel_data[0] = 0;
+  //channel_data[0] = 0;
+  channel_data = 0;
+
 }
 
 
@@ -940,7 +944,7 @@ CDrumKit::~CDrumKit()
 
 void CDrumKit::add_sample()
 {
-  std::cout << "CDrumKit::add_sample()\n";
+  //std::cout << "CDrumKit::add_sample()\n";
   
   CDrumSample *s  = new CDrumSample (samplerate);
   v_samples.push_back (s);

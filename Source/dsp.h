@@ -106,8 +106,7 @@ inline float conv_to_db (float v, float v_min, float v_max, float range_negative
 
 inline float scale_val (float val, float from_min, float from_max, float to_min, float to_max)
 {
-  return (val - from_min) * (to_max - to_min) /
-          (from_max - from_min) + to_min;
+  return (val - from_min) * (to_max - to_min) / (from_max - from_min) + to_min;
 }
 
 

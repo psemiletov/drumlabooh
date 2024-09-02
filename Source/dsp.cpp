@@ -35,23 +35,6 @@ float warmify (float x, float warmth)
 }
 
 
-/*
-// Функция для мягкого понижения уровня сигнала, если он превышает порог в 18 дБ (выше нуля)
-float softLimit(float input, float threshold_dB)
-{
-  // Проверяем, превышает ли входной сигнал порог
-  if (input > 0.0f && 20.0f * log10f(input) > threshold_dB)
-     {
-      // Рассчитываем множитель для понижения уровня
-      float reductionFactor = pow(10.0f, (threshold_dB - 20.0f * log10f(input)) / 20.0f);
-      // Применяем мягкое понижение уровня
-      return input * reductionFactor;
-    }
-
-  // Если сигнал не превышает порог, возвращаем его без изменений
-  return input;
-}
-*/
 
 const float thresholdLevel = pow(10.0f, 18.0f / 20.0f); // Значение, соответствующее +18 дБ
 
@@ -64,9 +47,9 @@ float softLimit (float input)
       // Рассчитываем множитель для понижения уровня
       float reductionFactor = thresholdLevel / input;
   // Применяем мягкое понижение уровня
-     return input * reductionFactor;
+      return input * reductionFactor;
     }
 
     // Если сигнал не превышает порог, возвращаем его без изменений
-   return input;
+  return input;
 }

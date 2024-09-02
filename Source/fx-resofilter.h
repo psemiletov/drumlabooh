@@ -57,6 +57,7 @@ public:
                cutoff = v;
                calc_feedback_amount();
               };
+              
 
   inline void set_resonance (float v)
               {
@@ -66,8 +67,12 @@ public:
                resonance = v;
                calc_feedback_amount();
               };
+              
 
-  inline void calc_feedback_amount() {feedback_amount = resonance + (float) resonance / (1.0 - cutoff);};
+  inline void calc_feedback_amount() 
+             {
+              feedback_amount = resonance + (float) resonance / (1.0 - cutoff);
+             };
 };
 
 

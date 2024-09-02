@@ -35,7 +35,7 @@ class CDrumLayer
 {
 public:
 
-  int session_samplerate; //uplink (session) samplerate
+  int session_samplerate; //uplink's (session) samplerate
 
   CDrumSample *drum_sample;
 
@@ -46,14 +46,18 @@ public:
   std::string file_name; //name of the loaded file, full path
   
  // int channels; //channels at this layer
- //channels veariable has been removed as we have mono only
+ //channels variable has been removed as we have mono only
 
   int samplerate; //samplerate of this layer
   int length_in_samples;// i.e frames, the amount of samples per channel
   int sample_offset; //to play inc until < length_in_samples
 
   juce::AudioBuffer<float> *audio_buffer; //holds audio data
-  const float *channel_data [2]; // pointers to channels of audio_buffer
+  //const float *channel_data [2]; // pointers to channels of audio_buffer, 2 is legacy from stereo support
+  //now we use just first channel
+  const float *channel_data; // pointer to the first channel of audio_buffer
+
+  
 
   CDrumLayer (CDrumSample *s);
   ~CDrumLayer();

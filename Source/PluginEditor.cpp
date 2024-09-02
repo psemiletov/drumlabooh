@@ -463,15 +463,6 @@ void CAudioProcessorEditor::load_kit()
 {
   //make all drum labels empty
 
-  std::cout << "CAudioProcessorEditor::load_kit() 1 \n";
-  
-  if (! audioProcessor.drumkit)
-     return;
-  
-  std::cout << "CAudioProcessorEditor::load_kit() 2\n";
-  
-  
-  
   
   //std::string real_kitpath = transform_kit_path_to_local (kitpath);
   
@@ -480,7 +471,9 @@ void CAudioProcessorEditor::load_kit()
        drumcells[i].set_name ("EMPTY CELL");
        drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
       }
-
+  
+  if (! audioProcessor.drumkit)
+     return;
   
   //find kit at v_scanned_kits
 
@@ -614,9 +607,10 @@ void CAudioProcessorEditor::adapt()
 
       //update GUI
     //  load_kit (audioProcessor.drumkit_path);
+      audioProcessor.drumkit->save();
+           
       load_kit();
     
-      audioProcessor.drumkit->save();
                
       log (audioProcessor.drumkit->kit_name);
       log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
@@ -636,7 +630,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
 
   drumkits_model.editor = this;
   
-  need_to_update_cells = false;
+  need_to_update_cells = true;
   
   //kits_scanner.scan();
 /*
@@ -648,7 +642,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
        drumkits_model.indexes.push_back (i);
       }
 */
-   update_kits_list();
+  update_kits_list();
 
   //NamedValueSet& drumkits_listbox_props = drumkits_listbox.getProperties();   
   //drumkits_listbox_props.set ("fontSize", 24);
@@ -789,14 +783,16 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
                                         return;
 
                                      audioProcessor.drumkit_path = full;
+                             
                                      tmr_leds.stopTimer();
 
                                      audioProcessor.load_kit (full);
 
                                       //update GUI
-                                     //load_kit (full);
-                                     load_kit ();
-
+  
+//                                     load_kit();
+                                     
+                                     need_to_update_cells = false;
                                      
                                      log (audioProcessor.drumkit->kit_name);
                                      log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
@@ -1035,8 +1031,17 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
      log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
     }
 
-  load_kit();
+  //load_kit();
 
+  
+  for (size_t i = 0; i < 36; i++)
+      {
+       drumcells[i].set_name ("EMPTY CELL");
+       drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
+      }
+
+  
+  
  
   tmr_leds.uplink = this;
   tmr_leds.startTimer (1000 / 15); //15 FPS
@@ -1153,6 +1158,12 @@ void CTimer::hiResTimerCallback()
   if (! uplink->audioProcessor.drumkit)
      return;
 
+  if (uplink->need_to_update_cells && uplink->audioProcessor.drumkit->loaded)
+     {
+      uplink->need_to_update_cells = false;
+      uplink->load_kit();
+     }
+  
   for (int i = 0; i < uplink->audioProcessor.drumkit->v_samples.size(); i++)
       {
        bool actv = uplink->audioProcessor.drumkit->v_samples[i]->active;
@@ -1206,10 +1217,7 @@ void CDrumkitsListBoxModel::paintListBoxItem (int rowNumber, Graphics &g, int wi
   //g.drawFittedText (items[rowNumber].c_str(),
 	//	        4, 0, width - 4, height,
 		//        Justification::centredLeft, 2);
-     
- 
 }
-
 
 
 void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
@@ -1225,12 +1233,14 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
 
   editor->audioProcessor.load_kit (full);
 
+  editor->tmr_leds.startTimer (1000 / 15); //15 FPS  
+
       //update GUI
 // editor->load_kit (full);
 
   if (editor->audioProcessor.drumkit)
      {
-      editor->load_kit ();
+      editor->load_kit();
         
       editor->log ("***\n");
       editor->log ("\n");
@@ -1240,6 +1250,4 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
       editor->log ("loaded:\n");
      }
 
-  
-  editor->tmr_leds.startTimer (1000 / 15); //15 FPS  
 }
