@@ -740,7 +740,7 @@ void CDrumKit::load_sfz (const std::string &data)
 
          //parse filename for a layer
 
-         pos = line.find ("key=");
+         pos = line.find (" key=");
          if (pos != string::npos)
             {
              size_t end = line.find (" ", pos);
@@ -748,10 +748,20 @@ void CDrumKit::load_sfz (const std::string &data)
                 {
                  string str_note = line.substr (pos, end - pos);
                  cout << "str_note:" << str_note << std::endl;
-               
                 } 
-             
             }
+            
+         pos = line.find (">key=");
+         if (pos != string::npos)
+            {
+             size_t end = line.find (" ", pos);
+             if (end != string::npos)
+                {
+                 string str_note = line.substr (pos, end - pos);
+                 cout << "str_note:" << str_note << std::endl;
+                } 
+            }
+            
           
          //parse sample 
          pos = line.find ("sample=");
