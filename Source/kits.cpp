@@ -1172,6 +1172,8 @@ void CDrumKitsScanner::scan_full()
 
  // juce::File home_location = File::getSpecialLocation	(juce::File::SpecialLocationType::userHomeDirectory);
 
+  v_kits_locations.push_back ("c:\\drum_sklad");
+  v_kits_locations.push_back ("d:\\drum_sklad");
 
   v_kits_locations.push_back ("c:\\drumlabooh-kits");
   v_kits_locations.push_back ("c:\\sfz-kits");
@@ -1305,6 +1307,9 @@ void CDrumKitsScanner::scan()
  // juce::File home_location = File::getSpecialLocation	(juce::File::SpecialLocationType::userHomeDirectory);
 
 
+  v_kits_locations.push_back ("c:\\drum_sklad");
+  v_kits_locations.push_back ("d:\\drum_sklad");
+
   v_kits_locations.push_back ("c:\\drumlabooh-kits");
   v_kits_locations.push_back ("c:\\sfz-kits");
   v_kits_locations.push_back ("d:\\drumlabooh-kits");
@@ -1372,32 +1377,41 @@ void CDrumKitsScanner::scan()
 
        if (kit_exists)
           {
-           CDrumKit *kit = new CDrumKit;
-           kit->scan_mode = true;
-           kit->load (fname.c_str(), 44100);
-           //v_scanned_kits.push_back (kit);
-           map_kits.insert (pair<string,string> (kit->kit_name, fname));
-           v_kits_names.push_back (kit->kit_name);
-           delete kit;
+           //get kit name here 
+            
+           std::string ext = get_file_ext (fname); 
+           std::string kit_name; 
+            
+           if (ext == "txt")
+              {
+               //get the last part of kd 
+               kit_name = get_last_part (kd);
+              }
+             
+           if (ext == "sfz")
+              {
+               kit_name = get_last_part (kd);
+              }
+
+              
+           if (ext == "xml")
+              {
+               std::string fs = string_file_load (fname); 
+               kit_name = get_string_between (fs, "<name>", "</name>");
+               }
+
+           
+           
+           map_kits.insert (pair<string,string> (kit_name, fname));
+           v_kits_names.push_back (kit_name);
+  //         delete kit;
           }
 
       }
 
       
     std::sort (v_kits_names.begin(), v_kits_names.end());  
-   //CHANGE TO vector sort by ABC  filled v_kits_names 
-/*      
-  std::sort (v_scanned_kits.begin(), v_scanned_kits.end(), [](CDrumKit* a, CDrumKit* b) {return a->kit_name < b->kit_name;});
 
-  for (auto i : v_scanned_kits)
-      {
-       v_kits_names.push_back (i->kit_name);
-       ///NEWWWW
-       delete i;
-       ///
-       
-      }
-*/
 }
 
 

@@ -419,3 +419,43 @@ std::string bytes_to_file_size (size_t val)
 
   return std::to_string (val) + " bytes";;
 }
+
+
+std::string get_string_between (const std::string &s, const std::string &start, const std::string &end)
+{
+  std::string result;
+  size_t first = s.find (start);
+  
+  if (first == std::string::npos)
+     return result;
+
+  first = first + start.length();
+
+ // std::cout << "first:" << first << std::endl;
+  
+  size_t last = s.find (end);
+
+  //std::cout << "last:" << last << std::endl;
+    
+  if (last == std::string::npos)
+     return result;
+  
+  result = s.substr (first, last - first);
+  
+  return result; 
+}
+
+
+std::string get_last_part (const std::string &path)
+{
+  std::string result;
+  size_t pos = path.rfind ("/");
+  
+  if (pos == std::string::npos)
+     return result;
+  
+  result = path.substr (pos + 1, path.length() - pos);
+  
+  return result; 
+}
+

@@ -11,7 +11,7 @@ this code is the public domain
 #include <vector>
 
 bool file_exists (const std::string &name);
-bool ends_with (std::string const &value, std::string const & ending);
+bool ends_with (std::string const &value, std::string const &ending);
 std::string resolve_symlink (const std::string &path);
 std::string get_home_dir();
 
@@ -33,6 +33,9 @@ std::string transform_kit_path_to_local (const std::string &path);
 std::string transform_kit_path_from_local (const std::string &path);
 
 std::string bytes_to_file_size (size_t val);
+std::string get_string_between (const std::string &s, const std::string &start, const std::string &end);
+std::string get_last_part (const std::string &path);
+
 
 
 #endif
