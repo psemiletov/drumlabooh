@@ -33,8 +33,8 @@ std::mt19937 rnd_mt19937;
 
 std::string get_part (std::string &s)
 {
-  size_t first = s.find("[");
-  size_t last = s.find("]", first);
+  size_t first = s.find ("[");
+  size_t last = s.find ("]", first);
 
   if (first == std::string::npos)
      return std::string("");
@@ -43,7 +43,7 @@ std::string get_part (std::string &s)
      return std::string("");
 
   std::string result = s.substr (first + 1, last - first - 1);
-  s.erase(first,last-first+1);
+  s.erase (first,last - first + 1); //remove extracted part from the source
 
   return result;
 }
@@ -264,7 +264,7 @@ void CDrumLayer::print()
 CDrumLayer::~CDrumLayer()
 {
   if (audio_buffer)
-      delete audio_buffer;
+     delete audio_buffer;
 }
 
 
@@ -1404,7 +1404,6 @@ void CDrumKitsScanner::scan()
            
            map_kits.insert (pair<string,string> (kit_name, fname));
            v_kits_names.push_back (kit_name);
-  //         delete kit;
           }
 
       }

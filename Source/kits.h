@@ -172,8 +172,8 @@ public:
   CDrumKitsScanner();
   ~CDrumKitsScanner();
 
-  void scan_full(); //old scan
-  void scan(); //new 
+  void scan_full(); //old scan, uses semi-loading for each drumkit
+  void scan(); //new, does not load kits, just extract names in some ways 
 
   void print();
 };
