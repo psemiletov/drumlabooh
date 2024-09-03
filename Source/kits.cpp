@@ -733,34 +733,48 @@ void CDrumKit::load_sfz (const std::string &data)
 
 //          cout << "parse line: " << line << endl;
          if (line.find ("<group>") != string::npos)
+            {
              add_sample();
-
+             
+             pos = line.find (" key=");
+             if (pos != string::npos)
+                {
+                 pos += 5; 
+                 size_t end = line.find (" ", pos);
+                 if (end != string::npos)
+                    {
+                     string str_note = line.substr (pos, end - pos);
+                     //cout << "str_note:" << str_note << std::endl;
+                     if (! str_note.empty())
+                        v_samples.back()->mapped_note = std::stoi (str_note);
+                    } 
+                }
+            } 
+                      
+   
          if (line.find("<region>") != string::npos  && ! multi_layered)
+            {
              add_sample();
+             
+             pos = line.find (" key=");
+             if (pos != string::npos)
+                {
+                 pos += 5; 
+                 size_t end = line.find (" ", pos);
+                 if (end != string::npos)
+                    {
+                     string str_note = line.substr (pos, end - pos);
+                     //cout << "str_note:" << str_note << std::endl;
+                     if (! str_note.empty())
+                        v_samples.back()->mapped_note = std::stoi (str_note);
+                    } 
+                }
+            } 
 
+   
+          
          //parse filename for a layer
 
-         pos = line.find (" key=");
-         if (pos != string::npos)
-            {
-             size_t end = line.find (" ", pos);
-             if (end != string::npos)
-                {
-                 string str_note = line.substr (pos, end - pos);
-                 cout << "str_note:" << str_note << std::endl;
-                } 
-            }
-            
-         pos = line.find (">key=");
-         if (pos != string::npos)
-            {
-             size_t end = line.find (" ", pos);
-             if (end != string::npos)
-                {
-                 string str_note = line.substr (pos, end - pos);
-                 cout << "str_note:" << str_note << std::endl;
-                } 
-            }
             
           
          //parse sample 
@@ -1124,6 +1138,138 @@ CDrumKitsScanner::~CDrumKitsScanner()
 }
 
 
+void CDrumKitsScanner::scan_full()
+{
+  std::vector <std::string> v_kits_locations;
+
+  v_kits_dirs.clear();
+  v_kits_names.clear();
+  map_kits.clear();
+
+#if !defined(_WIN32) || !defined(_WIN64)
+
+  v_kits_locations.push_back ("/usr/share/hydrogen/data/drumkits");
+  v_kits_locations.push_back ("/usr/local/share/hydrogen/data/drumkits");
+  v_kits_locations.push_back ("/usr/share/drmr/drumkits");
+  v_kits_locations.push_back ("/usr/share/drumrox-kits");
+  v_kits_locations.push_back ("/usr/share/drumlabooh-kits");
+  v_kits_locations.push_back ("/usr/local/share/drumlabooh-kits");
+
+  v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
+  v_kits_locations.push_back (get_home_dir() + "/.drmr/drumkits");
+  v_kits_locations.push_back (get_home_dir() + "/drumrox-kits");
+  v_kits_locations.push_back (get_home_dir() + "/drumlabooh-kits");
+  v_kits_locations.push_back (get_home_dir() + "/drum_sklad");
+
+  v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
+/*
+  juce::File home_location = File::getSpecialLocation	(juce::File::SpecialLocationType::userHomeDirectory);
+  const String & fnm = home_location.getFullPathName();
+  std::string sfnm (fnm.toStdString());
+  sfnm += "\\";
+  */
+#else
+
+ // juce::File home_location = File::getSpecialLocation	(juce::File::SpecialLocationType::userHomeDirectory);
+
+
+  v_kits_locations.push_back ("c:\\drumlabooh-kits");
+  v_kits_locations.push_back ("c:\\sfz-kits");
+  v_kits_locations.push_back ("d:\\drumlabooh-kits");
+  v_kits_locations.push_back ("d:\\sfz-kits");
+
+  //v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
+
+  juce::File home_location = File::getSpecialLocation (juce::File::SpecialLocationType::userHomeDirectory);
+  const String & fnm = home_location.getFullPathName();
+  std::string sfnm (fnm.toStdString());
+  sfnm += "\\";
+  sfnm += ".hydrogen/data/drumkits";
+  v_kits_locations.push_back (sfnm);
+
+  /*
+  std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
+
+  std::cout << get_home_dir() + "/.hydrogen/data/drumkits" << std::endl;
+
+  std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
+*/
+
+#endif
+
+  for (std::string i: v_kits_locations)
+      {
+       std::vector <std::string> v_kits_dirs_t = files_get_list (i);
+       if (v_kits_dirs_t.size() > 0)
+          v_kits_dirs.insert (v_kits_dirs.end(), v_kits_dirs_t.begin(), v_kits_dirs_t.end());
+      }
+
+  std::sort (v_kits_dirs.begin(), v_kits_dirs.end());
+  v_kits_dirs.erase (std::unique (v_kits_dirs.begin(), v_kits_dirs.end() ), v_kits_dirs.end() );
+
+  for (std::string kd: v_kits_dirs)
+      {
+       //cout << kd << endl;
+       //cout << get_kit_name (kd + "/drumkit.xml") << endl;
+
+       bool kit_exists = false;
+
+       std::string fname = kd + "/drumkit.xml";
+
+       if (file_exists (fname))
+          kit_exists = true;
+       else
+           {
+            fname = kd + "/drumkit.txt";
+            if (file_exists (fname))
+               kit_exists = true;
+           }
+
+
+       if (kd.find ("/sfz-kits") != string::npos)
+          {
+           //search sfz file
+           std::vector <std::string> v = files_get_list (kd, ".sfz");
+           if (v.size() != 0)
+              fname = v[0];
+
+           if (file_exists (fname))
+               kit_exists = true;
+          }
+
+
+       if (kit_exists)
+          {
+           CDrumKit *kit = new CDrumKit;
+           kit->scan_mode = true;
+           kit->load (fname.c_str(), 44100);
+           //v_scanned_kits.push_back (kit);
+           map_kits.insert (pair<string,string> (kit->kit_name, fname));
+           v_kits_names.push_back (kit->kit_name);
+           delete kit;
+          }
+
+      }
+
+      
+    std::sort (v_kits_names.begin(), v_kits_names.end());  
+   //CHANGE TO vector sort by ABC  filled v_kits_names 
+/*      
+  std::sort (v_scanned_kits.begin(), v_scanned_kits.end(), [](CDrumKit* a, CDrumKit* b) {return a->kit_name < b->kit_name;});
+
+  for (auto i : v_scanned_kits)
+      {
+       v_kits_names.push_back (i->kit_name);
+       ///NEWWWW
+       delete i;
+       ///
+       
+      }
+*/
+}
+
+
+
 void CDrumKitsScanner::scan()
 {
   std::vector <std::string> v_kits_locations;
@@ -1253,6 +1399,8 @@ void CDrumKitsScanner::scan()
       }
 */
 }
+
+
 
 
 void CDrumKitsScanner::print()

@@ -172,7 +172,9 @@ public:
   CDrumKitsScanner();
   ~CDrumKitsScanner();
 
-  void scan();
+  void scan_full(); //old scan
+  void scan(); //new 
+
   void print();
 };
 
