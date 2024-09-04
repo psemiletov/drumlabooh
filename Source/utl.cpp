@@ -301,7 +301,7 @@ std::string string_file_load (const string &fname)
 
 
 /// Try to find in the Haystack the Needle - ignore case
-bool findStringIC(const std::string & strHaystack, const std::string & strNeedle)
+bool findStringIC (const std::string & strHaystack, const std::string & strNeedle)
 {
   auto it = std::search(
     strHaystack.begin(), strHaystack.end(),

@@ -471,7 +471,7 @@ void CDrumKit::load_txt (const std::string &data)
          if (line.empty())
             continue;
 
-         if (v_samples.size() == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 32 SAMPLES
+         if (v_samples.size() == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
             break;
 
          size_t pos = line.find ("=");
@@ -488,7 +488,6 @@ void CDrumKit::load_txt (const std::string &data)
 
          if (fname.empty())
             continue;
-//////////////////////////////
           
          //scan sample_name for []
          //if yes, take all between [] as the MIDI note number,
@@ -498,8 +497,6 @@ void CDrumKit::load_txt (const std::string &data)
          std::string str_note = get_part (sample_name);
          
        //  std::cout << "str_note:" << str_note << std::endl;
-          
-////////////////////// 
          size_t check_for_list = fname.find (",");
          
          bool check_for_rnd = false;
@@ -582,7 +579,7 @@ void CDrumKit::load_txt (const std::string &data)
                   l = v_samples.back()->v_layers[i];
 
                   float segment_start = part_size * i;
-                  float segment_end = part_size * (i + 1) - 0.001;
+                  float segment_end = part_size * (i + 1) - 0.001f;
 
                   //std::cout << "segment_start: " << segment_start << std::endl;
                   //std::cout << "segment_end: " << segment_end << std::endl;
@@ -608,7 +605,7 @@ void CDrumKit::load_txt (const std::string &data)
                   v_samples.back()->v_layers.back()->load (filename.c_str());
                   if (! str_note.empty())
                      {
-                      v_samples.back()->mapped_note = std::stoi(str_note);
+                      v_samples.back()->mapped_note = std::stoi (str_note);
                       map_samples[v_samples.back()->mapped_note] = v_samples.back();
                     //  std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
                       has_mapping = true;
@@ -619,7 +616,7 @@ void CDrumKit::load_txt (const std::string &data)
 
          for (auto signature: v_hat_open_signatures)
              {
-              if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
+              if (findStringIC (sample_name, signature) || findStringIC (fname, signature)) //заменить на другую функцию проверки?
                  {
                   v_samples.back()->hihat_open = true;
                   break;
@@ -682,9 +679,9 @@ std::string guess_sample_name (const std::string &raw)
 
 
 // trim from right
-inline std::string& rtrim (std::string& s, const char* t = " \t\n\r\f\v")
+inline std::string& rtrim (std::string &s, const char *t = " \t\n\r\f\v")
 {
-  s.erase(s.find_last_not_of(t) + 1);
+  s.erase (s.find_last_not_of (t) + 1);
   return s;
 }
 
@@ -720,7 +717,7 @@ void CDrumKit::load_sfz (const std::string &data)
   
   while (getline (st, line))
         {
-         if (v_samples.size() == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 32 SAMPLES
+         if (v_samples.size() == MAX_SAMPLES) //WE DON'T LOAD MORE THAN MAX_SAMPLES SAMPLES
              return;
 
          if (line.empty())
@@ -733,49 +730,45 @@ void CDrumKit::load_sfz (const std::string &data)
 
 //          cout << "parse line: " << line << endl;
          if (line.find ("<group>") != string::npos)
-            {
              add_sample();
-             
-             pos = line.find (" key=");
-             if (pos != string::npos)
-                {
-                 pos += 5; 
-                 size_t end = line.find (" ", pos);
-                 if (end != string::npos)
-                    {
-                     string str_note = line.substr (pos, end - pos);
-                     //cout << "str_note:" << str_note << std::endl;
-                     if (! str_note.empty())
-                        v_samples.back()->mapped_note = std::stoi (str_note);
-                    } 
-                }
-            } 
                       
    
          if (line.find("<region>") != string::npos  && ! multi_layered)
-            {
              add_sample();
-             
-             pos = line.find (" key=");
-             if (pos != string::npos)
-                {
-                 pos += 5; 
-                 size_t end = line.find (" ", pos);
-                 if (end != string::npos)
-                    {
-                     string str_note = line.substr (pos, end - pos);
-                     //cout << "str_note:" << str_note << std::endl;
-                     if (! str_note.empty())
-                        v_samples.back()->mapped_note = std::stoi (str_note);
-                    } 
-                }
-            } 
-
    
-          
-         //parse filename for a layer
 
-            
+         pos = line.find (" key=");
+         if (pos != string::npos)
+            {
+             pos += 5; 
+             size_t end = line.find (" ", pos);
+             if (end != string::npos)
+                {
+                 string str_note = line.substr (pos, end - pos);
+                 //cout << "str_note:" << str_note << std::endl;
+                 if (! str_note.empty())
+                     if (v_samples.back())
+                        v_samples.back()->mapped_note = std::stoi (str_note);
+                } 
+           }
+
+
+         pos = line.find (">key=");
+         if (pos != string::npos)
+            {
+             pos += 5; 
+             size_t end = line.find (" ", pos);
+             if (end != string::npos)
+                {
+                 string str_note = line.substr (pos, end - pos);
+                 //cout << "str_note:" << str_note << std::endl;
+                 if (! str_note.empty())
+                     if (v_samples.back())
+                         v_samples.back()->mapped_note = std::stoi (str_note);
+                } 
+            }
+       
+         //parse filename for a layer
           
          //parse sample 
          pos = line.find ("sample=");
@@ -856,12 +849,11 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   std::string filename = resolve_symlink (initial_fname.c_str());
 
    if (! scan_mode)
-     cout << "@@@@@@@@@@@@ void CDrumKit::load: " << filename << endl;
+       cout << "@@@@@@@@@@@@ void CDrumKit::load: " << filename << endl;
 
   
   kit_filename = filename;
   kit_dir = get_file_path (kit_filename);
-
   
   std::string source = string_file_load (kit_filename);
   if (source.empty())
@@ -882,7 +874,6 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
 
   //else Hydrogen format
-
   
   kit_type = KIT_TYPE_HYDROGEN;
 
@@ -954,7 +945,6 @@ CDrumKit::CDrumKit()
   v_hat_close_signatures.push_back ("choke");
   v_hat_close_signatures.push_back ("hat_c");
   v_hat_close_signatures.push_back ("HHC");
-
 }
 
 
@@ -970,7 +960,6 @@ CDrumKit::~CDrumKit()
 void CDrumKit::add_sample()
 {
   //std::cout << "CDrumKit::add_sample()\n";
-  
   CDrumSample *s  = new CDrumSample (samplerate);
   v_samples.push_back (s);
 }
@@ -996,18 +985,11 @@ size_t CDrumKit::total_samples_size()
  
        for (size_t j = 0; j < s->v_layers.size(); j++)
            {
-//            std::cout << "j:" << j << std::endl; 
-            
             if (s->v_layers[j]->audio_buffer)
-               
-            {
-             // std::cout << "s->v_layers[j]->length_in_samples:" << s->v_layers[j]->audio_buffer->getNumSamples() << std::endl; 
-              result += s->v_layers[j]->audio_buffer->getNumSamples(); }
+                result += s->v_layers[j]->audio_buffer->getNumSamples(); }
+              // std::cout << "s->v_layers[j]->length_in_samples:" << s->v_layers[j]->audio_buffer->getNumSamples() << std::endl; 
             //std::cout << result << std::endl;
-            
-           } 
-       
-      }
+           }
 
 //  std::cout << "CDrumKit::total_samples_size() - 2\n";
       
@@ -1015,10 +997,13 @@ size_t CDrumKit::total_samples_size()
 }
 
 
-void CDrumKit::save()
+void CDrumKit::save() //used at Adapt button handler
 {
   if (v_samples.size() == 0)
       return;
+  
+  if (kit_type != KIT_TYPE_DRUMLABOOH)
+     return;
   
 //  std::cout << "CDrumKit::total_samples_size() - 1\n";
  
@@ -1038,18 +1023,14 @@ void CDrumKit::save()
                 
                 fl.deleteFile();
                 
-                std::cout << "save file: " << s->v_layers[j]->file_name << std::endl;
-                std::cout << "samplerate: " << s->v_layers[j]->samplerate << std::endl;
-                std::cout << "samples: " << s->v_layers[j]->audio_buffer->getNumSamples() << std::endl;
+                //std::cout << "save file: " << s->v_layers[j]->file_name << std::endl;
+                //std::cout << "samplerate: " << s->v_layers[j]->samplerate << std::endl;
+                //std::cout << "samples: " << s->v_layers[j]->audio_buffer->getNumSamples() << std::endl;
                 
                 juce::OutputStream *fs = new juce::FileOutputStream (fl); //will be deleted by writer?
                 
-                
                 //if (fs->failedToOpen())
                   // std::cout << "fs->failedToOpen() " << std::endl;
-                   
-
-                
 
                 juce::AudioFormatWriter *writer = 0;
                 
@@ -1057,21 +1038,26 @@ void CDrumKit::save()
                 ext = string_to_lower (ext);
 
                 if (ext == "wav")
-                   //writer = WavAudioFormat().createWriterFor (fs, true);
-                  	 writer = WavAudioFormat().createWriterFor (fs, s->v_layers[j]->samplerate, 
-                                                       1,
-                                                      32,//int bitsPerSample, 
-                                                      StringPairArray(), 
-                                                      0);
+                    writer = WavAudioFormat().createWriterFor (fs, s->v_layers[j]->samplerate, 
+                                                               1, //channels
+                                                               32,//int bitsPerSample, 
+                                                               StringPairArray(), 
+                                                               0);
                   
+                if (ext == "aiff")
+                    writer = AiffAudioFormat().createWriterFor (fs, s->v_layers[j]->samplerate, 
+                                                                1, //channels
+                                                                32,//int bitsPerSample, 
+                                                                StringPairArray(), 
+                                                                0);
 
-//                if (ext == "flac")
-  //                  writer = FlacAudioFormat().createWriterFor (fs, true);
+                if (ext == "flac")
+                    writer = FlacAudioFormat().createWriterFor (fs, s->v_layers[j]->samplerate, 
+                                                                1, //channels
+                                                                24,//int bitsPerSample, 
+                                                                StringPairArray(), 
+                                                                0);
 
-               
-
-    //            if (ext == "aiff")
-      //             writer = AiffAudioFormat().createWriterFor (fs, true);
 
                 if (! writer)
                    return;
