@@ -655,7 +655,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
     
   addAndMakeVisible (l_plugin_name);
   l_plugin_name.setSize (280 + XFILLER, 36);
-  l_plugin_name.setTopLeftPosition (XFILLER, YFILLER);
+  l_plugin_name.setTopLeftPosition (XFILLER, YFILLER / 2);
   //l_plugin_name.setText (juce::CharPointer_UTF8("DRUMLABOOH"), juce::NotificationType::dontSendNotification);
   l_plugin_name.setFont	(f_logo);
   l_plugin_name.setText (PRODUCT.c_str(), juce::NotificationType::dontSendNotification);
@@ -675,7 +675,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   hl_homepage.setColour (juce::HyperlinkButton::textColourId, juce::Colour (121, 164, 103));
   //make link color 121 164 103
   
-  gr_topbar.setSize (hl_homepage.getRight() + XFILLER * 2, l_plugin_name.getHeight() + YFILLER);
+  gr_topbar.setSize (hl_homepage.getRight() + XFILLER, l_plugin_name.getHeight() + YFILLER / 2);
   gr_topbar.setTopLeftPosition (1, 1);
 
   
@@ -704,7 +704,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
 
   addAndMakeVisible (gr_kitinfo);
   gr_kitinfo.setTopLeftPosition (gr_drumkits.getX(), gr_drumkits.getBottom());
-  gr_kitinfo.setSize (gr_drumkits.getWidth(), 200 + YFILLER); 
+  gr_kitinfo.setSize (gr_drumkits.getWidth(), 220 + YFILLER); 
   
   addAndMakeVisible (l_kitinfo);
   l_kitinfo.setFont (f_kitname_font);
@@ -712,8 +712,11 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   l_kitinfo.setSize (280, 48);
 
   addAndMakeVisible (kit_image);
-  kit_image.setSize (gr_kitinfo.getWidth() - XFILLER * 3, 200 - YFILLER * 3);
-  kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2));
+  //kit_image.setSize (gr_kitinfo.getWidth() - XFILLER * 3, 200 - YFILLER * 3);
+  kit_image.setSize (gr_kitinfo.getWidth() - XFILLER * 3, 220 - YFILLER * 4);
+   //kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2));
+  kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), 
+                               (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2));
 
   
   
@@ -741,7 +744,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
   bt_file_open.setButtonText ("OPEN");
   addAndMakeVisible (bt_file_open);
+  bt_file_open.setTooltip ("Select the drumkit file to open");
 
+  
   bt_file_open.setTopLeftPosition (gr_kitbuttons.getX() + XFILLER, gr_kitbuttons.getY() + YFILLER);
   bt_file_open.setSize (54, 40);
     
@@ -798,6 +803,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
                             
   bt_kit_adapt.setButtonText ("ADAPT");
   addAndMakeVisible (bt_kit_adapt);
+  
+  bt_kit_adapt.setTooltip ("Clone the current kit\n with the current samplerate");
+
 
   bt_kit_adapt.setTopLeftPosition (bt_file_open.getRight() + XFILLER, gr_kitbuttons.getY() + YFILLER);
   bt_kit_adapt.setSize (54, 40);
@@ -870,6 +878,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   addAndMakeVisible (l_midimap_mode);
   l_midimap_mode.setTopLeftPosition (gr_options.getX() + XFILLER, gr_options.getY() + YFILLER);
   l_midimap_mode.setSize (120, 32);
+  l_midimap_mode.setTooltip ("Map drums by the order (Auto)\n or from the kit settings (Kit)");
+
+  
   cmb_midimap_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
   cmb_midimap_mode.setColour (juce::ComboBox::textColourId, Colours::white);
   
@@ -879,8 +890,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   cmb_midimap_mode.setTopLeftPosition (l_midimap_mode.getX() + l_midimap_mode.getWidth(),
                                        l_midimap_mode.getY());
   
-  cmb_midimap_mode.addItem ("Automatic", MIDIMAPMODE_LABOOH); 
-  cmb_midimap_mode.addItem ("Kit-defined", MIDIMAPMODE_FROMKIT);
+  cmb_midimap_mode.addItem ("Auto", MIDIMAPMODE_LABOOH); 
+  cmb_midimap_mode.addItem ("Kit", MIDIMAPMODE_FROMKIT);
   
   att_midimap_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "midimap_mode", cmb_midimap_mode));
  
@@ -891,7 +902,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   l_base_note.setTopLeftPosition (gr_options.getX() + XFILLER, cmb_midimap_mode.getBottom() + YFILLER);
   
   
-  l_base_note.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
+  l_base_note.setTooltip ("Number of MIDI note from which\n we start to map instruments in Auto mode, \n default 36");
 
   addAndMakeVisible (sl_base_note);
   sl_base_note.setSliderStyle (juce::Slider::SliderStyle::IncDecButtons);
@@ -953,6 +964,10 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   //////////////NEW GLOBAL ANALOG
   addAndMakeVisible (bt_global_analog_on);
   bt_global_analog_on.setButtonText ("Analog");
+  
+  bt_global_analog_on.setTooltip ("Turn the Analog saturator on");
+
+  
   //bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
   bt_global_analog_on.setSize (80, 48);
   bt_global_analog_on.setTopLeftPosition (l_pan_mode.getX(), 
@@ -968,15 +983,15 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   sl_global_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
   sl_global_analog_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
   sl_global_analog_amount.setColour (juce::Slider::thumbColourId, juce::Colours::orange);
-  
+  sl_global_analog_amount.setTooltip ("Level of Analog saturator");
+
   att_global_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "global_analog_amount", sl_global_analog_amount));
    
-
   
   addAndMakeVisible (log_area);
   log_area.setMultiLine (true, true);
   log_area.setReadOnly (true);
-   log_area.setTopLeftPosition (sl_global_analog_amount.getRight(), l_midimap_mode.getY());
+  log_area.setTopLeftPosition (sl_global_analog_amount.getRight(), l_midimap_mode.getY());
   log_area.setSize (170, 148);
   
   
@@ -985,8 +1000,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
 
 #ifndef MULTICHANNEL
-  
-  
+    
   gr_options.setSize (810, sl_base_note.getHeight() + 
                            cmb_pan_mode.getHeight() + 
                            cmb_midimap_mode.getHeight() + 

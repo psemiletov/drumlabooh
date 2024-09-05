@@ -24,19 +24,21 @@
 
 <td>
 
-
 <p>Important note: when loading the drumkit, Drumlabooh converts the samples in the memory to the DAW's session samplerate. So the large kit can be loaded slowly if the samples are, for example, at 48 kHz, but session's rate is 44.1. The same with the FLAC-compressed samples. If you try to load such large drumkit, please wait, don't think that the plugin or DAW is frozen.</p>
 
-<p>As Drumlabooh supports several drum kit formats and has no build-in dedicated manager for kits collection, there are "external" ways to install new drum kits.
+<p>The best way to deal with it - use "Adapt" button, that saves the copy of current drumkit with the <b>session's</b> samplerate, at <i>drum_sklad</i> directory. Then, this copy will be used as the current drumkit. The next time this copy will be loaded faster than the original kit.</p>
+
+<p>As Drumlabooh supports several drum kit formats and has no build-in dedicated manager for kits collection, there are many "external" ways to install new drum kits.
 </p>
 
 
 <h3>Drumlabooh drum kits</h3>
 
-<p>The own kit format of Dramlabooh. One kit = one directory, placed to <i>$HOME/drumlabooh-kits </i>or <i>/usr/share/drumlabooh-kits</i> on Linux, and, for Windows, to <i>c:\drumlabooh-kits </i>or <i>d:\drumlabooh-kits</i>. On its installation, Dramlabooh bundles with kits from <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad on Github</a> repo. Also, there you can read a details about the format, it is quite simple, you need a few time to create an own kit from the samples.</p>
+<p>The own kit format of Dramlabooh. One kit = one directory, placed to <i>$HOME/drumlabooh-kits</i>, <i>$HOME/drum_sklad</i> or <i>/usr/share/drumlabooh-kits</i> on Linux, and, for Windows, to <i>c:\drumlabooh-kits</i>, <i>d:\drumlabooh-kits</i>, <i>c:\drum_sklad</i> or <i>d:\drum_sklad</i>.</p> 
+
+<p>Dramlabooh usually installs automatically  kits from its official <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad on Github</a> repo. Also, there you can <b>read a details about the format</b>, it is quite simple, you need a few time to create an own kit from the samples.</p>
 
 <p>Additional kits those are not hosted on Github can be downloaded from <a href="https://t.me/drum_sklad">Drum Sklad at Telegram</a>. So the full Drumlabooh kits collection is Drum Sklad on Github + Drum Sklad on Telegram.</p>
-
 
 
 <h3>Hydrogen drum kits</h3>
