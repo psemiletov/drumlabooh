@@ -49,7 +49,6 @@ CFx::CFx()
   int xoffs = XFILLER * 2;
   int yoffs = YFILLER * 2;
 
-
   addChildComponent (gr_group_analog);
   gr_group_analog.setText ("ANALOG");
 
@@ -461,10 +460,9 @@ void CDrumCell::set_name (const std::string &n)
 //load_kit just updates GUI, actual kit load is at CAudioProcessor::load_kit 
 void CAudioProcessorEditor::load_kit()
 {
-  //make all drum labels empty
-
-  
   //std::string real_kitpath = transform_kit_path_to_local (kitpath);
+
+  //make all drum labels empty
   
   for (size_t i = 0; i < 36; i++)
       {
@@ -474,10 +472,7 @@ void CAudioProcessorEditor::load_kit()
   
   if (! audioProcessor.drumkit)
      return;
-  
-  //find kit at v_scanned_kits
-
-  //CDrumKit *k = audioProcessor.drumkit;
+ 
 
   for (size_t i = 0; i < audioProcessor.drumkit->v_samples.size(); i++)
       {
@@ -580,7 +575,10 @@ void CAudioProcessorEditor::adapt()
      return;
     
   if (audioProcessor.drumkit->kit_type != KIT_TYPE_DRUMLABOOH)
+    {
+     log ("Cannot adapt the non-Drumlabooh kit"); 
      return;
+    } 
   
   std::string new_path = get_home_dir() + "/drum_sklad/";
   std::string srate = std::to_string (audioProcessor.session_samplerate);
@@ -594,8 +592,6 @@ void CAudioProcessorEditor::adapt()
   
   if (source_dir.copyDirectoryTo (dest_dir)) 
      {
-       
-       
       audioProcessor.scanner.scan(); 
       update_kits_list();
       
@@ -606,22 +602,19 @@ void CAudioProcessorEditor::adapt()
       audioProcessor.load_kit (audioProcessor.drumkit_path);
 
       //update GUI
-    //  load_kit (audioProcessor.drumkit_path);
       audioProcessor.drumkit->save();
            
       load_kit();
-    
                
       log (audioProcessor.drumkit->kit_name);
       log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
                                      
       tmr_leds.startTimer (1000 / 15); //15 FPS
      }
-  
 }
 
 
-CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts)
+CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::AudioProcessorValueTreeState &vts)
                                              : AudioProcessorEditor (&parent),
                                                audioProcessor (parent),
                                                valueTreeState (vts)
