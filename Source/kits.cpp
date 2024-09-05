@@ -25,7 +25,6 @@ this code is the public domain
 
 using namespace std;
 
-#define MAX_SAMPLES 36
 
 
 std::mt19937 rnd_mt19937;
@@ -712,8 +711,6 @@ void CDrumKit::load_sfz (const std::string &data)
 
   stringstream st (temp_data);
   string line;
-
-  //add parse "key" (mapped MIDI note)
   
   while (getline (st, line))
         {
@@ -746,9 +743,9 @@ void CDrumKit::load_sfz (const std::string &data)
                 {
                  string str_note = line.substr (pos, end - pos);
                  //cout << "str_note:" << str_note << std::endl;
-                 if (! str_note.empty())
-                     if (v_samples.back())
-                        v_samples.back()->mapped_note = std::stoi (str_note);
+                 if (! str_note.empty() && v_samples.size() != 0)
+                     //if (v_samples.back())
+                     v_samples.back()->mapped_note = std::stoi (str_note);
                 } 
            }
 
@@ -762,9 +759,9 @@ void CDrumKit::load_sfz (const std::string &data)
                 {
                  string str_note = line.substr (pos, end - pos);
                  //cout << "str_note:" << str_note << std::endl;
-                 if (! str_note.empty())
-                     if (v_samples.back())
-                         v_samples.back()->mapped_note = std::stoi (str_note);
+                     //if (v_samples.back())
+                 if (! str_note.empty() && v_samples.size() != 0)
+                     v_samples.back()->mapped_note = std::stoi (str_note);
                 } 
             }
        
@@ -1003,7 +1000,7 @@ void CDrumKit::save() //used at Adapt button handler
       return;
   
   if (kit_type != KIT_TYPE_DRUMLABOOH)
-     return;
+      return;
   
 //  std::cout << "CDrumKit::total_samples_size() - 1\n";
  
@@ -1013,8 +1010,7 @@ void CDrumKit::save() //used at Adapt button handler
    
        if (s->v_layers.size() == 0)
           continue;
-       
- 
+  
        for (size_t j = 0; j < s->v_layers.size(); j++)
            {
             if (s->v_layers[j]->audio_buffer)
@@ -1061,16 +1057,11 @@ void CDrumKit::save() //used at Adapt button handler
 
                 if (! writer)
                    return;
-
-                 std::cout << "write!\n";
-                
                  
-                 if (! writer->writeFromAudioSampleBuffer (*s->v_layers[j]->audio_buffer, 0, s->v_layers[j]->audio_buffer->getNumSamples()))
+                if (! writer->writeFromAudioSampleBuffer (*s->v_layers[j]->audio_buffer, 0, s->v_layers[j]->audio_buffer->getNumSamples()))
                     std::cout << "NO write!\n";
-                   
-                //bool 	writeFromAudioSampleBuffer (const AudioBuffer< float > &source, int startSample, int numSamples)
                  
-                 delete writer;
+                delete writer;
  	           }
             
            } 
@@ -1169,7 +1160,7 @@ void CDrumKitsScanner::scan_full()
   //v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
 
   juce::File home_location = File::getSpecialLocation (juce::File::SpecialLocationType::userHomeDirectory);
-  const String & fnm = home_location.getFullPathName();
+  const String &fnm = home_location.getFullPathName();
   std::string sfnm (fnm.toStdString());
   sfnm += "\\";
   sfnm += ".hydrogen/data/drumkits";
@@ -1241,7 +1232,6 @@ void CDrumKitsScanner::scan_full()
 
       
     std::sort (v_kits_names.begin(), v_kits_names.end());  
-   //CHANGE TO vector sort by ABC  filled v_kits_names 
 /*      
   std::sort (v_scanned_kits.begin(), v_scanned_kits.end(), [](CDrumKit* a, CDrumKit* b) {return a->kit_name < b->kit_name;});
 
@@ -1255,7 +1245,6 @@ void CDrumKitsScanner::scan_full()
       }
 */
 }
-
 
 
 void CDrumKitsScanner::scan()
@@ -1369,15 +1358,11 @@ void CDrumKitsScanner::scan()
            std::string kit_name; 
             
            if (ext == "txt")
-              {
                //get the last part of kd 
                kit_name = get_last_part (kd);
-              }
              
            if (ext == "sfz")
-              {
                kit_name = get_last_part (kd);
-              }
 
               
            if (ext == "xml")
@@ -1385,8 +1370,6 @@ void CDrumKitsScanner::scan()
                std::string fs = string_file_load (fname); 
                kit_name = get_string_between (fs, "<name>", "</name>");
                }
-
-           
            
            map_kits.insert (pair<string,string> (kit_name, fname));
            v_kits_names.push_back (kit_name);
@@ -1396,10 +1379,7 @@ void CDrumKitsScanner::scan()
 
       
     std::sort (v_kits_names.begin(), v_kits_names.end());  
-
 }
-
-
 
 
 void CDrumKitsScanner::print()
@@ -1416,20 +1396,11 @@ void CDrumKitsScanner::print()
 void CDrumSample::untrigger_sample()
 {
 //  std::cout << "CDrumSample::UNtrigger_sample" << std::endl;
-
   active = false;
-
+  current_layer = 0;
  // for (size_t i = 0; i < v_layers.size(); i++)
    //   v_layers[i]->sample_offset = 0;
-
-  current_layer = 0;
-  
-  //if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
-    // current_layer = -1;
-     
 }
-
-
 
 
 int get_rnd (int ta, int tb)
@@ -1446,7 +1417,6 @@ void CDrumSample::trigger_sample (float vel)
   //v_layers[current_layer]->sample_offset = 0;
 
   active = true;
-
   velocity = vel;
 
   ///if (use_random_noice)
@@ -1455,30 +1425,29 @@ void CDrumSample::trigger_sample (float vel)
   if (v_layers.size() > 1)
      {
   
-     if (layer_index_mode == LAYER_INDEX_MODE_VEL || layer_index_mode == LAYER_INDEX_MODE_NOVELOCITY)
-         current_layer = map_velo_to_layer_number (velocity);
+      if (layer_index_mode == LAYER_INDEX_MODE_VEL || layer_index_mode == LAYER_INDEX_MODE_NOVELOCITY)
+          current_layer = map_velo_to_layer_number (velocity);
 
-     if (layer_index_mode == LAYER_INDEX_MODE_RND)
-         current_layer = get_rnd (0, v_layers.size() - 1);//random layer
+      if (layer_index_mode == LAYER_INDEX_MODE_RND)
+          current_layer = get_rnd (0, v_layers.size() - 1);//random layer
        
-     if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
-        {
+      if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
+         {
          //if (current_layer == v_layers.size() - 1)
           ///   current_layer = -1;
           
          //std::cout << "trigger\n"; 
           
-         robin_counter++;
+          robin_counter++;
 
-         if (robin_counter == v_layers.size())
-             robin_counter = 0;
+          if (robin_counter == v_layers.size())
+              robin_counter = 0;
          
-         current_layer = robin_counter;
-        } 
-     }
+          current_layer = robin_counter;
+         } 
+      }
    else 
        current_layer = 0; //if layers count == 1
-  
 
   //std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
 

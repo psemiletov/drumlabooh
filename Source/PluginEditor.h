@@ -1,5 +1,5 @@
 /*
-written at 2023 by Peter Semiletov
+written at 2023-24 by Peter Semiletov
 this code is the public domain
  */
 
@@ -10,33 +10,28 @@ this code is the public domain
 #include "PluginProcessor.h"
 
 
-
 typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
-
 
 class CAudioProcessorEditor;
 
 
-
-class CDrumkitsListBoxModel: //public Component,
-				     	     public ListBoxModel
+class CDrumkitsListBoxModel: public ListBoxModel
 {
 public:
   
-    CAudioProcessorEditor *editor;
+  CAudioProcessorEditor *editor;
 
-    juce::Font item_font { 14.0f, juce::Font::bold};
+  juce::Font item_font {14.0f, juce::Font::bold};
   
-    std::vector <std::string> items;
-    std::vector <int> indexes;
+  std::vector <std::string> items;
+  std::vector <int> indexes;
   
-	CDrumkitsListBoxModel();
-	~CDrumkitsListBoxModel();
-	int getNumRows();
-	void paintListBoxItem( int rowNumber, Graphics& g, int width, int height, bool rowIsSelected );
-    void selectedRowsChanged (int lastRowSelected) override;
-
+  CDrumkitsListBoxModel();
+  ~CDrumkitsListBoxModel();
+  int getNumRows();
+  void paintListBoxItem (int rowNumber, Graphics &g, int width, int height, bool rowIsSelected);
+  void selectedRowsChanged (int lastRowSelected) override;
 };
 
 
@@ -47,21 +42,8 @@ public:
   CTimer() {};
   CAudioProcessorEditor *uplink = 0;
   void hiResTimerCallback() override;
-
 };
 
-
-/*
-class CToggleButton: public juce::ToggleButton
-{
-
-void paintButton 	( 	juce::Graphics &  	g,
-		bool  	shouldDrawButtonAsHighlighted,
-		bool  	shouldDrawButtonAsDown
-	) override;
-
-}
-*/
 
 class CLed: public juce::Component
 {
@@ -72,7 +54,7 @@ public:
   bool is_on = false;
   float velocity = 1.0f;
 
-  void paint(Graphics& g);
+  void paint(Graphics &g);
 };
 
 
@@ -90,16 +72,16 @@ class CFx: public juce::Component
 {
 public:
 
-  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_lp;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_cutoff;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_reso;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::ButtonAttachment> att_lp;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_cutoff;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_lp_reso;
 
-  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_hp;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_hp_cutoff;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_hp_reso;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::ButtonAttachment> att_hp;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_hp_cutoff;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_hp_reso;
 
-  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_analog;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_analog_amount;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::ButtonAttachment> att_analog;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_analog_amount;
 
   juce::GroupComponent gr_group_lp;
   juce::GroupComponent gr_group_hp;
@@ -130,7 +112,7 @@ class CDrumCell: public juce::Component/*,
 {
 public:
 
-  juce::Font f_samplename_font { 16.0f, juce::Font::bold};
+  juce::Font f_samplename_font {16.0f, juce::Font::bold};
 
   juce::GroupComponent gr_group;
   juce::Slider sl_pan;
@@ -148,9 +130,9 @@ public:
 
   juce::Label cell_label;
 
-  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_vol;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_pan;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_mute;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_vol;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_pan;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::ButtonAttachment> att_mute;
 
   int cell_number;
 
@@ -172,7 +154,7 @@ class CDrumCell: public juce::Component/*,
 {
 public:
 
-  juce::Font f_samplename_font { 16.0f, juce::Font::bold};
+  juce::Font f_samplename_font {16.0f, juce::Font::bold};
 
   juce::GroupComponent gr_group;
 
@@ -208,13 +190,13 @@ class CAudioProcessorEditor: public juce::AudioProcessorEditor,
 {
 public:
 
-  CAudioProcessor& audioProcessor;
+  CAudioProcessor &audioProcessor;
 
   bool need_to_update_cells;
   
  // CDrumKitsScanner kits_scanner;
   CTimer tmr_leds;
-  CDrumCell drumcells [36];
+  CDrumCell drumcells [MAX_SAMPLES];
 
   juce::AudioProcessorValueTreeState& valueTreeState;
 

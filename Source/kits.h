@@ -28,6 +28,7 @@ this code is the public domain
 #define KIT_TYPE_HYDROGEN 1
 #define KIT_TYPE_SFZ 2
 
+#define MAX_SAMPLES 36
 
 class CDrumSample;
 
