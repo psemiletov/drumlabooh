@@ -886,8 +886,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor& parent, juce::Aud
   cmb_midimap_mode.setTopLeftPosition (l_midimap_mode.getX() + l_midimap_mode.getWidth(),
                                        l_midimap_mode.getY());
   
-  cmb_midimap_mode.addItem ("Simple", MIDIMAPMODE_LABOOH); 
-  cmb_midimap_mode.addItem ("General MIDI", MIDIMAPMODE_GM);
+  cmb_midimap_mode.addItem ("Automatic", MIDIMAPMODE_LABOOH); 
+  cmb_midimap_mode.addItem ("Kit-defined", MIDIMAPMODE_FROMKIT);
   
   att_midimap_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "midimap_mode", cmb_midimap_mode));
  

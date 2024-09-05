@@ -14,7 +14,7 @@ this code is the public domain
 #include "fx-resofilter.h"
 
 #define MIDIMAPMODE_LABOOH 1
-#define MIDIMAPMODE_GM 2
+#define MIDIMAPMODE_FROMKIT 2
 
 class CAudioProcessor: public juce::AudioProcessor
                             #if JucePlugin_Enable_ARA

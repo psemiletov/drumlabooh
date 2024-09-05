@@ -231,7 +231,6 @@ public:
   juce::Label l_midimap_mode { {}, "MIDI map mode" };
   juce::ComboBox cmb_midimap_mode;
   
-
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_base_note;
   juce::Label l_base_note { {}, "Base MIDI note" };
   juce::Slider sl_base_note;
@@ -258,15 +257,14 @@ public:
   juce::Label l_plugin_name;
   juce::Label l_plugin_author;
   juce::HyperlinkButton hl_homepage;
-  juce::Font f_sitelink { 20.0f, juce::Font::bold};
-  juce::Font f_logo { 30.0f, juce::Font::bold};
+  juce::Font f_sitelink {20.0f, juce::Font::bold};
+  juce::Font f_logo {30.0f, juce::Font::bold};
 //END OF TOPBAR
   
-  juce::Font f_log { 14.0f, juce::Font::bold};
-  juce::Font f_kits { 30.0f, juce::Font::bold};
-
+  juce::Font f_log {14.0f, juce::Font::bold};
+  juce::Font f_kits {30.0f, juce::Font::bold};
   
-  juce::Font f_kitname_font { 20.0f, juce::Font::bold};
+  juce::Font f_kitname_font {20.0f, juce::Font::bold};
   juce::ImageComponent kit_image;
 
   juce::GroupComponent drumcells_group;
@@ -279,25 +277,20 @@ public:
   juce::GroupComponent gr_drumkits;
   juce::GroupComponent gr_kitbuttons;
 
-  
+ 
 //  juce::Label l_drumkit_selector { {}, "Drumkit selector" };
 //  juce::ComboBox cmb_drumkit_selector;
 
-
-  CAudioProcessorEditor (CAudioProcessor& parent, juce::AudioProcessorValueTreeState& vts);
+  CAudioProcessorEditor (CAudioProcessor &parent, juce::AudioProcessorValueTreeState &vts);
   ~CAudioProcessorEditor() override;
 
   //void load_kit (const std::string &kitpath);
   
-  void load_kit();
-
+  void load_kit(); //call after processor's load_kit to update GUI
   void log (const std::string &s);
-  
-  
-  void adapt();
   void update_kits_list();
-  
-  
+  void adapt();
+    
   void paint (juce::Graphics&) override;
   void resized() override;
 
