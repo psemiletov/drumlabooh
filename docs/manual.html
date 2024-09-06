@@ -11,11 +11,21 @@
 
 <h2 align="center"> Drumlabooh | Драмлабух: USER'S MANUAL</h2>
 
-<p align="center">
-<a href="index.html">Home | Главная</a> •
-<a href="about.html">About | Инфа</a> • 
-<a href="install.html">Get plugin | Скачать плагин</a> • <a href="getkits.html">Get kits | Скачать драмкиты</a> •
-<a href="manual.html">Docs | Руководство</a> • <a href="donate.html">Donate | Донат</a></p>
+<p align="center"><b>
+&#129345;
+<a href="index.html">Home | Главная</a> 
+&#129345;
+<a href="about.html">About | Инфа</a> 
+&#129345; 
+<a href="install.html">Install | Скачать</a> 
+&#129345;
+<a href="manual.html">Manual | Руководство</a> 
+&#129345;
+<a href="getkits.html">Drumkits | Драмкиты</a>
+&#129345;
+<a href="donate.html">Donate | Донат</a>
+&#129345;</b>
+</p>
 
 
 <table class="center">
@@ -39,55 +49,28 @@
 <a name="mni_modes"></a>
 <h3>1. Stereo vs Multi-channel modes</h3>
 
-<p>The first thing that you should know that there are two versions of Drumlabooh - <b>Stereo </b>and <b>Multi</b> (Multi-channel or Multi-outputs), that gives you the separated output mono channel for each instrument from the drum kit (36 channels at all).  To use the Stereo version, add to track Drumlabooh plugin. And for Multi-channel version, add Drumlabooh-multi.</p>
+<p>The first thing that you should know that there are two versions of Drumlabooh - <b>Stereo </b>and <b>Multi</b> (Multi-channel or Multi-outputs), that gives you the separated output mono channel for each instrument from the drum kit (36 channels at all). To use the Stereo version, add to track <i>Drumlabooh</i> plugin. And for Multi-channel version, add <i>Drumlabooh-multi</i>.</p>
 
 <p>At Multi-channel version, the plugin's pan, volume and mute controls <b>are disabled</b>, because you can control them via tracks or buses in DAW.</p>
 
 <p>
-Read the <a name="mni_multi">DETAILS</a> how to use Multi-mode in DAW, to attach each drum to the individual track or the bus.
+Read the <a name="mni_multi">DETAILS</a> how to use Multi-mode in DAW, how to attach each drum to the individual track or the bus.
 </p>
 
 
 <a name="mni_getkits"></a>
-<h3>2. Get kits</h3>
+<h3>2. Kits</h3>
 
-<p>For Hydrogen drumkits, run Hydrogen, then go there to <b>Drumkits - Online import</b> menu and download kits from Hydrogen or Musical Artifacts repositories.</p> 
+<p>The main info about drum kits is <a href="getkits.html">HERE :)</a></p>
 
-<p>To install or update Drumlabooh format kits, download them from <a href="https://github.com/psemiletov/drum_sklad">Drum sklad</a> (usually installed with the plugins by default) and <a href="https://t.me/drum_sklad">Drumlabooh kits at Telegram</a> (additional kits), then copy or unpack drumkits folders to <i>$HOME/drumlabooh-kits</i> or <i>$HOME/drum_sklad</i> (you may git clone to $HOME). Each kit = one folder.</p>
+<p>Drumlabooh scans all kits and <b>shows the list with them</b> to select. Also, you can press <b>Open</b> button below the list, to select the drumkit file manually from any location. Select xml (Hydrogen formet), sfz (SFZ) or drumkit.txt (Drumlabooh format) file at the drumkit's folder.</p>
 
-<p>Similary, Dramlabooh searches SFZ kits at <i>$HOME/sfz-kits</i></p>
 
-<p>All kits those found will be available from the menu (drop-down list) at the top left corner of the plugin.</p>
-
-<p>You can also select the drumkit at any directory, using the <b>Or select file</b> button near the drumkits dropdown list. Select xml (Hydrogen formet), sfz (SFZ) or drumkit.txt (Drumlabooh format) file at the drumkit's folder.
+<p>You can also select the drumkit at any directory, using the <b>Open</b> button near the drumkits dropdown list. Select xml (Hydrogen formet), sfz (SFZ) or drumkit.txt (Drumlabooh format) file at the drumkit's folder.
 </p>
-
-<p>Note: actually, Drumalbooh searches kits at many locations.</p>
-
-<p>Drumlabooh/Drumrox format:</p>
-
-<pre>/usr/share/drumrox-kits
-$HOME/drumrox-kits
-$HOME/drum_sklad
-/usr/share/drumlabooh-kits
-$HOME/drumlabooh-kits</pre>
-
-<p>Hydrogen format:</p>
-
-<pre>/usr/share/hydrogen/data/drumkits
-/usr/local/share/hydrogen/data/drumkits
-/usr/share/drmr/drumkits
-$HOME/.hydrogen/data/drumkits
-$HOME/.drmr/drumkits</pre>
-
-<p>SFZ format:</p>
-
-<pre>$HOME/sfz-kits</pre>
 
 
 <p><b>Notes:</b></p>
-
-<p>When Drumlabooh loads the kit samples, it converts them before use, on the fly, to the DAW's project session rate (if needed), so the conversion can take some time with big kits. Please note that any resampling changes how samples sounds, at some degree.</p>
 
 <p>Drumlabooh loads pre-panned stereo samples as mono, using the left channel. The pre-panning makes the actual panning on the mixing just weird. So Drumlabooh with it's own stereo mixer treats all source samples as mono.</p>
 
@@ -95,7 +78,7 @@ $HOME/.drmr/drumkits</pre>
 <a name="mni_mixer"></a>
 <h3>3. Built-in mixer</h3>
 
-<p>Below the drumkit selector you see the cells (or slots) with loaded samples. Here the layout of each cell:</p>
+<p>At the right from the drumkits list you see the cells (or slots) with loaded samples. Here the layout of each cell:</p>
 
 <p>1 <b>Led</b> - lights when note plays.<br><br>
 
@@ -108,28 +91,42 @@ Both filters are resonance filters and have the <b>resonance</b> parameter. Play
 <i>Note: at Ardour, when FX window becomes active, the plugin window hides, and when you close FX window, you will see the plugin window again. At Reaper and Muse both windows are visible as intended.</i>
 <br><br>
 
-3 <b>Pan control</b> - values from 0 to 1, 0.5 is a middle. See the <b>Pan mode</b> option to know the algorhytm of the paning. It is important that different DAWs have different pan modes for its tracks, sometimes DAW give you an option to select that. Dramlabooh internally acts like a DAW mixer and provides such flexibility too.
+4 <b>Pan control</b> - values from 0 to 1, 0.5 is a middle. See the <b>Pan mode</b> option to know the algorhytm of the paning. It is important that different DAWs have different pan modes for its tracks, sometimes DAW give you an option to select that. Dramlabooh internally acts like a DAW mixer and provides such flexibility too.
 <br><br>
 
-4. <b>Volume slider</b> - non-linear, values from -96 to +6 dB.<br><br>
+5. <b>Volume slider</b> - non-linear, values from -96 to +6 dB.<br><br>
 
-5. <b>Mute switch</b> - mutes the instrument.
+6. <b>Mute switch</b> - mutes the instrument.
 </p>
 
 <p>Under the <b>Options</b> you will find the "global" Analog switch and slider, it affects the whole mix at the end of the signal chain. Good for live but quiet drums.</p>
 
 <a name="mni_options"></a>
-<h3>4. Built-in options</h3>
+<h3>4. Options section</h3>
 
-<p>By the right side of the plugin window you see, below the drumkit info section, the Options.</p>
+<p>At the lower part of the plugin window you see Options.</p>
 
-<p><b>Base MIDI note</b> - default 36, means at which MIDI note number we map the first instrument at the kit. MIDI note 36 = C at 2-st octave.</p>
+
+<p><b>MIDI map mode</b> - there are two modes, <b>Auto</b> and <b>Kit</b>. When <b>Auto</b>, Drumlabooh assign MIDI notes to samples starting from another option, <b>Base MIDI note</b> which default 36, means at which MIDI note number we map the first instrument at the kit. MIDI note 36 = C at 2-st octave. Such mode is default and good for the playing from MIDI keyboard. When <b>Kit</b> selected, Drumlabooh uses MIDI note assignements from the drumkit file, usually it is <a href="https://computermusicresource.com/GM.Percussion.KeyMap.html">General MIDI mapping</a> compatible with e-drums and drum pads. It is also the right mode for Ardour's drum grooves.
+</p>
+
+<p>So, MIDI mapping is MIDI note numbers assigned for the drum instruments (Drumlabooh cells) from the kit. Mapping data is included at most Drumlabooh and SFZ kits. But, some drums or percussions are not covered by General MIDI, so in these cases <b>Auto</b> mode is more useful and give you the access to all instruments at the kit.</p>
+
+<p>To more complex MIDI mapping, use your DAW features, e-drum/pads options or plugins such as, at Reaper, "JS MIDI map to key v2" - just put it before the Drumlabooh and create/select mapping file, for example:</p>
+
+<pre>A3 -> E5
+C4 -> C5</pre>
+
+<p><b>Ignore MIDI velocity</b> - play samples at full level.</p>
+
 
 <p><b>Pan mode</b> - allow to select the pan mode for Drumlabooh's internal mixer. See the <a href="https://en.wikipedia.org/wiki/Panning_law">article</a>. Defaul panner is qual power panning, law: -3 dB (sin/cos taper).<br>
 By the way, the pan mode is the significant factor of how DAW "sounds". Pan mode, and/or pan law, is the algorithm that controls the total acoustic power output of 2 channels, making their level lower when paning position moves to the center. Otherwise, we have louder sound at the center, bacause two channels will play at the full power, and will be louder than the same mono sound. So, any stereo output must be reduced on some degree, when the pan position approaching to the center, to prevent the loudness increase.
 </p>
 
 <p>Maybe it's better to set Pan mode at Drumlabooh the same to your DAW's pan mode, to make all drum samples paned in the same method. Try what is best sounds in your mix.</p>
+
+<p><b>Analog</b>- the global saturation on/off and the level of that. Good for quiet drum kits.</p>
 
 <a name="multi"></a>
 <h3>5. Multi-channel explained</h3>
@@ -145,9 +142,9 @@ By the way, the pan mode is the significant factor of how DAW "sounds". Pan mode
 
 <p>1. Create MIDI track with Drumlabooh-muiti as the instrument.</p>
 
-<p>2. Load drumkit into the Drumlabooh-multi. For example, Hydrogen's GMRockKit. It has 18 instruments inside. Thus, we need just 18 output channels from the 36 available.</p>
+<p>2. Load drumkit into the Drumlabooh-multi. For example, Hydrogen's Ludwig Sixties. It has 19 instruments inside. Thus, we need just 19 output channels from the 36 available.</p>
 
-<p>3. By default, Drumlabooh-multi sounds at stereo-output. We don't need that. Let's create the individual channels or buses for each drum/precussion sample.</p>
+<p>3. By default, Drumlabooh-multi sounds as stereo-output. We don't need that. Let's create the individual channels or buses for each drum/precussion sample.</p>
 
 <p>4. Right click <b>on the top of the channel strip</b> and select <b>Fan out to tracks</b> or <b>Fan out to buses</b>. Now you have  one track or bus per channel to control each of 36 drumkit channels. Please note that tracks and buses are mono, so to use stereo FX on them, do the right click on the effect, select **Pin connection** and connect pins to make stereo:
 </p>
@@ -210,95 +207,67 @@ By the way, the pan mode is the significant factor of how DAW "sounds". Pan mode
 
 
 <a name="mni_getkitsru"></a>
-<h3>2. Скачайте драмкиты</h3>
+<h3>2. Драмкиты</h3>
 
-<p>Драмкиты для Hydrogen проще скачать так - запустите Hydrogen, а в нем пойдите в меню <b>Drumkits - Online import</b> и скачайте драмкиты по вкусу из предложенных хранилищ, их есть два - Hydrogen и Musicak Artifacts.</p>
+Подробно о драмкитах <a href="./getkits.html">читайте здесь</a>. 
 
-<p>Чтобы установить драмкиты формата Драмлабуха, скачайте их с <a href="https://github.com/psemiletov/drum_sklad">Drum sklad</a> (эти обычно устанавливаются по умолчанию) или <a href="https://t.me/drum_sklad">Драмсклад в Телеге</a> (дополнительные киты), а затем скопируйте распакованные папки драмкитов в  
-<i>$HOME/drumlabooh-kits</i> или в <i>$HOME/drum_sklad</i> (сюда удобно сделать git clone, находясь в $HOME). Каждый кит = одна папка.</p>
+При запуске Драмлабух сканирует в нужных папках драмкиты всех известных ему форматов и предлагает вам список, откуда киты можно выбирать. Под списком и картинкой кита (если такая есть) находится кнопочка <b>Open</b>, через нее можно открыть драмкит, лежащий вне папок, где ищет Драмлабух. Через диалоговое окно надо выбрать файл xml (для формата Hydrogen ), sfz (для SFZ) или, в случае с форматом Drumlabooh, drumkit.txt.</p>
 
-<p>При установке самого Драмлабуха обычно устанавливаются киты с гитхаба Драмсклада, а в его тележной части лежат дополнительные киты.</p>
-
-
-<p>Драмкиты в формате SFZ Драмлабух будет искать в папке<i>$HOME/sfz-kits</i>.</p>
-
-<p>Все найденные драмкиты будут доступны в Драмлабухе из выпадающего списка в верхней левой части плагина.</p>
-
-<p>Справа от него есть также кнопочка <b>Or select file</b>, при помощи которой можно через диалоговое окно открыть драмкит в любом каталоге, где нужно выбрать файл xml (для формата Hydrogen ), sfz (для SFZ) или, в случае с форматом Drumlabooh, drumkit.txt.
-</p>
-
-
-<p>Примечание: вообще-то Драмлабух ищет киты во многих каталогах, а именно:</p>
-
-
-<p>Киты в формате Drumlabooh/Drumrox:</p>
-
-<pre>/usr/share/drumrox-kits
-$HOME/drumrox-kits
-/usr/share/drumlabooh-kits
-$HOME/drumlabooh-kits
-$HOME/drum_sklad</pre>
-
-
-<p>Киты в формате Hydrogen:</p>
-
-<pre>/usr/share/hydrogen/data/drumkits
-/usr/local/share/hydrogen/data/drumkits
-/usr/share/drmr/drumkits
-$HOME/.hydrogen/data/drumkits
-$HOME/.drmr/drumkits</pre>
-
-
-<p>В формате SFZ:</p>
-
-<pre>$HOME/sfz-kits</pre>
-
-<p><b>Примечания:</b></p>
-
-<p>Когда Драмлабух загружает сэмплы из кита в память, то, если частота оцифровки текущей сессии/проекта DAW отлична от частоты сэмплов, сэмплы ресэмплируются (в оперативной памяти) к частоте сессии, что может занять некоторое время в зависимости от количества сэмплов, мощности процессора и т.д. Большинство китов формата Драмлабух оцифрованы в 44.1 килогерц, однако некоторые большие киты вроде Ludwig Basic - 48 килогерц.</p>
 
 
 <a name="mni_mixerru"></a>
 <h3>3. Встроенный микшер</h3>
 
-<p>Под списком выбора драмкита расположены ячейки инструментов. Каждая из них состоит из следующих частей:</p>
+<p>Справа от списка с драмкитами драмкита расположены ячейки инструментов, куда загружаются ударные из драмкита. Каждая  ячейка состоит из следующих частей:</p>
 
 <p>1 <b>Светодиод</b> - загорается когда играет инструмент, загруженный в ячейку.<br><br>
 
-2 <b>Название инструмента</b> - берется из XML-файла кита или другим способом.<br><br>
+2 <b>Название инструмента</b> - задано в драмките или вычислено Лабухом, если не задано.<br><br>
 
-3 <b>FX</b> - вызывает окно эффектов для текущего инструмента. Окно можно закрыть кнопкой с крестиком либо клавишей Esc. Используйте эффекты, если привычный звук драмкита надоел.
+3 <b>FX</b> - вызывает окно эффектов для текущего инструмента. Окно можно закрыть кнопкой с крестиком либо клавишей Esc. Используйте эффекты, если привычный звук драмкита надоел.<br>
 Имеем два резонансных фильтра - <b>LP</b> (низкочастотный, пропускает только частоты ниже определенного значения) и <b>HP</b> (высокочастотный). Значение (частота) среза регулируется параметром <b>cutoff</b> (первый ползунок фильтра). Также есть параметр резонанса - <b>resonance</b>. Играйтесь ими, чтобы на лету делать новые звуки из исходных сэмплов. Если же звучание сэмплов кажется тусклым или убогим, попробуйте включить блок <b>Analog</b> и вращать крутилку, чтобы придать сигналу теплое, аналоговое звучание.<br>
 <i>Заметка: в Ardour при вызове окна FX исчезает из виду само окно плагина, и появляется, когда вы закрываете окно FX. В Reaper или Muse такого не происходит.</i>
 <br>
 <br>
 
-3 <b>Регулятор панорамы</b> - значения от 0 до 1, 0.5 середина. Помещает инструмент левее или правее, при по алгоритму, заданному опцией <b>Pan mode</b> (см. ниже). Разные DAW применяют к дорожкам разные режимы панорамы, а некоторые позволяют выбрать режим - собственно, во многом именно алгоритмы панорамы влияют на "фирменное" звучание DAW. Драмлабух, имея внутри себя полноценный микшер, как в DAW, тоже дает возможность выбрать режим панорамы.
+4 <b>Регулятор панорамы</b> - значения от 0 до 1, 0.5 середина. Помещает инструмент левее или правее, при по алгоритму, заданному опцией <b>Pan mode</b> (см. ниже). Разные DAW применяют к дорожкам разные режимы панорамы, а некоторые позволяют выбрать режим - собственно, во многом именно алгоритмы панорамы влияют на "фирменное" звучание DAW. Драмлабух, имея внутри себя полноценный микшер, как в DAW, тоже дает возможность выбрать режим панорамы.
 <br><br>
 
-4. <b>Регулятор громкости</b> - нелинейный, значения от -96 до +6 dB.<br><br>
+5. <b>Регулятор громкости</b> - нелинейный, значения от -96 до +6 dB.<br><br>
 
-5. Переключатель <b>Mute</b> (молчать, заглушить) - если стоит галочка, инструмент не играет, т.е. временно исключается из микса.
+6. Переключатель <b>Mute</b> (молчать, заглушить) - если стоит галочка, инструмент не играет, т.е. временно исключается из микса.
 </p>
 
 <a name="mni_optionsru"></a>
 <h3>Настройки плагина</h3>
 
-<p>В правой части окна плагина, под разделом сведений о драмките, находятся настройки.</p>
+<p>В нижней части окна плагина находятся настройки.</p>
 
-<p><b>Base MIDI note</b> - по умолчанию 36, задает MIDI номер ноты, с которой начинается  "раскладка" инструментов из драмкита. MIDI нота 36 это "До" второй октавы (C2).</p>
-
-<p><b>Pan mode</b> - выбор режима панорамы для микшера Драмлабуха. Подробнее <a href="https://en.wikipedia.org/wiki/Panning_law">в этой статье</a>. По умолчанию стоит паннер на основе синуса/косинуса, -3 dB.
+<p><b>MIDI map mode</b> - там два режима, <b>Auto</b> и <b>Kit</b>. Если выбрано <b>Auto</b>, Drumlabooh назначает каждому инструменту из кита номера MIDI-нот, начиная с другой опции, <b>Base MIDI note</b>, где по умолчанию стоит 36, это нота C второй октавы. Такой режим установлен по умолчанию и он удобен для игры с MIDI-клавы или прописывания квадратиками в пианоролле. Другой режим, <b>Kit</b>, использует номера MIDI-нот, заданные в файле драмкита, как правило они соответствуют стандарту <a href="https://computermusicresource.com/GM.Percussion.KeyMap.html">General MIDI mapping</a> и совместимы с электронными барабанами или падами. Этот же режим совместим с грувами из Ардора.
 </p>
 
-<p>Внизу под разделом опций вы найдете еще и глобальный переключатель и слайдер Analog, которые влияют на весь микс, обрабатывая его в конце цепи следования сигнала. Полезно для живых, но тихих барабанов.</p>
+<p>То есть, MIDI mapping это соответствие номеров MIDI-нот (поступающих от клавиатуры, пэдов или с пианоролла) и инструментов из драмкита. Почти все драмкиты Драмлабуха имеют совместимость с General MIDI при выборе режима Kit.  Установки MIDI mapping читаются также из драмкитов формата SFZ. Однако, стандарт General MIDI может включает в себя всё многообразие ударных, и в некоторых китах ряд инструментов не имеют соответсвий в номерах нот General MIDI. Для таких китов, чтобы получить доступ ко всем инструментам кита, лучше выбрать режим мэппинга <b>Auto</b>. 
+</p>
+
+<p>Для более сложного MIDI mapping используйте настройки вашего MIDI-железа или, в Рипере, плагин "JS MIDI map to key v2" - просто подключие его к дорожке перед Драмлабухом и выберите созданный текстовый файл мэппинга условно такого содержания:</p>
+
+<pre>A3 -> E5
+C4 -> C5</pre>
+
+<p><b>Pan mode</b> - выбор режима панорамы для микшера Драмлабуха. Подробнее <a href="https://en.wikipedia.org/wiki/Panning_law">в этой статье</a>. По умолчанию стоит паннер на основе синуса/косинуса, -3 dB. </p>
+
+<p>Во многом режим панорамы и определяет звучание микса в DAW, ибо отвечает за воспринимаемую громкость сигнала в приближении ползунка к середине. Вникните в это подробнее, и вероятно будет логичным выбрать в Лабухе такой же режим панорамы, как в вашей DAW.
+</p>
+
+<p><b>Analog</b>. Глобальный переключатель и слайдер сатуратора, который влияет на весь микс, обрабатывая его в конце цепи следования сигнала. Полезно для живых, но тихих барабанов.</p>
+
 
 <a name="multi"></a>
 <h3>5. О многоканальном режиме подробно</h3>
 
 <p>Повторюсь, что в многоканальной версии плагина <b>нет ползунков панорамы, громкости и кнопки Mute</b> - всё это возложено на микшер DAW.</p>
 
-<p>Драмлабух предоставляет 36 выводных моно-каналов, по одному на каждый инструмент из драмкита.</p>
+<p>Драмлабух предоставляет 36 выходных моно-каналов, по одному на каждый инструмент из драмкита.</p>
 
 
 <a name="multiardru"></a>
@@ -307,7 +276,7 @@ $HOME/.drmr/drumkits</pre>
 
 <p>1. Создайте MIDI-дорожку и добавьте туда инструмент <b>Drumlabooh-muiti</b>.</p>
 
-<p>2. Загрузите в <b>Drumlabooh-multi</b> драмкит. Например, GMRockKit из состава Hydrogen. В нем 18 инструментов. Таким образом, нам нужно только 18 выходных каналов из имеющихся 36.</p>
+<p>2. Загрузите в <b>Drumlabooh-multi</b> драмкит. Например, в нем будет 18 инструментов. Таким образом, нам нужно только 18 выходных каналов из имеющихся 36.</p>
 
 <p>3. По умолчанию, Drumlabooh-multi "звучит" на два канала, как стерео. Нам это не нужно. Мы хотим разбросать инструменты по отдельным дорожкам либо шинам. Как это сделать?
 </p>
@@ -323,7 +292,7 @@ $HOME/.drmr/drumkits</pre>
 
 <a href="/.remove-group.png"><img src="remove-group-small.jpg" alt="" width="444" height="222"></a>
 
-<p>6. Теперь осталось удалить ненужные дорожки - например, в драмките только 8 инструментов, а у нас 36 дорожек!
+<p>6. Теперь осталось удалить ненужные дорожки - например, в драмките только 18 инструментов, а у нас 36 дорожек!
 </p>
 
 <a name="multireaper"></a>

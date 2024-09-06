@@ -573,7 +573,11 @@ void CAudioProcessorEditor::adapt()
 {
   if (! audioProcessor.drumkit)
      return;
-    
+  
+if (! audioProcessor.drumkit->loaded)
+     return;
+  
+  
   if (audioProcessor.drumkit->kit_type != KIT_TYPE_DRUMLABOOH)
     {
      log ("Cannot adapt the non-Drumlabooh kit"); 
