@@ -39,27 +39,20 @@
 
 <h3>NEWS</h3>
 
-<p>Coming soon - Drumlabooh 5! Beside this good news, the bad one that I broke my smartphone and want to buy a new one, so donates are very welcome! Paypal: &#112;&#101;&#116;&#101;&#114;&#46;&#115;&#101;&#109;&#105;&#108;&#101;&#116;&#111;&#118;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;
-</p>
-
-<p>August 13 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/4.0.0">4.0.0 release</a></p>
+<p>September 07 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/5.0.0">5.0.0 release</a></p>
 
 <p>   What's new?
-</p><p>   The first and visible one - "Analog" saturator slider at the main screen, applied to the whole mix at the end of the signal flow. Move the slider to make tiny and weak drums bigger and stronger, if that you need.
-</p><p>    This version also introduces new multi-sampling mode, where the engine plays sample layers according to MIDI velocity, but the velocity's value is not included to the final signal calculation formula. It's useful when we have too quiet sampled layers. Read https://github.com/psemiletov/drum_sklad for the details of such option at the drumkit.
-</p><p>    New compilation flag for the packagers - use cmake -DINSTALLKITS=OFF to disable fetching and installing the drumkits, so now you can build just the package with the binaries, and make separated package with kits from https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
-</p><p>    Speaking of the kits. Now you can place them also to $HOME/drum_sklad (to simpilify keeping them up-to-date in the case of the manual installing/updating via git). 
-</p><p>   And, the new kits:
-</p> 
-<p>  1. Gretch Jazzkit - sampled from famous  Gretch drums and cymbals, compiled from C0 sample packs of Bigjoedrummer and Shpira, and includes, among others: Gretsch Cat Maple 22 Bass Drum, Premier Artist Maple snare 14x5.5,
-Gretsch Catalina Maple floor tom 14 inch
-Gretsch Catalina Maple tom 12 inch, Gretsch Catalina Maple tom 10 inch, Gretsch Catalina Maple tom 8 inch.
+</p><p>   The UI was heavy redesigned to add new controls and options. The drumkits list now visible all the time instead of lurky combo box. This allows select kits in a more natural way. The new kits scanner provides kits list faster than before.
+</p><p>   To speed-up the loading of large kits with the samplerate that differs from session's samplerate, you can make a resampled copy of the kit using a new "Adapt" button.
+</p><p>   Another big enhancement is the MIDI mapping support via plugin's engine. Please read the Manual for details. With built-in mapping modes, you can turn on GM-compatibility mode for e-drums, pads or made Ardour's drum grooves sound right. Almost all Drumlabooh native format kits are updated for such compatibility. SFZ mapping setting are also supported.
+</p><p>   Pan mode and panning code are fixed, all panning modes now works as intended. The status log area has been added to make changes more visible. Many code was refactored and rewritten.
+</p><p>
+   Stay tuned, Peter Semiletov
 </p>
-<p>   2. The Almighty Sound Drumkit - another acoustic drumkit at this update, sampled by the member rock band The Almighty Sound, Paul Xavier Luke. Includes samples: 1966 Ludwig Acrolite snare drum, 20" Zildjian Ride Cymbal, 16" Yamaha DP Floor Tom, 22" Yamaha DP Kick Drum, 13" Yamaha DP Riding Tom, Paiste 18" Crash Cymbal, Sabian B8 Pro Hi Hat/
 
-</p>  3. Kits of sampled rare old drum machines: MTI AO-1, GEM Drum15</p>
+<p><b>September 06 2024</b></p>
 
-<p>   Stay tuned, Peter Semiletov!
+<p>Coming soon - Drumlabooh 5! Beside this good news, the bad one that I broke my smartphone and want to buy a new one, so donates are very welcome! Paypal: &#112;&#101;&#116;&#101;&#114;&#46;&#115;&#101;&#109;&#105;&#108;&#101;&#116;&#111;&#118;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;
 </p>
 
 </td>
@@ -70,28 +63,17 @@ Gretsch Catalina Maple tom 12 inch, Gretsch Catalina Maple tom 10 inch, Gretsch 
 <h3>НОВОСТИ</h3>
 
 
-<p>13 августа 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/4.0.0">версия 4.0.0</a></p>
+<p>7 сентября 2024 - <a href="https://github.com/psemiletov/drumlabooh/releases/tag/5.0.0">версия 5.0.0</a></p>
 
 <p>Что нового?</p>
 
-<p>Первое и самое заметное - ползунок "Аналог" для всего микса, влияющий на  насыщенность звучания в конце цепочки обработки сигнала. Полезно для тихих, слабых барабанов, если вы хотите сделать их более драйвовыми.</p>
-
-<p>В этой версии Лабуха появляется также новый режим мультисэмплинга, подробности см. на сайте <a href="https://github.com/psemiletov/drum_sklad">Драмсклад</a>, они заинтересуют только создателей драмкитов. </p>
-
-<p>Для ведущих пакетов, появилась опция сборки cmake -DINSTALLKITS=OFF - она отключает скачивание и установку драмкитов при сборке cmake, таким образом можно сделать пакет чисто с исполняемыми файлами, а драмкиты вынести в отдельный пакет на основе архива https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
+<p>Переделан интерфейс - появился удобный список выбора драмкитов вместо выпадающего списка, сканнер установленных китов переписан с нуля для ускорения работы.
 </p>
 
-<p>Драмкиты теперь можно размещать еще и в папке $HOME/drum_sklad, для более удобной синхронизации с Драмскладом, если вы устанавливали киты оттуда вручную по гиту.</p>
-
-<p>   Наконец, новые драмкиты!</p> 
-
-<p>  1. Gretch Jazzkit - сэмплирован со знаменитых джазовых барабанов и перкуссий  Gretch, собран из пакетов сэмплов от  Bigjoedrummer и Shpira, и содержит, кроме прочего: Gretsch Cat Maple 22 Bass Drum, Premier Artist Maple snare 14x5.5,
-Gretsch Catalina Maple floor tom 14 inch
-Gretsch Catalina Maple tom 12 inch, Gretsch Catalina Maple tom 10 inch, Gretsch Catalina Maple tom 8 inch.
+<p>Добавлены режимы MIDI-mapping, подробнее читайте в документации, это относится к тому как удобно подружить драм-пады и e-drums с драмкитами. Все драмкиты Лабуха обрели теперь совместимость с GM. 
+Починена работа режимов панорамирования. Появилась кнопка Adapt для клонирования тяжелых китов с переоцифровкой их к частоте оцифровки рабочей сессии - таким образом кит будет загружаться быстрее, не пересэмплируясь каждый раз при загрузке.
 </p>
-<p>   2. The Almighty Sound Drumkit - еще один акустический драмкит, сэмплированный участником группы The Almighty Sound, Paul Xavier Luke. Содержит сэмплы: 1966 Ludwig Acrolite snare drum, 20" Zildjian Ride Cymbal, 16" Yamaha DP Floor Tom, 22" Yamaha DP Kick Drum, 13" Yamaha DP Riding Tom, Paiste 18" Crash Cymbal, Sabian B8 Pro Hi Hat/
 
-</p>  3. Киты редких старых драм машин: MTI AO-1, GEM Drum15</p>
 
 </td>
 
