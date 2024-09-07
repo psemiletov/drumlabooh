@@ -1,18 +1,9 @@
-   Drumlabooh 4.0.0
+   Drumlabooh 5.0.0
 
    What's new?
-   The first and visible one - "Analog" saturator slider at the main screen, applied to the whole mix at the end of the signal flow. Move the slider to make tiny and weak drums bigger and stronger, if that you need.
-    This version also introduces new multi-sampling mode, where the engine plays sample layers according to MIDI velocity, but the velocity's value is not included to the final signal calculation formula. It's useful when we have too quiet sampled layers. Read https://github.com/psemiletov/drum_sklad for the details of such option at the drumkit.
-    New compilation flag for the packagers - use cmake -DINSTALLKITS=OFF to disable fetching and installing the drumkits, so now you can build just the package with the binaries, and make separated package with kits from https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
-    Speaking of the kits. Now you can place them also to $HOME/drum_sklad (to simpilify keeping them up-to-date in the case of the manual installing/updating via git). 
-   And, the new kits:
- 
-  1. Gretch Jazzkit - sampled from famous  Gretch drums and cymbals, compiled from C0 sample packs of Bigjoedrummer and Shpira, and includes, among others: Gretsch Cat Maple 22 Bass Drum, Premier Artist Maple snare 14x5.5,
-Gretsch Catalina Maple floor tom 14 inch
-Gretsch Catalina Maple tom 12 inch, Gretsch Catalina Maple tom 10 inch, Gretsch Catalina Maple tom 8 inch.
+   The UI was heavy redesigned to add new controls and options. The drumkits list now visible all the time instead of lurky combo box. This allows select kits in a more natural way. The new kits scanner provides kits list faster than before.
+   To speed-up the loading of large kits with the samplerate that differs from session's samplerate, you can make a resampled copy of the kit using a new "Adapt" button.
+   Another big enhancement is the MIDI mapping support via plugin's engine. Please read the Manual for details. With built-in mapping modes, you can turn on GM-compatibility mode for e-drums, pads or made Ardour's drum grooves sound right. Almost all Drumlabooh native format kits are updated for such compatibility. SFZ mapping setting are also supported.
+   Pan mode and panning code are fixed, all panning modes now works as intended. The status log area has been added to make changes more visible. Many code was refactored and rewritten.
 
-   2. The Almighty Sound Drumkit - another acoustic drumkit at this update, sampled by the member rock band The Almighty Sound, Paul Xavier Luke. Includes samples: 1966 Ludwig Acrolite snare drum, 20" Zildjian Ride Cymbal, 16" Yamaha DP Floor Tom, 22" Yamaha DP Kick Drum, 13" Yamaha DP Riding Tom, Paiste 18" Crash Cymbal, Sabian B8 Pro Hi Hat/
-
-  3. Kits of sampled rare old drum machines: MTI AO-1, GEM Drum15
-
-   Stay tuned, Peter Semiletov!
+   Stay tuned, Peter Semiletov

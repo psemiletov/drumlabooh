@@ -742,10 +742,15 @@ void CDrumKit::load_sfz (const std::string &data)
              if (end != string::npos)
                 {
                  string str_note = line.substr (pos, end - pos);
-                 //cout << "str_note:" << str_note << std::endl;
+//                 cout << "str_note:" << str_note << std::endl;
                  if (! str_note.empty() && v_samples.size() != 0)
                      //if (v_samples.back())
+                    {
                      v_samples.back()->mapped_note = std::stoi (str_note);
+                     map_samples[v_samples.back()->mapped_note] = v_samples.back();
+                    }     
+                     
+                  
                 } 
            }
 
@@ -758,10 +763,15 @@ void CDrumKit::load_sfz (const std::string &data)
              if (end != string::npos)
                 {
                  string str_note = line.substr (pos, end - pos);
-                 //cout << "str_note:" << str_note << std::endl;
+ //                cout << "str_note:" << str_note << std::endl;
                      //if (v_samples.back())
                  if (! str_note.empty() && v_samples.size() != 0)
+                     //v_samples.back()->mapped_note = std::stoi (str_note);
+                    {
                      v_samples.back()->mapped_note = std::stoi (str_note);
+                     map_samples[v_samples.back()->mapped_note] = v_samples.back();
+                    }     
+
                 } 
             }
        
