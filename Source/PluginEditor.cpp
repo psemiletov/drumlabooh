@@ -381,6 +381,8 @@ CDrumCell::~CDrumCell()
 void CDrumCell::attach_params (CAudioProcessorEditor *ed, int cellno)
 {
   cell_number = cellno;
+  
+  cell_label.editor = ed;
 
   std::string param_name = "vol" + std::to_string (cell_number);
   att_vol.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_vol));
@@ -474,9 +476,16 @@ void CAudioProcessorEditor::load_kit()
      return;
  
 
-  for (size_t i = 0; i < audioProcessor.drumkit->v_samples.size(); i++)
+  for (size_t i = 0; i < 36; i++)
       {
-       drumcells[i].set_name (audioProcessor.drumkit->v_samples[i]->name);
+       CDrumSample *s = 0;
+       s = audioProcessor.drumkit->a_samples[i];
+       
+       if (!s)
+          continue;
+       
+        
+       drumcells[i].set_name (s->name);
        drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
       }
 
@@ -1175,12 +1184,19 @@ void CTimer::hiResTimerCallback()
       uplink->load_kit();
      }
   
-  for (int i = 0; i < uplink->audioProcessor.drumkit->v_samples.size(); i++)
-      {
-       bool actv = uplink->audioProcessor.drumkit->v_samples[i]->active;
-       uplink->drumcells[i].led.is_on = actv;
-       uplink->drumcells[i].led.velocity = uplink->audioProcessor.drumkit->v_samples[i]->velocity;
-       uplink->drumcells[i].led.repaint();
+//  for (int i = 0; i < uplink->audioProcessor.drumkit->v_samples.size(); i++)
+    for (int i = 0; i < 36; i++)
+        {
+         CDrumSample *s = 0;
+         s = uplink->audioProcessor.drumkit->a_samples[i];
+         
+         if (! s)
+            continue;
+          
+         bool actv = s->active;
+         uplink->drumcells[i].led.is_on = actv;
+         uplink->drumcells[i].led.velocity = s->velocity;
+         uplink->drumcells[i].led.repaint();
       }
 }
 
@@ -1262,3 +1278,29 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
      }
 
 }
+
+
+
+bool CCellLabel::isInterestedInFileDrag (const StringArray &files)
+{
+  String fname = files[0]; 
+  
+  if (fname.endsWithIgnoreCase (".wav") || 
+      fname.endsWithIgnoreCase (".aiff") ||
+      fname.endsWithIgnoreCase (".flac") ||
+      fname.endsWithIgnoreCase (".ogg") ||
+      fname.endsWithIgnoreCase (".mp3")
+     )
+      return true;
+      
+  return false;   
+};
+
+
+void CCellLabel::filesDropped (const StringArray &files, int x, int y)
+{
+  if (! editor)
+      return;
+  
+  std::string fname = files[0].toStdString();   
+};

@@ -42,7 +42,7 @@ std::string get_part (std::string &s)
      return std::string("");
 
   std::string result = s.substr (first + 1, last - first - 1);
-  s.erase (first,last - first + 1); //remove extracted part from the source
+  s.erase (first, last - first + 1); //remove extracted part from the source
 
   return result;
 }
@@ -376,20 +376,20 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
      kit->kit_name = txt.as_string();
 
   if (node_name == "name" && drumkit_info_passed && drumkitComponent_passed)
-     if (kit->v_samples.size() != 0)
-         kit->v_samples.back()->name = txt.as_string();
+     if (kit->sample_counter != 0)
+         kit->temp_sample->name = txt.as_string();
 
   if (node_name == "id" && drumkit_info_passed && drumkitComponent_passed && ! kit->scan_mode)
-     if (kit->v_samples.size() != 0)
-         kit->v_samples.back()->id = txt.as_int();
+     if (kit->sample_counter != 0)
+         kit->temp_sample->id = txt.as_int();
 
   if (node_name == "min" && drumkit_info_passed && drumkitComponent_passed && ! kit->scan_mode)
-     if (kit->v_samples.size() != 0)
-         kit->v_samples.back()->v_layers.back()->min = txt.as_float();
+     if (kit->sample_counter != 0)
+         kit->temp_sample->v_layers.back()->min = txt.as_float();
 
   if (node_name == "max" && drumkit_info_passed && drumkitComponent_passed  && ! kit->scan_mode)
-     if (kit->v_samples.size() != 0)
-         kit->v_samples.back()->v_layers.back()->max = txt.as_float();
+     if (kit->sample_counter != 0)
+         kit->temp_sample->v_layers.back()->max = txt.as_float();
 
   if (node_name == "image")
      kit->image_fname = kit->kit_dir + "/" + txt.as_string();
@@ -399,34 +399,34 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
      {
       drumkit_info_passed = true;
 
-      if (kit->v_samples.size() == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
+      if (kit->sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
          return false;
 
-      kit->add_sample();
+      kit->temp_sample = kit->add_sample (kit->sample_counter++);
 
       if (! kit->layers_supported) //non-layered
-         kit->v_samples.back()->add_layer(); //add default layer
+         kit->temp_sample->add_layer(); //add default layer
      }
 
 
-  if (node_name == "layer" && ! kit->scan_mode)
+  if (node_name == "layer" && kit->temp_sample && ! kit->scan_mode)
      {
-      if (kit->v_samples.size() != 0)
-          kit->v_samples.back()->add_layer();
+      if (kit->sample_counter != 0)
+          kit->temp_sample->add_layer();
      }
 
 
-  if (node_name == "filename")
+  if (node_name == "filename" && kit->temp_sample)
      {
       std::string fname = txt.as_string();
       std::string path = kit->kit_dir + "/" + fname;
-      std::string sample_name = kit->v_samples.back()->name;
+      std::string sample_name = kit->temp_sample->name;
 
       for (auto signature: kit->v_hat_open_signatures)
           {
            if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
               {
-               kit->v_samples.back()->hihat_open = true;
+               kit->temp_sample->hihat_open = true;
                break;
               }
           }
@@ -435,14 +435,14 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
           {
            if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
               {
-               kit->v_samples.back()->hihat_close = true;
+               kit->temp_sample->hihat_close = true;
                break;
               }
           }
 
-      if (! kit->scan_mode && kit->v_samples.size() != 0)
-          if (kit->v_samples.back()->v_layers.size() != 0)
-                kit->v_samples.back()->v_layers.back()->load (path.c_str());
+      if (! kit->scan_mode && kit->sample_counter != 0)
+          if (kit->temp_sample->v_layers.size() != 0)
+                kit->temp_sample->v_layers.back()->load (path.c_str());
      }
 
 
@@ -470,7 +470,7 @@ void CDrumKit::load_txt (const std::string &data)
          if (line.empty())
             continue;
 
-         if (v_samples.size() == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
+         if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
             break;
 
          size_t pos = line.find ("=");
@@ -535,26 +535,26 @@ void CDrumKit::load_txt (const std::string &data)
              if (v_fnames.size() == 0)
                 continue;
 
-             add_sample();
-             v_samples.back()->name = sample_name;
+             temp_sample = add_sample (sample_counter++);
+             temp_sample->name = sample_name;
              
              if (! str_note.empty())
                 {
-                 v_samples.back()->mapped_note = std::stoi(str_note);
-                 map_samples[v_samples.back()->mapped_note] = v_samples.back();
+                 temp_sample->mapped_note = std::stoi(str_note);
+                 map_samples[temp_sample->mapped_note] = temp_sample;
                 // std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
                  has_mapping = true;
                 } 
          
          
              if (check_for_rnd)
-                v_samples.back()->layer_index_mode = LAYER_INDEX_MODE_RND; 
+                temp_sample->layer_index_mode = LAYER_INDEX_MODE_RND; 
               
              if (check_for_robin)
-                 v_samples.back()->layer_index_mode = LAYER_INDEX_MODE_ROBIN; 
+                 temp_sample->layer_index_mode = LAYER_INDEX_MODE_ROBIN; 
 
              if (check_for_novelocity)
-                 v_samples.back()->layer_index_mode = LAYER_INDEX_MODE_NOVELOCITY; 
+                 temp_sample->layer_index_mode = LAYER_INDEX_MODE_NOVELOCITY; 
 
 //              if (check_for_random_noice)
   //               v_samples.back()->use_random_noice = true;
@@ -563,19 +563,19 @@ void CDrumKit::load_txt (const std::string &data)
              for (auto f: v_fnames)
                  {
                   string filename = kit_dir + "/" + f;
-                  v_samples.back()->add_layer();
+                  temp_sample->add_layer();
 
                   if (file_exists (filename) && ! scan_mode)
-                      v_samples.back()->v_layers.back()->load (filename.c_str());
+                      temp_sample->v_layers.back()->load (filename.c_str());
                  }
 
-             float part_size = (float) 1 / v_samples.back()->v_layers.size();
+             float part_size = (float) 1 / temp_sample->v_layers.size();
              
              CDrumLayer *l;
               //evaluate min and max velocities by the file position in the vector
-             for (size_t i = 0; i < v_samples.back()->v_layers.size(); i++)
+             for (size_t i = 0; i < temp_sample->v_layers.size(); i++)
                  {
-                  l = v_samples.back()->v_layers[i];
+                  l = temp_sample->v_layers[i];
 
                   float segment_start = part_size * i;
                   float segment_end = part_size * (i + 1) - 0.001f;
@@ -593,19 +593,19 @@ void CDrumKit::load_txt (const std::string &data)
              {
               string filename = kit_dir + "/" + fname;
 
-              add_sample();
+              temp_sample = add_sample (sample_counter++);
 
-              v_samples.back()->name = sample_name;
+              temp_sample->name = sample_name;
 
-              v_samples.back()->add_layer(); //add default layer
+              temp_sample->add_layer(); //add default layer
 
               if (file_exists (filename) && ! scan_mode)
                  {
-                  v_samples.back()->v_layers.back()->load (filename.c_str());
+                  temp_sample->v_layers.back()->load (filename.c_str());
                   if (! str_note.empty())
                      {
-                      v_samples.back()->mapped_note = std::stoi (str_note);
-                      map_samples[v_samples.back()->mapped_note] = v_samples.back();
+                      temp_sample->mapped_note = std::stoi (str_note);
+                      map_samples[temp_sample->mapped_note] = temp_sample;
                     //  std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
                       has_mapping = true;
                      } 
@@ -617,7 +617,7 @@ void CDrumKit::load_txt (const std::string &data)
              {
               if (findStringIC (sample_name, signature) || findStringIC (fname, signature)) //заменить на другую функцию проверки?
                  {
-                  v_samples.back()->hihat_open = true;
+                  temp_sample->hihat_open = true;
                   break;
                  }
              }
@@ -627,7 +627,7 @@ void CDrumKit::load_txt (const std::string &data)
              {
               if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
                  {
-                  v_samples.back()->hihat_close = true;
+                  temp_sample->hihat_close = true;
                   break;
                  }
              }
@@ -714,7 +714,7 @@ void CDrumKit::load_sfz (const std::string &data)
   
   while (getline (st, line))
         {
-         if (v_samples.size() == MAX_SAMPLES) //WE DON'T LOAD MORE THAN MAX_SAMPLES SAMPLES
+         if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN MAX_SAMPLES SAMPLES
              return;
 
          if (line.empty())
@@ -727,12 +727,12 @@ void CDrumKit::load_sfz (const std::string &data)
 
 //          cout << "parse line: " << line << endl;
          if (line.find ("<group>") != string::npos)
-             add_sample();
+             temp_sample = add_sample (sample_counter++);
                       
    
          if (line.find("<region>") != string::npos  && ! multi_layered)
-             add_sample();
-   
+            temp_sample = add_sample (sample_counter++);
+                
 
          pos = line.find (" key=");
          if (pos != string::npos)
@@ -743,11 +743,11 @@ void CDrumKit::load_sfz (const std::string &data)
                 {
                  string str_note = line.substr (pos, end - pos);
 //                 cout << "str_note:" << str_note << std::endl;
-                 if (! str_note.empty() && v_samples.size() != 0)
+                 if (! str_note.empty() && sample_counter != 0)
                      //if (v_samples.back())
                     {
-                     v_samples.back()->mapped_note = std::stoi (str_note);
-                     map_samples[v_samples.back()->mapped_note] = v_samples.back();
+                     temp_sample->mapped_note = std::stoi (str_note);
+                     map_samples[temp_sample->mapped_note] = temp_sample;
                     }     
                      
                   
@@ -765,11 +765,11 @@ void CDrumKit::load_sfz (const std::string &data)
                  string str_note = line.substr (pos, end - pos);
  //                cout << "str_note:" << str_note << std::endl;
                      //if (v_samples.back())
-                 if (! str_note.empty() && v_samples.size() != 0)
+                 if (! str_note.empty() && sample_counter != 0)
                      //v_samples.back()->mapped_note = std::stoi (str_note);
                     {
-                     v_samples.back()->mapped_note = std::stoi (str_note);
-                     map_samples[v_samples.back()->mapped_note] = v_samples.back();
+                     temp_sample->mapped_note = std::stoi (str_note);
+                     map_samples[temp_sample->mapped_note] = temp_sample;
                     }     
 
                 } 
@@ -787,26 +787,26 @@ void CDrumKit::load_sfz (const std::string &data)
 
              fname = kit_dir + "/" + just_name;
 
-             v_samples.back()->add_layer();
+             temp_sample->add_layer();
 
              if (file_exists (fname))
                 {
                  if (! scan_mode)
-                     v_samples.back()->v_layers.back()->load (fname.c_str());
+                     temp_sample->v_layers.back()->load (fname.c_str());
 
-                 v_samples.back()->name = guess_sample_name (just_name);
+                 temp_sample->name = guess_sample_name (just_name);
                 }
             }
 
 
-         if (! scan_mode && multi_layered && v_samples.back()->v_layers.size() != 0)
+         if (! scan_mode && multi_layered && temp_sample->v_layers.size() != 0)
             {
-             float part_size = (float) 1 / v_samples.back()->v_layers.size();
+             float part_size = (float) 1 / temp_sample->v_layers.size();
              CDrumLayer *l = 0;
               //evaluate min and max velocities by the file position in the vector
-             for (size_t i = 0; i < v_samples.back()->v_layers.size(); i++)
+             for (size_t i = 0; i < temp_sample->v_layers.size(); i++)
                  {
-                  l = v_samples.back()->v_layers[i];
+                  l = temp_sample->v_layers[i];
 
                   l->min = part_size * i;;
                   l->max = part_size * (i + 1) - 0.001;;
@@ -815,22 +815,22 @@ void CDrumKit::load_sfz (const std::string &data)
              l->max = 1.0f;
             }
 
-         if (! scan_mode && v_samples.size() > 0)
+         if (! scan_mode && sample_counter > 0)
             {
              for (auto signature: v_hat_open_signatures)
                  {
-                  if (findStringIC (v_samples.back()->name, signature))
+                  if (findStringIC (temp_sample->name, signature))
                      {
-                      v_samples.back()->hihat_open = true;
+                      temp_sample->hihat_open = true;
                       break;
                      }
                   }
 
             for (auto signature: v_hat_close_signatures)
                 {
-                 if (findStringIC (v_samples.back()->name, signature))
+                 if (findStringIC (temp_sample->name, signature))
                     {
-                     v_samples.back()->hihat_close = true;
+                     temp_sample->hihat_close = true;
                      break;
                     }
                 }
@@ -942,6 +942,8 @@ CDrumKit::CDrumKit()
   layers_supported = false;
   has_mapping = false;
   loaded = false;
+  temp_sample = 0;
+  sample_counter = 0;
   
   v_hat_open_signatures.push_back ("hat_o");
   v_hat_open_signatures.push_back ("open");
@@ -952,38 +954,48 @@ CDrumKit::CDrumKit()
   v_hat_close_signatures.push_back ("choke");
   v_hat_close_signatures.push_back ("hat_c");
   v_hat_close_signatures.push_back ("HHC");
+  
+  for (int i = 0; i < 36; i++)
+      a_samples [i] = 0;
 }
 
 
 CDrumKit::~CDrumKit()
 {
-  for (size_t i = 0; i < v_samples.size(); i++)
+  for (size_t i = 0; i < 36; i++)
       {
-       delete v_samples[i];
+       if (a_samples[i])
+          delete a_samples[i];
+                  
       }
 }
 
 
-void CDrumKit::add_sample()
+CDrumSample* CDrumKit::add_sample(size_t index)
 {
   //std::cout << "CDrumKit::add_sample()\n";
   CDrumSample *s  = new CDrumSample (samplerate);
-  v_samples.push_back (s);
+  //v_samples.push_back (s);
+  a_samples [index] = s;
+  return s;
 }
 
 
 size_t CDrumKit::total_samples_size()
 {
-  if (v_samples.size() == 0)
+  if (sample_counter == 0)
       return 0;
   
 //  std::cout << "CDrumKit::total_samples_size() - 1\n";
   
   size_t result = 0; 
  
-  for (size_t i = 0; i < v_samples.size(); i++)
+  for (size_t i = 0; i < 36; i++)
       { 
-       CDrumSample *s = v_samples[i];
+       CDrumSample *s = a_samples[i];
+       
+       if (! s)
+          continue;
    
        if (s->v_layers.size() == 0)
           continue;
@@ -994,8 +1006,6 @@ size_t CDrumKit::total_samples_size()
            {
             if (s->v_layers[j]->audio_buffer)
                 result += s->v_layers[j]->audio_buffer->getNumSamples(); }
-              // std::cout << "s->v_layers[j]->length_in_samples:" << s->v_layers[j]->audio_buffer->getNumSamples() << std::endl; 
-            //std::cout << result << std::endl;
            }
 
 //  std::cout << "CDrumKit::total_samples_size() - 2\n";
@@ -1006,7 +1016,7 @@ size_t CDrumKit::total_samples_size()
 
 void CDrumKit::save() //used at Adapt button handler
 {
-  if (v_samples.size() == 0)
+  if (sample_counter == 0)
       return;
   
   if (kit_type != KIT_TYPE_DRUMLABOOH)
@@ -1014,9 +1024,12 @@ void CDrumKit::save() //used at Adapt button handler
   
 //  std::cout << "CDrumKit::total_samples_size() - 1\n";
  
-  for (size_t i = 0; i < v_samples.size(); i++)
+  for (size_t i = 0; i < 36; i++)
       { 
-       CDrumSample *s = v_samples[i];
+       CDrumSample *s = a_samples[i];
+       
+       if (! s)
+           continue; 
    
        if (s->v_layers.size() == 0)
           continue;
@@ -1085,12 +1098,13 @@ void CDrumKit::print()
 {
   cout << "void CDrumKit::print() -- start" << endl;
 
-  for (size_t i = 0; i < v_samples.size(); i++)
+  for (size_t i = 0; i < 36; i++)
       {
-       v_samples[i]->print();
+       if (a_samples[i]) 
+           a_samples[i]->print();
       }
 
-  cout << "samples count:" << v_samples.size() << endl;
+  cout << "samples count:" << sample_counter << endl;
 
   cout << "void CDrumKit::print() -- end" << endl;
 }
@@ -1102,9 +1116,10 @@ void CDrumKit::print_stats()
 
   cout << "kitname: " << kit_name << endl;
 
-  for (size_t i = 0; i < v_samples.size(); i++)
+  for (size_t i = 0; i < 36; i++)
       {
-       v_samples[i]->print_stats();
+       if (a_samples[i]) 
+          a_samples[i]->print_stats();
       }
 
   cout << "void CDrumKit::print-stats() -- end" << endl;
@@ -1242,18 +1257,6 @@ void CDrumKitsScanner::scan_full()
 
       
     std::sort (v_kits_names.begin(), v_kits_names.end());  
-/*      
-  std::sort (v_scanned_kits.begin(), v_scanned_kits.end(), [](CDrumKit* a, CDrumKit* b) {return a->kit_name < b->kit_name;});
-
-  for (auto i : v_scanned_kits)
-      {
-       v_kits_names.push_back (i->kit_name);
-       ///NEWWWW
-       delete i;
-       ///
-       
-      }
-*/
 }
 
 

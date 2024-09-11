@@ -457,9 +457,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   int int_midimap_mode = (int) *midimap_mode;
 
   
-  size_t v_samples_size = drumkit->v_samples.size();
+  //size_t v_samples_size = drumkit->v_samples.size();
 
-  if (v_samples_size == 0)
+  if (drumkit->sample_counter == 0)
       return;
 
   for (const juce::MidiMessageMetadata metadata: midiMessages)
@@ -483,14 +483,14 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
            int nn = note_number - base_note_number;
            
            if (int_midimap_mode == MIDIMAPMODE_LABOOH)
-               if (nn < 0 || nn > v_samples_size - 1)
+               if (nn < 0 || nn > 35)
                    continue;
 
 
             CDrumSample *s = 0;
 
             if (int_midimap_mode == MIDIMAPMODE_LABOOH)
-                s = drumkit->v_samples[nn];
+                s = drumkit->a_samples[nn];
             else
                 if (drumkit->map_samples.count (note_number) > 0) 
                   {
@@ -509,9 +509,12 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
            // so find the open hihat
            if (s->hihat_close)
                {
-                for (size_t i = 0; i < v_samples_size; i++)
+                for (size_t i = 0; i < 36; i++)
                     {
-                     CDrumSample *s2 = drumkit->v_samples[i]; //point to the sample
+                     CDrumSample *s2 = drumkit->a_samples[i]; //point to the sample
+                     if (! s2)
+                        continue;
+                      
                      if (s2->hihat_open)
                          s2->untrigger_sample();
                     }
@@ -523,7 +526,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
     float *channel_data [36]; //output channels
 
-    if (v_samples_size > num_channels)
+    if (drumkit->sample_counter > num_channels)
        return;
 
 
@@ -534,12 +537,12 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
 
     //for each drum instrument
-    for (int drum_sample_index = 0; drum_sample_index < v_samples_size; drum_sample_index++)
+    for (int drum_sample_index = 0; drum_sample_index < 36; drum_sample_index++)
         {
          //for each sample out_buf_offs
          for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
              {
-              CDrumSample *s = drumkit->v_samples[drum_sample_index];
+              CDrumSample *s = drumkit->a_samples[drum_sample_index];
               if (! s)
                  {
                   std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
@@ -659,9 +662,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       return;
 
 
-  size_t v_samples_size = drumkit->v_samples.size();
+//  size_t v_samples_size = drumkit->v_samples.size();
 
-  if (v_samples_size == 0)
+  if (drumkit->sample_counter == 0)
       return;
 
   for (const juce::MidiMessageMetadata metadata: midiMessages)
@@ -693,7 +696,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
 
             if (int_midimap_mode == MIDIMAPMODE_LABOOH)
-                if (nn < 0 || nn > v_samples_size - 1)
+                if (nn < 0 || nn > 35)
                    continue;
 
 //             std::cout << "GO ON with n: " << nn << std::endl;
@@ -709,13 +712,13 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             CDrumSample *s = 0;
 
             if (int_midimap_mode == MIDIMAPMODE_LABOOH)
-                s = drumkit->v_samples[nn];
+                s = drumkit->a_samples[nn];
             else
                {
                 if (drumkit->map_samples.count (note_number) > 0) 
                   {
                     s = drumkit->map_samples[note_number];
-                   std::cout << "play mapped note: " << note_number << std::endl;
+//                   std::cout << "play mapped note: " << note_number << std::endl;
                   } 
                }
   
@@ -729,9 +732,12 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
              // so find the open hihat
             if (s->hihat_close)
                {
-                for (size_t i = 0; i < v_samples_size; i++)
+                for (size_t i = 0; i < 36; i++)
                     {
-                     CDrumSample *s2 = drumkit->v_samples[i]; //point to the sample
+                     CDrumSample *s2 = drumkit->a_samples[i]; //point to the sample
+                     if (! s2)
+                        continue;
+
                      if (s2->hihat_open)
                          s2->untrigger_sample();
                    }
@@ -757,10 +763,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
    //for each sample out_buf_offs
     for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
         //for each drum instrument
-    {
-      for (int drum_sample_index = 0; drum_sample_index < v_samples_size; drum_sample_index++)
+       {
+      for (int drum_sample_index = 0; drum_sample_index < 36; drum_sample_index++)
             {
-             CDrumSample *s = drumkit->v_samples[drum_sample_index];
+             CDrumSample *s = drumkit->a_samples[drum_sample_index];
 
              if (! s)
                 {

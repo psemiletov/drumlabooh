@@ -139,13 +139,19 @@ public:
 
   size_t total_samples_size();
   
-  std::vector <CDrumSample*> v_samples;
+  //std::vector <CDrumSample*> v_samples;
+  
+  CDrumSample* a_samples [36];
+  
   std::map <int, CDrumSample*> map_samples; //just a map, actual samples are at v_samples
   
   std::vector <std::string> v_hat_open_signatures;
   std::vector <std::string> v_hat_close_signatures;
 
-  void add_sample();
+  CDrumSample* add_sample (size_t index);
+  CDrumSample* temp_sample;
+  
+  int sample_counter;
   
   void load (const std::string &fname, int sample_rate);
   void load_txt (const std::string &fname);
