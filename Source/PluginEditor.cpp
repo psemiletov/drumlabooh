@@ -221,6 +221,8 @@ CDrumCell::CDrumCell()
   cell_label.setFont (f_samplename_font);
   cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
 
+  cell_label.cell = this;
+  
   xoffs += cell_label.getWidth();
   xoffs += XFILLER;
 
@@ -323,7 +325,9 @@ CDrumCell::CDrumCell()
 //  label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
   cell_label.setFont (f_samplename_font);
   cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
+  cell_label.cell = this;
 
+  
   xoffs += cell_label.getWidth();
   xoffs += XFILLER;
 
@@ -720,6 +724,10 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   gr_kitinfo.setSize (gr_drumkits.getWidth(), 220 + YFILLER); 
   
   addAndMakeVisible (l_kitinfo);
+  l_kitinfo.setText ("EMPTY KIT",  NotificationType::dontSendNotification);
+  
+  l_kitinfo.setEditable (false, true);
+  
   l_kitinfo.setFont (f_kitname_font);
   l_kitinfo.setTopLeftPosition (gr_kitinfo.getX() + XFILLER, gr_kitinfo.getY());
   l_kitinfo.setSize (280, 48);
@@ -1302,5 +1310,22 @@ void CCellLabel::filesDropped (const StringArray &files, int x, int y)
   if (! editor)
       return;
   
+  
   std::string fname = files[0].toStdString();   
+  
+  if (! editor->audioProcessor.drumkit)
+      editor->audioProcessor.drumkit = new CDrumKit();
+    
+  
+  CDrumSample *s = editor->audioProcessor.drumkit->load_sample_to_index (cell->cell_number,
+                                                                         fname, 
+                                                                         editor->audioProcessor.session_samplerate);
+  
+  
+  setText (s->name, juce::dontSendNotification);
+
+  cell->set_name (s->name);
+  setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+  
+  
 };

@@ -1466,3 +1466,69 @@ void CDrumSample::trigger_sample (float vel)
 
   v_layers[current_layer]->sample_offset = 0;
 }
+
+
+CDrumSample* CDrumKit::load_sample_to_index (size_t index, const std::string &fname, int sample_rate)
+{
+  if (! file_exists (fname))
+      return 0;
+    
+  
+  remove_sample_at_index (index);
+  CDrumSample *s = new CDrumSample (sample_rate);
+  
+  if (! s)
+      return 0;
+  
+  sample_counter++;
+  
+  s->add_layer();
+  
+  s->v_layers.back()->load (fname.c_str());
+///
+  
+  //detect sample name
+  
+  std::string base_filename = fname.substr(fname.find_last_of("/") + 1);
+  std::string::size_type const p (base_filename.find_last_of('.'));
+  std::string file_without_extension = base_filename.substr(0, p);
+  
+  s->name = file_without_extension;
+  
+  
+/////////  
+  for (auto signature: v_hat_open_signatures)
+      {
+       if (findStringIC (fname, signature) || findStringIC (fname, signature))
+          {
+           s->hihat_open = true;
+           break;
+          }
+       }
+
+      for (auto signature: v_hat_close_signatures)
+          {
+           if (findStringIC (fname, signature) || findStringIC (fname, signature))
+              {
+               s->hihat_close = true;
+               break;
+              }
+          }
+/////////
+  
+  a_samples[index] = s;
+  return s;
+}
+
+
+void CDrumKit::remove_sample_at_index (size_t index)
+{
+  if (a_samples[index])  
+     {
+      delete a_samples[index];
+      a_samples[index] = 0;
+      sample_counter--;
+     }
+  
+}
+  

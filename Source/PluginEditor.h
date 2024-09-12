@@ -14,7 +14,7 @@ typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
 class CAudioProcessorEditor;
-
+class CDrumCell;
 
 class CDrumkitsListBoxModel: public ListBoxModel
 {
@@ -109,6 +109,7 @@ class CCellLabel: public juce::Label,
 {
 public:
   
+  CDrumCell *cell; //uplink
   CAudioProcessorEditor *editor = 0; //uplink
   
   bool isInterestedInFileDrag (const StringArray &files) override;
@@ -290,7 +291,7 @@ public:
   juce::Component drumcells_container;
   juce::Viewport drumcells_viewer;
 
-  juce::Label l_drumkit_name;
+  //juce::Label l_drumkit_name;
   juce::TextButton bt_drumkit_info;
 
   juce::GroupComponent gr_drumkits;
