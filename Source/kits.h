@@ -169,7 +169,10 @@ public:
   void print();
   void print_stats();
   
-  void save(); //for Adapt function
+  void adapt(); //for Adapt function
+  
+  void save_qkit();
+  
 };
 
 

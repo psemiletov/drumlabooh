@@ -459,3 +459,11 @@ std::string get_last_part (const std::string &path)
   return result; 
 }
 
+
+void string_save_to_file (const std::string &fname, const std::string &s)
+{
+  std::ofstream file (fname);
+  if (file.is_open())
+  file << s;
+  file.close();
+}

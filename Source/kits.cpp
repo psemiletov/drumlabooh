@@ -669,7 +669,14 @@ void CDrumKit::load_qtxt (const std::string &data)
 
          if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
             break;
+          
+         if (line == "#EMPTY") 
+           {
+            sample_counter++;
+            continue;
+           } 
 
+          
          size_t pos = line.find ("=");
 
          if (pos == string::npos)
@@ -683,7 +690,7 @@ void CDrumKit::load_qtxt (const std::string &data)
          string fname = line.substr (pos + 1, line.size() - pos);
 
          if (fname.empty())
-            continue;
+             continue;
          
           //ONE LAYER PER SAMPLE
           
@@ -734,6 +741,9 @@ void CDrumKit::load_qtxt (const std::string &data)
 
   if (file_exists (kitimg))
       image_fname = kitimg;
+  
+  
+  std::cout << " kit_type: " << kit_type << std::endl;
   
   loaded = true;
 }
@@ -958,18 +968,25 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (source.empty())
       return;
 
+ cout << "1\n";  
+  
   if (ends_with (kit_filename, "drumkit.txt"))
      {
       load_txt (source);
       return;
      }
 
+cout << "2\n";  
+      
+     
   if (ends_with (kit_filename, "drumkitq.txt"))
      {
       load_qtxt (source);
       return;
      }
 
+cout << "3\n";  
+ 
 
   if (ends_with (kit_filename, ".sfz"))
      {
@@ -1112,7 +1129,7 @@ size_t CDrumKit::total_samples_size()
 }
 
 
-void CDrumKit::save() //used at Adapt button handler
+void CDrumKit::adapt() //used at Adapt button handler
 {
   if (sample_counter == 0)
       return;
@@ -1623,6 +1640,9 @@ CDrumSample* CDrumKit::load_sample_to_index (size_t index, const std::string &fn
 /////////
   
   a_samples[index] = s;
+  
+  loaded = true;
+  
   return s;
 }
 
@@ -1638,3 +1658,47 @@ void CDrumKit::remove_sample_at_index (size_t index)
   
 }
   
+  
+  
+void CDrumKit::save_qkit() 
+{
+  if (sample_counter == 0)
+      return;
+  
+  if (kit_type != KIT_TYPE_QDRUMLABOOH)
+      return;
+  
+  std::string result;
+  
+//  std::cout << "CDrumKit::total_samples_size() - 1\n";
+ 
+  for (size_t i = 0; i < 36; i++)
+      { 
+       CDrumSample *s = a_samples[i];
+       
+       if (! s)
+         {
+          result += "#EMPTY\n"; 
+          continue; 
+         }  
+   
+       if (s->v_layers.size() == 0)
+          continue;
+  
+        
+       std::string line;
+        
+       if (s->v_layers[0]->audio_buffer)
+          {
+           line = s->name;
+           line += "=";
+           line += s->v_layers[0]->file_name;
+           line += "\n";
+           
+           result += line;
+          }
+       } 
+             
+    
+  string_save_to_file (kit_filename, result);
+}

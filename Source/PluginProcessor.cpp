@@ -545,7 +545,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
               CDrumSample *s = drumkit->a_samples[drum_sample_index];
               if (! s)
                  {
-                  std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
+                 // std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
                   break;
                  }
 
@@ -770,7 +770,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
              if (! s)
                 {
-                 std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
+                // std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
                  break;
                 }
 

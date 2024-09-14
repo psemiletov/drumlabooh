@@ -4,6 +4,8 @@ this code is the public domain
 */
 
 
+#include <filesystem>
+
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -215,8 +217,6 @@ CDrumCell::CDrumCell()
   bt_file_open.setTopLeftPosition (xoffs, YFILLER);
   bt_file_open.setSize (24, 32);
   
-  
-  
 ///////////////
   bt_file_open.onClick = [this] {
     
@@ -257,6 +257,8 @@ CDrumCell::CDrumCell()
                                                              
                                                             editor->audioProcessor.drumkit->kit_type = KIT_TYPE_QDRUMLABOOH; 
   
+                                                            editor->audioProcessor.drumkit->kit_name = editor->l_kit_name.getText().toStdString();
+                                                            
                                                             CDrumSample *s = editor->audioProcessor.drumkit->load_sample_to_index (cell_number,
                                                                                                                                    fname, 
                                                                                                                                    editor->audioProcessor.session_samplerate); 
@@ -566,12 +568,10 @@ void CAudioProcessorEditor::load_kit()
 
   for (size_t i = 0; i < 36; i++)
       {
-       CDrumSample *s = 0;
-       s = audioProcessor.drumkit->a_samples[i];
+       CDrumSample *s = audioProcessor.drumkit->a_samples[i];
        
        if (!s)
           continue;
-       
         
        drumcells[i].set_name (s->name);
        drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
@@ -703,7 +703,7 @@ if (! audioProcessor.drumkit->loaded)
       audioProcessor.load_kit (audioProcessor.drumkit_path);
 
       //update GUI
-      audioProcessor.drumkit->save();
+      audioProcessor.drumkit->adapt();
            
       load_kit();
                
@@ -882,6 +882,10 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
                                      if (ends_with (full, "drumkit.txt"))
                                         supported = true;
 
+                                     if (ends_with (full, "drumkitq.txt"))
+                                        supported = true;
+
+
                                      if (! supported)
                                         return;
 
@@ -923,7 +927,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
   bt_kit_save.setTooltip ("Save the quick kit");
 
-  bt_kit_save.setTopLeftPosition (bt_file_adapt.getRight() + XFILLER, gr_kitbuttons.getY() + YFILLER);
+  bt_kit_save.setTopLeftPosition (bt_kit_adapt.getRight() + XFILLER, gr_kitbuttons.getY() + YFILLER);
   bt_kit_save.setSize (54, 40);
     
   bt_kit_save.onClick = [this] { 
@@ -1429,16 +1433,59 @@ void CCellLabel::filesDropped (const StringArray &files, int x, int y)
 
 void CAudioProcessorEditor::save_quick_kit()
 {
-   
+  
+  if (! audioProcessor.drumkit)
+    {
+     log ("NO DRUMKIT\n");
+     return;
+    }
+  
   std::string kit_name = l_kit_name.getText().toStdString(); 
   if (kit_name == "EMPTY KIT")  
      {
       log ("GIVE OTHER NAME TO THE KIT\n");
       return;
     }
+    
+    
    
+  std::string kit_path;
    
+#if !defined(_WIN32) || !defined(_WIN64)  
+   
+  kit_path = get_home_dir() + "/drum_sklad/" + kit_name;
+
+#else
+
+ kit_path = "c:\\drum_sklad\\" + kit_name;
   
+#endif
+
+ std::filesystem::create_directories (kit_path);
+ 
+ std::string kit_filename;
+ kit_filename = kit_path + "/drumkitq.txt";
+
+ audioProcessor.drumkit->kit_filename = kit_filename;
+
+ audioProcessor.drumkit_path = kit_filename;
+ 
+ audioProcessor.drumkit->kit_dir = kit_path; 
+ audioProcessor.drumkit->kit_name = kit_name;
+ 
+ tmr_leds.stopTimer();
+ audioProcessor.suspendProcessing (true); 
   
+ audioProcessor.drumkit->save_qkit(); 
+
+
+ audioProcessor.scanner.scan(); 
+ update_kits_list();
+       
+  
+ audioProcessor.suspendProcessing (false);
+ tmr_leds.startTimer (1000 / 15); //15 FPS
+ 
+ 
 }
 

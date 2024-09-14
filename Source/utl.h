@@ -36,6 +36,6 @@ std::string bytes_to_file_size (size_t val);
 std::string get_string_between (const std::string &s, const std::string &start, const std::string &end);
 std::string get_last_part (const std::string &path);
 
-
+void string_save_to_file (const std::string &fname, const std::string &s);
 
 #endif
