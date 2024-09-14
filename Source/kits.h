@@ -27,6 +27,7 @@ this code is the public domain
 #define KIT_TYPE_DRUMLABOOH 0
 #define KIT_TYPE_HYDROGEN 1
 #define KIT_TYPE_SFZ 2
+#define KIT_TYPE_QDRUMLABOOH 3
 
 #define MAX_SAMPLES 36
 
@@ -155,6 +156,7 @@ public:
   
   void load (const std::string &fname, int sample_rate);
   void load_txt (const std::string &fname);
+  void load_qtxt (const std::string &fname);
   void load_sfz (const std::string & fname);
   
   CDrumSample* load_sample_to_index (size_t index, const std::string &fname, int sample_rate);

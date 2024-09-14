@@ -114,8 +114,6 @@ public:
   
   bool isInterestedInFileDrag (const StringArray &files) override;
   void filesDropped (const StringArray &files, int x, int y) override;
-  
-  
 };
 
 
@@ -133,6 +131,9 @@ public:
 
   size_t cell_number;
   
+  CAudioProcessorEditor *editor = 0; //uplink
+  
+  
   juce::GroupComponent gr_group;
   juce::Slider sl_pan;
   juce::Slider sl_vol;
@@ -145,10 +146,15 @@ public:
   CFx fx;
 
   juce::TextButton bt_fx;
+  juce::TextButton bt_file_open;
+
   juce::Button *bt_fx_close;
 
-  CCellLabel cell_label;
+  //CCellLabel cell_label;
 
+  Label cell_label;
+
+  
   std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_vol;
   std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_pan;
   std::unique_ptr <juce::AudioProcessorValueTreeState::ButtonAttachment> att_mute;
@@ -177,7 +183,10 @@ public:
 
   juce::GroupComponent gr_group;
 
-   
+  
+  CAudioProcessorEditor *editor = 0; //uplink
+  
+  
   CLed led;
 
   CDocumentWindow *wnd_fx;
@@ -185,6 +194,8 @@ public:
   CFx fx;
 
   juce::TextButton bt_fx;
+  juce::TextButton bt_file_open;
+  
   juce::Button *bt_fx_close;
 
   CCellLabel cell_label;
@@ -264,12 +275,13 @@ public:
   std::unique_ptr<juce::FileChooser> dlg_fileopen;
   
   juce::TextButton bt_kit_adapt;
+  juce::TextButton bt_kit_save;
   
   
   juce::TooltipWindow tooltip_window;
 
   juce::GroupComponent gr_kitinfo;
-  juce::Label l_kitinfo;
+  juce::Label l_kit_name;
 
 //TOP BAR  
   juce::GroupComponent gr_topbar;
@@ -310,6 +322,7 @@ public:
   void log (const std::string &s);
   void update_kits_list();
   void adapt();
+  void save_quick_kit();
     
   void paint (juce::Graphics&) override;
   void resized() override;

@@ -210,18 +210,86 @@ CDrumCell::CDrumCell()
   xoffs += led.getWidth();
   xoffs += XFILLER;
 
+  addAndMakeVisible (bt_file_open);
+  bt_file_open.setButtonText ("*");
+  bt_file_open.setTopLeftPosition (xoffs, YFILLER);
+  bt_file_open.setSize (24, 32);
+  
+  
+  
+///////////////
+  bt_file_open.onClick = [this] {
+    
+                                 if (! editor)
+                                     return;
+        
+                                 if (editor->audioProcessor.drumkit)  
+                                    {
+                                     if (editor->audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
+                                        {
+                                         editor->log ("WRONG KIT TYPE! NEED TO BE THE QUICK KIT\n"); 
+                                         return;
+                                        }
+                                    }
+                                   
+  
+                                 editor->dlg_fileopen = std::make_unique<juce::FileChooser> ("Select file to load...",
+                                                        File::getSpecialLocation (juce::File::userHomeDirectory),
+                                                                                        "*.wav;*.aiff;*.flac;*.mp3;*.ogg");
+
+                                 auto folderChooserFlags = juce::FileBrowserComponent::openMode;
+
+                                 editor->dlg_fileopen->launchAsync (folderChooserFlags, [this] (const juce::FileChooser& chooser)
+                                                           {
+                                                            juce::File f (editor->dlg_fileopen->getResult());
+                                                            if (! f.exists())
+                                                                return;
+
+                                                            editor->tmr_leds.stopTimer();
+                                                            editor->audioProcessor.suspendProcessing (true);
+                                      
+                                                            std::string fname (f.getFullPathName().toRawUTF8());
+ 
+  
+                                                            if (! editor->audioProcessor.drumkit)
+                                                                editor->audioProcessor.drumkit = new CDrumKit();
+                                                             
+                                                             
+                                                            editor->audioProcessor.drumkit->kit_type = KIT_TYPE_QDRUMLABOOH; 
+  
+                                                            CDrumSample *s = editor->audioProcessor.drumkit->load_sample_to_index (cell_number,
+                                                                                                                                   fname, 
+                                                                                                                                   editor->audioProcessor.session_samplerate); 
+                                                                                                                                   
+                                                            cell_label.setText (s->name, juce::dontSendNotification);
+                                                            set_name (s->name);
+                                                            cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+  
+                                                            editor->audioProcessor.suspendProcessing (false);
+                                                            editor->tmr_leds.startTimer (1000 / 15); //15 FPS
+                                                           });
+    
+                                };
+  
+  //////////////////////////////
+  
+  xoffs += bt_file_open.getWidth();
+  xoffs += XFILLER;
+
 
   addAndMakeVisible (cell_label);
 
   cell_label.setTopLeftPosition (xoffs, YFILLER);
-  cell_label.setSize (160, 32);
+  cell_label.setSize (180, 32);
   cell_label.setColour (juce::Label::textColourId, juce::Colours::black);
   cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
 //  label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
   cell_label.setFont (f_samplename_font);
   cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
+  
+  
 
-  cell_label.cell = this;
+  //cell_label.cell = this;
   
   xoffs += cell_label.getWidth();
   xoffs += XFILLER;
@@ -313,19 +381,31 @@ CDrumCell::CDrumCell()
   led.setTopLeftPosition (xoffs, YFILLER);
   led.setSize (16, 32);
 
-  xoffs += led.getWidth();
+  
+  
+  addAndMakeVisible (bt_file_open);
+  bt_file_open.setButtonText ("*");
+  bt_file_open.setTopLeftPosition (xoffs, YFILLER);
+  bt_file_open.setSize (24, 32);
+
+  xoffs += bt_file_open.getWidth();
   xoffs += XFILLER;
+
+
+  
+//  xoffs += led.getWidth();
+//  xoffs += XFILLER;
 
   addAndMakeVisible (cell_label);
 
   cell_label.setTopLeftPosition (xoffs, YFILLER);
-  cell_label.setSize (160, 32);
+  cell_label.setSize (180, 32);
   cell_label.setColour (juce::Label::textColourId, juce::Colours::black);
   cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
 //  label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
   cell_label.setFont (f_samplename_font);
   cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
-  cell_label.cell = this;
+  //cell_label.cell = this;
 
   
   xoffs += cell_label.getWidth();
@@ -386,8 +466,10 @@ void CDrumCell::attach_params (CAudioProcessorEditor *ed, int cellno)
 {
   cell_number = cellno;
   
-  cell_label.editor = ed;
+//  cell_label.editor = ed;
 
+  editor = ed;
+  
   std::string param_name = "vol" + std::to_string (cell_number);
   att_vol.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, sl_vol));
 
@@ -429,6 +511,8 @@ void CDrumCell::attach_params (CAudioProcessorEditor *ed, int cellno)
 {
   cell_number = cellno;
 
+  editor = ed;
+  
   std::string param_name = "lp" + std::to_string (cell_number);
   fx.att_lp.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (ed->valueTreeState, param_name, fx.bt_lp));
 
@@ -495,7 +579,7 @@ void CAudioProcessorEditor::load_kit()
 
    juce::String kitname = audioProcessor.drumkit->kit_name.c_str();
 
-   l_kitinfo.setText (kitname, juce::dontSendNotification );
+   l_kit_name.setText (kitname, juce::dontSendNotification );
 
    if (file_exists (audioProcessor.drumkit->image_fname))
       {
@@ -723,14 +807,14 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   gr_kitinfo.setTopLeftPosition (gr_drumkits.getX(), gr_drumkits.getBottom());
   gr_kitinfo.setSize (gr_drumkits.getWidth(), 220 + YFILLER); 
   
-  addAndMakeVisible (l_kitinfo);
-  l_kitinfo.setText ("EMPTY KIT",  NotificationType::dontSendNotification);
+  addAndMakeVisible (l_kit_name);
+  l_kit_name.setText ("EMPTY KIT",  NotificationType::dontSendNotification);
   
-  l_kitinfo.setEditable (false, true);
+  l_kit_name.setEditable (false, true);
   
-  l_kitinfo.setFont (f_kitname_font);
-  l_kitinfo.setTopLeftPosition (gr_kitinfo.getX() + XFILLER, gr_kitinfo.getY());
-  l_kitinfo.setSize (280, 48);
+  l_kit_name.setFont (f_kitname_font);
+  l_kit_name.setTopLeftPosition (gr_kitinfo.getX() + XFILLER, gr_kitinfo.getY());
+  l_kit_name.setSize (280, 48);
 
   addAndMakeVisible (kit_image);
   //kit_image.setSize (gr_kitinfo.getWidth() - XFILLER * 3, 200 - YFILLER * 3);
@@ -827,14 +911,25 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
   bt_kit_adapt.setTooltip ("Clone the current kit\n with the current samplerate");
 
-
   bt_kit_adapt.setTopLeftPosition (bt_file_open.getRight() + XFILLER, gr_kitbuttons.getY() + YFILLER);
   bt_kit_adapt.setSize (54, 40);
     
   bt_kit_adapt.onClick = [this] { 
                                  adapt(); 
+                                };                             
+                                
+  bt_kit_save.setButtonText ("SAVE");
+  addAndMakeVisible (bt_kit_save);
+  
+  bt_kit_save.setTooltip ("Save the quick kit");
 
-  };                             
+  bt_kit_save.setTopLeftPosition (bt_file_adapt.getRight() + XFILLER, gr_kitbuttons.getY() + YFILLER);
+  bt_kit_save.setSize (54, 40);
+    
+  bt_kit_save.onClick = [this] { 
+                                save_quick_kit();
+                               };                             
+                                
                             
 //END KIT BUTTONS
 /////////////////////////////////                            
@@ -1329,3 +1424,21 @@ void CCellLabel::filesDropped (const StringArray &files, int x, int y)
   
   
 };
+
+
+
+void CAudioProcessorEditor::save_quick_kit()
+{
+   
+  std::string kit_name = l_kit_name.getText().toStdString(); 
+  if (kit_name == "EMPTY KIT")  
+     {
+      log ("GIVE OTHER NAME TO THE KIT\n");
+      return;
+    }
+   
+   
+  
+  
+}
+

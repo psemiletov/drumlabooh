@@ -647,6 +647,98 @@ void CDrumKit::load_txt (const std::string &data)
 }
 
 
+void CDrumKit::load_qtxt (const std::string &data)
+{
+  //cout << "void CDrumKit::load_txt (const std::string data)\n";
+
+  if (data.empty())
+      return;
+
+  size_t i = kit_dir.rfind ("/");
+  kit_name = kit_dir.substr (i + 1);
+
+  kit_type = KIT_TYPE_QDRUMLABOOH;
+  
+  stringstream st (data);
+  string line;
+
+  while (getline (st, line))
+        {
+         if (line.empty())
+            continue;
+
+         if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
+            break;
+
+         size_t pos = line.find ("=");
+
+         if (pos == string::npos)
+             continue;
+
+         if (pos > line.size())
+             continue;
+
+
+         string sample_name = line.substr (0, pos);
+         string fname = line.substr (pos + 1, line.size() - pos);
+
+         if (fname.empty())
+            continue;
+         
+          //ONE LAYER PER SAMPLE
+          
+         //is path absolute? 
+          
+          string filename; //final name
+         
+          if (fname[0] == '/')
+             filename == fname; //absolute!
+          else   
+              filename = kit_dir + "/" + fname;
+
+          temp_sample = add_sample (sample_counter++);
+
+          temp_sample->name = sample_name;
+
+          temp_sample->add_layer(); //add default layer
+
+          if (file_exists (filename) && ! scan_mode)
+              temp_sample->v_layers.back()->load (filename.c_str());
+
+
+          for (auto signature: v_hat_open_signatures)
+              {
+               if (findStringIC (sample_name, signature) || findStringIC (fname, signature)) //заменить на другую функцию проверки?
+                  {
+                   temp_sample->hihat_open = true;
+                   break;
+                  }
+              }
+
+
+         for (auto signature: v_hat_close_signatures)
+             {
+              if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
+                 {
+                  temp_sample->hihat_close = true;
+                  break;
+                 }
+             }
+
+        }
+
+  std::string kitimg = kit_dir + "/image.jpg";
+
+  if (! file_exists (kitimg))
+      kitimg = kit_dir + "/image.png";
+
+  if (file_exists (kitimg))
+      image_fname = kitimg;
+  
+  loaded = true;
+}
+
+
 std::string guess_sample_name (const std::string &raw)
 {
   std::string result;
@@ -866,9 +958,15 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (source.empty())
       return;
 
-  if (ends_with (kit_filename, ".txt"))
+  if (ends_with (kit_filename, "drumkit.txt"))
      {
       load_txt (source);
+      return;
+     }
+
+  if (ends_with (kit_filename, "drumkitq.txt"))
+     {
+      load_qtxt (source);
       return;
      }
 
@@ -1348,6 +1446,12 @@ void CDrumKitsScanner::scan()
             fname = kd + "/drumkit.txt";
             if (file_exists (fname))
                kit_exists = true;
+            else
+                {
+                 fname = kd + "/drumkitq.txt";
+                 if (file_exists (fname))
+                    kit_exists = true;
+                }
            }
 
 
@@ -1373,7 +1477,9 @@ void CDrumKitsScanner::scan()
            if (ext == "txt")
                //get the last part of kd 
                kit_name = get_last_part (kd);
-             
+         
+         
+            
            if (ext == "sfz")
                kit_name = get_last_part (kd);
 
