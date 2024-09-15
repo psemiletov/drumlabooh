@@ -85,8 +85,8 @@ FetchContent_Declare(
   juce
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
 #  GIT_TAG        2a27ebcfae7ca7f6eb62b29d5f002ceefdaadbdb # release-7.0.7
-  GIT_TAG         7.0.10 # release-7.0.10
-#  GIT_TAG         8.0.0 
+#  GIT_TAG         7.0.10 # release-7.0.10
+  GIT_TAG         8.0.1 
 
 #since cmake 3.28
 #  EXCLUDE_FROM_ALL
@@ -107,9 +107,9 @@ FetchContent_Declare(
   juce
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
 
-  GIT_TAG         7.0.10 # release-7.0.10
+#  GIT_TAG         7.0.10 # release-7.0.10
 
-#GIT_TAG         8.0.0 
+GIT_TAG         8.0.1 
 #since cmake 3.28
   EXCLUDE_FROM_ALL
 #  

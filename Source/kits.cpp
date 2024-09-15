@@ -649,7 +649,12 @@ void CDrumKit::load_txt (const std::string &data)
 
 void CDrumKit::load_qtxt (const std::string &data)
 {
-  //cout << "void CDrumKit::load_txt (const std::string data)\n";
+  std::cout << "CDrumKit::load_qtxt - 1\n";
+  
+  std::cout << data << std::endl;
+    
+  std::cout << "CDrumKit::load_qtxt - 2\n";
+  
 
   if (data.empty())
       return;
@@ -664,17 +669,21 @@ void CDrumKit::load_qtxt (const std::string &data)
 
   while (getline (st, line))
         {
+          std::cout << "line:" << line << std::endl;
+   
+          
          if (line.empty())
             continue;
 
          if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
             break;
-          
-         if (line == "#EMPTY") 
-           {
-            sample_counter++;
-            continue;
-           } 
+         
+         if (line.rfind ("#EMPTY", 0) == 0)
+         //if (line == "#EMPTY") 
+            {
+             sample_counter++;
+             continue;
+            } 
 
           
          size_t pos = line.find ("=");
@@ -1086,7 +1095,7 @@ CDrumKit::~CDrumKit()
 }
 
 
-CDrumSample* CDrumKit::add_sample(size_t index)
+CDrumSample* CDrumKit::add_sample (size_t index)
 {
   //std::cout << "CDrumKit::add_sample()\n";
   CDrumSample *s  = new CDrumSample (samplerate);
@@ -1593,10 +1602,11 @@ void CDrumSample::trigger_sample (float vel)
 
 CDrumSample* CDrumKit::load_sample_to_index (size_t index, const std::string &fname, int sample_rate)
 {
+  std::cout << "CDrumKit::load_sample_to_index: " << fname << " - at index: " << index << std::endl;
+  
   if (! file_exists (fname))
       return 0;
-    
-  
+      
   remove_sample_at_index (index);
   CDrumSample *s = new CDrumSample (sample_rate);
   
@@ -1641,7 +1651,9 @@ CDrumSample* CDrumKit::load_sample_to_index (size_t index, const std::string &fn
   
   a_samples[index] = s;
   
-  loaded = true;
+  //loaded = true;
+  
+  std::cout << "CDrumKit::load_sample_to_index - end" << std::endl;
   
   return s;
 }
@@ -1655,9 +1667,7 @@ void CDrumKit::remove_sample_at_index (size_t index)
       a_samples[index] = 0;
       sample_counter--;
      }
-  
 }
-  
   
   
 void CDrumKit::save_qkit() 
@@ -1668,32 +1678,49 @@ void CDrumKit::save_qkit()
   if (kit_type != KIT_TYPE_QDRUMLABOOH)
       return;
   
+  std::cout << " CDrumKit::save_qkit() -1\n";
+  
   std::string result;
   
 //  std::cout << "CDrumKit::total_samples_size() - 1\n";
  
   for (size_t i = 0; i < 36; i++)
       { 
+   
+        
        CDrumSample *s = a_samples[i];
+
+       std::cout << "i: " << i << std::endl;
+
        
        if (! s)
-         {
-          result += "#EMPTY\n"; 
-          continue; 
-         }  
+          {
+           result += "#EMPTY\n"; 
+           
+           std::cout << "#EMPTY\n";
+
+           
+           continue; 
+          }  
    
        if (s->v_layers.size() == 0)
           continue;
-  
+
+          std::cout << "AAAA!\n"; 
         
        std::string line;
         
        if (s->v_layers[0]->audio_buffer)
           {
+           std::cout << "BBBB!\n"; 
+ 
+            
            line = s->name;
            line += "=";
            line += s->v_layers[0]->file_name;
            line += "\n";
+           
+           std::cout << "line: " << line << std::endl;
            
            result += line;
           }

@@ -235,7 +235,7 @@ CDrumCell::CDrumCell()
   
                                  editor->dlg_fileopen = std::make_unique<juce::FileChooser> ("Select file to load...",
                                                         File::getSpecialLocation (juce::File::userHomeDirectory),
-                                                                                        "*.wav;*.aiff;*.flac;*.mp3;*.ogg");
+                                                                                  "*.wav;*.aiff;*.flac;*.mp3;*.ogg");
 
                                  auto folderChooserFlags = juce::FileBrowserComponent::openMode;
 
@@ -245,24 +245,30 @@ CDrumCell::CDrumCell()
                                                             if (! f.exists())
                                                                 return;
 
+                                                             
                                                             editor->tmr_leds.stopTimer();
                                                             editor->audioProcessor.suspendProcessing (true);
                                       
                                                             std::string fname (f.getFullPathName().toRawUTF8());
- 
-  
+
+                                                            editor->need_to_update_cells = false; //чтобы кит не подгрузился по таймеру
+
+                                                            
                                                             if (! editor->audioProcessor.drumkit)
                                                                 editor->audioProcessor.drumkit = new CDrumKit();
-                                                             
                                                              
                                                             editor->audioProcessor.drumkit->kit_type = KIT_TYPE_QDRUMLABOOH; 
   
                                                             editor->audioProcessor.drumkit->kit_name = editor->l_kit_name.getText().toStdString();
                                                             
+                                                            std::cout << "cell_number: " << cell_number << std::endl;
+                                                            
                                                             CDrumSample *s = editor->audioProcessor.drumkit->load_sample_to_index (cell_number,
                                                                                                                                    fname, 
-                                                                                                                                   editor->audioProcessor.session_samplerate); 
-                                                                                                                                   
+                                                                                                                                   editor->audioProcessor.session_samplerate);
+                                                            
+                                                            editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
+                                                            
                                                             cell_label.setText (s->name, juce::dontSendNotification);
                                                             set_name (s->name);
                                                             cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
@@ -1425,10 +1431,7 @@ void CCellLabel::filesDropped (const StringArray &files, int x, int y)
 
   cell->set_name (s->name);
   setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
-  
-  
 };
-
 
 
 void CAudioProcessorEditor::save_quick_kit()
@@ -1446,8 +1449,6 @@ void CAudioProcessorEditor::save_quick_kit()
       log ("GIVE OTHER NAME TO THE KIT\n");
       return;
     }
-    
-    
    
   std::string kit_path;
    
@@ -1467,9 +1468,7 @@ void CAudioProcessorEditor::save_quick_kit()
  kit_filename = kit_path + "/drumkitq.txt";
 
  audioProcessor.drumkit->kit_filename = kit_filename;
-
  audioProcessor.drumkit_path = kit_filename;
- 
  audioProcessor.drumkit->kit_dir = kit_path; 
  audioProcessor.drumkit->kit_name = kit_name;
  
@@ -1478,14 +1477,12 @@ void CAudioProcessorEditor::save_quick_kit()
   
  audioProcessor.drumkit->save_qkit(); 
 
-
  audioProcessor.scanner.scan(); 
  update_kits_list();
-       
-  
+
+ need_to_update_cells = false;
+ 
  audioProcessor.suspendProcessing (false);
  tmr_leds.startTimer (1000 / 15); //15 FPS
- 
- 
 }
 
