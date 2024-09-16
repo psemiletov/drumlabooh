@@ -12,6 +12,7 @@ this code is the public domain
 #include <chrono>
 #include <random>
 
+#include <filesystem>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -698,6 +699,12 @@ void CDrumKit::load_qtxt (const std::string &data)
          string sample_name = line.substr (0, pos);
          string fname = line.substr (pos + 1, line.size() - pos);
 
+  //       std::cout << "fname: " << fname << std::endl;
+         
+//         std::cout << "fname[0]: " << fname[0] << std::endl;
+         
+         
+         
          if (fname.empty())
              continue;
          
@@ -705,12 +712,21 @@ void CDrumKit::load_qtxt (const std::string &data)
           
          //is path absolute? 
           
+          std::filesystem::path path (fname);
+          
           string filename; //final name
          
-          if (fname[0] == '/')
-             filename == fname; //absolute!
+          //if (fname[0] == '/')
+          if (path.is_absolute())
+             {
+              filename = fname; //absolute!
+             }  
           else   
               filename = kit_dir + "/" + fname;
+          
+          
+          std::cout << "load sample: " << filename << std::endl;
+          //АА ХЕЗ ТУТ ПУСТО!
 
           temp_sample = add_sample (sample_counter++);
 
