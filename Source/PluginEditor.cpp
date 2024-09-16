@@ -1132,7 +1132,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
 //  drumcells_group.setSize (drumcells_viewer.getWidth() + (XFILLER * 3), 699 + (YFILLER * 2));
 //  drumcells_group.setSize (drumcells_viewer.getWidth() + (XFILLER * 3), gr_kitbuttons.getBottom());
-  drumcells_group.setSize (drumcells_viewer.getWidth() + (XFILLER * 3), 550);
+  //drumcells_group.setSize (drumcells_viewer.getWidth() + (XFILLER * 3), 550);
+  drumcells_group.setSize (drumcells_viewer.getWidth() + (XFILLER * 3), 570);
 
 
   drumcells_viewer.setTopLeftPosition (drumcells_group.getX() + XFILLER, drumcells_group.getY() + YFILLER);
@@ -1279,7 +1280,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
 
 #ifndef MULTICHANNEL
     
-  gr_options.setSize (810, sl_base_note.getHeight() + 
+  gr_options.setSize (/*830*/drumcells_group.getRight(), sl_base_note.getHeight() + 
                            cmb_pan_mode.getHeight() + 
                            cmb_midimap_mode.getHeight() + 
                            bt_ignore_midi_velocity.getHeight());
