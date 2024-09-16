@@ -546,7 +546,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
               if (! s)
                  {
                  // std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
-                  break;
+                  continue;
                  }
 
               if (! s->active)
@@ -647,13 +647,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
   int num_channels = buffer.getNumChannels();
   int out_buf_length = buffer.getNumSamples();
-
   
   int int_midimap_mode = (int) *midimap_mode;
 
-
   //clearing input buffer, good for Reaper
-
   for (int i = 0; i < num_channels; ++i)
        buffer.clear (i, 0, out_buf_length);
 
@@ -686,7 +683,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
        int note_number = msg.getNoteNumber(); //36 starting note
 
-       if (isNoteOn )
+       if (isNoteOn)
           {
             //std::cout << "note_number: " << note_number << std::endl;
             //std::cout << "velocity: " << velocity << std::endl;
@@ -697,8 +694,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
             if (int_midimap_mode == MIDIMAPMODE_LABOOH)
                 if (nn < 0 || nn > 35)
-                   continue;
-
+                  {
+                    //std::cout << "nn < 0 || nn > 35: " << nn << std::endl; 
+                    continue;
+                  }
 //             std::cout << "GO ON with n: " << nn << std::endl;
 
             float gn = db2lin (*(vols[nn]));
@@ -716,10 +715,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             else
                {
                 if (drumkit->map_samples.count (note_number) > 0) 
-                  {
+                   {
                     s = drumkit->map_samples[note_number];
 //                   std::cout << "play mapped note: " << note_number << std::endl;
-                  } 
+                   } 
                }
   
             if (! s)
@@ -771,7 +770,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
              if (! s)
                 {
                 // std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
-                 break;
+                 continue;
                 }
 
              if (! s->active)

@@ -650,13 +650,9 @@ void CDrumKit::load_txt (const std::string &data)
 
 void CDrumKit::load_qtxt (const std::string &data)
 {
-  std::cout << "CDrumKit::load_qtxt - 1\n";
-  
-  std::cout << data << std::endl;
+ 
+//  std::cout << data << std::endl;
     
-  std::cout << "CDrumKit::load_qtxt - 2\n";
-  
-
   if (data.empty())
       return;
 

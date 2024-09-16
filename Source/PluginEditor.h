@@ -147,7 +147,9 @@ public:
 
   juce::TextButton bt_fx;
   juce::TextButton bt_file_open;
+  juce::TextButton bt_cell_clear;
 
+  
   juce::Button *bt_fx_close;
 
   //CCellLabel cell_label;
@@ -194,7 +196,11 @@ public:
   CFx fx;
 
   juce::TextButton bt_fx;
+
   juce::TextButton bt_file_open;
+  juce::TextButton bt_cell_clear;
+
+  
   
   juce::Button *bt_fx_close;
 

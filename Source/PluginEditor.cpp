@@ -213,10 +213,12 @@ CDrumCell::CDrumCell()
   xoffs += XFILLER;
 
   addAndMakeVisible (bt_file_open);
-  bt_file_open.setButtonText ("*");
-  bt_file_open.setTopLeftPosition (xoffs, YFILLER);
-  bt_file_open.setSize (24, 32);
   
+  bt_file_open.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (180, 209, 220));
+  bt_file_open.setButtonText ("+");
+  bt_file_open.setTopLeftPosition (xoffs, YFILLER);
+  bt_file_open.setSize (16, 16);
+  bt_file_open.setTooltip ("Add sample to quick kit");  
 ///////////////
   bt_file_open.onClick = [this] {
     
@@ -283,8 +285,51 @@ CDrumCell::CDrumCell()
   
   xoffs += bt_file_open.getWidth();
   xoffs += XFILLER;
+  
+  addAndMakeVisible (bt_cell_clear);
+  
+  bt_cell_clear.setColour ( TextButton::ColourIds::buttonColourId, juce::Colour (131, 152, 160));
+  
+  bt_cell_clear.setButtonText ("-");
+  bt_cell_clear.setTopLeftPosition (bt_file_open.getX(), bt_file_open.getBottom() + 1);
+  bt_cell_clear.setSize (16, 16);
 
+  bt_cell_clear.setTooltip ("Remove sample from quick kit");  
 
+  
+  bt_cell_clear.onClick = [this] {
+    
+                                 if (! editor)
+                                     return;
+        
+                                 if (! editor->audioProcessor.drumkit)  
+                                     return;
+                                   
+                                    
+                                 if (editor->audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
+                                    {
+                                     editor->log ("WRONG KIT TYPE! NEED TO BE THE QUICK KIT\n"); 
+                                     return;
+                                    }
+                             
+                                editor->tmr_leds.stopTimer();
+                                editor->audioProcessor.suspendProcessing (true);
+                             
+                                    
+                                editor->audioProcessor.drumkit->remove_sample_at_index (cell_number);
+
+                                cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
+                                set_name ("");
+                                cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
+
+                                editor->audioProcessor.suspendProcessing (false);
+                                editor->tmr_leds.startTimer (1000 / 15); //15 FPS
+                                   
+                               };
+  
+  //xoffs += XFILLER;
+
+  
   addAndMakeVisible (cell_label);
 
   cell_label.setTopLeftPosition (xoffs, YFILLER);
@@ -391,13 +436,120 @@ CDrumCell::CDrumCell()
 
   
   
-  addAndMakeVisible (bt_file_open);
-  bt_file_open.setButtonText ("*");
+  bt_file_open.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (180, 209, 220));
+  bt_file_open.setButtonText ("+");
   bt_file_open.setTopLeftPosition (xoffs, YFILLER);
-  bt_file_open.setSize (24, 32);
+  bt_file_open.setSize (16, 16);
+  bt_file_open.setTooltip ("Add sample to quick kit");  
+///////////////
+  bt_file_open.onClick = [this] {
+    
+                                 if (! editor)
+                                     return;
+        
+                                 if (editor->audioProcessor.drumkit)  
+                                    {
+                                     if (editor->audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
+                                        {
+                                         editor->log ("WRONG KIT TYPE! NEED TO BE THE QUICK KIT\n"); 
+                                         return;
+                                        }
+                                    }
+                                   
+  
+                                 editor->dlg_fileopen = std::make_unique<juce::FileChooser> ("Select file to load...",
+                                                        File::getSpecialLocation (juce::File::userHomeDirectory),
+                                                                                  "*.wav;*.aiff;*.flac;*.mp3;*.ogg");
 
+                                 auto folderChooserFlags = juce::FileBrowserComponent::openMode;
+
+                                 editor->dlg_fileopen->launchAsync (folderChooserFlags, [this] (const juce::FileChooser& chooser)
+                                                           {
+                                                            juce::File f (editor->dlg_fileopen->getResult());
+                                                            if (! f.exists())
+                                                                return;
+
+                                                             
+                                                            editor->tmr_leds.stopTimer();
+                                                            editor->audioProcessor.suspendProcessing (true);
+                                      
+                                                            std::string fname (f.getFullPathName().toRawUTF8());
+
+                                                            editor->need_to_update_cells = false; //чтобы кит не подгрузился по таймеру
+
+                                                            
+                                                            if (! editor->audioProcessor.drumkit)
+                                                                editor->audioProcessor.drumkit = new CDrumKit();
+                                                             
+                                                            editor->audioProcessor.drumkit->kit_type = KIT_TYPE_QDRUMLABOOH; 
+  
+                                                            editor->audioProcessor.drumkit->kit_name = editor->l_kit_name.getText().toStdString();
+                                                            
+                                                            std::cout << "cell_number: " << cell_number << std::endl;
+                                                            
+                                                            CDrumSample *s = editor->audioProcessor.drumkit->load_sample_to_index (cell_number,
+                                                                                                                                   fname, 
+                                                                                                                                   editor->audioProcessor.session_samplerate);
+                                                            
+                                                            editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
+                                                            
+                                                            cell_label.setText (s->name, juce::dontSendNotification);
+                                                            set_name (s->name);
+                                                            cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+  
+                                                            editor->audioProcessor.suspendProcessing (false);
+                                                            editor->tmr_leds.startTimer (1000 / 15); //15 FPS
+                                                           });
+    
+                                };
+  
+  //////////////////////////////
+  
   xoffs += bt_file_open.getWidth();
   xoffs += XFILLER;
+  
+  addAndMakeVisible (bt_cell_clear);
+  
+  bt_cell_clear.setColour ( TextButton::ColourIds::buttonColourId, juce::Colour (131, 152, 160));
+  
+  bt_cell_clear.setButtonText ("-");
+  bt_cell_clear.setTopLeftPosition (bt_file_open.getX(), bt_file_open.getBottom() + 1);
+  bt_cell_clear.setSize (16, 16);
+
+  bt_cell_clear.setTooltip ("Remove sample from quick kit");  
+
+  
+  bt_cell_clear.onClick = [this] {
+    
+                                 if (! editor)
+                                     return;
+        
+                                 if (! editor->audioProcessor.drumkit)  
+                                     return;
+                                   
+                                    
+                                 if (editor->audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
+                                    {
+                                     editor->log ("WRONG KIT TYPE! NEED TO BE THE QUICK KIT\n"); 
+                                     return;
+                                    }
+                             
+                                editor->tmr_leds.stopTimer();
+                                editor->audioProcessor.suspendProcessing (true);
+                             
+                                    
+                                editor->audioProcessor.drumkit->remove_sample_at_index (cell_number);
+
+                                cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
+                                set_name ("");
+                                cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
+
+                                editor->audioProcessor.suspendProcessing (false);
+                                editor->tmr_leds.startTimer (1000 / 15); //15 FPS
+                                   
+                               };
+  
+  //xoffs += XFILLER;
 
 
   
