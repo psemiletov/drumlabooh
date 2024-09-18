@@ -35,7 +35,6 @@ float warmify (float x, float warmth)
 }
 
 
-
 const float thresholdLevel = pow(10.0f, 18.0f / 20.0f); // Значение, соответствующее +18 дБ
 
 
@@ -46,10 +45,10 @@ float softLimit (float input)
      {
       // Рассчитываем множитель для понижения уровня
       float reductionFactor = thresholdLevel / input;
-  // Применяем мягкое понижение уровня
+     // Применяем мягкое понижение уровня
       return input * reductionFactor;
-    }
+     }
 
-    // Если сигнал не превышает порог, возвращаем его без изменений
+  // Если сигнал не превышает порог, возвращаем его без изменений
   return input;
 }

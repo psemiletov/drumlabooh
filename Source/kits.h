@@ -8,10 +8,10 @@ this code is the public domain
 
 #include <vector>
 #include <map>
+#include <random>
 
 #include <stdint.h>
 #include <string.h>
-#include <random>
 
 #include <JuceHeader.h>
 
@@ -31,7 +31,9 @@ this code is the public domain
 
 #define MAX_SAMPLES 36
 
+
 class CDrumSample;
+
 
 class CDrumLayer
 {
@@ -41,7 +43,7 @@ public:
 
   CDrumSample *drum_sample; //uplink sample class that holds this sample layer
 
-  //for layer's velo range
+  //for layer's velocity range
   float min;
   float max;
 
@@ -54,7 +56,7 @@ public:
   int length_in_samples;// i.e frames, the amount of samples per channel
   int sample_offset; //to play inc until < length_in_samples
 
-  juce::AudioBuffer<float> *audio_buffer; //holds audio data
+  juce::AudioBuffer <float> *audio_buffer; //holds audio data
   //const float *channel_data [2]; // pointers to channels of audio_buffer, 2 is legacy from stereo support
   //now we use just first channel
   const float *channel_data; // pointer to the first channel of audio_buffer
@@ -62,7 +64,7 @@ public:
   CDrumLayer (CDrumSample *s);
   ~CDrumLayer();
 
-  void load (const std::string &fname); //loads the sample, sets internally info, data, file_name
+  void load (const std::string &fname); //loads the sample, sets internal info, data, file_name
   void print();
 
   juce::AudioBuffer<float> * load_whole_sample (const std::string &fname); //called from load_whole_sample_resampled
@@ -79,7 +81,7 @@ public:
   int id; //Hydrogen's. For what? 
   int current_layer;
 //  int midiOutNote;
-  int session_samplerate; //session srate, taken from the upper object
+  int session_samplerate; //session srate, taken from the upper level object
 
   bool active; //is sample triggered to play? 
   
@@ -92,7 +94,7 @@ public:
   
   int layer_index_mode; //0 - velocity, 1 - rnd, 2 - round robin
   
-  size_t robin_counter;
+  size_t robin_counter; 
   
   float velocity;
 

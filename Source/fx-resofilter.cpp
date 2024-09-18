@@ -1,7 +1,7 @@
 #include "fx-resofilter.h"
 
 /*
-Peter Semiletov, 2023
+Peter Semiletov, 2023-24
 */
 
 
