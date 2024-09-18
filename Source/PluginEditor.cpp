@@ -190,9 +190,9 @@ CFx::~CFx()
 void CLed::paint(Graphics& g)
 {
   if (is_on)
-     g.fillAll(cl_on.withLightness(velocity));
+     g.fillAll (cl_on.withLightness(velocity));
   else
-      g.fillAll(cl_off);
+      g.fillAll (cl_off);
 }
 
 
@@ -433,8 +433,8 @@ CDrumCell::CDrumCell()
   addAndMakeVisible (led);
   led.setTopLeftPosition (xoffs, YFILLER);
   led.setSize (16, 32);
-
   
+  addAndMakeVisible (bt_file_open);
   
   bt_file_open.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (180, 209, 220));
   bt_file_open.setButtonText ("+");
@@ -1271,7 +1271,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   log_area.setMultiLine (true, true);
   log_area.setReadOnly (true);
   log_area.setTopLeftPosition (sl_global_analog_amount.getRight(), l_midimap_mode.getY());
-  log_area.setSize (170, 148);
+  //log_area.setSize (200, 148);
+  log_area.setSize (224, 148);
   
   
 #endif
@@ -1458,6 +1459,20 @@ void CTimer::hiResTimerCallback()
          
          if (! s)
             continue;
+         
+#ifndef MULTICHANNEL 
+         bool mute = *(uplink->audioProcessor.mutes[i]) > 0.5f;
+         
+         if (mute)
+           {
+            uplink->drumcells[i].led.is_on = false;
+            uplink->drumcells[i].led.velocity = 0;
+
+            continue;
+           }  
+       
+       
+#endif
           
          bool actv = s->active;
          uplink->drumcells[i].led.is_on = actv;
@@ -1602,6 +1617,14 @@ void CAudioProcessorEditor::save_quick_kit()
       log ("GIVE OTHER NAME TO THE KIT\n");
       return;
     }
+   
+  if (audioProcessor.drumkit->kit_type != KIT_TYPE_DRUMLABOOH)
+    {
+     log ("WRONG DRUMKIT TYPE, YOU CAN SAVE QUICK KITS ONLY\n");
+     return;
+    }
+   
+   
    
   std::string kit_path;
    
