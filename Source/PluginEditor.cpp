@@ -1491,6 +1491,7 @@ CDrumkitsListBoxModel::CDrumkitsListBoxModel()
 
 }
 
+
 CDrumkitsListBoxModel::~CDrumkitsListBoxModel()
 {
 
@@ -1500,7 +1501,7 @@ CDrumkitsListBoxModel::~CDrumkitsListBoxModel()
 
 int CDrumkitsListBoxModel::getNumRows()
 {
-	return items.size();
+  return items.size();
 }
 
 
@@ -1509,7 +1510,6 @@ void CDrumkitsListBoxModel::paintListBoxItem (int rowNumber, Graphics &g, int wi
   if (rowIsSelected)
 	  g.fillAll (Colours::cornflowerblue);
  	  //g.fillAll (Colours::lightblue);
- 
   else
 	  //g.fillAll (Colours::cornflowerblue);
     //g.fillAll (Colours::plum);
@@ -1517,9 +1517,10 @@ void CDrumkitsListBoxModel::paintListBoxItem (int rowNumber, Graphics &g, int wi
     
   g.setFont (20); 
 
- g.drawText (items[rowNumber].c_str(),
-		        4, 0, width - 4, height,
-		        Justification::centredLeft, true);
+  if (! items[rowNumber].is_empty())
+      g.drawText (items[rowNumber].c_str(),
+                  4, 0, width - 4, height,
+		          Justification::centredLeft, true);
 
  
   //g.drawFittedText (items[rowNumber].c_str(),
