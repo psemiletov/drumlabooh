@@ -1378,7 +1378,7 @@ void CDrumKitsScanner::scan_full()
           }
 
 
-       if (kit_exists)
+       if (kit_exists && ! kit->kit_name.empty())
           {
            CDrumKit *kit = new CDrumKit;
            kit->scan_mode = true;
@@ -1528,8 +1528,11 @@ void CDrumKitsScanner::scan()
                kit_name = get_string_between (fs, "<name>", "</name>");
                }
            
-           map_kits.insert (pair<string,string> (kit_name, fname));
-           v_kits_names.push_back (kit_name);
+           if (! kit_name.empty())
+              {
+               map_kits.insert (pair<string,string> (kit_name, fname));
+               v_kits_names.push_back (kit_name);
+              }
           }
 
       }
