@@ -656,7 +656,7 @@ void CDrumKit::load_qtxt (const std::string &data)
   if (data.empty())
       return;
 
-  size_t i = kit_dir.rfind ("/");
+  size_t i = kit_dir.rfind (DIR_SEPARATOR);
   kit_name = kit_dir.substr (i + 1);
 
   kit_type = KIT_TYPE_QDRUMLABOOH;
@@ -666,7 +666,7 @@ void CDrumKit::load_qtxt (const std::string &data)
 
   while (getline (st, line))
         {
-          std::cout << "line:" << line << std::endl;
+        //  std::cout << "line:" << line << std::endl;
    
           
          if (line.empty())

@@ -41,7 +41,7 @@ jobs:
 
 
     - name: Get installer
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
        name: drumlabooh-installer.exe
        path: drumlabooh-installer.exe

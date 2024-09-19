@@ -3,7 +3,6 @@ written at 2023-24 by Peter Semiletov
 this code is the public domain
 */
 
-
 #ifndef UTL_H
 #define UTL_H
 
@@ -37,5 +36,16 @@ std::string get_string_between (const std::string &s, const std::string &start, 
 std::string get_last_part (const std::string &path);
 
 void string_save_to_file (const std::string &fname, const std::string &s);
+
+
+#if !defined(_WIN32) || !defined(_WIN64)
+
+#define DIR_SEPARATOR "/"
+
+#else
+
+#define DIR_SEPARATOR "\\"
+
+#endif
 
 #endif
