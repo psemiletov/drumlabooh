@@ -1639,7 +1639,11 @@ void CAudioProcessorEditor::save_quick_kit()
   
 #endif
 
- std::filesystem::create_directories (kit_path);
+ std::filesystem::path p (kit_path);
+ 
+ //std::filesystem::create_directories (kit_path);
+ std::filesystem::create_directories (p);
+ 
  
  log ("created directory: " + kit_path + "\n");
  
