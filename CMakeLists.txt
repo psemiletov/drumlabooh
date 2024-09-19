@@ -24,10 +24,10 @@ set(VST3_INSTALL_DIR lib/vst3 CACHE PATH "Specifies where the VST3 libraries sho
 
 
 IF (WIN32)
-set (JUCETAG "7.0.10")
+set (JUCETAG 7.0.10)
   # set stuff for windows
 ELSE()
-set (JUCETAG "8.0.1")
+set (JUCETAG 8.0.1)
   # set stuff for other systems
 ENDIF()
 

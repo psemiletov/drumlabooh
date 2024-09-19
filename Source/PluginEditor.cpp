@@ -1517,7 +1517,7 @@ void CDrumkitsListBoxModel::paintListBoxItem (int rowNumber, Graphics &g, int wi
     
   g.setFont (20); 
 
-  if (! items[rowNumber].is_empty())
+  if (! items[rowNumber].empty())
       g.drawText (items[rowNumber].c_str(),
                   4, 0, width - 4, height,
 		          Justification::centredLeft, true);

@@ -32,9 +32,10 @@ For all details, docs and drumkits see the [Drumlabooh site](https://psemiletov.
 
 To build Drumlabooh form the source, you need to install some dependencies first. Drumlabooh is based on JUCE. JUCE source code will be fetched by configuration process, but JUCE needs additional libraries.
 
-Dependencies (Ubuntu packages names):
+Dependencies (Debian/Ubuntu packages names):
 
-``libasound2-dev
+``pkgconf
+libasound2-dev
 libfreetype6-dev
 libx11-dev
 libxcomposite-dev
