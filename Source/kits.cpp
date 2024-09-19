@@ -102,7 +102,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
 
      // std::cout << "reader.get() != nullptr\n";
 
-   juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float>;
+   juce::AudioBuffer <float> *buffer = new juce::AudioBuffer<float>;
 
    int bufsize = (int) reader->lengthInSamples;
    //buffer->setSize ((int) reader->numChannels, bufsize);

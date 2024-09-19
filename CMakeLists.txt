@@ -23,6 +23,16 @@ set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should
 set(VST3_INSTALL_DIR lib/vst3 CACHE PATH "Specifies where the VST3 libraries should be installed")
 
 
+IF (WIN32)
+set (JUCETAG "7.0.10")
+  # set stuff for windows
+ELSE()
+set (JUCETAG "8.0.1")
+  # set stuff for other systems
+ENDIF()
+
+
+
 set(FETCHCONTENT_QUIET FALSE)
 
 
@@ -85,9 +95,9 @@ FetchContent_Declare(
   juce
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
 #  GIT_TAG        2a27ebcfae7ca7f6eb62b29d5f002ceefdaadbdb # release-7.0.7
-  GIT_TAG         7.0.10 # release-7.0.10
+#  GIT_TAG         7.0.10 # release-7.0.10
 #  GIT_TAG         8.0.1 
-
+   GIT_TAG ${JUCETAG}
 #since cmake 3.28
 #  EXCLUDE_FROM_ALL
 #  
@@ -106,8 +116,9 @@ else()
 FetchContent_Declare(
   juce
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
+  GIT_TAG ${JUCETAG}
 
-  GIT_TAG         7.0.10 # release-7.0.10
+#  GIT_TAG         7.0.10 # release-7.0.10
 
 #GIT_TAG         8.0.1 
 #since cmake 3.28
@@ -139,6 +150,7 @@ juce_add_plugin(drumlabooh
     # VERSION ...                               # Set this if the plugin version is different to the project version
     # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
     # ICON_SMALL ...
+     NEEDS_WEB_BROWSER FALSE
      JUCE_DISPLAY_SPLASH_SCREEN=0
      LV2URI https://github.com/psemiletov/drumlabooh
      LV2_SHARED_LIBRARY_NAME drumlabooh
@@ -223,6 +235,7 @@ if(MULTI)
 
   juce_add_plugin(drumlabooh-multi
      JUCE_DISPLAY_SPLASH_SCREEN=0
+     NEEDS_WEB_BROWSER FALSE
      LV2URI https://github.com/psemiletov/drumlabooh-multi
      LV2_SHARED_LIBRARY_NAME drumlabooh-multi
      COMPANY_NAME Semiletov                     # Specify the name of the plugin's author
