@@ -1607,17 +1607,17 @@ void CAudioProcessorEditor::save_quick_kit()
 {
   
   if (! audioProcessor.drumkit)
-    {
-     log ("NO DRUMKIT\n");
-     return;
-    }
+     {
+      log ("NO DRUMKIT\n");
+      return;
+     }
   
   std::string kit_name = l_kit_name.getText().toStdString(); 
   if (kit_name == "EMPTY KIT")  
      {
       log ("GIVE OTHER NAME TO THE KIT\n");
       return;
-    }
+     }
    
   if (audioProcessor.drumkit->kit_type != KIT_TYPE_DRUMLABOOH)
     {
@@ -1640,6 +1640,8 @@ void CAudioProcessorEditor::save_quick_kit()
 #endif
 
  std::filesystem::create_directories (kit_path);
+ 
+ log ("created directory: " + kit_path + "\n");
  
  std::string kit_filename;
  kit_filename = kit_path + "/drumkitq.txt";
