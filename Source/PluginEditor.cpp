@@ -1619,7 +1619,7 @@ void CAudioProcessorEditor::save_quick_kit()
       return;
      }
    
-  if (audioProcessor.drumkit->kit_type != KIT_TYPE_DRUMLABOOH)
+  if (audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
     {
      log ("WRONG DRUMKIT TYPE, YOU CAN SAVE QUICK KITS ONLY\n");
      return;
