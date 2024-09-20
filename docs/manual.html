@@ -286,7 +286,7 @@ By the way, the pan mode is the significant factor of how DAW "sounds". Pan mode
 
 
 <a href="#mni_modesru">1. Стерео и Многоканальный режимы</a><br>
-<a href="#mni_getkitsru">2. Установка драмкитов</a><br>
+<a href="#mni_kitsru">2.0 Установка драмкитов</a><br>
 <a href="#mni_mixerru">3. Встроенный микшер</a><br>
 <a href="#mni_optionsru">4. Настройки</a><br>
 <a href="#multiru">5. О многоканальном режиме подобно</a><br>
@@ -308,48 +308,81 @@ By the way, the pan mode is the significant factor of how DAW "sounds". Pan mode
 Читайте <a name="mni_multiru">ПОДРОБНОСТИ</a> об использовании многокального режима - как подключать инструменты драмкита к разным дорожкам или шинам.</p>
 
 
-<a name="mni_getkitsru"></a>
-<h3>2. Драмкиты</h3>
+<a name="mni_kitsru"></a>
+<h3>2.0 Драмкиты</h3>
 
 При запуске Драмлабух сканирует в нужных папках драмкиты всех известных ему форматов и предлагает вам список, откуда киты можно выбирать. Под списком и картинкой кита (если такая есть) находится кнопочка <b>Open</b>, через нее можно открыть драмкит, лежащий вне папок, где ищет Драмлабух. Через диалоговое окно надо выбрать файл xml (для формата Hydrogen ), sfz (для SFZ) или, в случае с форматом Drumlabooh, drumkit.txt.</p>
 
 <p>Важное замечание! Загружая драмкит, Драмлабух преобразует его сэмплы, в памяти, к частоте оцифровки текущей сессии DAW, что при большом драмките может затормозить загрузку и даже создать ощущение зависона. Например, сэмплы в драмките имеют частоту 44.1, а частота сессии 48 килогерц. Просто подождите. Но если не хотите ждать каждый раз, нажмите кнопку <b>Adapt</b> под списком драмкитов. Она сохранит копию текущего драмкита в папку <i>drum_sklad</i>, и у этой копии сэмплы будут с частотой текущей сессии, кроме того данные будут конвертированы в 32 bit float (24 integer для FLAC). Копия автоматически установится как текущий драмкит. При этом поддерживаются, для такого клонирования, только киты в формате Драмлабух с сэмплами в форматах WAV, AIFF и FLAC.
 </p>
 
-<p>При запуске, Драмлабух сканирует все установленные драмкиты поддерживаемых форматов и предоставляет их в списке, для выбора.</p>
-
-<p>Поскольку Драмлабух поддерживает несколько форматов драмкитов, а какого-либо встроенного менеджера коллекций китов у него нет, существуют следующие "внешние" способы установки новых драмкитов.</p>
-
 
 <a name="mni_kits_hydrogenru"></a>
-<h3>Драмкиты в формате Hydrogen</h3>
+<h3>2.1 Драмкиты в формате Hydrogen</h3>
 
-<p>При запуске, Drumlabooh сканирует все установленные киты от <a href="http://hydrogen-music.org">драм машины Hydrogen </a>, которая выпускается как для Linux, так и Windows. Под Hydrogen существуют десятки драмкитов, но чтобы установить их, надо запустить сам Hydrogen и пойти в нем в меню <b>Драмкиты - Online import</b>, откуда можно скачать киты из двух хранилищ -Hydrogen и Musical Artifacts.</p>
+<p>При запуске, Drumlabooh сканирует все установленные киты от <a href="http://hydrogen-music.org">драм машины Hydrogen </a>, которая выпускается для Linux и Windows. Под Hydrogen существуют десятки драмкитов, но чтобы установить их, надо запустить сам Hydrogen и пойти в нем в меню <b>Драмкиты - Online import</b>, откуда можно скачать киты из двух хранилищ -Hydrogen и Musical Artifacts.</p>
 
-<p>В Линуксе при установке самого Hydrogen скорее всего установятся и некоторые киты. На сегодня, под все системы, самый быстрый способ скачать новые киты для Hydrogen, это его вышеописанная функциия<b>Online import</b>, ибо публичных ссылок на отдельные киты из хранилищ вы не найдете.</p>
+<p>В Линуксе при установке самого Hydrogen скорее всего установятся и некоторые киты. На сегодня, под все системы, самый быстрый способ скачать дополнительные киты для Hydrogen, это его вышеописанная функция<b>Online import</b>, ибо публичных ссылок на отдельные киты из хранилищ вы не найдете.</p>
 
 <a name="mni_kits_sfzru"></a>
-<h3>Драмкиты в формате SFZ</h3>
+<h3>2.2 Драмкиты в формате SFZ</h3>
 
-<p>Драмлабух сканирует установленные SFZ-киты <i>$HOME/drumlabooh-kits</i> (под Linux), а также в <i>c:\sfz-kits</i> и <i>c:\sfz-kits</i> (под Windows). Как обычно, папки с SFZ китами надо поместить туда, чтобы Драмлабух их увидел.
-</p>
+<p>Драмлабух сканирует установленные SFZ-киты <i>$HOME/drumlabooh-kits</i> (под Linux), а также в <i>c:\sfz-kits</i> и <i>c:\sfz-kits</i> (под Windows). Как обычно, папки с SFZ китами надо поместить туда, чтобы Драмлабух их увидел.</p>
 
-<p>Драмлабух поддерживает в SFZ MIDI mapping, заданный параметрами key. Для использования такого мэппинга, установите в Драмлабухе опцию MIDI map mode равной "Kit". Иначе же, в режиме "Auto", мэппинг будет в виде последовательной нумерации, начиная с миди-ноты 36 для бас-бочки, первого сэмпла по счету в ките.</p>
+<p>Драмлабух в формате SFZ поддерживает MIDI mapping, заданный параметрами key. Для использования такого мэппинга, установите в Драмлабухе опцию MIDI map mode равной "Kit". Иначе же, в режиме "Auto", мэппинг будет в виде последовательной нумерации, начиная с миди-ноты 36 для бас-бочки, первого сэмпла по счету в ките.</p>
 
 <p>Драмкиты превосходного качества - AVL Drumkits - вы можете скачать в формате SFZ по ссылке <a href="http://www.bandshed.net/sounds/AVLDrumkits_SFZ">http://www.bandshed.net/sounds/AVLDrumkits_SFZ</a>.</p>
 
 
 
 <a name="mni_kits_laboohru"></a>
-<h3>Киты в формате Драмлабуха</h3>
+<h3>2.3 Киты в формате Драмлабуха</h3>
 
-<p>Драмкиты в формате Драмлабуха. Один кит = одна папка, помещенная в <i>$HOME/drumlabooh-kits</i>, <i>/usr/share/drumlabooh-kits</i>, <i>$HOME/drum_sklad</i> (в Линукс), либо, для Windows, в <i>c:\drumlabooh-kits</i>, <i>d:\drumlabooh-kits</i>, <i>c:\drum_sklad</i> или <i>d:\drum_sklad</i>.</p>
+<p>Киты в формате Драмлабуха. Один кит = одна папка, помещенная в <i>$HOME/drumlabooh-kits</i>, <i>/usr/share/drumlabooh-kits</i>, <i>$HOME/drum_sklad</i> (в Линукс), либо, для Windows, в <i>c:\drumlabooh-kits</i>, <i>d:\drumlabooh-kits</i>, <i>c:\drum_sklad</i> или <i>d:\drum_sklad</i>.</p>
 
-<p>При установке самого Драмлабуха в комплекте с ним идут киты из официального хранилища <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad on Github</a>. Там же вы можете узнать подробности о формате. Дело пяти минут - создание нового драмкита из набора сэмплов.</p>
+<p>При установке самого Драмлабуха в комплекте с ним идут киты из официального хранилища <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad on Github</a>. Там же вы можете узнать подробности о формате.</p>
 
 <p>Дополнительные киты, которых нет на Гитхабе, качайте с <a href="https://t.me/drum_sklad">Drum Sklad в Телеге</a>. Так что полная коллекция китов для Драмлабуха лежит на Гитхабе ПЛЮС в Телеге.</p>
 
 <p>Все киты формата Драмлабух имеют опциональный, заданный в ките, MIDI-mapping стандарта General MIDI, который можно выбрать в Драмлабухе в опции <b>MIDI map mode</b>, где в выпадающем списке надо выбрать "Kit". В противном случае ("Auto") Драмлабух будет осущесвлять mapping по принципу нумерации миди-нот начиная, по умолчани, с 36 для бас бочки.</p>
+
+<a name="mni_kits_laboohru"></a>
+<h3>2.4 Быстрые самодельные киты</h3>
+
+<p>Не китами едиными жив человек, в сети доступно много паков с сэмплами, например есть вот такой ресурс - <a href="https://www.reddit.com/r/Drumkits/">www.reddit.com/r/Drumkits</a>. Как же загрузить отдельные сэмплы в Лабуха? Неужели создавать традиционнй драмкит? Нет. На сцену выходят Быстрые киты!</p>
+
+<p>Быстрый кит не хранит в себе сами файлы сэмплов, а лишь запоминает пути к ним. Чтобы создать быстрый кит, надо:</p>
+
+<p>1. Добавьте нового Драмлабуха на дорожку. Должен быть "пустой" плагин без загруженного кита. Все ячейки пустые.</p>
+
+<p>2. У каждой ячейки есть, слева от названия слота, две кнопочки одна над другой:</p>
+
+<img src="qpic01.png" alt="" width="287" height="64">
+
+<p>3. Нажатие на верхнюю открывает диалог выбора файла с сэмплом. Он будет загружен в этот слот. Нижняя кнопка выгружает сэмпл и очищает слот.</p>
+
+<p>4. Добавьте еще какие-то сэмплы в слоты.</p>
+
+<p>5. Теперь дадим вашему киту имя. Дважды щелкните мышью на надписи с именем кита, сейчас там написано "EMPTY KIT":</p>
+
+<img src="qpic02.png" alt="" width="406" height="218">
+
+<p>6. Введите имя кита, нажмите Enter.</p>
+
+<p>7. Теперь нажмите кнопку <b>Save</b>:</p>
+
+<img src="qpic03.png" alt="" width="345" height="122">
+
+<p>8. Ваш быстрй кит сохранится в папке <i>drum_sklad</i> внутри домашнего каталога. Этот кит будет сканироваться Лабухом как обычные киты и доступен из списка. Также он автоматически становится, после сохранения, текущим китом в плагине.</p>
+
+<p>Напомню - быстрые киты не хранят в своих папках файлы, хранятся только абсолютные пути к ним. Если вы хотите сделать из быстрого кита обычный портабельный кит с сэмплами внутри папки, то нажмите кнопку <b>Adapt</b> и исопльзуйте полученную копию.</p>
+
+<p>Быстрые киты можно редактировать, не забывайте потом нажимать кнопку Save. Если дать киту новое имя (двойной клик на названии кита на той надписи, что ниже списка китов), то кит сохранится под новым именем, но останется и кит со старым названием. Если в кит, полученный посредством кнопки <b>Adapt</b>, добавлять новые сэмплы, то они будут добавляться в виде пути на файл, а не копироваться в папку с сэмплом.</p>
+
+<p>Быстрый кит позволяет быстро создать свой кит, однако не поддерживает многослойные сэмплы и прочие плюшки, присущие "обычным" китам.</p>
+
+
+
 
 <h3>Поддерживаемые форматы сэмплов</h3>
 
@@ -377,41 +410,6 @@ $HOME/.drmr/drumkits</pre>
 <p>SFZ format:</p>
 
 <pre>$HOME/sfz-kits</pre>
-
-
-<a name="mni_kits_qlabooh"></a>
-<h3>2.4 Quick Custom Kits</h3>
-
-<p>Running Drumlabooh you can quickly make you own kit with external one-shot samples, for example from some drum sample pack. Here is the good resource - <a href="https://www.reddit.com/r/Drumkits/">https://www.reddit.com/r/Drumkits/</a>.</p>
-
-<p>Quick kit is the "proxy" and simplified kit, that you can make for yourself just from Drumlabooh. To create such kit, do the following steps:</p>
-
-<p>1. Add Drumlabooh to the track. Now you have empty drum cells/slots.</p>
-
-<p>2. At any cell, you see the two small buttons on the left of the cell name:</p>
-
-<img src="qpic01.png" alt="" width="287" height="64">
-
-<p>3. The upper one shows the file open dialog. Select some sample for this slot. The lower button clears the cell.</p>
-
-<p>4. Add other samples to other slots.</p>
-
-<p>5. Now we can save your quick kit. Double click at kit's name ("EMPTY KIT" caption):</p>
-
-<img src="qpic02.png" alt="" width="406" height="218">
-
-<p>6. Edit kit name, press Enter to finish.</p>
-
-<p>7. Now press <b>Save</b> button:</p>
-
-<img src="qpic03.png" alt="" width="345" height="122">
-
-<p>8. Now your quick kit is saved at <i>drum_sklad</i> directory at your home folder. This kit will be scanned by Drumlabooh as all other kits.</p>
-
-<p>The quick kit's folder don't hold samples. Quick kit config file keeps just absolute paths to samples. They are stays in their folders. But if you want to create the "bundle", press <b>Adapt</b> button to create the copy of quick kit, and then use that copy.
-</p>
-
-<p>You can load the quick kit as a normal kit, and can edit it, just don't forget to <b>Save</b> it. The "bundled" quick kit is also editable, but newly added sampled will be added as file paths and not copied to the kit's folder.</p>
 
 
 
