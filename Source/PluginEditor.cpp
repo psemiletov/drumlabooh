@@ -829,17 +829,74 @@ void CAudioProcessorEditor::adapt()
   if (! audioProcessor.drumkit)
      return;
   
-if (! audioProcessor.drumkit->loaded)
+  if (! audioProcessor.drumkit->loaded)
      return;
   
   
-  if (audioProcessor.drumkit->kit_type != KIT_TYPE_DRUMLABOOH)
-    {
-     log ("Cannot adapt the non-Drumlabooh kit"); 
-     return;
-    } 
+  if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH)
+     {
+      adapt_drumlabooh();
+      return;
+     } 
+  
+  if (audioProcessor.drumkit->kit_type == KIT_TYPE_QDRUMLABOOH)
+     {
+      adapt_qdrumlabooh();
+      return;
+     } 
+  
+  log ("Cannot adapt the non-Drumlabooh kit"); 
+}
+
+
+void CAudioProcessorEditor::adapt_drumlabooh()
+{
   
   std::string new_path = get_home_dir() + "/drum_sklad/";
+   
+  std::string srate = std::to_string (audioProcessor.session_samplerate);
+  
+  new_path += audioProcessor.drumkit->kit_name;
+  new_path += "-";
+  new_path += srate;
+  
+  File source_dir (audioProcessor.drumkit->kit_dir);
+  File dest_dir (new_path);
+
+  if (! source_dir.copyDirectoryTo (dest_dir)) 
+       {
+        log ("CANNOT COPY KIT TO: " + new_path + "\n"); 
+        return;
+       }  
+  
+  std::string kitfname = "/drumkit.txt";    
+     
+  audioProcessor.scanner.scan(); 
+  update_kits_list();
+      
+  audioProcessor.drumkit_path = new_path + kitfname;
+      
+  tmr_leds.stopTimer();
+      
+  audioProcessor.load_kit (audioProcessor.drumkit_path);
+
+   //update GUI
+  if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH)
+      audioProcessor.drumkit->adapt();
+      
+  load_kit();
+               
+  log (audioProcessor.drumkit->kit_name);
+  log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+                                     
+  tmr_leds.startTimer (1000 / 15); //15 FPS
+}
+
+
+void CAudioProcessorEditor::adapt_qdrumlabooh()
+{
+  std::string new_path = get_home_dir() + "/drum_sklad/";
+   
   std::string srate = std::to_string (audioProcessor.session_samplerate);
   
   new_path += audioProcessor.drumkit->kit_name;
@@ -849,27 +906,26 @@ if (! audioProcessor.drumkit->loaded)
   File source_dir (audioProcessor.drumkit->kit_dir);
   File dest_dir (new_path);
   
-  if (source_dir.copyDirectoryTo (dest_dir)) 
-     {
-      audioProcessor.scanner.scan(); 
-      update_kits_list();
+  std::string kitfname = "/drumkitq.txt";    
+       
+  audioProcessor.drumkit->adapt_qkit (new_path);
+     
+  audioProcessor.scanner.scan(); 
+  update_kits_list();
       
-      audioProcessor.drumkit_path = new_path + "/drumkit.txt";
+  audioProcessor.drumkit_path = new_path + kitfname;
       
-      tmr_leds.stopTimer();
+  tmr_leds.stopTimer();
+      
+  audioProcessor.load_kit (audioProcessor.drumkit_path);
 
-      audioProcessor.load_kit (audioProcessor.drumkit_path);
-
-      //update GUI
-      audioProcessor.drumkit->adapt();
-           
-      load_kit();
+   //update GUI
+  load_kit();
                
-      log (audioProcessor.drumkit->kit_name);
-      log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+  log (audioProcessor.drumkit->kit_name);
+  log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
                                      
-      tmr_leds.startTimer (1000 / 15); //15 FPS
-     }
+  tmr_leds.startTimer (1000 / 15); //15 FPS
 }
 
 

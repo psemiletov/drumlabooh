@@ -327,7 +327,13 @@ public:
   void load_kit(); //call after processor's load_kit to update GUI
   void log (const std::string &s);
   void update_kits_list();
+  
   void adapt();
+  
+  void adapt_drumlabooh();
+  void adapt_qdrumlabooh();
+  
+  
   void save_quick_kit();
     
   void paint (juce::Graphics&) override;

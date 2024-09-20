@@ -172,6 +172,7 @@ public:
   void print_stats();
   
   void adapt(); //for Adapt function
+  void adapt_qkit (std::string new_dir_path); //for Adapt function
   
   void save_qkit();
   

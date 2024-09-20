@@ -1222,10 +1222,94 @@ void CDrumKit::adapt() //used at Adapt button handler
                  
                 delete writer;
  	           }
-            
            } 
-       
       }
+}
+
+
+void CDrumKit::adapt_qkit (std::string new_dir_path) //used at Adapt button handler
+{
+  if (sample_counter == 0)
+      return;
+  
+  if (kit_type != KIT_TYPE_QDRUMLABOOH)
+      return;
+  
+//  std::cout << "CDrumKit::total_samples_size() - 1\n";
+ 
+  std::string result;
+  
+  std::filesystem::create_directories (new_dir_path);
+  
+  for (size_t i = 0; i < 36; i++)
+      { 
+       CDrumSample *s = a_samples[i];
+       
+       if (! s)
+           continue; 
+   
+       if (s->v_layers.size() == 0)
+          continue;
+  
+          
+       if (s->v_layers[0]->audio_buffer)
+          {
+           juce::File fl (s->v_layers[0]->file_name);
+                                
+           std::string pure_fname = fl.getFileName().toStdString(); 
+                
+           fl = new_dir_path + "/" + pure_fname;
+           
+           s->v_layers[0]->file_name = fl.getFullPathName().toStdString();
+           
+           result += pure_fname;
+           result += "=";
+           result += pure_fname;
+           result += "\n";
+             
+           juce::OutputStream *fs = new juce::FileOutputStream (fl); //will be deleted by writer?
+                
+           juce::AudioFormatWriter *writer = 0;
+                
+           std::string ext = get_file_ext (s->v_layers[0]->file_name);
+           ext = string_to_lower (ext);
+
+           if (ext == "wav")
+              writer = WavAudioFormat().createWriterFor (fs, s->v_layers[0]->samplerate, 
+                                                         1, //channels
+                                                         32,//int bitsPerSample, 
+                                                         StringPairArray(), 
+                                                         0);
+                  
+           if (ext == "aiff")
+               writer = AiffAudioFormat().createWriterFor (fs, s->v_layers[0]->samplerate, 
+                                                           1, //channels
+                                                           32,//int bitsPerSample, 
+                                                           StringPairArray(), 
+                                                           0);
+
+           if (ext == "flac")
+               writer = FlacAudioFormat().createWriterFor (fs, s->v_layers[0]->samplerate, 
+                                                                1, //channels
+                                                                24,//int bitsPerSample, 
+                                                                StringPairArray(), 
+                                                                0);
+
+
+           if (! writer)
+              return;
+                 
+           if (! writer->writeFromAudioSampleBuffer (*s->v_layers[0]->audio_buffer, 0, s->v_layers[0]->audio_buffer->getNumSamples()))
+                    std::cout << "NO write!\n";
+                 
+           delete writer;
+ 	      }
+            
+      }     
+       
+      
+   string_save_to_file (new_dir_path + "/drumkitq.txt", result);
+  
       
 }
 
@@ -1717,7 +1801,6 @@ void CDrumKit::save_qkit()
           {
            result += "#EMPTY\n"; 
            
-           std::cout << "#EMPTY\n";
 
            
            continue; 
@@ -1726,21 +1809,17 @@ void CDrumKit::save_qkit()
        if (s->v_layers.size() == 0)
           continue;
 
-          std::cout << "AAAA!\n"; 
         
        std::string line;
         
        if (s->v_layers[0]->audio_buffer)
           {
-           std::cout << "BBBB!\n"; 
- 
             
            line = s->name;
            line += "=";
            line += s->v_layers[0]->file_name;
            line += "\n";
            
-           std::cout << "line: " << line << std::endl;
            
            result += line;
           }
