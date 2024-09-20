@@ -1246,7 +1246,10 @@ void CDrumKit::adapt_qkit (std::string new_dir_path) //used at Adapt button hand
        CDrumSample *s = a_samples[i];
        
        if (! s)
-           continue; 
+         {
+          result += "#EMPTY\n"; 
+          continue; 
+         } 
    
        if (s->v_layers.size() == 0)
           continue;
@@ -1256,15 +1259,20 @@ void CDrumKit::adapt_qkit (std::string new_dir_path) //used at Adapt button hand
           {
            juce::File fl (s->v_layers[0]->file_name);
                                 
-           std::string pure_fname = fl.getFileName().toStdString(); 
-                
-           fl = new_dir_path + "/" + pure_fname;
+           std::string fname_ext = fl.getFileName().toStdString(); 
+           std::string pure_fname =  fl.getFileNameWithoutExtension().toStdString(); 
+             
+           //std::string fname_ext = fl.getFileName().toStdString(); 
+           //std::string pure_fname =  fl.getFileName.toStdString(); 
+           
+           
+           fl = new_dir_path + "/" + fname_ext;
            
            s->v_layers[0]->file_name = fl.getFullPathName().toStdString();
            
            result += pure_fname;
            result += "=";
-           result += pure_fname;
+           result += fname_ext;
            result += "\n";
              
            juce::OutputStream *fs = new juce::FileOutputStream (fl); //will be deleted by writer?
@@ -1782,7 +1790,7 @@ void CDrumKit::save_qkit()
   if (kit_type != KIT_TYPE_QDRUMLABOOH)
       return;
   
-  std::cout << " CDrumKit::save_qkit() -1\n";
+  //std::cout << " CDrumKit::save_qkit() -1\n";
   
   std::string result;
   
@@ -1794,15 +1802,11 @@ void CDrumKit::save_qkit()
         
        CDrumSample *s = a_samples[i];
 
-       std::cout << "i: " << i << std::endl;
-
+//       std::cout << "i: " << i << std::endl;
        
        if (! s)
           {
            result += "#EMPTY\n"; 
-           
-
-           
            continue; 
           }  
    
