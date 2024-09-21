@@ -485,7 +485,7 @@ CDrumCell::CDrumCell()
   
                                                             editor->audioProcessor.drumkit->kit_name = editor->l_kit_name.getText().toStdString();
                                                             
-                                                            std::cout << "cell_number: " << cell_number << std::endl;
+                                                            //std::cout << "cell_number: " << cell_number << std::endl;
                                                             
                                                             CDrumSample *s = editor->audioProcessor.drumkit->load_sample_to_index (cell_number,
                                                                                                                                    fname, 
@@ -559,7 +559,9 @@ CDrumCell::CDrumCell()
   addAndMakeVisible (cell_label);
 
   cell_label.setTopLeftPosition (xoffs, YFILLER);
-  cell_label.setSize (180, 32);
+//  cell_label.setSize (180, 32);
+  cell_label.setSize (262, 32);
+
   cell_label.setColour (juce::Label::textColourId, juce::Colours::black);
   cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
 //  label.setColour (juce::Label::backgroundColourId, juce::Colour (255, 222, 89));
@@ -836,12 +838,14 @@ void CAudioProcessorEditor::adapt()
   if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH)
      {
       adapt_drumlabooh();
+      drumkits_listbox.repaint(); 
       return;
      } 
   
   if (audioProcessor.drumkit->kit_type == KIT_TYPE_QDRUMLABOOH)
      {
       adapt_qdrumlabooh();
+      drumkits_listbox.repaint(); 
       return;
      } 
   
@@ -1258,8 +1262,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   bt_ignore_midi_velocity.setSize (180 + XFILLER, 48);
   bt_ignore_midi_velocity.setTopLeftPosition (l_base_note.getX(), sl_base_note.getBottom());
   
-  
- 
 
 #ifndef MULTICHANNEL
   
@@ -1327,47 +1329,42 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   log_area.setMultiLine (true, true);
   log_area.setReadOnly (true);
   log_area.setTopLeftPosition (sl_global_analog_amount.getRight(), l_midimap_mode.getY());
-  //log_area.setSize (200, 148);
   log_area.setSize (224, 148);
   
-  
-#endif
-  
-  
-
-#ifndef MULTICHANNEL
     
-  gr_options.setSize (/*830*/drumcells_group.getRight(), sl_base_note.getHeight() + 
-                           cmb_pan_mode.getHeight() + 
-                           cmb_midimap_mode.getHeight() + 
-                           bt_ignore_midi_velocity.getHeight());
+  gr_options.setSize (drumcells_group.getRight(), sl_base_note.getHeight() + 
+                      cmb_pan_mode.getHeight() + 
+                      cmb_midimap_mode.getHeight() + 
+                      bt_ignore_midi_velocity.getHeight());
+  
+  
+  setSize (drumcells_viewer.getRight() + XFILLER * 2, 
+           gr_options.getBottom());
+
 #else
 
   
   addAndMakeVisible (log_area);
   log_area.setFont (f_log);
-  log_area.setTopLeftPosition (cmb_midimap_mode.getRight(), l_midimap_mode.getY());
-  log_area.setSize (170, 148);
+  log_area.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER * 2, l_midimap_mode.getY());
+  log_area.setSize (354, 148);
 
   
-  gr_options.setSize (810, sl_base_note.getHeight() + 
-                           bt_ignore_midi_velocity.getHeight());
+  gr_options.setSize (/*810*/gr_topbar.getRight(), sl_base_note.getHeight() + 
+                           cmb_midimap_mode.getHeight() +
+                           bt_ignore_midi_velocity.getHeight() + YFILLER * 2);
+   //gr_options.setSize (810, bt_ignore_midi_velocity.getBottom());
+
+
+
+   setSize (gr_topbar.getRight() + XFILLER / 2, 
+            gr_options.getBottom() + 2);
   
 #endif  
-
-  
-///////////////END OF ANALOG  
-   
-  
   
 ////////////////////////              
   
-//  setSize (drumcells_viewer.getRight() + XFILLER * 2, 
-  //         gr_options.getBottom() + YFILLER * 2);
-
-   setSize (drumcells_viewer.getRight() + XFILLER * 2, 
-           gr_options.getBottom());
-
+  
  if (audioProcessor.drumkit)
     {
      log (audioProcessor.drumkit->kit_name);
@@ -1375,7 +1372,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
     }
 
   //load_kit();
-
   
   for (size_t i = 0; i < 36; i++)
       {
@@ -1590,6 +1586,8 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
   if (! editor)
       return;
   
+  
+  //editor->log ("LOADING NEW KIT, WAIT...\n");
   //std::string full = editor->kits_scanner.map_kits[kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1]];
   std::string full = editor->audioProcessor.scanner.map_kits[editor->audioProcessor.scanner.v_kits_names [lastRowSelected]]; //why not direct index?
 
@@ -1719,6 +1717,8 @@ void CAudioProcessorEditor::save_quick_kit()
  audioProcessor.scanner.scan(); 
  update_kits_list();
 
+ drumkits_listbox.repaint(); 
+ 
  need_to_update_cells = false;
  
  audioProcessor.suspendProcessing (false);

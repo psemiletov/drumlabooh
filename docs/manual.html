@@ -21,8 +21,6 @@
 &#129345;
 <a href="manual.html">Manual | Руководство</a> 
 &#129345;
-<a href="getkits.html">Drumkits | Драмкиты</a>
-&#129345;
 <a href="donate.html">Donate | Донат</a>
 &#129345;</b>
 </p>
@@ -34,13 +32,13 @@
 
 <td class="table_top_cell">
 
-<p>Drumlabooh is aimed to not interfere with the creativity. All that you need is to create a new MIDI track at your DAW, select the drumkit from the list, and play. Yes indeed, Drumlabooh is not for inventors of new, synthesized drum sounds. Drumlabooh uses the existing, sampled drumkits, so you need to install them first. Some of them are installed with Drumlabooh.</p>
+<p>Drumlabooh is aimed to not interfere with the creativity. All that you need is to create a new MIDI track at your DAW, select the drumkit from the list, and play. Drumlabooh uses the existing, sampled drumkits or the samples from the sample packs.</p>
 
 <a href="#mni_modes">1. Stereo vs Multi-channel modes</a><br>
 <a href="#mni_kits">2.0 Kits</a><br>
 <a href="#mni_kits_hydrogen">2.1 Hydrogen Kits</a><br>
 <a href="#mni_kits_sfz">2.2 SFZ Kits</a><br>
-<a href="#mni_kits_labooh">2.3 Drumlabooh</a><br>
+<a href="#mni_kits_labooh">2.3 Drumlabooh kits</a><br>
 <a href="#mni_kits_qlabooh">2.4 Quick Custom Kits</a><br>
 
 
@@ -54,39 +52,31 @@
 <a name="mni_modes"></a>
 <h3>1. Stereo vs Multi-channel modes</h3>
 
-<p>The first thing that you should know that there are two versions of Drumlabooh - <b>Stereo </b>and <b>Multi</b> (Multi-channel or Multi-outputs), that gives you the separated output mono channel for each instrument from the drum kit (36 channels at all). To use the Stereo version, add to track <i>Drumlabooh</i> plugin. And for Multi-channel version, add <i>Drumlabooh-multi</i>.</p>
+<p>The first thing that you need to know that there are two versions of Drumlabooh - <b>Stereo </b>and <b>Multi</b> (Multi-channel or Multi-outputs). The last one gives you the separated output mono channel for each instrument from the drum kit, so 36 channels at all. To use the Stereo version, add to track <i>Drumlabooh</i> plugin. And for Multi-channel version, add <i>Drumlabooh-multi</i>.</p>
 
-<p>At Multi-channel version, the plugin's pan, volume and mute controls <b>are disabled</b>, because you can control them via tracks or buses in DAW.</p>
-
-<p>
-Read the <a name="mni_multi">DETAILS</a> how to use Multi-mode in DAW, how to attach each drum to the individual track or the bus.
+<p>At Multi-channel version, the plugin's pan, volume and mute controls <b>are disabled</b>, because you can control them via tracks or buses in DAW. Read the <a href="#multi">DETAILS</a> how to use Multi-mode in DAW, how to attach each drum to the individual track or the bus.
 </p>
 
 
 <a name="mni_kits"></a>
 <h3>2.0 Kits</h3>
 
-<p>Drumlabooh scans all kits and <b>shows the list with them</b> to select. Also, you can press <b>Open</b> button below the list, to select the drumkit file manually from any location. Select xml (Hydrogen formet), sfz (SFZ) or drumkit.txt (Drumlabooh format) file at the drumkit's folder.</p>
+<p>Drumlabooh at start scans all kits and <b>shows the list with them</b> to select. Also, you can press <b>Open</b> button below the kit info section, to select the drumkit file manually from any location. Select xml (Hydrogen formet), sfz (SFZ) or drumkit.txt (Drumlabooh format) file at the drumkit's folder.</p>
 
-<p>You can also open the drumkit from any directory, using the <b>Open</b> button near the drumkits dropdown list. Select xml (Hydrogen formet), sfz (SFZ) or drumkit.txt (Drumlabooh format) file at the drumkit's folder.
-</p>
+<p>Important note: when loading the drumkit, Drumlabooh converts the samples in the memory with the DAW's session samplerate. So the large kit can be loaded slowly if the samples are, for example, at 48 kHz, but session's rate is 44.1. The same with the FLAC-compressed samples. If you try to load such large drumkit, please wait, don't think that the plugin or DAW is frozen.</p>
 
-<p>Important note: when loading the drumkit, Drumlabooh converts the samples in the memory to the DAW's session samplerate. So the large kit can be loaded slowly if the samples are, for example, at 48 kHz, but session's rate is 44.1. The same with the FLAC-compressed samples. If you try to load such large drumkit, please wait, don't think that the plugin or DAW is frozen.</p>
+<p>The best way to deal with it - use <b>Adapt</b> button, that saves the copy of current drumkit with the <b>session's</b> samplerate, and 32 bit float data format (24 bit for FLAC), at <i>drum_sklad</i> directory. Then, this copy will be used as the current drumkit. The next time the copy will be loaded faster than the original kit.</p>
 
-<p>The best way to deal with it - use <b>Adapt</b> button, that saves the copy of current drumkit with the <b>session's</b> samplerate, and 32 bit float data format (24 bit for FLAC), at <i>drum_sklad</i> directory. Then, this copy will be used as the current drumkit. The next time this copy will be loaded faster than the original kit.</p>
+<p>This function works with Drumlabooh kit format only, and with samples WAV, AIFF and FLAC.</p>
 
-<p>This functions works with Drumlabooh kit format only, and with samples WAV, AIFF and FLAC.</p>
-
-<p>As Drumlabooh supports several drum kit formats and has no build-in dedicated manager for kits collection, there are many "external" ways to install new drum kits.
-</p>
-
-<p>Drumlabooh supports the following kit formats.</p>
+<p>Let's talk about how Drumlabooh supports 
+drum kit formats.</p>
 
 
 <a name="mni_kits_hydrogen"></a>
 <h3>2.1 Hydrogen drum kits</h3>
 
-<p>At start, Drumlabooh searches also all installed <a href="http://hydrogen-music.org">Hydrogen drum machine</a> kits at proper places. There are dozens cool kits are created for <b>Hydrogen</b>, but to install them you need to run <b>Hydrogen</b>, and go to <b>Drumkits - Online import</b> menu, where you can download kits from Hydrogen or Musical Artifacts repositories.</p>
+<p>At start, Drumlabooh searches all installed <a href="http://hydrogen-music.org">Hydrogen drum machine</a> kits at their proper places. Dozens cool kits are created for <b>Hydrogen</b>, but to install them you need to run <b>Hydrogen</b>, and there go to <b>Drumkits - Online import</b> menu, where you can select and download kits from Hydrogen or Musical Artifacts repositories.</p>
 
 <p>Some of Hydrogen kits may be already installed at your Linux. Currently, for Linux and Windows, the best way to get new Hydrogen kits is <b>Online import</b> feature, because you simple cannot find public download links.</p>
 
@@ -94,7 +84,7 @@ Read the <a name="mni_multi">DETAILS</a> how to use Multi-mode in DAW, how to at
 <a name="mni_kits_sfz"></a>
 <h3>2.2 SFZ drum kits</h3>
 
-<p>Drumlabooh scans installed SFZ kits at pre-defined locations: <i>$HOME/drumlabooh-kits</i> (Linux) and <i>c:\sfz-kits</i> and <i>d:\sfz-kits</i> (Windows). As usual, SFZ kit directories must be placed there to be available for Drumlabooh.</p>
+<p>Drumlabooh scans installed SFZ kits at pre-defined locations: <i>$HOME/drumlabooh-kits</i> (Linux), <i>c:\sfz-kits</i> and <i>d:\sfz-kits</i> (Windows). SFZ kit directories must be placed there to be available for Drumlabooh.</p>
 
 <p>The kits of excellent quiality - AVL Drumkits - you can download in SFZ format from <a href="http://www.bandshed.net/sounds/AVLDrumkits_SFZ/">AVLDrumkits_SFZ</a>.</p>
 
@@ -103,7 +93,7 @@ Read the <a name="mni_multi">DETAILS</a> how to use Multi-mode in DAW, how to at
 
 <p>The own kit format of Dramlabooh. One kit = one directory, placed to <i>$HOME/drumlabooh-kits</i>, <i>$HOME/drum_sklad</i> or <i>/usr/share/drumlabooh-kits</i> on Linux, and, for Windows, to <i>c:\drumlabooh-kits</i>, <i>d:\drumlabooh-kits</i>, <i>c:\drum_sklad</i> or <i>d:\drum_sklad</i>.</p> 
 
-<p>Dramlabooh usually automatically installs  the kits from its official <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad on Github</a> repo. Also, there you can <b>read a details about the format</b>, it is quite simple.</p>
+<p>Dramlabooh usually automatically installs  the kits from its official <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad on Github</a> repo. Also, there you can <b>read a details about the format</b>, it is quite simple. And, the word "sklad" means "warehouse", "storage", "repository".</p>
 
 <p>Additional kits those are not hosted on Github can be downloaded from <a href="https://t.me/drum_sklad">Drum Sklad at Telegram</a>. So the full Drumlabooh kits collection is Drum Sklad on Github + Drum Sklad on Telegram.</p>
 
@@ -112,51 +102,53 @@ Read the <a name="mni_multi">DETAILS</a> how to use Multi-mode in DAW, how to at
 <a name="mni_kits_qlabooh"></a>
 <h3>2.4 Quick Custom Kits</h3>
 
-<p>Running Drumlabooh you can quickly make you own kit with external one-shot samples, for example from some drum sample pack. Here is the good resource - <a href="https://www.reddit.com/r/Drumkits/">https://www.reddit.com/r/Drumkits/</a>.</p>
+<p>Running Drumlabooh you can quickly make you own kit with external one-shot samples, for example from some drum sample pack. Here is the good resource - <a href="https://www.reddit.com/r/Drumkits/">www.reddit.com/r/Drumkits/</a>.</p>
 
 <p>Quick kit is the "proxy" and simplified kit, that you can make for yourself just from Drumlabooh. To create such kit, do the following steps:</p>
 
-<p>1. Add Drumlabooh to the track. Now you have empty drum cells/slots.</p>
+<p>1. At your DAW project, add Drumlabooh to the track. Now you have empty drum cells/slots.</p>
 
 <p>2. At any cell, you see the two small buttons on the left of the cell name:</p>
 
-<img src="qpic01.png" alt="" width="287" height="64">
+<p style="text-align:center;"><img src="qpic01.png" alt="" width="287" height="64"></p>
 
-<p>3. The upper one shows the file open dialog. Select some sample for this slot. The lower button clears the cell.</p>
+<p>3. The upper button shows the file open dialog. Select some sample for this slot. The lower button clears the cell.</p>
 
 <p>4. Add other samples to other slots.</p>
 
-<p>5. Now we can save your quick kit. Double click at kit's name ("EMPTY KIT" caption):</p>
+<p>5. Now you can save the quick kit. Double click at kit's name ("EMPTY KIT" caption):</p>
 
-<img src="qpic02.png" alt="" width="406" height="218">
+<p style="text-align:center;"><img src="qpic02.png" alt="" width="406" height="218"></p>
 
-<p>6. Edit kit name, press Enter to finish.</p>
+<p>6. Edit the kit name, press Enter to finish.</p>
 
-<p>7. Now press <b>Save</b> button:</p>
+<p>7. Press <b>Save</b> button:</p>
 
-<img src="qpic03.png" alt="" width="345" height="122">
+<p style="text-align:center;"><img src="qpic03.png" alt="" width="345" height="122"></p>
 
 <p>8. Now your quick kit is saved at <i>drum_sklad</i> directory at your home folder. This kit will be scanned by Drumlabooh as all other kits.</p>
 
-<p>The quick kit's folder don't hold samples. Quick kit config file keeps just absolute paths to samples. They are stays in their folders. But if you want to create the "bundle", press <b>Adapt</b> button to create the copy of quick kit, and then use that copy.
+<p>The quick kit's folder doesn't hold samples. Quick kit config file keeps absolute paths to samples. The sample files are stays in their folders. But if you want to create the "bundle", press <b>Adapt</b> button to create the copy of quick kit, and then use that copy.
 </p>
 
-<p>You can load the quick kit as a normal kit, and can edit it, just don't forget to <b>Save</b> it. The "bundled" quick kit is also editable, but newly added sampled will be added as file paths and not copied to the kit's folder.</p>
+<p>You can load the quick kit as the normal kit, and can edit it, just don't forget to <b>Save</b> it. The "bundled" quick kit is also editable, but newly added samples will be added as file paths and not copied to the kit's folder.</p>
 
 <h3>Supported sample formats</h3>
 
-<p>Drumlabooh supports kits with the samples in the following formats: WAV, AIFF, OGG, FLAC, MP3. Stereo samples will be readed as mono (left channel used), because pre-panned (from the kit) drums make internal mixing just weird.
-</p>
+<p>Drumlabooh supports the samples in the following formats: WAV, AIFF, FLAC, OGG, MP3. OGG and MP3 cannot be <b>adapted</b>. Stereo samples will be readed as mono (left channel used), because pre-panned (from the kit) drums make internal mixing just weird.</p>
 
 <h3>Full directories list, where Drumalbooh searches for the kits</h3>
 
 <p>Drumlabooh/Drumrox format:</p>
 
 <pre>/usr/share/drumrox-kits
-$HOME/drumrox-kits
-$HOME/drum_sklad
 /usr/share/drumlabooh-kits
-$HOME/drumlabooh-kits</pre>
+$HOME/drumrox-kits
+$HOME/drumlabooh-kits
+$HOME/drum_sklad
+C:\drumlabooh-kits
+D:\drumlabooh-kits
+C:\drum_sklad</pre>
 
 <p>Hydrogen format:</p>
 
@@ -168,29 +160,31 @@ $HOME/.drmr/drumkits</pre>
 
 <p>SFZ format:</p>
 
-<pre>$HOME/sfz-kits</pre>
-
-
-
+<pre>$HOME/sfz-kits
+C:\sfz-kits
+</pre>
 
 
 <a name="mni_mixer"></a>
 <h3>3. Built-in mixer</h3>
 
-<p>At the right from the drumkits list you see the cells (or slots) with loaded samples. Here the layout of each cell:</p>
+<p>At the right from the drumkits list you see 36 cells (or slots) for loaded samples. Here the layout of each cell:</p>
+
+<p style="text-align:center;"><img src="cell.png" alt="" width="90%"></p>
 
 <p>1 <b>Led</b> - lights when note plays.<br><br>
 
-2 <b>Instrument name</b> - taken from the kit xml file, or in another way.<br><br>
+2 <b>Instrument name</b> - defined at the kit, otherwise the file name is used.<br><br>
 
 3 <b>FX</b> - button to call FX window for this instrument. You can close window by "close" button or Escape key. All effects in that window can be turned on and off, so they works only when enabled.<br>
+
 There are <b>LP</b> (Low pass filter, allow the frequences only below the <b>cutoff</b> value), HP (High pass filter, allow the frequences only upper the <b>cutoff</b> value). To simplify the code and performance, the cutoff parameter value is not it HZ, but in floating point number within the range 0..1.<br>
-Both filters are resonance filters and have the <b>resonance</b> parameter. Play with the sliders to make new interesting sounds. HP filter is best for hihats, LP for the kick, HP or LP can make cool effect with the snare. If you feel that your drum samples sounds weak and thin, try the <b>Analog</b> slider to add some warmness.<br> 
+Both filters are resonance filters and have the <b>resonance</b> parameter. Play with the sliders to make new interesting sounds. HP filter is best for hihats, LP for the kick, HP or LP can make cool effect with the snare. If you feel that your sample sounds weak and thin, try the <b>Analog</b> slider to add some warmness.<br>
 
 <i>Note: at Ardour, when FX window becomes active, the plugin window hides, and when you close FX window, you will see the plugin window again. At Reaper and Muse both windows are visible as intended.</i>
 <br><br>
 
-4 <b>Pan control</b> - values from 0 to 1, 0.5 is a middle. See the <b>Pan mode</b> option to know the algorhytm of the paning. It is important that different DAWs have different pan modes for its tracks, sometimes DAW give you an option to select that. Dramlabooh internally acts like a DAW mixer and provides such flexibility too.
+4 <b>Pan control</b> - values from 0 (full left) to 1 (full right), 0.5 is a middle. See the <b>Pan mode</b> option to know the algorhytm of the paning. It is important that different DAWs have different pan modes the mixing, sometimes DAW give you an option to select that. Dramlabooh internally acts like the DAW mixer and provides such flexibility too.
 <br><br>
 
 5. <b>Volume slider</b> - non-linear, values from -96 to +6 dB.<br><br>
@@ -203,27 +197,24 @@ Both filters are resonance filters and have the <b>resonance</b> parameter. Play
 <a name="mni_options"></a>
 <h3>4. Options section</h3>
 
-<p>At the lower part of the plugin window you see Options.</p>
+<p>At the lower part of the plugin window you see <b>Options</b>.</p>
 
+<p><b>MIDI map mode</b> - there are two modes, <b>Auto</b> and <b>Kit</b>. With <b>Auto</b>, Drumlabooh assigns MIDI notes to samples starting from the numerical value of another option, <b>Base MIDI note</b> (default: 36), means at which MIDI note number we map the first instrument at the kit. MIDI note 36 = C at 2-nd octave. Such mode is default and good for the playing from MIDI keyboard. When <b>Kit</b> is selected, Drumlabooh uses MIDI note assignements from the drumkit file, usually it is <a href="https://computermusicresource.com/GM.Percussion.KeyMap.html">General MIDI mapping</a> that compatible with e-drums and drum pads. It is also the proper mode for Ardour's drum grooves.</p>
 
-<p><b>MIDI map mode</b> - there are two modes, <b>Auto</b> and <b>Kit</b>. When <b>Auto</b>, Drumlabooh assign MIDI notes to samples starting from another option, <b>Base MIDI note</b> which default 36, means at which MIDI note number we map the first instrument at the kit. MIDI note 36 = C at 2-st octave. Such mode is default and good for the playing from MIDI keyboard. When <b>Kit</b> selected, Drumlabooh uses MIDI note assignements from the drumkit file, usually it is <a href="https://computermusicresource.com/GM.Percussion.KeyMap.html">General MIDI mapping</a> compatible with e-drums and drum pads. It is also the right mode for Ardour's drum grooves.
-</p>
+<p>So, MIDI mapping is MIDI note numbers assigned for the drum instruments (Drumlabooh cells) from the kit. The mapping data is included at many Drumlabooh and SFZ kits. But, some drums or percussions are not covered by General MIDI, so in these cases <b>Auto</b> mode is more useful and give you the access to all instruments of the kit.</p>
 
-<p>So, MIDI mapping is MIDI note numbers assigned for the drum instruments (Drumlabooh cells) from the kit. Mapping data is included at most Drumlabooh and SFZ kits. But, some drums or percussions are not covered by General MIDI, so in these cases <b>Auto</b> mode is more useful and give you the access to all instruments at the kit.</p>
-
-<p>To more complex MIDI mapping, use your DAW features, e-drum/pads options or plugins such as, at Reaper, "JS MIDI map to key v2" - just put it before the Drumlabooh and create/select mapping file, for example:</p>
+<p>To more complex MIDI mapping, use the power of you DAW, e-drum/pads options or plugins such as, at Reaper, "JS MIDI map to key v2" - just put it before the Drumlabooh and create/select mapping file, for example:</p>
 
 <pre>A3 -> E5
 C4 -> C5</pre>
 
-<p><b>Ignore MIDI velocity</b> - play samples at full level.</p>
+<p><b>Ignore MIDI velocity</b> - play samples at full level. Plain and loud.</p>
 
 
-<p><b>Pan mode</b> - allow to select the pan mode for Drumlabooh's internal mixer. See the <a href="https://en.wikipedia.org/wiki/Panning_law">article</a>. Defaul panner is qual power panning, law: -3 dB (sin/cos taper).<br>
-By the way, the pan mode is the significant factor of how DAW "sounds". Pan mode, and/or pan law, is the algorithm that controls the total acoustic power output of 2 channels, making their level lower when paning position moves to the center. Otherwise, we have louder sound at the center, bacause two channels will play at the full power, and will be louder than the same mono sound. So, any stereo output must be reduced on some degree, when the pan position approaching to the center, to prevent the loudness increase.
-</p>
+<p><b>Pan mode</b> - allows to select the pan mode for Drumlabooh's internal mixer. See the <a href="https://en.wikipedia.org/wiki/Panning_law">article</a>. Defaul panner is qual power panning, law: -3 dB (sin/cos taper).<br>
+By the way, the pan mode is the significant factor of how DAW "sounds". The pan mode, and/or panning law, is the algorithm that controls the total acoustic power output of two channels, making their level lower when paning position moves to the center. Otherwise, we have louder sound at the center, bacause two channels will play at the full power, and will be louder than the same mono sound. So, any stereo output must be reduced on some degree, when the pan position approaching to the center, to prevent the loudness increase.</p>
 
-<p>Maybe it's better to set Pan mode at Drumlabooh the same to your DAW's pan mode, to make all drum samples paned in the same method. Try what is best sounds in your mix.</p>
+<p>Maybe it's better to set the pan mode at Drumlabooh the same to your DAW's pan mode, to make all drum samples paned in the same way. Try what is best sounds in your mix.</p>
 
 <p><b>Analog</b>- the global saturation on/off and the level of that. Good for quiet drum kits.</p>
 
@@ -241,19 +232,17 @@ By the way, the pan mode is the significant factor of how DAW "sounds". Pan mode
 
 <p>1. Create MIDI track with Drumlabooh-muiti as the instrument.</p>
 
-<p>2. Load drumkit into the Drumlabooh-multi. For example, Hydrogen's Ludwig Sixties. It has 19 instruments inside. Thus, we need just 19 output channels from the 36 available.</p>
+<p>2. Load the drumkit into Drumlabooh-multi. For example, Ludwig Sixties. It has 19 instruments inside. Thus, we need just 19 output channels from the 36 available.</p>
 
-<p>3. By default, Drumlabooh-multi sounds as stereo-output. We don't need that. Let's create the individual channels or buses for each drum/precussion sample.</p>
+<p>3. By default, Drumlabooh-multi sounds as the stereo-output. We don't need that. Let's create the individual channels or the buses for each drum/precussion sample.</p>
 
-<p>4. Right click <b>on the top of the channel strip</b> and select <b>Fan out to tracks</b> or <b>Fan out to buses</b>. Now you have  one track or bus per channel to control each of 36 drumkit channels. Please note that tracks and buses are mono, so to use stereo FX on them, do the right click on the effect, select **Pin connection** and connect pins to make stereo:
-</p>
+<p>4. Right click <b>on the top of the channel strip</b> and select <b>Fan out to tracks</b> or <b>Fan out to buses</b>. Now you have  one track or bus per channel to control each of 36 drumkit channels. Please note that these tracks and buses are mono, so to use stereo FX on them, do the right click on the effect, select <b>Pin connection</b> and connect pins to make stereo:</p>
 
-<p>
-<a href="./mono2stereo.png"><img src="mono2stereo-small.jpg" alt="" width="346" height="156"></a></p>
+<p style="text-align:center;"><a href="./mono2stereo.png"><img src="mono2stereo-small.jpg" alt="" width="346" height="156"></a></p>
 
 <p>5. All new tracks/channels are in the group now. To make them properly being muted, soloed, etc, do the right click at the group header, and select <b>Remove group</b>:</p>
 
-<a href="/.remove-group.png"><img src="remove-group-small.jpg" alt="" width="444" height="222"></a>
+<p style="text-align:center;"><a href="/.remove-group.png"><img src="remove-group-small.jpg" alt="" width="444" height="222"></a></p>
 
 <p>
 6. Now, remove unneeded tracks (for example, the kit has only 8 instruments, but you have 36 tracks from Drumlabooh!)
