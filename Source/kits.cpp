@@ -1714,7 +1714,7 @@ void CDrumSample::trigger_sample (float vel)
 
 CDrumSample* CDrumKit::load_sample_to_index (size_t index, const std::string &fname, int sample_rate)
 {
-  std::cout << "CDrumKit::load_sample_to_index: " << fname << " - at index: " << index << std::endl;
+  //std::cout << "CDrumKit::load_sample_to_index: " << fname << " - at index: " << index << std::endl;
   
   if (! file_exists (fname))
       return 0;
@@ -1765,7 +1765,7 @@ CDrumSample* CDrumKit::load_sample_to_index (size_t index, const std::string &fn
   
   //loaded = true;
   
-  std::cout << "CDrumKit::load_sample_to_index - end" << std::endl;
+//  std::cout << "CDrumKit::load_sample_to_index - end" << std::endl;
   
   return s;
 }
