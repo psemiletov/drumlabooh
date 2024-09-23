@@ -60,6 +60,9 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
 {
 //  std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
   
+  if (fname.empty())
+     return 0;
+  
   if (! file_exists (fname))
      return 0;
 
@@ -111,7 +114,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
       // if (! reader->read (buffer,  0, bufsize, 0,  true, true))
    if (! reader->read (buffer,  0, bufsize, 0,  true, false)) //read just left channel
       {
-       std::cout << "! reader->read " << std::endl;
+      // std::cout << "! reader->read " << std::endl;
 
        delete reader;
        delete buffer;
@@ -420,6 +423,10 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
   if (node_name == "filename" && kit->temp_sample)
      {
       std::string fname = txt.as_string();
+      
+      if (fname.empty())
+          return false;
+      
       std::string path = kit->kit_dir + "/" + fname;
       std::string sample_name = kit->temp_sample->name;
 
@@ -443,7 +450,7 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
 
       if (! kit->scan_mode && kit->sample_counter != 0)
           if (kit->temp_sample->v_layers.size() != 0)
-                kit->temp_sample->v_layers.back()->load (path.c_str());
+              kit->temp_sample->v_layers.back()->load (path.c_str());
      }
 
 
@@ -458,7 +465,7 @@ void CDrumKit::load_txt (const std::string &data)
   if (data.empty())
       return;
 
-  size_t i = kit_dir.rfind ("/");
+  size_t i = kit_dir.rfind (DIR_SEPARATOR);
   kit_name = kit_dir.substr (i + 1);
 
   kit_type = KIT_TYPE_DRUMLABOOH;
@@ -549,7 +556,7 @@ void CDrumKit::load_txt (const std::string &data)
          
          
              if (check_for_rnd)
-                temp_sample->layer_index_mode = LAYER_INDEX_MODE_RND; 
+                 temp_sample->layer_index_mode = LAYER_INDEX_MODE_RND; 
               
              if (check_for_robin)
                  temp_sample->layer_index_mode = LAYER_INDEX_MODE_ROBIN; 
@@ -644,7 +651,6 @@ void CDrumKit::load_txt (const std::string &data)
       image_fname = kitimg;
   
   loaded = true;
-
 }
 
 
@@ -667,8 +673,7 @@ void CDrumKit::load_qtxt (const std::string &data)
   while (getline (st, line))
         {
         //  std::cout << "line:" << line << std::endl;
-   
-          
+         
          if (line.empty())
             continue;
 
@@ -694,12 +699,6 @@ void CDrumKit::load_qtxt (const std::string &data)
 
          string sample_name = line.substr (0, pos);
          string fname = line.substr (pos + 1, line.size() - pos);
-
-  //       std::cout << "fname: " << fname << std::endl;
-         
-//         std::cout << "fname[0]: " << fname[0] << std::endl;
-         
-         
          
          if (fname.empty())
              continue;
@@ -714,15 +713,9 @@ void CDrumKit::load_qtxt (const std::string &data)
          
           //if (fname[0] == '/')
           if (path.is_absolute())
-             {
               filename = fname; //absolute!
-             }  
           else   
               filename = kit_dir + "/" + fname;
-          
-          
-          std::cout << "load sample: " << filename << std::endl;
-          //АА ХЕЗ ТУТ ПУСТО!
 
           temp_sample = add_sample (sample_counter++);
 
@@ -793,7 +786,7 @@ std::string guess_sample_name (const std::string &raw)
   //remove all non-letters
 
   for (size_t i = 0; i < t.size(); i++)
-      if (isalpha(t[i]))
+      if (isalnum (t[i]))
          result += t[i];
 
   return result;
@@ -872,11 +865,8 @@ void CDrumKit::load_sfz (const std::string &data)
                      temp_sample->mapped_note = std::stoi (str_note);
                      map_samples[temp_sample->mapped_note] = temp_sample;
                     }     
-                     
-                  
                 } 
            }
-
 
          pos = line.find (">key=");
          if (pos != string::npos)
@@ -917,7 +907,7 @@ void CDrumKit::load_sfz (const std::string &data)
                  if (! scan_mode)
                      temp_sample->v_layers.back()->load (fname.c_str());
 
-                 temp_sample->name = guess_sample_name (just_name);
+                 temp_sample->name = guess_sample_name (just_name); //FIXIT: возможно guess_sample_name лишнее, не помню
                 }
             }
 
@@ -969,6 +959,9 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 //  if (! scan_mode)
   //   cout << "@@@@@@@@@@@@ void CDrumKit::load: " << fname << "samplerate: " << sample_rate << endl;
 
+  if (fname.empty())
+     return;
+     
   auto start = chrono::high_resolution_clock::now();
 
   samplerate = sample_rate;
@@ -988,17 +981,12 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   std::string source = string_file_load (kit_filename);
   if (source.empty())
       return;
-
- cout << "1\n";  
   
   if (ends_with (kit_filename, "drumkit.txt"))
      {
       load_txt (source);
       return;
      }
-
-cout << "2\n";  
-      
      
   if (ends_with (kit_filename, "drumkitq.txt"))
      {
@@ -1006,17 +994,14 @@ cout << "2\n";
       return;
      }
 
-cout << "3\n";  
- 
-
   if (ends_with (kit_filename, ".sfz"))
      {
       load_sfz (source);
       return;
      }
 
-
   //else Hydrogen format
+  //FIXKIT перенести в отдельную функцию
   
   kit_type = KIT_TYPE_HYDROGEN;
 
@@ -1102,7 +1087,6 @@ CDrumKit::~CDrumKit()
       {
        if (a_samples[i])
           delete a_samples[i];
-                  
       }
 }
 
@@ -1239,7 +1223,8 @@ void CDrumKit::adapt_qkit (std::string new_dir_path) //used at Adapt button hand
  
   std::string result;
   
-  std::filesystem::create_directories (new_dir_path);
+  if (! std::filesystem::create_directories (new_dir_path))
+      return;
   
   for (size_t i = 0; i < 36; i++)
       { 
@@ -1317,8 +1302,6 @@ void CDrumKit::adapt_qkit (std::string new_dir_path) //used at Adapt button hand
        
       
    string_save_to_file (new_dir_path + "/drumkitq.txt", result);
-  
-      
 }
 
 
@@ -1333,7 +1316,6 @@ void CDrumKit::print()
       }
 
   cout << "samples count:" << sample_counter << endl;
-
   cout << "void CDrumKit::print() -- end" << endl;
 }
 
@@ -1368,6 +1350,7 @@ CDrumKitsScanner::~CDrumKitsScanner()
 }
 
 
+//DEPRECATED
 void CDrumKitsScanner::scan_full()
 {
   std::vector <std::string> v_kits_locations;
@@ -1529,7 +1512,6 @@ void CDrumKitsScanner::scan()
 
 
   v_kits_locations.push_back ("c:\\drum_sklad");
-  v_kits_locations.push_back ("d:\\drum_sklad");
 
   v_kits_locations.push_back ("c:\\drumlabooh-kits");
   v_kits_locations.push_back ("c:\\sfz-kits");
@@ -1612,7 +1594,6 @@ void CDrumKitsScanner::scan()
            if (ext == "txt")
                //get the last part of kd 
                kit_name = get_last_part (kd);
-         
          
             
            if (ext == "sfz")

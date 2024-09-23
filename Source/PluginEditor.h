@@ -117,8 +117,6 @@ public:
 };
 
 
-
-
 #ifndef MULTICHANNEL
 
 
@@ -132,8 +130,7 @@ public:
   size_t cell_number;
   
   CAudioProcessorEditor *editor = 0; //uplink
-  
-  
+    
   juce::GroupComponent gr_group;
   juce::Slider sl_pan;
   juce::Slider sl_vol;
@@ -188,26 +185,23 @@ public:
   
   CAudioProcessorEditor *editor = 0; //uplink
   
-  
   CLed led;
 
   CDocumentWindow *wnd_fx;
 
   CFx fx;
 
-  juce::TextButton bt_fx;
-
-  juce::TextButton bt_file_open;
-  juce::TextButton bt_cell_clear;
-
-  
-  
-  juce::Button *bt_fx_close;
 
   CCellLabel cell_label;
 
   size_t cell_number;
 
+  juce::TextButton bt_fx;
+  juce::Button *bt_fx_close;
+  juce::TextButton bt_file_open;
+  juce::TextButton bt_cell_clear;
+
+  
   CDrumCell();
   ~CDrumCell() override;
 
@@ -237,7 +231,7 @@ public:
 
   juce::AudioProcessorValueTreeState& valueTreeState;
 
-  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_ignore_midi_velocity;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::ButtonAttachment> att_ignore_midi_velocity;
   juce::ToggleButton bt_ignore_midi_velocity;
 
   CDrumkitsListBoxModel drumkits_model;
@@ -245,26 +239,24 @@ public:
   
   TextEditor log_area;
 
-
-
 //////////////////////////////////
 //OPTIONS CONTROLS  
   
 #ifndef MULTICHANNEL
 
-  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> att_global_analog_on = nullptr;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::ButtonAttachment> att_global_analog_on = nullptr;
   juce::ToggleButton bt_global_analog_on;
 
-  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_global_analog_amount = nullptr;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_global_analog_amount = nullptr;
   juce::Slider sl_global_analog_amount;
   
-  std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_pan_mode;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_pan_mode;
   juce::Label l_pan_mode { {}, "Pan mode" };
   juce::ComboBox cmb_pan_mode;
 
 #endif
 
-  std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_midimap_mode;
+  std::unique_ptr <juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_midimap_mode;
   juce::Label l_midimap_mode { {}, "MIDI map mode" };
   juce::ComboBox cmb_midimap_mode;
   
@@ -278,12 +270,11 @@ public:
 //END OF OPTIONS CONTROLS  
 
   juce::TextButton bt_file_open;
-  std::unique_ptr<juce::FileChooser> dlg_fileopen;
+  std::unique_ptr <juce::FileChooser> dlg_fileopen;
   
   juce::TextButton bt_kit_adapt;
   juce::TextButton bt_kit_save;
-  
-  
+    
   juce::TooltipWindow tooltip_window;
 
   juce::GroupComponent gr_kitinfo;
