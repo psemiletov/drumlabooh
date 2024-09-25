@@ -335,7 +335,7 @@ CDrumCell::CDrumCell()
   cell_label.setFont (f_samplename_font);
   cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
 
-  //cell_label.cell = this;
+  //cell_label.cell = this; //for CDrumCell
   
   xoffs += cell_label.getWidth();
   xoffs += XFILLER;
@@ -1538,6 +1538,7 @@ bool CCellLabel::isInterestedInFileDrag (const StringArray &files)
 };
 
 
+/*
 void CCellLabel::filesDropped (const StringArray &files, int x, int y)
 {
   if (! editor)
@@ -1558,6 +1559,42 @@ void CCellLabel::filesDropped (const StringArray &files, int x, int y)
   cell->set_name (s->name);
   setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
 };
+*/
+
+void CCellLabel::filesDropped (const StringArray &files, int x, int y)
+{
+  if (! editor)
+      return;
+  
+  std::string fname = files[0].toStdString();   
+  
+  cell->editor->tmr_leds.stopTimer();
+  cell->editor->audioProcessor.suspendProcessing (true);
+                                     
+
+  cell->editor->need_to_update_cells = false; //чтобы кит не подгрузился по таймеру
+
+  if (! editor->audioProcessor.drumkit)
+     editor->audioProcessor.drumkit = new CDrumKit();
+                                                             
+  cell->editor->audioProcessor.drumkit->kit_type = KIT_TYPE_QDRUMLABOOH; 
+  
+  cell->editor->audioProcessor.drumkit->kit_name = cell->editor->l_kit_name.getText().toStdString();
+                                                            
+//                                                            std::cout << "cell_number: " << cell_number << std::endl;
+                                                            
+  CDrumSample *s = cell->editor->audioProcessor.drumkit->load_sample_to_index (cell->cell_number,
+                                                                         fname, 
+                                                                         cell->editor->audioProcessor.session_samplerate);
+  
+  cell->editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
+                                                            
+  setText (s->name, juce::dontSendNotification);
+  cell->set_name (s->name);
+  setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+  
+  cell->editor->audioProcessor.suspendProcessing (false);
+}                                                          
 
 
 void CAudioProcessorEditor::save_quick_kit()

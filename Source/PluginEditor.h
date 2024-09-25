@@ -149,7 +149,7 @@ public:
   
   juce::Button *bt_fx_close;
 
-  //CCellLabel cell_label;
+//  CCellLabel cell_label;
 
   Label cell_label;
 
@@ -183,6 +183,7 @@ public:
   juce::GroupComponent gr_group;
 
   
+  
   CAudioProcessorEditor *editor = 0; //uplink
   
   CLed led;
@@ -192,7 +193,8 @@ public:
   CFx fx;
 
 
-  CCellLabel cell_label;
+  //CCellLabel cell_label;
+   Label cell_label;
 
   size_t cell_number;
 
