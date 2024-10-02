@@ -510,6 +510,10 @@ void CDrumKit::load_txt (const std::string &data)
          bool check_for_robin = false;
          bool check_for_novelocity = false;
          bool check_for_random_noice = false;
+         bool check_for_txt = false;
+                  
+         if (fname.find ("samples.txt") != string::npos)
+             check_for_txt = true;
          
          if (sample_name.rfind ("*", 0) == 0) 
             { 
@@ -536,9 +540,27 @@ void CDrumKit::load_txt (const std::string &data)
             } 
   */
             
-         if (check_for_list != string::npos)
+         if ((check_for_list != string::npos) || check_for_txt)
             {
-             vector <string> v_fnames = split_string_to_vector (fname, ",", false);
+             vector <string> v_fnames;
+             
+             if (check_for_txt)
+                {
+                       //std::cout << "check_for_txt\n";  
+                  
+                     //  std::cout << "fname:" << fname << std::endl;;  
+                  
+                       
+                 std::string file_data = string_file_load (kit_dir + "/" + fname);
+                 
+                 
+                 v_fnames = split_string_to_vector (file_data, "\n", false);
+                 
+                 //std::cout << "v_fnames.size()" << v_fnames.size() << std::endl;
+                 
+                }
+             else
+                 v_fnames = split_string_to_vector (fname, ",", false);
              
              if (v_fnames.size() == 0)
                 continue;
@@ -567,7 +589,8 @@ void CDrumKit::load_txt (const std::string &data)
 //              if (check_for_random_noice)
   //               v_samples.back()->use_random_noice = true;
               
-              
+             
+             if (! check_for_txt) 
              for (auto f: v_fnames)
                  {
                   string filename = kit_dir + "/" + f;
@@ -576,6 +599,19 @@ void CDrumKit::load_txt (const std::string &data)
                   if (file_exists (filename) && ! scan_mode)
                       temp_sample->v_layers.back()->load (filename.c_str());
                  }
+             else   
+             for (auto f: v_fnames)
+                 {
+                  filesystem::path pt (kit_dir + "/" + fname); //full path for samples.txt
+ 
+                  string fpath = pt.parent_path();  //get path with dirs only
+                  string filename = fpath + "/" + f; // get full path to filename of the each sample
+                  temp_sample->add_layer();
+
+                  if (file_exists (filename) && ! scan_mode)
+                      temp_sample->v_layers.back()->load (filename.c_str());
+                 }
+                 
 
              float part_size = (float) 1 / temp_sample->v_layers.size();
              
