@@ -546,18 +546,8 @@ void CDrumKit::load_txt (const std::string &data)
              
              if (check_for_txt)
                 {
-                       //std::cout << "check_for_txt\n";  
-                  
-                     //  std::cout << "fname:" << fname << std::endl;;  
-                  
-                       
                  std::string file_data = string_file_load (kit_dir + "/" + fname);
-                 
-                 
                  v_fnames = split_string_to_vector (file_data, "\n", false);
-                 
-                 //std::cout << "v_fnames.size()" << v_fnames.size() << std::endl;
-                 
                 }
              else
                  v_fnames = split_string_to_vector (fname, ",", false);
