@@ -17,10 +17,25 @@ message("Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 
 option(MULTI "Build with multy-channel support" ON)
 option(INSTALLKITS "Bundle and install kits" ON)
+option(LOCALINSTALL "Install to the $HOME subdirs" OFF)
 
+if (LOCALINSTALL)
+
+set(LV2_INSTALL_DIR "$ENV{HOME}$ENV{USERNAME}/.lv2" CACHE PATH "Specifies where the LV2 libraries should be installed")
+set(VST3_INSTALL_DIR "$ENV{HOME}$ENV{USERNAME}/.vst3" CACHE PATH "Specifies where the VST3 libraries should be installed")
+
+
+message("LOCALINSTALL YES")
+message(${LV2_INSTALL_DIR})
+
+
+else()
 
 set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should be installed")
 set(VST3_INSTALL_DIR lib/vst3 CACHE PATH "Specifies where the VST3 libraries should be installed")
+
+
+endif()
 
 
 IF (WIN32)
@@ -224,7 +239,11 @@ install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/LV2/drumlabo
 install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/VST3/drumlabooh.vst3 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/vst3)
 
 if (INSTALLKITS)
+if (LOCALINSTALL)
+install (DIRECTORY ${drum_sklad_SOURCE_DIR}/ DESTINATION $ENV{HOME}$ENV{USERNAME}/drum_sklad)
+else()
 install (DIRECTORY ${drum_sklad_SOURCE_DIR}/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/drumlabooh-kits)
+endif()
 endif()
 
 
