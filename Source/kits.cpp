@@ -512,7 +512,7 @@ void CDrumKit::load_txt (const std::string &data)
          bool check_for_random_noice = false;
          bool check_for_txt = false;
                   
-         if (fname.find ("samples.txt") != string::npos)
+         if (fname.find ("samples.txt") != string::npos || fname.find (".part") != string::npos)
              check_for_txt = true;
          
          if (sample_name.rfind ("*", 0) == 0) 

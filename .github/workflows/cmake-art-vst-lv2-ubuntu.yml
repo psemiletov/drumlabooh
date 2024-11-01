@@ -27,13 +27,13 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Archive artifacts VST3
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
        name: drumlabooh.vst3
        path: ${{github.workspace}}/build/drumlabooh_artefacts/Release/VST3
 
     - name: Archive artifacts LV2
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
        name: drumlabooh.lv2
        path: ${{github.workspace}}/build/drumlabooh_artefacts/Release/LV2
