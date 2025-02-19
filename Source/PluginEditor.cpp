@@ -1563,7 +1563,7 @@ void CCellLabel::filesDropped (const StringArray &files, int x, int y)
 
 void CCellLabel::filesDropped (const StringArray &files, int x, int y)
 {
-  if (! editor)
+  if (! cell->editor)
       return;
   
   std::string fname = files[0].toStdString();   
@@ -1574,8 +1574,8 @@ void CCellLabel::filesDropped (const StringArray &files, int x, int y)
 
   cell->editor->need_to_update_cells = false; //чтобы кит не подгрузился по таймеру
 
-  if (! editor->audioProcessor.drumkit)
-     editor->audioProcessor.drumkit = new CDrumKit();
+  if (! cell->editor->audioProcessor.drumkit)
+     cell->editor->audioProcessor.drumkit = new CDrumKit();
                                                              
   cell->editor->audioProcessor.drumkit->kit_type = KIT_TYPE_QDRUMLABOOH; 
   

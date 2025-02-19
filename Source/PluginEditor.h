@@ -110,7 +110,7 @@ class CCellLabel: public juce::Label,
 public:
   
   CDrumCell *cell; //uplink
-  CAudioProcessorEditor *editor = 0; //uplink
+  //CAudioProcessorEditor *editor = 0; //uplink
   
   bool isInterestedInFileDrag (const StringArray &files) override;
   void filesDropped (const StringArray &files, int x, int y) override;
@@ -149,9 +149,9 @@ public:
   
   juce::Button *bt_fx_close;
 
-//  CCellLabel cell_label;
+  CCellLabel cell_label;
 
-  Label cell_label;
+//  Label cell_label;
 
   
   std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_vol;
@@ -193,8 +193,8 @@ public:
   CFx fx;
 
 
-  //CCellLabel cell_label;
-   Label cell_label;
+  CCellLabel cell_label;
+//   Label cell_label;
 
   size_t cell_number;
 

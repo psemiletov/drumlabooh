@@ -449,7 +449,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
   for (size_t i = 0; i < num_channels; i++)
       buffer.clear (i, 0, out_buf_length);
-
+   //  buffer.clear(); 
 
   if (! drumkit)
       return;
@@ -651,8 +651,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   int int_midimap_mode = (int) *midimap_mode;
 
   //clearing input buffer, good for Reaper
-  for (int i = 0; i < num_channels; ++i)
-       buffer.clear (i, 0, out_buf_length);
+ for (int i = 0; i < num_channels; ++i)
+      buffer.clear (i, 0, out_buf_length);
 
 
   if (! drumkit)
@@ -748,12 +748,27 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
     float *channel_data[2]; //output channels
 
+    
     if (num_channels > 0)
-        channel_data [0] = buffer.getWritePointer (0);
+       channel_data [0] = buffer.getWritePointer (0);
 
     if (num_channels > 1)
        channel_data [1] = buffer.getWritePointer (1);
+/*
+    
+    if (num_channels > 0)
+      {
+       channel_data [0] = buffer.getWritePointer (0);
+       std::fill(channel_data [0], channel_data [0] + out_buf_length, 0.0f);
+      } 
 
+    if (num_channels > 1)
+      {
+       channel_data [1] = buffer.getWritePointer (1);
+       std::fill(channel_data [1], channel_data [1] + out_buf_length, 0.0f);
+     
+      } 
+  */
 
  // juce::ScopedNoDenormals();
   //juce::FloatVectorOperations::disableDenormalisedNumberSupport();
