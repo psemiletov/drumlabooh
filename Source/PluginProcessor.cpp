@@ -470,7 +470,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
        bool isNoteOff = msg.isNoteOff();
 
        //float velocity = msg.getFloatVelocity();
-       float velocity = VelocityToLevel (msg.getVelocity());
+       uint uvelocity = msg.getVelocity();
+
+       
+       float velocity = VelocityToLevel (uvelocity);
 
        if (*ignore_midi_velocity > 0.5)
            velocity = 1;
@@ -489,21 +492,32 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
             CDrumSample *s = 0;
 
-            if (int_midimap_mode == MIDIMAPMODE_LABOOH && drumkit->kit_type != KIT_TYPE_SFZ)
+           if (int_midimap_mode == MIDIMAPMODE_LABOOH || drumkit->kit_type != KIT_TYPE_SFZ)
                 s = drumkit->a_samples[nn];
-            else //map!
+            else
                 if (drumkit->map_samples.count (note_number) > 0) 
-                  {
-                   s = drumkit->map_samples[note_number];
+                   {
+                    s = drumkit->map_samples[note_number];
                    
                    //std::cout << "play mapped note: " << note_number << std::endl;
-                  } 
+                   } 
   
 
-           if (! s)
-              continue;
 
-           s->trigger_sample (velocity);
+            if (! s)
+               continue;
+  
+
+           //s->trigger_sample (velocity);
+            if (drumkit->kit_type == KIT_TYPE_SFZ)
+                s->trigger_sample_uint (uvelocity, velocity);
+            else
+                s->trigger_sample (velocity);
+            
+            
+            std::cout << "s->current_layer:" << s->current_layer << std::endl;
+            std::cout << "s->>v_layers.size():" << s->v_layers.size() << std::endl;
+
 
            //also untrigger open hihat if closed hihat triggering
            // so find the open hihat
@@ -653,7 +667,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   int int_midimap_mode = (int) *midimap_mode;
 
   //clearing input buffer, good for Reaper
- for (int i = 0; i < num_channels; ++i)
+  for (int i = 0; i < num_channels; ++i)
       buffer.clear (i, 0, out_buf_length);
 
 
@@ -802,8 +816,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
    //for each sample out_buf_offs
     for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
         //for each drum instrument
-       {
-      for (int drum_sample_index = 0; drum_sample_index < 36; drum_sample_index++)
+        {
+         for (int drum_sample_index = 0; drum_sample_index < 36; drum_sample_index++)
             {
              CDrumSample *s = drumkit->a_samples[drum_sample_index];
 
