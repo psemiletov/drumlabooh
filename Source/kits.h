@@ -160,6 +160,7 @@ public:
   void load_txt (const std::string &fname);
   void load_qtxt (const std::string &fname);
   void load_sfz (const std::string & fname);
+  void load_sfz_new (const std::string & fname);
   
   CDrumSample* load_sample_to_index (size_t index, const std::string &fname, int sample_rate);
   void remove_sample_at_index (size_t index);

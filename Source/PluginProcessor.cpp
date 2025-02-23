@@ -489,9 +489,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
             CDrumSample *s = 0;
 
-            if (int_midimap_mode == MIDIMAPMODE_LABOOH)
+            if (int_midimap_mode == MIDIMAPMODE_LABOOH && drumkit->kit_type != KIT_TYPE_SFZ)
                 s = drumkit->a_samples[nn];
-            else
+            else //map!
                 if (drumkit->map_samples.count (note_number) > 0) 
                   {
                    s = drumkit->map_samples[note_number];
@@ -552,6 +552,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
               if (! s->active)
                 continue;
 
+
+               std::cout << "s->current_layer:" << s->current_layer << std::endl;
 
               CDrumLayer *l = s->v_layers[s->current_layer];
 
@@ -692,7 +694,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             int nn = note_number - base_note_number;
 
 
-            if (int_midimap_mode == MIDIMAPMODE_LABOOH)
+            if (int_midimap_mode == MIDIMAPMODE_LABOOH && drumkit->kit_type != KIT_TYPE_SFZ)
                 if (nn < 0 || nn > 35)
                   {
                     //std::cout << "nn < 0 || nn > 35: " << nn << std::endl; 
@@ -709,7 +711,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
 */
             CDrumSample *s = 0;
-
+/*
             if (int_midimap_mode == MIDIMAPMODE_LABOOH)
                 s = drumkit->a_samples[nn];
             else
@@ -720,12 +722,29 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 //                   std::cout << "play mapped note: " << note_number << std::endl;
                    } 
                }
+  */
+
+            if (int_midimap_mode == MIDIMAPMODE_LABOOH && drumkit->kit_type != KIT_TYPE_SFZ)
+                s = drumkit->a_samples[nn];
+            else
+                if (drumkit->map_samples.count (note_number) > 0) 
+                  {
+                   s = drumkit->map_samples[note_number];
+                   
+                   //std::cout << "play mapped note: " << note_number << std::endl;
+                  } 
   
+
+
             if (! s)
                continue;
   
                
             s->trigger_sample (velocity);
+            
+            std::cout << "s->current_layer:" << s->current_layer << std::endl;
+            std::cout << "s->>v_layers.size():" << s->v_layers.size() << std::endl;
+
 
              //also untrigger open hihat if closed hihat triggering
              // so find the open hihat

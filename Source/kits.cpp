@@ -829,6 +829,193 @@ inline std::string& rtrim (std::string &s, const char *t = " \t\n\r\f\v")
 }
 
 
+
+std::string get_parameter_from_line (const std::string &line, const std::string &key)
+{
+  std::string result;
+  
+  std::string str_to_find = key + "=";
+  
+  //cout << "str_to_find: " << str_to_find << std::endl;
+  
+  
+  size_t pos = line.find (str_to_find);
+  if (pos != string::npos)
+     {
+      pos += str_to_find.length(); 
+      
+      size_t end = line.find (" ", pos);
+      
+      if (end != string::npos)
+          result = line.substr (pos, end - pos);
+      else
+      size_t end = line.find ("\n", pos);
+      
+      if (end != string::npos)
+          result = line.substr (pos, end - pos);
+      else
+           {
+            //копируем от pos до конца строки
+            result = line.substr (pos, line.size() - pos);
+           } 
+
+     }
+     
+  //std::cout << key << ": " << result << std::endl;  
+     
+  return result;   
+}
+
+
+void CDrumKit::load_sfz_new (const std::string &data)
+{
+  cout << "void CDrumKit::load_sfz_new (const std::string data)\n";
+
+  if (data.empty())
+      return;
+
+  //change crlf in data to lf
+
+  kit_type = KIT_TYPE_SFZ;
+
+  
+  std::string temp_data = string_replace_all (data, "\r\n", "\n");
+  temp_data = string_replace_all (data, "\\", "/");
+
+  bool multi_layered = false;
+
+  size_t pos = temp_data.find ("<group>");
+  if (pos != string::npos)
+     multi_layered = true;
+
+  size_t i = kit_dir.rfind ("/");
+  kit_name = kit_dir.substr (i + 1);
+
+  stringstream st (temp_data);
+  string line;
+  
+  while (getline (st, line))
+        {
+         if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN MAX_SAMPLES SAMPLES
+             return;
+
+         if (line.empty())
+             continue;
+
+         if (line.find ("//") != string::npos)
+             continue;
+
+         string fname;
+
+//          cout << "parse line: " << line << endl;
+         if (line.find ("<group>") != string::npos)
+             temp_sample = add_sample (sample_counter++);
+                      
+   
+         if (line.find("<region>") != string::npos && ! multi_layered)
+             temp_sample = add_sample (sample_counter++);
+                
+
+         std::string str_note = get_parameter_from_line (line, "key");
+         if (! str_note.empty() && sample_counter != 0 && temp_sample)
+            {
+             std::cout << "key: " << str_note << std::endl; 
+             temp_sample->mapped_note = std::stoi (str_note);
+             map_samples[temp_sample->mapped_note] = temp_sample;
+            }     
+         
+         //parse filename for a layer
+         
+         std::string just_name = get_parameter_from_line (line, "sample"); 
+         if (! just_name.empty() && temp_sample)
+            {
+//             std::cout << "sample: " << just_name << std::endl; 
+              
+             just_name = rtrim (just_name); //remove trailing spaces if any
+             fname = kit_dir + "/" + just_name;
+
+             temp_sample->add_layer();
+
+             if (file_exists (fname))
+                {
+                 if (! scan_mode)
+                   { 
+                    temp_sample->v_layers.back()->load (fname.c_str());
+                    temp_sample->name = guess_sample_name (just_name); //FIXIT: возможно guess_sample_name лишнее, не помню
+                   } 
+                }
+          
+            }
+
+            
+
+         std::string lovel = get_parameter_from_line (line, "lovel");    
+         std::string hivel = get_parameter_from_line (line, "hivel");    
+         
+         if (! scan_mode && multi_layered && temp_sample->v_layers.size() != 0)
+         if (! lovel.empty() && ! hivel.empty())
+            { 
+              
+             std::cout << "ADD LOvEL and HOVEL: " << just_name << std::endl; 
+             
+                          
+             temp_sample->v_layers.back()->min = (float) 1 / std::stoi (lovel);
+             temp_sample->v_layers.back()->max = (float) 1 / std::stoi (hivel);
+             
+             std::cout << "temp_sample->v_layers.back()->min: " << temp_sample->v_layers.back()->min << std::endl; 
+             std::cout << "temp_sample->v_layers.back()->max: " << temp_sample->v_layers.back()->max << std::endl; 
+
+             
+            }
+              
+              
+         /*     
+         if (! scan_mode && multi_layered && temp_sample->v_layers.size() != 0)
+            {
+              
+              
+             float part_size = (float) 1 / temp_sample->v_layers.size();
+             CDrumLayer *l = 0;
+              //evaluate min and max velocities by the file position in the vector
+             for (size_t j = 0; j < temp_sample->v_layers.size(); j++)
+                 {
+                  l = temp_sample->v_layers[j];
+
+                  l->min = part_size * j;
+                  l->max = part_size * (j + 1) - 0.001;
+                 }
+
+             l->max = 1.0f;
+            }
+*/
+         if (! scan_mode && sample_counter > 0)
+            {
+             for (auto signature: v_hat_open_signatures)
+                 {
+                  if (findStringIC (temp_sample->name, signature))
+                     {
+                      temp_sample->hihat_open = true;
+                      break;
+                     }
+                  }
+
+            for (auto signature: v_hat_close_signatures)
+                {
+                 if (findStringIC (temp_sample->name, signature))
+                    {
+                     temp_sample->hihat_close = true;
+                     break;
+                    }
+                }
+           }
+        }
+        
+    loaded = true;    
+}
+
+
+
+
 void CDrumKit::load_sfz (const std::string &data)
 {
 //  cout << "void CHydrogenKit::load_sfz (const std::string data)\n";
@@ -982,6 +1169,7 @@ void CDrumKit::load_sfz (const std::string &data)
 }
 
 
+
 void CDrumKit::load (const std::string &fname, int sample_rate)
 {
 //  if (! scan_mode)
@@ -1024,7 +1212,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
   if (ends_with (kit_filename, ".sfz"))
      {
-      load_sfz (source);
+      load_sfz_new (source);
       return;
      }
 
