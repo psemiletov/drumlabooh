@@ -678,8 +678,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
        bool isNoteOff = msg.isNoteOff();
 
        //float velocity = msg.getFloatVelocity();
-       float velocity = VelocityToLevel (msg.getVelocity());
+       uint uvelocity = msg.getVelocity();
 
+       float velocity = VelocityToLevel (uvelocity);
+       
        if (*ignore_midi_velocity > 0.5)
            velocity = 1;
 
@@ -724,7 +726,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                }
   */
 
-            if (int_midimap_mode == MIDIMAPMODE_LABOOH && drumkit->kit_type != KIT_TYPE_SFZ)
+            if (int_midimap_mode == MIDIMAPMODE_LABOOH || drumkit->kit_type != KIT_TYPE_SFZ)
                 s = drumkit->a_samples[nn];
             else
                 if (drumkit->map_samples.count (note_number) > 0) 
@@ -740,7 +742,11 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                continue;
   
                
-            s->trigger_sample (velocity);
+            if (drumkit->kit_type == KIT_TYPE_SFZ)
+                s->trigger_sample_uint (uvelocity, velocity);
+            else
+                s->trigger_sample (velocity);
+            
             
             std::cout << "s->current_layer:" << s->current_layer << std::endl;
             std::cout << "s->>v_layers.size():" << s->v_layers.size() << std::endl;

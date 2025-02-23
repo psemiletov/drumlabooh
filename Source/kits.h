@@ -47,6 +47,10 @@ public:
   float min;
   float max;
 
+  uint umin;
+  uint umax;
+  
+  
   std::string file_name; //name of the loaded file, full path
   
  // int channels; //channels at this layer
@@ -107,6 +111,7 @@ public:
   ~CDrumSample();
 
   size_t map_velo_to_layer_number (float velo);
+  size_t map_uint_velo_to_layer_number (uint velo);
 
   void add_layer();
 
@@ -114,7 +119,8 @@ public:
   void print_stats();
 
   void untrigger_sample();
-  void trigger_sample (float vel);
+  void trigger_sample (float vel); //not vel actually! измени формулировки!
+  void trigger_sample_uint (uint vel, float velo);
 
 };
 

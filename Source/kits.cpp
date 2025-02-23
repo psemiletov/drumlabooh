@@ -275,7 +275,11 @@ CDrumSample::CDrumSample (int sample_rate)
 {
   session_samplerate = sample_rate;
   current_layer = 0;
+  
+  
   velocity = 0.0f;
+  
+  
   hihat_open = false;
   hihat_close = false;
   active = false;
@@ -316,6 +320,40 @@ size_t CDrumSample::map_velo_to_layer_number (float velo)
            result = i;
            break;
           }
+       }
+
+  return result;
+}
+
+
+size_t CDrumSample::map_uint_velo_to_layer_number (uint velo)
+{
+  if (v_layers.size() == 1)
+     return 0; //return zero pos layer if we have just one layer
+
+  std::cout << "CDrumSample::map_uint_velo_to_layer_number: " << velo << std::endl;
+  
+     
+  size_t result = 0;
+
+  //search for the layer within its umin..umax velo
+  for (size_t i = 0; i < v_layers.size(); i++)
+      {
+       if (velo >= v_layers[i]->umin && 
+           velo <= v_layers[i]->umax)
+          {
+           result = i;
+           break;
+          }
+       
+        
+      /* if (v_layers[i]->min <= velo &&
+          (v_layers[i]->max > velo ||
+          (v_layers[i]->max == 127 && velo == 127)))
+          {
+           result = i;
+           break;
+          }*/
        }
 
   return result;
@@ -956,16 +994,22 @@ void CDrumKit::load_sfz_new (const std::string &data)
          if (! lovel.empty() && ! hivel.empty())
             { 
               
-             std::cout << "ADD LOvEL and HOVEL: " << just_name << std::endl; 
+             //std::cout << "ADD LOvEL and HOVEL: " << just_name << std::endl; 
              
-                          
+            /*              
              temp_sample->v_layers.back()->min = (float) 1 / std::stoi (lovel);
              temp_sample->v_layers.back()->max = (float) 1 / std::stoi (hivel);
              
              std::cout << "temp_sample->v_layers.back()->min: " << temp_sample->v_layers.back()->min << std::endl; 
              std::cout << "temp_sample->v_layers.back()->max: " << temp_sample->v_layers.back()->max << std::endl; 
 
+             */
+             temp_sample->v_layers.back()->umin = std::stoi (lovel);
+             temp_sample->v_layers.back()->umax = std::stoi (hivel);
              
+             std::cout << "temp_sample->v_layers.back()->min: " << temp_sample->v_layers.back()->umin << std::endl; 
+             std::cout << "temp_sample->v_layers.back()->max: " << temp_sample->v_layers.back()->umax << std::endl; 
+
             }
               
               
@@ -1880,7 +1924,7 @@ void CDrumSample::trigger_sample (float vel)
      {
   
       if (layer_index_mode == LAYER_INDEX_MODE_VEL || layer_index_mode == LAYER_INDEX_MODE_NOVELOCITY)
-          current_layer = map_velo_to_layer_number (velocity);
+          current_layer = map_velo_to_layer_number (vel);
 
       if (layer_index_mode == LAYER_INDEX_MODE_RND)
           current_layer = get_rnd (0, v_layers.size() - 1);//random layer
@@ -1891,6 +1935,48 @@ void CDrumSample::trigger_sample (float vel)
           ///   current_layer = -1;
           
          //std::cout << "trigger\n"; 
+          
+          robin_counter++;
+
+          if (robin_counter == v_layers.size())
+              robin_counter = 0;
+         
+          current_layer = robin_counter;
+         } 
+      }
+   else 
+       current_layer = 0; //if layers count == 1
+
+  //std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
+
+  v_layers[current_layer]->sample_offset = 0;
+}
+
+
+void CDrumSample::trigger_sample_uint (uint vel, float velo)
+{
+  std::cout << "CDrumSample::trigger_sample_uint: " << name << std::endl;
+std::cout << "vel: " << vel << " velo:" << velo << std::endl;
+
+  //v_layers[current_layer]->sample_offset = 0;
+
+  active = true;
+  velocity = velo;
+
+  ///if (use_random_noice)
+  //    random_number = std::uniform_real_distribution<float> distrib(-noiseLevel, noiseLevel);
+  
+  if (v_layers.size() > 1)
+     {
+  
+      if (layer_index_mode == LAYER_INDEX_MODE_VEL || layer_index_mode == LAYER_INDEX_MODE_NOVELOCITY)
+          current_layer = map_uint_velo_to_layer_number (vel);
+
+      if (layer_index_mode == LAYER_INDEX_MODE_RND)
+          current_layer = get_rnd (0, v_layers.size() - 1);//random layer
+       
+      if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
+         {
           
           robin_counter++;
 
