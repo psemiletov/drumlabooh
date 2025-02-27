@@ -180,11 +180,8 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
 
 juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::string &fname, int sess_samplerate)
 {
-  std::cout << "debug 1\n";
   
   juce::AudioBuffer <float>* buffer = load_whole_sample (fname);
-  
-  std::cout << "debug 2\n";
   
   
   if (! buffer)
@@ -385,15 +382,6 @@ size_t CDrumSample::map_uint_velo_to_layer_number (uint velo)
            result = i;
            break;
           }
-       
-        
-      /* if (v_layers[i]->min <= velo &&
-          (v_layers[i]->max > velo ||
-          (v_layers[i]->max == 127 && velo == 127)))
-          {
-           result = i;
-           break;
-          }*/
        }
 
   return result;
@@ -899,6 +887,27 @@ std::string guess_sample_name (const std::string &raw)
 }
 
 
+std::string guess_sample_name2 (const std::string &raw)
+{
+  //std::string result;
+
+  std::string base_filename = raw.substr(raw.find_last_of("/\\") + 1);
+  std::string::size_type const p(base_filename.find_last_of('.'));
+  std::string file_without_extension = base_filename .substr (0, p);
+  
+
+  //remove all non-letters
+
+  std::string t;
+  
+  for (size_t i = 0; i < file_without_extension.size(); i++)
+      if (isalnum (file_without_extension[i]))
+         t += file_without_extension[i];
+
+  return t;
+}
+
+
 // trim from right
 inline std::string& rtrim (std::string &s, const char *t = " \t\n\r\f\v")
 {
@@ -945,11 +954,10 @@ std::string get_parameter_from_line (const std::string &line, const std::string 
 }
 
 
-//всё что нам нужно, это key, sample и lo/hivel
 
-void CDrumKit::load_sfz_new2 (const std::string &data)
+void CDrumKit::load_sfz_new3 (const std::string &data)
 {
-  cout << "void CDrumKit::load_sfz_new2 (const std::string data)\n";
+  cout << "void CDrumKit::load_sfz_new3 (const std::string data)\n";
 
   if (data.empty())
       return;
@@ -962,17 +970,8 @@ void CDrumKit::load_sfz_new2 (const std::string &data)
   std::string temp_data = string_replace_all (data, "\r\n", "\n");
   temp_data = string_replace_all (data, "\\", "/");
 
-  bool has_groups = false;
   
-  //мы при текущей строке в группе или в регионе?
-  //bool is_group = false;
-  //bool is_region = false;
-  
-
-  size_t pos = temp_data.find ("<group>");
-  if (pos != string::npos)
-     has_groups = true;
-
+ 
   size_t i = kit_dir.rfind ("/");
   kit_name = kit_dir.substr (i + 1);
 
@@ -981,7 +980,6 @@ void CDrumKit::load_sfz_new2 (const std::string &data)
 
   int key = 0;
 
-  cout << "getline cycle begin\n";
 
   
   while (getline (st, line))
@@ -996,68 +994,40 @@ void CDrumKit::load_sfz_new2 (const std::string &data)
              continue;
 
          
-         cout << "line: " << line << std::endl;
+//         cout << "line: " << line << std::endl;
           
-         string fname;
-
+ 
          std::string str_key = get_parameter_from_line (line, "key");
-        
-         cout << "str_key: " << str_key << std::endl;
-        
-         
          if (! str_key.empty())
              key = std::stoi (str_key); 
-         
-          cout << "key: " << key << std::endl;
+       
+        // cout << "str_key: " << str_key << std::endl;
+         cout << "key: " << key << std::endl;
         
           
-         if (key != 0) 
          if (line.find ("<region>") != string::npos)
-            if (sample_counter == 0) //сэмплов еще нет            
-               {
-                temp_sample = add_sample (sample_counter++);
-          
-                temp_sample->mapped_note = key;
-                map_samples[temp_sample->mapped_note] = temp_sample;
-               }
-           else //sample_counter > 0  
-               if (map_samples.find (key) != map_samples.end()) 
-                  {
-                   temp_sample = map_samples [key];
-                  }
-               else
-                   {
-                    temp_sample = add_sample (sample_counter++);
-                    temp_sample->mapped_note = key;
-                    map_samples[temp_sample->mapped_note] = temp_sample;
-                   }   
-                     
+            { 
+             if (map_samples.find (key) != map_samples.end()) 
+                temp_sample = map_samples [key]; //если уже есть сэмпл с таким key, получаем
+            else
+               temp_sample = add_sample (sample_counter++);
+            }   
          
-         cout << "ok? 1\n";
-        
+         //но если key в другой строке, не в строке group и не в строке с region?
+            
+         //проверяем key
+         //есть ли key у текущего сэмпла?
            
-           //но если key в другой строке, не в строке group и не в строке с region?
-           
-           //проверяем key
-           //есть ли key у текущего сэмпла?
-           
-           if (temp_sample && key != 0)
-           if (temp_sample->mapped_note == 0)
-              {
-               //нетути
-               //надо присвоить 
-               temp_sample->mapped_note = key; 
-              }
-           else
-               {
-                //ага, уже назначено 
-             
-               }
+         if (temp_sample && key != 0)
+         if (temp_sample->mapped_note == 0)
+            {
+             //нетути
+             //надо присвоить 
+             temp_sample->mapped_note = key; 
+            }
            
          cout << "ok? 2\n";
             
-            
-         
          //parse filename for a layer
          
          std::string just_name = get_parameter_from_line (line, "sample"); 
@@ -1072,7 +1042,7 @@ void CDrumKit::load_sfz_new2 (const std::string &data)
              cout << "just_name: " << just_name << std::endl;
               
              just_name = rtrim (just_name); //remove trailing spaces if any
-             fname = kit_dir + "/" + just_name;
+             std::string fname = kit_dir + "/" + just_name;
 
              cout << "fname: " << fname << std::endl;
              
@@ -1096,8 +1066,11 @@ void CDrumKit::load_sfz_new2 (const std::string &data)
                     
                     cout << "hmmm 04\n"; 
                     
-                    temp_sample->name = guess_sample_name (just_name); //FIXIT: возможно guess_sample_name лишнее, не помню
+                  //  temp_sample->name = guess_sample_name (just_name); //FIXIT: возможно guess_sample_name лишнее, не помню
                     
+                     if (temp_sample->name.empty())
+                         temp_sample->name = guess_sample_name2 (temp_sample->v_layers[0]->file_name); 
+                   
                     cout << "hmmm 05\n"; 
                     
                    } 
@@ -1153,7 +1126,219 @@ void CDrumKit::load_sfz_new2 (const std::string &data)
            
         }
   
-  cout << "getline cycle end\n";
+
+  
+    loaded = true;    
+}
+
+
+//всё что нам нужно, это key, sample и lo/hivel
+
+void CDrumKit::load_sfz_new2 (const std::string &data)
+{
+  cout << "void CDrumKit::load_sfz_new2 (const std::string data)\n";
+
+  if (data.empty())
+      return;
+
+  //change crlf in data to lf
+
+  kit_type = KIT_TYPE_SFZ;
+   
+  
+  std::string temp_data = string_replace_all (data, "\r\n", "\n");
+  temp_data = string_replace_all (data, "\\", "/");
+
+  bool has_groups = false;
+  
+  //мы при текущей строке в группе или в регионе?
+  //bool is_group = false;
+  //bool is_region = false;
+  
+
+  size_t pos = temp_data.find ("<group>");
+  if (pos != string::npos)
+     has_groups = true;
+
+  size_t i = kit_dir.rfind ("/");
+  kit_name = kit_dir.substr (i + 1);
+
+  stringstream st (temp_data);
+  string line;
+
+  int key = 0;
+
+
+  
+  while (getline (st, line))
+        {
+         if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN MAX_SAMPLES SAMPLES
+             return;
+
+         if (line.empty())
+             continue;
+
+         if (line.find ("//") != string::npos) //skip the comment
+             continue;
+
+         
+         cout << "line: " << line << std::endl;
+          
+         string fname;
+
+         std::string str_key = get_parameter_from_line (line, "key");
+        
+         cout << "str_key: " << str_key << std::endl;
+        
+         
+         if (! str_key.empty())
+             key = std::stoi (str_key); 
+         
+         cout << "key: " << key << std::endl;
+        
+          
+         if (key != 0) 
+         if (line.find ("<region>") != string::npos)
+            if (sample_counter == 0) //сэмплов еще нет            
+               {
+                temp_sample = add_sample (sample_counter++);
+          
+                temp_sample->mapped_note = key;
+                map_samples[temp_sample->mapped_note] = temp_sample;
+               }
+            else //sample_counter > 0  
+                if (map_samples.find (key) != map_samples.end()) 
+                   {
+                    temp_sample = map_samples [key];
+                   }
+                else
+                   {
+                    temp_sample = add_sample (sample_counter++);
+                    temp_sample->mapped_note = key;
+                    map_samples[temp_sample->mapped_note] = temp_sample;
+                   }   
+                     
+         
+         cout << "ok? 1\n";
+        
+           
+           //но если key в другой строке, не в строке group и не в строке с region?
+           
+           //проверяем key
+           //есть ли key у текущего сэмпла?
+           
+         if (temp_sample && key != 0)
+         if (temp_sample->mapped_note == 0)
+            {
+             //нетути
+             //надо присвоить 
+             temp_sample->mapped_note = key; 
+            }
+         else
+             {
+                //ага, уже назначено 
+             }
+           
+         cout << "ok? 2\n";
+            
+         //parse filename for a layer
+         
+         std::string just_name = get_parameter_from_line (line, "sample"); 
+         
+         cout << "ok? 3\n";
+         
+         
+         if (! just_name.empty() && temp_sample)
+            {
+//             std::cout << "sample: " << just_name << std::endl; 
+              
+             cout << "just_name: " << just_name << std::endl;
+              
+             just_name = rtrim (just_name); //remove trailing spaces if any
+             fname = kit_dir + "/" + just_name;
+
+             cout << "fname: " << fname << std::endl;
+             
+             
+             temp_sample->add_layer();
+             
+             cout << "hmmm 01\n"; 
+             
+             if (file_exists (fname))
+                {
+                 cout << "hmmm 02\n"; 
+  
+                 if (! scan_mode)
+                   { 
+                    cout << "hmmm 03\n"; 
+  
+                    cout << "temp_sample->v_layers.size():" << temp_sample->v_layers.size() << std::endl; 
+  
+                    
+                    temp_sample->v_layers.back()->load (fname.c_str());
+                    
+                    cout << "hmmm 04\n"; 
+                    
+                  //  temp_sample->name = guess_sample_name (just_name); //FIXIT: возможно guess_sample_name лишнее, не помню
+                    
+                      if (temp_sample->name.empty())
+                          temp_sample->name = guess_sample_name (just_name); 
+                   
+                    cout << "hmmm 05\n"; 
+                    
+                   } 
+                }
+          
+            }
+            
+          cout << "ok? 4\n";
+        
+            
+         std::string lovel = get_parameter_from_line (line, "lovel");    
+         std::string hivel = get_parameter_from_line (line, "hivel");    
+         
+         if (temp_sample)
+         if (! scan_mode && temp_sample->v_layers.size() != 0)
+         if (! lovel.empty() && ! hivel.empty())
+            { 
+             temp_sample->v_layers.back()->umin = std::stoi (lovel);
+             temp_sample->v_layers.back()->umax = std::stoi (hivel);
+             
+             std::cout << "temp_sample->v_layers.back()->umin: " << temp_sample->v_layers.back()->umin << std::endl; 
+             std::cout << "temp_sample->v_layers.back()->umax: " << temp_sample->v_layers.back()->umax << std::endl; 
+
+            }
+              
+              
+          cout << "ok? 5\n";
+            
+              
+         if (! scan_mode && temp_sample && sample_counter > 0)
+            {
+             for (auto signature: v_hat_open_signatures)
+                 {
+                  if (findStringIC (temp_sample->name, signature))
+                     {
+                      temp_sample->hihat_open = true;
+                      break;
+                     }
+                  }
+
+            for (auto signature: v_hat_close_signatures)
+                {
+                 if (findStringIC (temp_sample->name, signature))
+                    {
+                     temp_sample->hihat_close = true;
+                     break;
+                    }
+                }
+           }
+           
+         cout << "ok? 6\n";
+          
+           
+        }
+  
 
   
     loaded = true;    
@@ -1750,7 +1935,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
   if (ends_with (kit_filename, ".sfz"))
      {
-      load_sfz_new2 (source);
+      load_sfz_new3 (source);
       return;
      }
 
