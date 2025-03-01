@@ -457,8 +457,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   int int_midimap_mode = (int) *midimap_mode;
 
   
-  //size_t v_samples_size = drumkit->v_samples.size();
-
+  //if (drumkit->kit_type == KIT_TYPE_SFZ)
+    //  int_midimap_mode == MIDIMAPMODE_FROMKIT;
+  
+  
   if (drumkit->sample_counter == 0)
       return;
 
@@ -490,16 +492,16 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                    continue;
 
 
-            CDrumSample *s = 0;
+           CDrumSample *s = 0;
 
            if (int_midimap_mode == MIDIMAPMODE_LABOOH || drumkit->kit_type != KIT_TYPE_SFZ)
-                s = drumkit->a_samples[nn];
+               s = drumkit->a_samples[nn];
             else
                 if (drumkit->map_samples.count (note_number) > 0) 
                    {
                     s = drumkit->map_samples[note_number];
                    
-                   //std::cout << "play mapped note: " << note_number << std::endl;
+                    std::cout << "play mapped note: " << note_number << std::endl;
                    } 
   
 
@@ -665,6 +667,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   int out_buf_length = buffer.getNumSamples();
   
   int int_midimap_mode = (int) *midimap_mode;
+  
+  if (drumkit->kit_type == KIT_TYPE_SFZ) //НЕ СРАБАТЫВАЕт!
+      int_midimap_mode == MIDIMAPMODE_FROMKIT;
+  
 
   //clearing input buffer, good for Reaper
   for (int i = 0; i < num_channels; ++i)

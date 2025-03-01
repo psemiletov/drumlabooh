@@ -984,7 +984,6 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
   stringstream st (temp_data);
   string line;
 
-  //bool create_new_sample = false;
 
 //temp vars
   
@@ -994,11 +993,6 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
   uint umin = 0;
   uint umax = 0;
   
-  
-//  CDrumSample sample (samplerate); //temp
-  
-  //bool region_start = false;
-  //bool region_end = false;
   
   int region_state = 0; //0 - empty, 1 - встретили начальный опкод региона, 2 - встретили конечный
   
@@ -1014,9 +1008,18 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
              region_state = 0;
              
             if (map_samples.find (key) != map_samples.end()) 
-               temp_sample = map_samples [key]; //если уже есть сэмпл с таким key, получаем
+               {
+                cout << "map_samples.find (key) != map_samples.end()" << std::endl;
+                cout << "key: " << key << std::endl;
+                
+                temp_sample = map_samples [key]; //если уже есть сэмпл с таким key, получаем
+                  
+                 
+               }  
             else
                 {
+                 cout << "create new sample at map to key: " << key << std::endl;
+ 
                  temp_sample = add_sample (sample_counter++);
                  temp_sample->mapped_note = key;
                  map_samples[temp_sample->mapped_note] = temp_sample;
@@ -1025,29 +1028,44 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
                 
             if (temp_sample)    
                {
+                cout << "add region with key: " << key << std::endl;
+   
                //std::cout << "temp_sample->v_layers.back()->umin: " << temp_sample->v_layers.back()->umin << std::endl; 
              //std::cout << "temp_sample->v_layers.back()->umax: " << temp_sample->v_layers.back()->umax << std::endl; 
                 
-                cout << "just_name: " << just_name << std::endl;
+                //cout << "just_name: " << just_name << std::endl;
+                 
                 just_name = rtrim (just_name); //remove trailing spaces if any
                 fname = kit_dir + "/" + just_name;
 
-                cout << "fname: " << fname << std::endl;
+                //cout << "fname: " << fname << std::endl;
              
                 if (file_exists (fname))
                    {
+                    cout << "loading to new layer: " << fname << std::endl;
+ 
                     temp_sample->add_layer();
                     temp_sample->v_layers.back()->load (fname.c_str());
                     
                     if (temp_sample->name.empty())
+                       {
                         temp_sample->name = guess_sample_name2 (temp_sample->v_layers[0]->file_name); 
+                        cout << "assign file name to sample: " << temp_sample->name << std::endl;
+                        
+                       } 
+                     
+                     
                    }
           
            
                 temp_sample->v_layers.back()->umin = umin;
                 temp_sample->v_layers.back()->umax = umax;
 
-            
+                cout << "temp_sample->v_layers.back()->umin: " << temp_sample->v_layers.back()->umin << std::endl;
+                cout << "temp_sample->v_layers.back()->umax: " << temp_sample->v_layers.back()->umax << std::endl;
+ 
+                
+                
                 for (auto signature: v_hat_open_signatures)
                     {
                      if (findStringIC (temp_sample->name, signature))
@@ -1111,15 +1129,15 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
          cout << "key: " << key << std::endl;
 
 
-         just_name = get_parameter_from_line (line, "sample"); 
-
-         if (! just_name.empty())
-            {
-             just_name = rtrim (just_name); //remove trailing spaces if any
-             fname = kit_dir + "/" + just_name;
-            } 
+         std::string temp_file_just_name = get_parameter_from_line (line, "sample"); 
          
-            
+         if (! temp_file_just_name.empty())
+            {
+             just_name = rtrim (temp_file_just_name); //remove trailing spaces if any
+             fname = kit_dir + "/" + just_name;
+            }
+         
+         
          std::string lovel = get_parameter_from_line (line, "lovel");    
          std::string hivel = get_parameter_from_line (line, "hivel");    
          
@@ -1128,21 +1146,8 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
             
          if (! hivel.empty())
              umax = std::stoi (hivel);
-            
-         
-         //как только встречаем регион, создаем новый сэмпл, но!
-         //если сэмпл с таким key уже существует?
          
          
-         
-         std::string temp_file_just_name = get_parameter_from_line (line, "sample"); 
-         
-         
-         if (! temp_file_just_name.empty())
-            {
-             just_name = rtrim (temp_file_just_name); //remove trailing spaces if any
-             fname = kit_dir + "/" + just_name;
-            }
             
            
         } //end get line
