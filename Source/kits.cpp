@@ -63,21 +63,15 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
   if (fname.empty())
      return 0;
 
-  std::cout << "@@@@@ CDrumLayer::load_whole_sample: 2" << std::endl;
-
-  
+ 
   if (! file_exists (fname))
      return 0;
-
-  std::cout << "@@@@@ CDrumLayer::load_whole_sample: 3" << std::endl;
 
   
   juce::File fl (fname);
   juce::InputStream *fs = new juce::FileInputStream (fl); //will be deleted by reader
 
   juce::AudioFormatReader *reader = 0;
-
-  std::cout << "@@@@@ CDrumLayer::load_whole_sample: 4" << std::endl;
   
   std::string ext = get_file_ext (fname);
   ext = string_to_lower (ext);
@@ -131,24 +125,15 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
    if (! reader->read (buffer,  0, bufsize, 0,  true, false)) //read just left channel
       {
       // std::cout << "! reader->read " << std::endl;
-        std::cout << "@@@@@ CDrumLayer::load_whole_sample: 8" << std::endl;
-
-        
+   
        delete reader;
-       
-       std::cout << "@@@@@ CDrumLayer::load_whole_sample: 9" << std::endl;
-
-       
        delete buffer;
-       
-        std::cout << "@@@@@ CDrumLayer::load_whole_sample: 10" << std::endl;
-
        
        
        return 0;
       }
-    else
-        std::cout << "CANNOT LOAD: " << fname <<  std::endl;
+   //else
+     //   std::cout << "CANNOT LOAD: " << fname <<  std::endl;
         
 
       
@@ -970,10 +955,12 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
   if (data.empty())
       return;
 
-  //change crlf in data to lf
-
+ 
   kit_type = KIT_TYPE_SFZ;
-     
+ 
+   //change crlf in data to lf
+
+  
   std::string temp_data = string_replace_all (data, "\r\n", "\n");
   temp_data = string_replace_all (data, "\\", "/");
  
@@ -1007,34 +994,27 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
             {
              region_state = 0;
              
-            if (map_samples.find (key) != map_samples.end()) 
-               {
-                cout << "map_samples.find (key) != map_samples.end()" << std::endl;
-                cout << "key: " << key << std::endl;
-                
-                temp_sample = map_samples [key]; //если уже есть сэмпл с таким key, получаем
-                  
-                 
-               }  
-            else
+             if (map_samples.find (key) != map_samples.end()) 
                 {
-                 cout << "create new sample at map to key: " << key << std::endl;
+                 cout << "map_samples.find (key) != map_samples.end()" << std::endl;
+                 cout << "key: " << key << " is found" std::endl;
+                 
+                 temp_sample = map_samples [key]; //если уже есть сэмпл с таким key, получаем
+                }  
+             else
+                 {
+                  cout << "create new sample at map to key: " << key << std::endl;
  
-                 temp_sample = add_sample (sample_counter++);
-                 temp_sample->mapped_note = key;
-                 map_samples[temp_sample->mapped_note] = temp_sample;
-                } 
+                  temp_sample = add_sample (sample_counter++);
+                  temp_sample->mapped_note = key;
+                  map_samples[key] = temp_sample;
+                 } 
                 
                 
             if (temp_sample)    
                {
                 cout << "add region with key: " << key << std::endl;
    
-               //std::cout << "temp_sample->v_layers.back()->umin: " << temp_sample->v_layers.back()->umin << std::endl; 
-             //std::cout << "temp_sample->v_layers.back()->umax: " << temp_sample->v_layers.back()->umax << std::endl; 
-                
-                //cout << "just_name: " << just_name << std::endl;
-                 
                 just_name = rtrim (just_name); //remove trailing spaces if any
                 fname = kit_dir + "/" + just_name;
 
@@ -1051,20 +1031,15 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
                        {
                         temp_sample->name = guess_sample_name2 (temp_sample->v_layers[0]->file_name); 
                         cout << "assign file name to sample: " << temp_sample->name << std::endl;
-                        
                        } 
-                     
-                     
                    }
           
            
                 temp_sample->v_layers.back()->umin = umin;
                 temp_sample->v_layers.back()->umax = umax;
 
-                cout << "temp_sample->v_layers.back()->umin: " << temp_sample->v_layers.back()->umin << std::endl;
-                cout << "temp_sample->v_layers.back()->umax: " << temp_sample->v_layers.back()->umax << std::endl;
- 
-                
+                //cout << "temp_sample->v_layers.back()->umin: " << temp_sample->v_layers.back()->umin << std::endl;
+                //cout << "temp_sample->v_layers.back()->umax: " << temp_sample->v_layers.back()->umax << std::endl;
                 
                 for (auto signature: v_hat_open_signatures)
                     {
@@ -1126,7 +1101,7 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
             key = std::stoi (str_key); 
        
         // cout << "str_key: " << str_key << std::endl;
-         cout << "key: " << key << std::endl;
+         cout << "parsed key: " << key << std::endl;
 
 
          std::string temp_file_just_name = get_parameter_from_line (line, "sample"); 
@@ -1146,10 +1121,8 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
             
          if (! hivel.empty())
              umax = std::stoi (hivel);
-         
-         
-            
-           
+
+          
         } //end get line
   
   
