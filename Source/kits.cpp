@@ -986,6 +986,8 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
   size_t i = kit_dir.rfind ("/");
   kit_name = kit_dir.substr (i + 1);
 
+  std::string sfz_default_path;
+  
   
   std::vector <std::string> t_str = split_string_to_vector (temp_data, "\n", false);
   
@@ -1080,7 +1082,15 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
         cout << "@@@7\n"; 
         
         //начинаем читать параметры
+        //default_path         
         
+        std::string temp_sfz_default_path = get_parameter_from_line (line, "default_path");
+        
+        if (! temp_sfz_default_path.empty())
+            sfz_default_path = string_replace_all (temp_sfz_default_path, "\\", "/");
+ 
+            //temp_sfz_default_path;
+            
          //key:
          std::string str_key = get_parameter_from_line (line, "key");
          //cout << "str_key: " << str_key << std::endl;
@@ -1101,7 +1111,7 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
          if (! temp_file_just_name.empty())
             {
              just_name = rtrim (temp_file_just_name); //remove trailing spaces if any
-             fname = kit_dir + "/" + just_name; //составляем полное имя
+             fname = kit_dir + "/" + sfz_default_path + just_name; //составляем полное имя
          //    cout << "fname: " << fname << std::endl;
             }
          
@@ -1169,8 +1179,8 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
                {
                 cout << "add new layer/region with key: " << key << std::endl;
    
-                just_name = rtrim (just_name); //remove trailing spaces if any
-                fname = kit_dir + "/" + just_name;
+             //   just_name = rtrim (just_name); //remove trailing spaces if any
+              //  fname = kit_dir + "/" + sfz_default_path + just_name;
 
                 //cout << "fname: " << fname << std::endl;
              
