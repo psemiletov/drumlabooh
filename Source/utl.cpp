@@ -32,6 +32,17 @@ this code is the public domain
 #endif
 
 
+#if !defined(_WIN32) || !defined(_WIN64)
+
+#define DIR_SEPARATOR "/"
+
+#else
+
+#define DIR_SEPARATOR "\\"
+
+#endif
+
+
 #include "utl.h"
 
 

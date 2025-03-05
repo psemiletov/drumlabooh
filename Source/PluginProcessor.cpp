@@ -494,7 +494,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
            CDrumSample *s = 0;
 
-           if (int_midimap_mode == MIDIMAPMODE_LABOOH || drumkit->kit_type != KIT_TYPE_SFZ)
+           if (int_midimap_mode == MIDIMAPMODE_LABOOH/* || drumkit->kit_type != KIT_TYPE_SFZ*/)
                s = drumkit->a_samples[nn];
             else
                 if (drumkit->map_samples.count (note_number) > 0) 
@@ -668,8 +668,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   
   int int_midimap_mode = (int) *midimap_mode;
   
-  if (drumkit->kit_type == KIT_TYPE_SFZ) //НЕ СРАБАТЫВАЕт!
-      int_midimap_mode == MIDIMAPMODE_FROMKIT;
+//  if (drumkit->kit_type == KIT_TYPE_SFZ) //НЕ СРАБАТЫВАЕт!
+  //    int_midimap_mode == MIDIMAPMODE_FROMKIT;
   
 
   //clearing input buffer, good for Reaper
@@ -716,7 +716,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             int nn = note_number - base_note_number;
 
 
-            if (int_midimap_mode == MIDIMAPMODE_LABOOH && drumkit->kit_type != KIT_TYPE_SFZ)
+            if (int_midimap_mode == MIDIMAPMODE_LABOOH/* && drumkit->kit_type != KIT_TYPE_SFZ*/)
                 if (nn < 0 || nn > 35)
                   {
                     //std::cout << "nn < 0 || nn > 35: " << nn << std::endl; 
@@ -746,7 +746,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                }
   */
 
-            if (int_midimap_mode == MIDIMAPMODE_LABOOH || drumkit->kit_type != KIT_TYPE_SFZ)
+            if (int_midimap_mode == MIDIMAPMODE_LABOOH/* || drumkit->kit_type != KIT_TYPE_SFZ*/)
                 s = drumkit->a_samples[nn];
             else
                 if (drumkit->map_samples.count (note_number) > 0) 
