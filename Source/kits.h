@@ -68,11 +68,11 @@ public:
   CDrumLayer (CDrumSample *s);
   ~CDrumLayer();
 
-  void load (const std::string &fname); //loads the sample, sets internal info, data, file_name
+  void load (const std::string &fname, int offset = 0); //loads the sample, sets internal info, data, file_name
   void print();
 
-  juce::AudioBuffer<float> * load_whole_sample (const std::string &fname); //called from load_whole_sample_resampled
-  juce::AudioBuffer<float> * load_whole_sample_resampled (const std::string &fname, int sess_samplerate); //main function to load the sample layer
+  juce::AudioBuffer<float> * load_whole_sample (const std::string &fname, int offset = 0); //called from load_whole_sample_resampled
+  juce::AudioBuffer<float> * load_whole_sample_resampled (const std::string &fname, int sess_samplerate, int offset = 0); //main function to load the sample layer
 
 };
 
@@ -165,9 +165,9 @@ public:
   void load (const std::string &fname, int sample_rate);
   void load_txt (const std::string &fname);
   void load_qtxt (const std::string &fname);
-  void load_sfz (const std::string & fname);
-  void load_sfz_new (const std::string & fname);
-  void load_sfz_new2 (const std::string & fname);
+  //void load_sfz (const std::string & fname);
+  //void load_sfz_new (const std::string & fname);
+  //void load_sfz_new2 (const std::string & fname);
   void load_sfz_new3 (const std::string & fname);
   
   CDrumSample* load_sample_to_index (size_t index, const std::string &fname, int sample_rate);
