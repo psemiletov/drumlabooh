@@ -963,6 +963,336 @@ std::string get_parameter_from_line (const std::string &line, const std::string 
  */ 
 
 
+/*
+
+void CDrumKit::load_sfz_new3 (const std::string &data)
+{
+  cout << "void CDrumKit::load_sfz_new3 (const std::string data)\n";
+
+  if (data.empty())
+      return;
+
+  map_samples.clear();
+ 
+  kit_type = KIT_TYPE_SFZ;
+ 
+  //change crlf in data to lf
+
+  
+  std::string temp_data = string_replace_all (data, "\r\n", "\n");
+  temp_data = string_replace_all (data, "\\", "/");
+ 
+ 
+  size_t i = kit_dir.rfind ("/");
+  kit_name = kit_dir.substr (i + 1);
+
+  std::string sfz_default_path;
+  
+  
+  std::vector <std::string> t_str = split_string_to_vector (temp_data, "\n", false);
+  
+  std::vector <std::string> v_str;
+  
+  size_t j = 0;
+  for (size_t i = 0; i < t_str.size(); i++)
+      {
+       std::string t = t_str[i];   
+        
+       if (t.find ("//") == string::npos) 
+           v_str.push_back (t);
+    
+      }
+  
+
+  
+  //std::stringstream st (temp_data);
+  std::string line;
+
+
+//temp vars
+  
+  std::string fname;
+  std::string just_name;
+  int key = -1;
+  uint umin = 0;
+  uint umax = 127;
+  uint offset = 0;
+  
+  sample_counter = 0;
+  
+//  int region_state = 0; //0 - empty, 1 - встретили начальный опкод региона, 2 - встретили конечный
+  
+  bool region_scope = false;
+  
+  //while (getline (st, line))
+  
+  
+    size_t index = -1;
+  
+    while (index != v_str.size())
+  
+//  for (size_t index = 0; index < v_str.size(); index++)
+      {
+     //  if (index == MAX_SAMPLES) //WE DON'T LOAD MORE THAN MAX_SAMPLES SAMPLES
+       //    break;
+       index++;
+ 
+       if (index == v_str.size())
+           break;
+        
+       line = v_str[index]; 
+//       cout << "PARSE LINE: " << line << std::endl;
+       
+       
+       if (line.empty())
+          continue;
+
+        
+       if (line.find ("//") != string::npos) //skip the comment
+          continue;
+        
+          
+       if (line.find ("<region>") != string::npos)
+          region_scope = true;
+        
+        
+        //начинаем читать параметры
+        //default_path         
+        
+        std::string temp_sfz_default_path = get_parameter_from_line (line, "default_path");
+        
+        if (! temp_sfz_default_path.empty())
+            sfz_default_path = string_replace_all (temp_sfz_default_path, "\\", "/");
+ 
+    
+
+         //offset
+        
+             //key:
+         std::string str_offset = get_parameter_from_line (line, "offset");
+         //cout << "str_key: " << str_key << std::endl;
+          
+         if (! str_offset.empty())
+            {
+             offset = std::stoi (str_offset); 
+             //cout << "parsed offset: " << offset << std::endl;
+            } 
+
+        //temp_sfz_default_path;
+            
+         //key:
+         std::string str_key = get_parameter_from_line (line, "key");
+         //cout << "str_key: " << str_key << std::endl;
+          
+         if (! str_key.empty())
+            {
+             key = std::stoi (str_key); 
+             cout << "parsed key: " << key << std::endl;
+            } 
+
+         //таким образом key может быть -1 только с самого начала
+         //пустое key не присваивается
+            
+         //читаем имя файла из sample   
+         std::string temp_file_just_name = get_parameter_from_line (line, "sample"); 
+         
+         //не пусто?
+         if (! temp_file_just_name.empty())
+            {
+             just_name = rtrim (temp_file_just_name); //remove trailing spaces if any
+             fname = kit_dir + "/" + sfz_default_path + just_name; //составляем полное имя
+         //    cout << "fname: " << fname << std::endl;
+            }
+         
+         
+         //читаем параметры скорости
+         std::string lovel = get_parameter_from_line (line, "lovel");    
+         std::string hivel = get_parameter_from_line (line, "hivel");    
+         
+         if (! lovel.empty())
+             umin = std::stoi (lovel);
+            
+         if (! hivel.empty())
+             umax = std::stoi (hivel);
+
+        
+        //а что у нас в следующей строке?
+        
+        //cout << "111111111111\n";
+
+        
+        std::string next_line; 
+        if (index + 1 != v_str.size()) 
+           next_line = v_str [index + 1];
+        
+        
+     //  std::cout << ">>>>>>>>>>>>>next_line: " << next_line << std::endl;
+         
+        if (next_line.find ("<group>") != string::npos || 
+            next_line.find ("<region>") != string::npos ||
+            index + 1 == v_str.size()) //EOF
+          if (region_scope) 
+            {
+//             cout << "-----region_scope-------\n";
+
+  //           cout << "line: " << line << std::endl;
+             
+             //is key exists at some samples?
+             if (map_samples.count (key) > 0) 
+                {
+                 //cout << "map_samples.count (key) > 0" << std::endl;
+    //             cout << "key: " << key << " is found" << std::endl;
+                 
+                 temp_sample = map_samples [key]; //если уже есть сэмпл с таким key, получаем
+                }  
+             else
+                 {
+      //            cout << "created new sample at array pos: " << sample_counter << std::endl;
+        //          cout << "mapped to key: " << key << std::endl;
+ 
+                  temp_sample = add_sample (sample_counter++);
+                  temp_sample->mapped_note = key;
+//                  map_samples[key] = temp_sample;
+                  map_samples.insert ({key, temp_sample});
+                 }                  
+                 
+                
+            if (temp_sample)    
+               {
+          //      cout << "add new layer/region with key: " << key << std::endl;
+   
+             //   just_name = rtrim (just_name); //remove trailing spaces if any
+              //  fname = kit_dir + "/" + sfz_default_path + just_name;
+
+                //cout << "fname: " << fname << std::endl;
+             
+                if (file_exists (fname))
+                   {
+            //        cout << "loading to new layer: " << fname << std::endl;
+ 
+                    temp_sample->add_layer();
+                    temp_sample->v_layers.back()->load (fname.c_str(), offset);
+                       
+                    
+                    temp_sample->v_layers.back()->umin = umin;
+                    temp_sample->v_layers.back()->umax = umax;
+                   }
+                 else
+                     cout << "sample file name not found or not parsed properly\n";
+              //  cout << "temp_sample->v_layers.size(): " << temp_sample->v_layers.size() << std::endl;
+                   
+               } //end if temp_sample
+   
+
+              //cout << "exit from temp_sample != 0 \n";
+
+   
+              region_scope = false; //reset state 
+                    
+              //key = -1;
+              umin = 0;
+              umax = 0;
+              offset = 0;
+                    
+              fname.clear();
+              just_name.clear();
+              temp_sample = 0;
+              
+              //cout << "------------\n";
+ 
+            } //end region scope = true
+            
+       
+        } //end cycle
+ 
+
+    //cout << "!!! naming cycle: " << endl;
+     for (size_t i = 0; i < MAX_SAMPLES; i++)
+         {
+          temp_sample = a_samples[i];
+          
+      //    cout << "i: " << i << endl;
+          
+//          cout << "temp_sample->name: " << temp_sample->name << endl;
+           
+          if (temp_sample)
+          if (temp_sample->v_layers.size() > 0)  
+            {
+             temp_sample->name = guess_sample_name2 (temp_sample->v_layers[0]->file_name); 
+           
+        //   cout << "# " << i << " temp_sample->name: " << temp_sample->name << endl;
+              
+             for (auto signature: v_hat_open_signatures)
+                 {
+                  if (findStringIC (temp_sample->name, signature))
+                     {
+                      temp_sample->hihat_open = true;
+                      break;
+                     }
+                 }
+
+             for (auto signature: v_hat_close_signatures)
+                 {
+                  if (findStringIC (temp_sample->name, signature))
+                     {
+                      temp_sample->hihat_close = true;
+                      break;
+                     }
+                 }
+            }   
+      }
+ 
+  
+    loaded = true;    
+}
+*/
+
+
+
+std::string sfz_extract_sample_filename (const std::string &line)
+{
+  std::string result;
+
+  std::string ext;
+  std::string pattern = "sample=";
+  
+  size_t start_pos = line.find (pattern);
+  if (start_pos == string::npos) 
+      return result;
+    
+  ext = ".wav";
+  size_t end_pos = line.find (ext);
+  
+  if (end_pos == string::npos) 
+     {
+      ext = ".flac";
+      if (end_pos == string::npos) 
+         {
+          ext = ".aiff";
+          end_pos = line.find (ext);
+          if (end_pos == string::npos) 
+            {
+             ext = ".ogg";
+             end_pos = line.find (ext);
+             if (end_pos == string::npos) 
+                {
+                 ext = ".mp3";
+                 end_pos = line.find (ext);
+                }
+            }
+         }
+     }
+    
+
+  if (end_pos != string::npos) 
+     result = line.substr (start_pos + pattern.size(), end_pos + ext.size());
+  
+    
+  
+  return result;
+}
+
+
 
 
 void CDrumKit::load_sfz_new3 (const std::string &data)
@@ -1102,14 +1432,34 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
          //пустое key не присваивается
             
          //читаем имя файла из sample   
-         std::string temp_file_just_name = get_parameter_from_line (line, "sample"); 
+         
+         //size_t eq_count = ch_count (line, '=');
+         
+         //cout << "eq_count: " << eq_count << std::endl;
+         
+         
+         std::string temp_file_just_name;
+         
+         //if (eq_count > 1)
+         //    temp_file_just_name = get_parameter_from_line (line, "sample"); 
+         
+         if (line.find ("sample=") != string::npos) 
+             temp_file_just_name = sfz_extract_sample_filename (line);
+        /* else
+             {
+              //от pos до конца строки
+              size_t pos = line.find ("="); 
+              if (pos == 1)
+                  temp_file_just_name = line.substr (pos + 1);                
+             }
+        */
          
          //не пусто?
          if (! temp_file_just_name.empty())
             {
              just_name = rtrim (temp_file_just_name); //remove trailing spaces if any
              fname = kit_dir + "/" + sfz_default_path + just_name; //составляем полное имя
-         //    cout << "fname: " << fname << std::endl;
+             cout << "************fname: " << fname << std::endl;
             }
          
          
@@ -1148,27 +1498,31 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
             index + 1 == v_str.size()) //EOF
           if (region_scope) 
             {
-//             cout << "-----region_scope-------\n";
+             cout << "-----region_scope-------\n";
 
-  //           cout << "line: " << line << std::endl;
+             cout << "line: " << line << std::endl;
              
              //is key exists at some samples?
              if (map_samples.count (key) > 0) 
                 {
-                 //cout << "map_samples.count (key) > 0" << std::endl;
-    //             cout << "key: " << key << " is found" << std::endl;
+                 cout << "map_samples.count (key) > 0" << std::endl;
+                 cout << "key: " << key << " is found" << std::endl;
                  
                  temp_sample = map_samples [key]; //если уже есть сэмпл с таким key, получаем
                 }  
              else
                  {
-      //            cout << "created new sample at array pos: " << sample_counter << std::endl;
-        //          cout << "mapped to key: " << key << std::endl;
- 
+                  cout << "created new sample at array pos: " << sample_counter << std::endl;
+                  cout << "mapped to key: " << key << std::endl;
+                  
                   temp_sample = add_sample (sample_counter++);
+                  
                   temp_sample->mapped_note = key;
+ 
 //                  map_samples[key] = temp_sample;
                   map_samples.insert ({key, temp_sample});
+                  
+             
                  }                  
                  
                 
@@ -1179,11 +1533,11 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
              //   just_name = rtrim (just_name); //remove trailing spaces if any
               //  fname = kit_dir + "/" + sfz_default_path + just_name;
 
-                //cout << "fname: " << fname << std::endl;
+                cout << "fname: " << fname << std::endl;
              
                 if (file_exists (fname))
                    {
-            //        cout << "loading to new layer: " << fname << std::endl;
+                    cout << "loading to new layer: " << fname << std::endl;
  
                     temp_sample->add_layer();
                     temp_sample->v_layers.back()->load (fname.c_str(), offset);
@@ -1191,12 +1545,16 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
                     
                     temp_sample->v_layers.back()->umin = umin;
                     temp_sample->v_layers.back()->umax = umax;
+                    
+                      cout << "temp_sample->v_layers.size(): " << temp_sample->v_layers.size() << std::endl;
+              
                    }
                    
-              //  cout << "temp_sample->v_layers.size(): " << temp_sample->v_layers.size() << std::endl;
                    
                } //end if temp_sample
    
+   
+                  
 
               //cout << "exit from temp_sample != 0 \n";
 
@@ -1225,6 +1583,7 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
     //cout << "!!! naming cycle: " << endl;
 
  
+   
      for (size_t i = 0; i < MAX_SAMPLES; i++)
          {
           temp_sample = a_samples[i];
@@ -1232,10 +1591,17 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
       //    cout << "i: " << i << endl;
           
 //          cout << "temp_sample->name: " << temp_sample->name << endl;
+          
+          
            
           if (temp_sample)
+          if (temp_sample->v_layers.size() > 0)
           {
               
+             cout << "^^^^8\n";
+            
+             cout << "temp_sample.v_layers.size():" << temp_sample->v_layers.size() << std::endl;
+             
            temp_sample->name = guess_sample_name2 (temp_sample->v_layers[0]->file_name); 
            
         //   cout << "# " << i << " temp_sample->name: " << temp_sample->name << endl;
@@ -1248,6 +1614,8 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
                     break;
                    }
                }
+               
+                    cout << "^^^^9\n";
 
           for (auto signature: v_hat_close_signatures)
               {
@@ -1260,6 +1628,8 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
           }   
       }
  
+  
+       cout << "^^^^10\n";
   
     loaded = true;    
 }

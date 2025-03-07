@@ -84,11 +84,11 @@ drum kit formats.</p>
 <a name="mni_kits_sfz"></a>
 <h3>2.2 SFZ drum kits</h3>
 
-<p>Drumlabooh scans installed SFZ kits at pre-defined locations: <i>$HOME/drumlabooh-kits</i> (Linux), <i>c:\sfz-kits</i> and <i>d:\sfz-kits</i> (Windows). SFZ kit directories must be placed there to be available for Drumlabooh.</p>
+<p>Drumlabooh scans installed SFZ kits at pre-defined locations: <i>$HOME/sfz-kits</i> (Linux), <i>c:\sfz-kits</i> and <i>d:\sfz-kits</i> (Windows). SFZ kit directories must be placed there to be available for Drumlabooh.</p>
 
 <p>The kits of excellent quiality - AVL Drumkits - you can download in SFZ format from <a href="http://www.bandshed.net/sounds/AVLDrumkits_SFZ/">AVLDrumkits_SFZ</a>. A lot of big SFZ's you can download from <a href="https://sfzinstruments.github.io/drums/">here</a>.</p>
 
-<p>Drumlabooh supports limited SFZ opcodes and parameters set: group, region, key, sample, default_path, offset, lovel, hivel.
+<p>Drumlabooh supports limited SFZ opcodes and parameters set: group, region, key, sample, default_path, offset, lovel, hivel. Drumlabooh does not support sample file names with the spaces (because it is obscure to parse them from SFZ file)
 </p>
 
 <a name="mni_kits_labooh"></a>
@@ -100,7 +100,7 @@ drum kit formats.</p>
 
 <p>Additional kits those are not hosted on Github can be downloaded from <a href="https://t.me/drum_sklad">Drum Sklad at Telegram</a>. So the full Drumlabooh kits collection is Drum Sklad on Github + Drum Sklad on Telegram.</p>
 
-<p>All natural Drumlabooh kits has built-in, optional General MIDI mapping settings, you can use it at the <b>MIDI map mode </b>, by selecting the <b>Kit</b> value there.</p>
+<p>All natural Drumlabooh kits have built-in, optional General MIDI mapping settings, you can use it at the <b>MIDI map mode </b>, by selecting the <b>Kit</b> value there.</p>
 
 <a name="mni_kits_qlabooh"></a>
 <h3>2.4 Quick Custom Kits</h3>
@@ -148,7 +148,7 @@ drum kit formats.</p>
 /usr/share/drumlabooh-kits
 $HOME/drumrox-kits
 $HOME/drumlabooh-kits
-$HOME/drum_sklad
+$HOME/drum_sklad //main dir for locally installed kits
 C:\drumlabooh-kits
 D:\drumlabooh-kits
 C:\drum_sklad</pre>
@@ -321,8 +321,7 @@ By the way, the pan mode is the significant factor of how DAW "sounds". The pan 
 
 <p>Драмкиты превосходного качества - AVL Drumkits - вы можете скачать в формате SFZ по ссылке <a href="http://www.bandshed.net/sounds/AVLDrumkits_SFZ">http://www.bandshed.net/sounds/AVLDrumkits_SFZ</a>.  Также большие SFZ-киты можно скачать <a href="https://sfzinstruments.github.io/drums/">тут</a>.</p>
 
-<p>Drumlabooh supports limited SFZ opcodes and parameters set: group, region, key, sample, default_path, offset, lovel, hivel.
-</p>
+<p>Drumlabooh поддерживает огранииченный набор опкодов и параметров SFZ: group, region, key, sample, default_path, offset, lovel, hivel. Drumlabooh не поддерживает для сэмплов в SFZ файлы с именами, содержащими пробелы.</p>
 
 
 
