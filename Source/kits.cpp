@@ -1563,7 +1563,7 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
                     
               //key = -1;
               umin = 0;
-              umax = 0;
+              umax = 127;
               offset = 0;
                     
               fname.clear();
