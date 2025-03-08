@@ -54,7 +54,7 @@ public:
   bool is_on = false;
   float velocity = 1.0f;
 
-  void paint(Graphics &g);
+  void paint (Graphics &g);
 };
 
 

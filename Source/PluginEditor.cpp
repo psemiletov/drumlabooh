@@ -190,7 +190,9 @@ CFx::~CFx()
 void CLed::paint(Graphics& g)
 {
   if (is_on)
-     g.fillAll (cl_on.withLightness(velocity));
+     //g.fillAll (cl_on.withLightness(velocity));
+     g.fillAll (cl_on.withSaturation(velocity));
+    
   else
       g.fillAll (cl_off);
 }
