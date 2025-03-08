@@ -343,7 +343,7 @@ size_t CDrumSample::map_uint_velo_to_layer_number (uint velo)
   if (v_layers.size() == 1)
      return 0; //return zero pos layer if we have just one layer
 
-  std::cout << "CDrumSample::map_uint_velo_to_layer_number: " << velo << std::endl;
+ // std::cout << "CDrumSample::map_uint_velo_to_layer_number: " << velo << std::endl;
   
      
   size_t result = 0;
@@ -648,8 +648,11 @@ void CDrumKit::load_txt (const std::string &data)
 
              float part_size = (float) 1 / temp_sample->v_layers.size();
              
+             uint uint_part_size = 127 / temp_sample->v_layers.size();
+             
              CDrumLayer *l;
               //evaluate min and max velocities by the file position in the vector
+             //ПЕРЕПИСАТЬ ПОД UINT?
              for (size_t i = 0; i < temp_sample->v_layers.size(); i++)
                  {
                   l = temp_sample->v_layers[i];
@@ -657,13 +660,23 @@ void CDrumKit::load_txt (const std::string &data)
                   float segment_start = part_size * i;
                   float segment_end = part_size * (i + 1) - 0.001f;
 
-                  //std::cout << "segment_start: " << segment_start << std::endl;
-                  //std::cout << "segment_end: " << segment_end << std::endl;
+                  std::cout << "l->min: " << l->min << std::endl;
+                  std::cout << "l->max: " << l->max << std::endl;
 
                   l->min = segment_start;
                   l->max = segment_end;
+                  
+                  l->umin = uint_part_size * i;
+                  l->umax = uint_part_size * i + uint_part_size - 1;
+                  
+                  
+                  std::cout << "l->umin: " << l->umin << std::endl;
+                  std::cout << "l->umax: " << l->umax << std::endl;
+
+                  
                  }
 
+             l->umax = 127;    
              l->max = 1.0f;
             }
          else //ONE LAYER PER SAMPLE

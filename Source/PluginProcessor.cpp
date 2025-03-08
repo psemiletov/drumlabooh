@@ -511,10 +511,18 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   
 
            //s->trigger_sample (velocity);
-            if (drumkit->kit_type == KIT_TYPE_SFZ)
+      
+            /*if (drumkit->kit_type == KIT_TYPE_SFZ)
                 s->trigger_sample_uint (uvelocity, velocity);
             else
                 s->trigger_sample (velocity);
+            */
+            
+           if (drumkit->kit_type == KIT_TYPE_SFZ || drumkit->kit_type == KIT_TYPE_DRUMLABOOH ||  drumkit->kit_type == KIT_TYPE_QDRUMLABOOH)
+                s->trigger_sample_uint (uvelocity, velocity);
+            else
+                s->trigger_sample (velocity);
+
             
             
             std::cout << "s->current_layer:" << s->current_layer << std::endl;
@@ -761,13 +769,20 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             if (! s)
                continue;
   
-               
+            if (drumkit->kit_type == KIT_TYPE_SFZ || drumkit->kit_type == KIT_TYPE_DRUMLABOOH ||  drumkit->kit_type == KIT_TYPE_QDRUMLABOOH)
+                s->trigger_sample_uint (uvelocity, velocity);
+            else
+                s->trigger_sample (velocity);
+
+            
+            
+/*          СТАРОЕ     
             if (drumkit->kit_type == KIT_TYPE_SFZ)
                 s->trigger_sample_uint (uvelocity, velocity);
             else
                 s->trigger_sample (velocity);
             
-            
+  */          
             std::cout << "s->current_layer:" << s->current_layer << std::endl;
             std::cout << "s->>v_layers.size():" << s->v_layers.size() << std::endl;
 
