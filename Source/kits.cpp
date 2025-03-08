@@ -1,5 +1,5 @@
 /*
-written at 2023-24 by Peter Semiletov
+written at 2023-25 by Peter Semiletov
 this code is the public domain
  */
 
@@ -62,7 +62,6 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
   
   if (fname.empty())
      return 0;
-
  
   if (! file_exists (fname))
      return 0;
@@ -95,61 +94,27 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
       return 0;
 
    // std::cout << "getFormatName: " << reader->getFormatName()  << std::endl;
-
-  
-    //std::cout << "ext: " << ext << std::endl;
-
    //juce::AudioBuffer <float> *buffer = new juce::AudioBuffer<float>;
 
-   int bufsize = (int) reader->lengthInSamples - offset;
-
+   int bufsize = (int) reader->lengthInSamples - offset; //offset is for SFZ
    juce::AudioBuffer <float> *buffer = new juce::AudioBuffer<float> (1, bufsize);
-
-   
-//   buffer->setSize ((int) 1, bufsize);
-  
-  
-//  std::cout << "bufsize: " << bufsize << std::endl;
 
       // if (! reader->read (buffer,  0, bufsize, 0,  true, true))
    if (! reader->read (buffer,  0, bufsize, offset,  true, false)) //read just left channel
       {
-      // std::cout << "! reader->read " << std::endl;
+       std::cout << "! reader->read from: " << fname << std::endl;
    
        delete reader;
        delete buffer;
-       
-       
        return 0;
       }
-   //else
-     //   std::cout << "CANNOT LOAD: " << fname <<  std::endl;
-        
 
       
    samplerate = reader->sampleRate;
    length_in_samples = reader->lengthInSamples;
 
-      //hardcode 1 channel please :)
-    //  channels = 1;//reader->numChannels;
-
-   //   std::cout << "samplerate: " << samplerate << std::endl;
-//      std::cout << "length_in_samples: " << length_in_samples << std::endl;
-     //std::cout << "channels: " << channels << std::endl;
-
-  //   std::cout << "@@@@@ CDrumLayer::load_whole_sample GOOD END" << std::endl;
-
-      //delete fs;
-
-   //else
-     //  std::cout << "reader.get() IS nullptr\n";
-
-
    delete reader;
    return buffer;
-
-  //std::cout << "@@@@@ CDrumLayer::load_whole_sample BAD END" << std::endl;
-  //delete fs;
 }
 
 
@@ -158,10 +123,9 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   
   juce::AudioBuffer <float>* buffer = load_whole_sample (fname, offset);
   
-  
   if (! buffer)
      {
-      cout << "load error: " << fname << endl;
+      std::cout << "load error: " << fname << std::endl;
       return 0;
      }
 
@@ -180,28 +144,8 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   float ratio = (float) sess_samplerate / samplerate;
   size_t output_frames_count = ratio * length_in_samples;
 
- // std::cout << "channels: " << channels << std::endl;
-//  std::cout << "output_frames_count: " << output_frames_count << std::endl;
-
-//  juce::AudioBuffer<float> * out_buf = new juce::AudioBuffer <float> (channels, output_frames_count);
-
   //make mono (1-channel) buffer out_buf
   juce::AudioBuffer<float> *out_buf = new juce::AudioBuffer <float> (1, output_frames_count);
-
-
-/*
-  for (int i = 0; i < channels; i++)
-      {
-       float *input_buffer = buffer->getWritePointer(i);
-       if (! input_buffer)
-          continue;
-
-       std::shared_ptr<speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
-       rs->read (input_buffer);
-       rs->write (out_buf->getWritePointer(i), output_frames_count);
-      }
-
-*/
 
   std::shared_ptr <speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
   rs->read (input_buffer);
@@ -220,15 +164,11 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
 
 void CDrumLayer::load (const std::string &fname, int offset)
 {
-  std::cout << "void CDrumLayer::load (const std::string &fname): " <<
-                fname << " : " << session_samplerate << std::endl;
+//  std::cout << "void CDrumLayer::load (const std::string &fname): " <<
+  //              fname << " : " << session_samplerate << std::endl;
 
-                
   audio_buffer = load_whole_sample_resampled (fname, session_samplerate, offset);
 
-  //std::cout << "CDrumLayer::111\n";
-  
-  
   if (! audio_buffer)
      {
       std::cout << "CDrumLayer::load ERROR: " << fname << std::endl;
@@ -237,19 +177,8 @@ void CDrumLayer::load (const std::string &fname, int offset)
 
   file_name = fname;
 
- // if (channels > 0)
-  
   if (audio_buffer->getNumSamples() > 0)
       channel_data = audio_buffer->getReadPointer (0);
-
-     //channel_data [0] = audio_buffer->getReadPointer (0);
-
-  //altough we have just mono sample, this "stereo" code is a legacy
-
-  //if (channels > 1)
-    //  channel_data [1] = audio_buffer->getReadPointer (1);
-
- // std::cout << "void CDrumLayer::load  -end;\n";
 }
 
 
@@ -260,8 +189,6 @@ CDrumLayer::CDrumLayer (CDrumSample *s)
   sample_offset = 0;
   audio_buffer = 0;
   length_in_samples = 0;
-  //channels = 1;
-  //channel_data[0] = 0;
   channel_data = 0;
 }
 
@@ -287,20 +214,13 @@ CDrumSample::CDrumSample (int sample_rate)
 {
   session_samplerate = sample_rate;
   current_layer = 0;
-  
-  
   velocity = 0.0f;
-  
-  
   hihat_open = false;
   hihat_close = false;
   active = false;
   robin_counter = -1;
   layer_index_mode = LAYER_INDEX_MODE_VEL;
   mapped_note = -1;
-//  random_number = 0.0;
- // use_random_noice = false;
-//  noise_level = 0.001f; 
 }
 
 
@@ -313,8 +233,7 @@ CDrumSample::~CDrumSample()
 }
 
 
-//#define GAIN_MIN -60.0f
-
+//used for Hydrogen-format kits 
 size_t CDrumSample::map_velo_to_layer_number (float velo)
 {
   if (v_layers.size() == 1)
@@ -338,13 +257,13 @@ size_t CDrumSample::map_velo_to_layer_number (float velo)
 }
 
 
+//used for Drumlabooh and SFZ kits
 size_t CDrumSample::map_uint_velo_to_layer_number (uint velo)
 {
   if (v_layers.size() == 1)
      return 0; //return zero pos layer if we have just one layer
 
  // std::cout << "CDrumSample::map_uint_velo_to_layer_number: " << velo << std::endl;
-  
      
   size_t result = 0;
 
