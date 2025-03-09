@@ -343,15 +343,15 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
      if (kit->sample_counter != 0)
          kit->temp_sample->name = txt.as_string();
 
-  if (node_name == "id" && drumkit_info_passed && drumkitComponent_passed && ! kit->scan_mode)
+  if (node_name == "id" && drumkit_info_passed && drumkitComponent_passed)
      if (kit->sample_counter != 0)
          kit->temp_sample->id = txt.as_int();
 
-  if (node_name == "min" && drumkit_info_passed && drumkitComponent_passed && ! kit->scan_mode)
+  if (node_name == "min" && drumkit_info_passed && drumkitComponent_passed)
      if (kit->sample_counter != 0)
          kit->temp_sample->v_layers.back()->min = txt.as_float();
 
-  if (node_name == "max" && drumkit_info_passed && drumkitComponent_passed  && ! kit->scan_mode)
+  if (node_name == "max" && drumkit_info_passed && drumkitComponent_passed)
      if (kit->sample_counter != 0)
          kit->temp_sample->v_layers.back()->max = txt.as_float();
 
@@ -373,7 +373,7 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
      }
 
 
-  if (node_name == "layer" && kit->temp_sample && ! kit->scan_mode)
+  if (node_name == "layer" && kit->temp_sample)
      {
       if (kit->sample_counter != 0)
           kit->temp_sample->add_layer();
@@ -408,7 +408,7 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
               }
           }
 
-      if (! kit->scan_mode && kit->sample_counter != 0)
+      if (kit->sample_counter != 0)
           if (kit->temp_sample->v_layers.size() != 0)
               kit->temp_sample->v_layers.back()->load (path.c_str());
      }
@@ -548,7 +548,7 @@ void CDrumKit::load_txt (const std::string &data)
                   string filename = kit_dir + "/" + f;
                   temp_sample->add_layer();
 
-                  if (file_exists (filename) && ! scan_mode)
+                  if (file_exists (filename))
                       temp_sample->v_layers.back()->load (filename.c_str());
                  }
              else   
@@ -560,7 +560,7 @@ void CDrumKit::load_txt (const std::string &data)
                   string filename = fpath + "/" + f; // get full path to filename of the each sample
                   temp_sample->add_layer();
 
-                  if (file_exists (filename) && ! scan_mode)
+                  if (file_exists (filename))
                       temp_sample->v_layers.back()->load (filename.c_str());
                  }
                  
@@ -571,7 +571,7 @@ void CDrumKit::load_txt (const std::string &data)
              
              CDrumLayer *l;
               //evaluate min and max velocities by the file position in the vector
-             //ПЕРЕПИСАТЬ ПОД UINT?
+             
              for (size_t i = 0; i < temp_sample->v_layers.size(); i++)
                  {
                   l = temp_sample->v_layers[i];
@@ -579,20 +579,17 @@ void CDrumKit::load_txt (const std::string &data)
                   float segment_start = part_size * i;
                   float segment_end = part_size * (i + 1) - 0.001f;
 
-                  std::cout << "l->min: " << l->min << std::endl;
-                  std::cout << "l->max: " << l->max << std::endl;
+//                  std::cout << "l->min: " << l->min << std::endl;
+//                  std::cout << "l->max: " << l->max << std::endl;
 
-                  l->min = segment_start;
-                  l->max = segment_end;
+                  l->min = segment_start; //for Hydrogen
+                  l->max = segment_end;   //for Hydrogen
                   
-                  l->umin = uint_part_size * i;
-                  l->umax = uint_part_size * i + uint_part_size - 1;
+                  l->umin = uint_part_size * i;  //Labooh/SFZ
+                  l->umax = uint_part_size * i + uint_part_size - 1; //Labooh/SFZ
                   
-                  
-                  std::cout << "l->umin: " << l->umin << std::endl;
-                  std::cout << "l->umax: " << l->umax << std::endl;
-
-                  
+//                  std::cout << "l->umin: " << l->umin << std::endl;
+//                  std::cout << "l->umax: " << l->umax << std::endl;
                  }
 
              l->umax = 127;    
@@ -603,12 +600,10 @@ void CDrumKit::load_txt (const std::string &data)
               string filename = kit_dir + "/" + fname;
 
               temp_sample = add_sample (sample_counter++);
-
               temp_sample->name = sample_name;
-
               temp_sample->add_layer(); //add default layer
 
-              if (file_exists (filename) && ! scan_mode)
+              if (file_exists (filename))
                  {
                   temp_sample->v_layers.back()->load (filename.c_str());
                   if (! str_note.empty())
@@ -657,9 +652,6 @@ void CDrumKit::load_txt (const std::string &data)
 
 void CDrumKit::load_qtxt (const std::string &data)
 {
- 
-//  std::cout << data << std::endl;
-    
   if (data.empty())
       return;
 
@@ -668,8 +660,8 @@ void CDrumKit::load_qtxt (const std::string &data)
 
   kit_type = KIT_TYPE_QDRUMLABOOH;
   
-  stringstream st (data);
-  string line;
+  std::stringstream st (data);
+  std::string line;
 
   while (getline (st, line))
         {
@@ -682,7 +674,6 @@ void CDrumKit::load_qtxt (const std::string &data)
             break;
          
          if (line.rfind ("#EMPTY", 0) == 0)
-         //if (line == "#EMPTY") 
             {
              sample_counter++;
              continue;
@@ -698,8 +689,8 @@ void CDrumKit::load_qtxt (const std::string &data)
              continue;
 
 
-         string sample_name = line.substr (0, pos);
-         string fname = line.substr (pos + 1, line.size() - pos);
+         std::string sample_name = line.substr (0, pos);
+         std::string fname = line.substr (pos + 1, line.size() - pos);
          
          if (fname.empty())
              continue;
@@ -710,9 +701,8 @@ void CDrumKit::load_qtxt (const std::string &data)
           
           std::filesystem::path path (fname);
           
-          string filename; //final name
+          std::string filename; //final name
          
-          //if (fname[0] == '/')
           if (path.is_absolute())
               filename = fname; //absolute!
           else   
@@ -724,7 +714,7 @@ void CDrumKit::load_qtxt (const std::string &data)
 
           temp_sample->add_layer(); //add default layer
 
-          if (file_exists (filename) && ! scan_mode)
+          if (file_exists (filename))
               temp_sample->v_layers.back()->load (filename.c_str());
 
 
@@ -766,44 +756,9 @@ void CDrumKit::load_qtxt (const std::string &data)
 
 std::string guess_sample_name (const std::string &raw)
 {
-  std::string result;
-
-  std::string t = raw;
-
-  //remove .ext
-
-  t.pop_back();
-  t.pop_back();
-  t.pop_back();
-  t.pop_back();
-
-  //remove part before slash
-
-  size_t pos = t.find ("/");
-
-  if (pos != string::npos)
-      t = t.substr (pos + 1);
-
-  //remove all non-letters
-
-  for (size_t i = 0; i < t.size(); i++)
-      if (isalnum (t[i]))
-         result += t[i];
-
-  return result;
-}
-
-
-std::string guess_sample_name2 (const std::string &raw)
-{
-  //std::string result;
-
   std::string base_filename = raw.substr(raw.find_last_of("/\\") + 1);
   std::string::size_type const p(base_filename.find_last_of('.'));
   std::string file_without_extension = base_filename .substr (0, p);
-  
-
-  //remove all non-letters
 
   std::string t = file_without_extension;
   
@@ -815,39 +770,12 @@ std::string guess_sample_name2 (const std::string &raw)
 }
 
 
-/*
-
-
-
-
-std::string guess_sample_name2 (const std::string &raw)
-{
-  //std::string result;
-
-  std::string base_filename = raw.substr(raw.find_last_of("/\\") + 1);
-  std::string::size_type const p(base_filename.find_last_of('.'));
-  std::string file_without_extension = base_filename .substr (0, p);
-  
-
-  //remove all non-letters
-
-  std::string t;
-  
-  for (size_t i = 0; i < file_without_extension.size(); i++)
-      if (isalnum (file_without_extension[i]))
-         t += file_without_extension[i];
-
-  return t;
-}
-*/
-
 // trim from right
 inline std::string& rtrim (std::string &s, const char *t = " \t\n\r\f\v")
 {
   s.erase (s.find_last_not_of (t) + 1);
   return s;
 }
-
 
 
 std::string get_parameter_from_line (const std::string &line, const std::string &key)
@@ -874,311 +802,14 @@ std::string get_parameter_from_line (const std::string &line, const std::string 
       if (end != string::npos)
           result = line.substr (pos, end - pos);
       else
-           {
-            //копируем от pos до конца строки
-            result = line.substr (pos, line.size() - pos);
-           } 
-
+          //копируем от pos до конца строки
+          result = line.substr (pos, line.size() - pos);
      }
      
   //std::cout << key << ": " << result << std::endl;  
      
   return result;   
 }
-
-/*
-  
- Inside the definition file, a region starts with the ‹region› header. 
- A region is defined between two ‹region› headers, or between a ‹region› header 
- and a ‹group› header, or between a ‹region› header and the end of the file. 
-  
- */ 
-
-
-/*
-
-void CDrumKit::load_sfz_new3 (const std::string &data)
-{
-  cout << "void CDrumKit::load_sfz_new3 (const std::string data)\n";
-
-  if (data.empty())
-      return;
-
-  map_samples.clear();
- 
-  kit_type = KIT_TYPE_SFZ;
- 
-  //change crlf in data to lf
-
-  
-  std::string temp_data = string_replace_all (data, "\r\n", "\n");
-  temp_data = string_replace_all (data, "\\", "/");
- 
- 
-  size_t i = kit_dir.rfind ("/");
-  kit_name = kit_dir.substr (i + 1);
-
-  std::string sfz_default_path;
-  
-  
-  std::vector <std::string> t_str = split_string_to_vector (temp_data, "\n", false);
-  
-  std::vector <std::string> v_str;
-  
-  size_t j = 0;
-  for (size_t i = 0; i < t_str.size(); i++)
-      {
-       std::string t = t_str[i];   
-        
-       if (t.find ("//") == string::npos) 
-           v_str.push_back (t);
-    
-      }
-  
-
-  
-  //std::stringstream st (temp_data);
-  std::string line;
-
-
-//temp vars
-  
-  std::string fname;
-  std::string just_name;
-  int key = -1;
-  uint umin = 0;
-  uint umax = 127;
-  uint offset = 0;
-  
-  sample_counter = 0;
-  
-//  int region_state = 0; //0 - empty, 1 - встретили начальный опкод региона, 2 - встретили конечный
-  
-  bool region_scope = false;
-  
-  //while (getline (st, line))
-  
-  
-    size_t index = -1;
-  
-    while (index != v_str.size())
-  
-//  for (size_t index = 0; index < v_str.size(); index++)
-      {
-     //  if (index == MAX_SAMPLES) //WE DON'T LOAD MORE THAN MAX_SAMPLES SAMPLES
-       //    break;
-       index++;
- 
-       if (index == v_str.size())
-           break;
-        
-       line = v_str[index]; 
-//       cout << "PARSE LINE: " << line << std::endl;
-       
-       
-       if (line.empty())
-          continue;
-
-        
-       if (line.find ("//") != string::npos) //skip the comment
-          continue;
-        
-          
-       if (line.find ("<region>") != string::npos)
-          region_scope = true;
-        
-        
-        //начинаем читать параметры
-        //default_path         
-        
-        std::string temp_sfz_default_path = get_parameter_from_line (line, "default_path");
-        
-        if (! temp_sfz_default_path.empty())
-            sfz_default_path = string_replace_all (temp_sfz_default_path, "\\", "/");
- 
-    
-
-         //offset
-        
-             //key:
-         std::string str_offset = get_parameter_from_line (line, "offset");
-         //cout << "str_key: " << str_key << std::endl;
-          
-         if (! str_offset.empty())
-            {
-             offset = std::stoi (str_offset); 
-             //cout << "parsed offset: " << offset << std::endl;
-            } 
-
-        //temp_sfz_default_path;
-            
-         //key:
-         std::string str_key = get_parameter_from_line (line, "key");
-         //cout << "str_key: " << str_key << std::endl;
-          
-         if (! str_key.empty())
-            {
-             key = std::stoi (str_key); 
-             cout << "parsed key: " << key << std::endl;
-            } 
-
-         //таким образом key может быть -1 только с самого начала
-         //пустое key не присваивается
-            
-         //читаем имя файла из sample   
-         std::string temp_file_just_name = get_parameter_from_line (line, "sample"); 
-         
-         //не пусто?
-         if (! temp_file_just_name.empty())
-            {
-             just_name = rtrim (temp_file_just_name); //remove trailing spaces if any
-             fname = kit_dir + "/" + sfz_default_path + just_name; //составляем полное имя
-         //    cout << "fname: " << fname << std::endl;
-            }
-         
-         
-         //читаем параметры скорости
-         std::string lovel = get_parameter_from_line (line, "lovel");    
-         std::string hivel = get_parameter_from_line (line, "hivel");    
-         
-         if (! lovel.empty())
-             umin = std::stoi (lovel);
-            
-         if (! hivel.empty())
-             umax = std::stoi (hivel);
-
-        
-        //а что у нас в следующей строке?
-        
-        //cout << "111111111111\n";
-
-        
-        std::string next_line; 
-        if (index + 1 != v_str.size()) 
-           next_line = v_str [index + 1];
-        
-        
-     //  std::cout << ">>>>>>>>>>>>>next_line: " << next_line << std::endl;
-         
-        if (next_line.find ("<group>") != string::npos || 
-            next_line.find ("<region>") != string::npos ||
-            index + 1 == v_str.size()) //EOF
-          if (region_scope) 
-            {
-//             cout << "-----region_scope-------\n";
-
-  //           cout << "line: " << line << std::endl;
-             
-             //is key exists at some samples?
-             if (map_samples.count (key) > 0) 
-                {
-                 //cout << "map_samples.count (key) > 0" << std::endl;
-    //             cout << "key: " << key << " is found" << std::endl;
-                 
-                 temp_sample = map_samples [key]; //если уже есть сэмпл с таким key, получаем
-                }  
-             else
-                 {
-      //            cout << "created new sample at array pos: " << sample_counter << std::endl;
-        //          cout << "mapped to key: " << key << std::endl;
- 
-                  temp_sample = add_sample (sample_counter++);
-                  temp_sample->mapped_note = key;
-//                  map_samples[key] = temp_sample;
-                  map_samples.insert ({key, temp_sample});
-                 }                  
-                 
-                
-            if (temp_sample)    
-               {
-          //      cout << "add new layer/region with key: " << key << std::endl;
-   
-             //   just_name = rtrim (just_name); //remove trailing spaces if any
-              //  fname = kit_dir + "/" + sfz_default_path + just_name;
-
-                //cout << "fname: " << fname << std::endl;
-             
-                if (file_exists (fname))
-                   {
-            //        cout << "loading to new layer: " << fname << std::endl;
- 
-                    temp_sample->add_layer();
-                    temp_sample->v_layers.back()->load (fname.c_str(), offset);
-                       
-                    
-                    temp_sample->v_layers.back()->umin = umin;
-                    temp_sample->v_layers.back()->umax = umax;
-                   }
-                 else
-                     cout << "sample file name not found or not parsed properly\n";
-              //  cout << "temp_sample->v_layers.size(): " << temp_sample->v_layers.size() << std::endl;
-                   
-               } //end if temp_sample
-   
-
-              //cout << "exit from temp_sample != 0 \n";
-
-   
-              region_scope = false; //reset state 
-                    
-              //key = -1;
-              umin = 0;
-              umax = 0;
-              offset = 0;
-                    
-              fname.clear();
-              just_name.clear();
-              temp_sample = 0;
-              
-              //cout << "------------\n";
- 
-            } //end region scope = true
-            
-       
-        } //end cycle
- 
-
-    //cout << "!!! naming cycle: " << endl;
-     for (size_t i = 0; i < MAX_SAMPLES; i++)
-         {
-          temp_sample = a_samples[i];
-          
-      //    cout << "i: " << i << endl;
-          
-//          cout << "temp_sample->name: " << temp_sample->name << endl;
-           
-          if (temp_sample)
-          if (temp_sample->v_layers.size() > 0)  
-            {
-             temp_sample->name = guess_sample_name2 (temp_sample->v_layers[0]->file_name); 
-           
-        //   cout << "# " << i << " temp_sample->name: " << temp_sample->name << endl;
-              
-             for (auto signature: v_hat_open_signatures)
-                 {
-                  if (findStringIC (temp_sample->name, signature))
-                     {
-                      temp_sample->hihat_open = true;
-                      break;
-                     }
-                 }
-
-             for (auto signature: v_hat_close_signatures)
-                 {
-                  if (findStringIC (temp_sample->name, signature))
-                     {
-                      temp_sample->hihat_close = true;
-                      break;
-                     }
-                 }
-            }   
-      }
- 
-  
-    loaded = true;    
-}
-*/
-
 
 
 std::string sfz_extract_sample_filename (const std::string &line)
@@ -1200,7 +831,7 @@ std::string sfz_extract_sample_filename (const std::string &line)
       ext = ".flac";
       if (end_pos == string::npos) 
          {
-          ext = ".aiff";
+          ext = ".aif"; //aiff too
           end_pos = line.find (ext);
           if (end_pos == string::npos) 
             {
@@ -1219,17 +850,13 @@ std::string sfz_extract_sample_filename (const std::string &line)
   if (end_pos != string::npos) 
      result = line.substr (start_pos + pattern.size(), end_pos + ext.size());
   
-    
-  
   return result;
 }
 
 
-
-
-void CDrumKit::load_sfz_new3 (const std::string &data)
+void CDrumKit::load_sfz_new (const std::string &data)
 {
-  cout << "void CDrumKit::load_sfz_new3 (const std::string data)\n";
+  //cout << "void CDrumKit::load_sfz_new (const std::string data)\n";
 
   if (data.empty())
       return;
@@ -1239,7 +866,6 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
   kit_type = KIT_TYPE_SFZ;
  
   //change crlf in data to lf
-
   
   std::string temp_data = string_replace_all (data, "\r\n", "\n");
   temp_data = string_replace_all (data, "\\", "/");
@@ -1249,7 +875,6 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
   kit_name = kit_dir.substr (i + 1);
 
   std::string sfz_default_path;
-  
   
   std::vector <std::string> t_str = split_string_to_vector (temp_data, "\n", false);
   
@@ -1262,14 +887,9 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
         
        if (t.find ("//") == string::npos) 
            v_str.push_back (t);
-    
       }
   
-
-  
-  //std::stringstream st (temp_data);
   std::string line;
-
 
 //temp vars
   
@@ -1282,184 +902,133 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
   
   sample_counter = 0;
   
-//  int region_state = 0; //0 - empty, 1 - встретили начальный опкод региона, 2 - встретили конечный
-  
   bool region_scope = false;
-  
-  //while (getline (st, line))
   
   /*
   
    ТРУДНОСТИ:
    
    1. Нет обработки MAX_SAMPLES
-   2. В первые два элементе a_samples раскиданы слои одного и того же сэмпла
   
   */
   
     size_t index = -1;
   
     while (index != v_str.size())
-  
-//  for (size_t index = 0; index < v_str.size(); index++)
-      {
-     //  if (index == MAX_SAMPLES) //WE DON'T LOAD MORE THAN MAX_SAMPLES SAMPLES
-       //    break;
-       index++;
+          {
+           index++;
  
-       if (index == v_str.size())
-           break;
+           if (index == v_str.size() || index > MAX_SAMPLES)
+               break;
         
-       line = v_str[index]; 
-//       cout << "PARSE LINE: " << line << std::endl;
+           line = v_str[index]; 
+   //       cout << "PARSE LINE: " << line << std::endl;
        
        
-       if (line.empty())
-          continue;
+           if (line.empty())
+              continue;
 
         
-       if (line.find ("//") != string::npos) //skip the comment
-          continue;
+           if (line.find ("//") != string::npos) //skip the comment
+              continue;
         
           
-       if (line.find ("<region>") != string::npos)
-          region_scope = true;
+           if (line.find ("<region>") != string::npos)
+              region_scope = true;
         
         
-        //начинаем читать параметры
-        //default_path         
+           //начинаем читать параметры
+           //default_path         
+          
+           std::string temp_sfz_default_path = get_parameter_from_line (line, "default_path");
         
-        std::string temp_sfz_default_path = get_parameter_from_line (line, "default_path");
-        
-        if (! temp_sfz_default_path.empty())
-            sfz_default_path = string_replace_all (temp_sfz_default_path, "\\", "/");
+           if (! temp_sfz_default_path.empty())
+               sfz_default_path = string_replace_all (temp_sfz_default_path, "\\", "/");
  
-    
-
-         //offset
+           //offset
         
-             //key:
-         std::string str_offset = get_parameter_from_line (line, "offset");
-         //cout << "str_key: " << str_key << std::endl;
+           std::string str_offset = get_parameter_from_line (line, "offset");
+           //cout << "str_key: " << str_key << std::endl;
           
-         if (! str_offset.empty())
-            {
-             offset = std::stoi (str_offset); 
-             //cout << "parsed offset: " << offset << std::endl;
-            } 
-
-        //temp_sfz_default_path;
+           if (! str_offset.empty())
+               offset = std::stoi (str_offset); 
             
-         //key:
-         std::string str_key = get_parameter_from_line (line, "key");
-         //cout << "str_key: " << str_key << std::endl;
+           //key:
+           std::string str_key = get_parameter_from_line (line, "key");
+           //cout << "str_key: " << str_key << std::endl;
           
-         if (! str_key.empty())
-            {
-             key = std::stoi (str_key); 
-             cout << "parsed key: " << key << std::endl;
-            } 
+           if (! str_key.empty())
+               key = std::stoi (str_key); 
 
          //таким образом key может быть -1 только с самого начала
          //пустое key не присваивается
             
          //читаем имя файла из sample   
          
-         //size_t eq_count = ch_count (line, '=');
-         
-         //cout << "eq_count: " << eq_count << std::endl;
+           std::string temp_file_just_name;
          
          
-         std::string temp_file_just_name;
+           if (line.find ("sample=") != string::npos) 
+               temp_file_just_name = sfz_extract_sample_filename (line);
          
-         //if (eq_count > 1)
-         //    temp_file_just_name = get_parameter_from_line (line, "sample"); 
+           //не пусто?
+           if (! temp_file_just_name.empty())
+              {
+               just_name = rtrim (temp_file_just_name); //remove trailing spaces if any
+               fname = kit_dir + "/" + sfz_default_path + just_name; //составляем полное имя
+              }
+        
          
-         if (line.find ("sample=") != string::npos) 
-             temp_file_just_name = sfz_extract_sample_filename (line);
-        /* else
-             {
-              //от pos до конца строки
-              size_t pos = line.find ("="); 
-              if (pos == 1)
-                  temp_file_just_name = line.substr (pos + 1);                
-             }
-        */
+          //читаем параметры скорости
+           std::string lovel = get_parameter_from_line (line, "lovel");    
+           std::string hivel = get_parameter_from_line (line, "hivel");    
          
-         //не пусто?
-         if (! temp_file_just_name.empty())
-            {
-             just_name = rtrim (temp_file_just_name); //remove trailing spaces if any
-             fname = kit_dir + "/" + sfz_default_path + just_name; //составляем полное имя
-             cout << "************fname: " << fname << std::endl;
-            }
-         
-         
-         //читаем параметры скорости
-         std::string lovel = get_parameter_from_line (line, "lovel");    
-         std::string hivel = get_parameter_from_line (line, "hivel");    
-         
-         if (! lovel.empty())
-             umin = std::stoi (lovel);
+           if (! lovel.empty())
+               umin = std::stoi (lovel);
             
-         if (! hivel.empty())
-             umax = std::stoi (hivel);
+           if (! hivel.empty())
+               umax = std::stoi (hivel);
 
         
-        //а что у нас в следующей строке?
+          //а что у нас в следующей строке?
         
-        //cout << "111111111111\n";
-
+           std::string next_line; 
+           if (index + 1 != v_str.size()) 
+              next_line = v_str [index + 1];
         
-        std::string next_line; 
-        if (index + 1 != v_str.size()) 
-           next_line = v_str [index + 1];
-        
-        
-     //  std::cout << ">>>>>>>>>>>>>next_line: " << next_line << std::endl;
-           
-/*        if (next_line.find ("<group>") != string::npos || 
-            next_line.find ("<region>") != string::npos ||
-            index + 1 == v_str.size()) //EOF
-             cout << "22222222222\n";
-
-  */          
          
-        if (next_line.find ("<group>") != string::npos || 
-            next_line.find ("<region>") != string::npos ||
-            index + 1 == v_str.size()) //EOF
-          if (region_scope) 
-            {
-             cout << "-----region_scope-------\n";
+           if (next_line.find ("<group>") != string::npos || 
+               next_line.find ("<region>") != string::npos ||
+               index + 1 == v_str.size()) //EOF
+               if (region_scope) 
+                  {
+                   //cout << "-----region_scope-------\n";
 
-             cout << "line: " << line << std::endl;
+                   //cout << "line: " << line << std::endl;
              
-             //is key exists at some samples?
-             if (map_samples.count (key) > 0) 
-                {
-                 cout << "map_samples.count (key) > 0" << std::endl;
-                 cout << "key: " << key << " is found" << std::endl;
-                 
-                 temp_sample = map_samples [key]; //если уже есть сэмпл с таким key, получаем
-                }  
-             else
-                 {
-                  cout << "created new sample at array pos: " << sample_counter << std::endl;
-                  cout << "mapped to key: " << key << std::endl;
+                   //is key exists at some samples?
+                   //if (map_samples.count (key) > 0) 
+                   if (map_samples.find (key) != map_samples.end()) 
+                      {
+                       cout << "map_samples.count (key) > 0" << std::endl;
+                       cout << "key: " << key << " is found" << std::endl;
+                       temp_sample = map_samples [key]; //если уже есть сэмпл с таким key, получаем
+                      }   
+                   else
+                       {
+                        cout << "created new sample at array pos: " << sample_counter << std::endl;
+                        cout << "mapped to key: " << key << std::endl;
                   
-                  temp_sample = add_sample (sample_counter++);
-                  
-                  temp_sample->mapped_note = key;
+                        temp_sample = add_sample (sample_counter++);
+                        temp_sample->mapped_note = key;
  
-//                  map_samples[key] = temp_sample;
-                  map_samples.insert ({key, temp_sample});
-                  
-             
-                 }                  
+     //                  map_samples[key] = temp_sample;
+                        map_samples.insert ({key, temp_sample});
+                       }                  
                  
                 
-            if (temp_sample)    
-               {
+                  if (temp_sample)    
+                     {
           //      cout << "add new layer/region with key: " << key << std::endl;
    
              //   just_name = rtrim (just_name); //remove trailing spaces if any
@@ -1534,7 +1103,7 @@ void CDrumKit::load_sfz_new3 (const std::string &data)
             
              cout << "temp_sample.v_layers.size():" << temp_sample->v_layers.size() << std::endl;
              
-           temp_sample->name = guess_sample_name2 (temp_sample->v_layers[0]->file_name); 
+           temp_sample->name = guess_sample_name (temp_sample->v_layers[0]->file_name); 
            
         //   cout << "# " << i << " temp_sample->name: " << temp_sample->name << endl;
               
@@ -1584,8 +1153,8 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   //std::string filename = resolve_symlink (fname.c_str());
   std::string filename = resolve_symlink (initial_fname.c_str());
 
-   if (! scan_mode)
-       cout << "@@@@@@@@@@@@ void CDrumKit::load: " << filename << endl;
+   //if (! scan_mode)
+  cout << "@@@@@@@@@@@@ void CDrumKit::load: " << filename << endl;
 
   
   kit_filename = filename;
@@ -1609,7 +1178,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
   if (ends_with (kit_filename, ".sfz"))
      {
-      load_sfz_new3 (source);
+      load_sfz_new (source);
       return;
      }
 
@@ -1672,7 +1241,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
 CDrumKit::CDrumKit()
 {
-  scan_mode = false;
+  //scan_mode = false;
   layers_supported = false;
   has_mapping = false;
   loaded = false;
@@ -1963,131 +1532,6 @@ CDrumKitsScanner::~CDrumKitsScanner()
 }
 
 
-//DEPRECATED
-void CDrumKitsScanner::scan_full()
-{
-  std::vector <std::string> v_kits_locations;
-
-  v_kits_dirs.clear();
-  v_kits_names.clear();
-  map_kits.clear();
-
-#if !defined(_WIN32) || !defined(_WIN64)
-
-  v_kits_locations.push_back ("/usr/share/hydrogen/data/drumkits");
-  v_kits_locations.push_back ("/usr/local/share/hydrogen/data/drumkits");
-  v_kits_locations.push_back ("/usr/share/drmr/drumkits");
-  v_kits_locations.push_back ("/usr/share/drumrox-kits");
-  v_kits_locations.push_back ("/usr/share/drumlabooh-kits");
-  v_kits_locations.push_back ("/usr/local/share/drumlabooh-kits");
-
-  v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
-  v_kits_locations.push_back (get_home_dir() + "/.drmr/drumkits");
-  v_kits_locations.push_back (get_home_dir() + "/drumrox-kits");
-  v_kits_locations.push_back (get_home_dir() + "/drumlabooh-kits");
-  v_kits_locations.push_back (get_home_dir() + "/drum_sklad");
-
-  v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
-/*
-  juce::File home_location = File::getSpecialLocation	(juce::File::SpecialLocationType::userHomeDirectory);
-  const String & fnm = home_location.getFullPathName();
-  std::string sfnm (fnm.toStdString());
-  sfnm += "\\";
-  */
-#else
-
- // juce::File home_location = File::getSpecialLocation	(juce::File::SpecialLocationType::userHomeDirectory);
-
-  v_kits_locations.push_back ("c:\\drum_sklad");
-  v_kits_locations.push_back ("d:\\drum_sklad");
-
-  v_kits_locations.push_back ("c:\\drumlabooh-kits");
-  v_kits_locations.push_back ("c:\\sfz-kits");
-  v_kits_locations.push_back ("d:\\drumlabooh-kits");
-  v_kits_locations.push_back ("d:\\sfz-kits");
-
-  //v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
-
-  juce::File home_location = File::getSpecialLocation (juce::File::SpecialLocationType::userHomeDirectory);
-  const String &fnm = home_location.getFullPathName();
-  std::string sfnm (fnm.toStdString());
-  sfnm += "\\";
-  sfnm += ".hydrogen/data/drumkits";
-  v_kits_locations.push_back (sfnm);
-
-  /*
-  std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
-
-  std::cout << get_home_dir() + "/.hydrogen/data/drumkits" << std::endl;
-
-  std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
-*/
-
-#endif
-
-  for (std::string i: v_kits_locations)
-      {
-       std::vector <std::string> v_kits_dirs_t = files_get_list (i);
-       if (v_kits_dirs_t.size() > 0)
-          v_kits_dirs.insert (v_kits_dirs.end(), v_kits_dirs_t.begin(), v_kits_dirs_t.end());
-      }
-
-  std::sort (v_kits_dirs.begin(), v_kits_dirs.end());
-  v_kits_dirs.erase (std::unique (v_kits_dirs.begin(), v_kits_dirs.end() ), v_kits_dirs.end() );
-
-  for (std::string kd: v_kits_dirs)
-      {
-       //cout << kd << endl;
-       //cout << get_kit_name (kd + "/drumkit.xml") << endl;
-
-       bool kit_exists = false;
-
-       std::string fname = kd + "/drumkit.xml";
-
-       if (file_exists (fname))
-          kit_exists = true;
-       else
-           {
-            fname = kd + "/drumkit.txt";
-            if (file_exists (fname))
-               kit_exists = true;
-           }
-
-
-       if (kd.find ("/sfz-kits") != string::npos)
-          {
-           //search sfz file
-           std::vector <std::string> v = files_get_list (kd, ".sfz");
-           if (v.size() != 0)
-              fname = v[0];
-
-           if (file_exists (fname))
-               kit_exists = true;
-          }
-
-
-       if (kit_exists)
-          {
-           CDrumKit *kit = new CDrumKit;
-           kit->scan_mode = true;
-           kit->load (fname.c_str(), 44100);
-           //v_scanned_kits.push_back (kit);
-           
-           if (! kit->kit_name.empty())
-              {
-               map_kits.insert (pair<string,string> (kit->kit_name, fname));
-               v_kits_names.push_back (kit->kit_name);
-              }
-              
-           delete kit;
-          }
-
-      }
-
-      
-    std::sort (v_kits_names.begin(), v_kits_names.end());  
-}
-
 
 void CDrumKitsScanner::scan()
 {
@@ -2284,11 +1728,6 @@ void CDrumSample::trigger_sample (float vel)
        
       if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
          {
-         //if (current_layer == v_layers.size() - 1)
-          ///   current_layer = -1;
-          
-         //std::cout << "trigger\n"; 
-          
           robin_counter++;
 
           if (robin_counter == v_layers.size())
@@ -2364,9 +1803,7 @@ CDrumSample* CDrumKit::load_sample_to_index (size_t index, const std::string &fn
   sample_counter++;
   
   s->add_layer();
-  
   s->v_layers.back()->load (fname.c_str());
-///
   
   //detect sample name
   
@@ -2395,13 +1832,10 @@ CDrumSample* CDrumKit::load_sample_to_index (size_t index, const std::string &fn
                break;
               }
           }
-/////////
   
   a_samples[index] = s;
-  
-  //loaded = true;
-  
-//  std::cout << "CDrumKit::load_sample_to_index - end" << std::endl;
+
+  //  std::cout << "CDrumKit::load_sample_to_index - end" << std::endl;
   
   return s;
 }
@@ -2434,8 +1868,6 @@ void CDrumKit::save_qkit()
  
   for (size_t i = 0; i < 36; i++)
       { 
-   
-        
        CDrumSample *s = a_samples[i];
 
 //       std::cout << "i: " << i << std::endl;
@@ -2448,19 +1880,15 @@ void CDrumKit::save_qkit()
    
        if (s->v_layers.size() == 0)
           continue;
-
         
        std::string line;
         
        if (s->v_layers[0]->audio_buffer)
           {
-            
            line = s->name;
            line += "=";
            line += s->v_layers[0]->file_name;
            line += "\n";
-           
-           
            result += line;
           }
        } 
