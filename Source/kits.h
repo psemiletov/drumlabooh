@@ -129,7 +129,7 @@ class CDrumKit
 {
 public:
 
-  bool scan_mode; //if false, we do not load kit's samples
+//  bool scan_mode; //if false, we do not load kit's samples
 
   std::string kit_name; //parsed from XML or evaluated in other way
   std::string kit_filename; //full path to the kit xml, txt or sfz file
@@ -194,13 +194,11 @@ public:
 
   std::vector <std::string> v_kits_dirs;
   std::vector <std::string> v_kits_names;
-  //std::vector <CDrumKit*> v_scanned_kits;
   std::map <std::string, std::string> map_kits; //name = full path
 
   CDrumKitsScanner();
   ~CDrumKitsScanner();
 
-  void scan_full(); //old scan, uses semi-loading for each drumkit
   void scan(); //new, does not load kits, just extract names in some ways 
 
   void print();
