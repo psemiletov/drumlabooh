@@ -1,8 +1,22 @@
-   Drumlabooh 6.0.0
+   Drumlabooh 7.0.0
 
-   Just after a previous "big update" here is another one. Ready-to-use drumkits are good thing, but what about all that thouthands sample packs, commercial and free? We need a way to load and play any samples, not just from the drumkits!
-   Thus, Drumlabooh 6 introduces the conception of Quick Kits (see the "Quick Custom Kits" section of the Manual). Using buttons "+" and "-" near the cell/slot name, you can add any external samples to the sample slots, remove samples from the slots, and save it as the Quick Kit with some name.
-  Other news and fixes for this release - GUI at the multi-channel mode has been fixed; many few and boring fixes. Windows build rolled back to compile with JUCE 7, to make it compatible with Windows 7.
-  The Manual at the homesite (https://psemiletov.github.io/drumlabooh/) is rewritten a lot.
+   In this version, I removed a lot of legacy code and rewrote SFZ reader, so now Drumlabooh can load alsmost any existing SFZ drumkit, but SFZ's "inlcude" and round robin options are not supported. 
+   Drumlabooh's own kit format is extended to make complex kits creation easier, you can define the kit part at the single file, and use its file name at the whole kit definition. This brokes Drumlabooh kit compatibility with my legacy drum machine Drumrox, but all previously created and simple kits are stays compatible.
+   The first example of "extended format" is a new kit called Lamp Vanilla, bundled with Drumlabooh.
+   Being initially as the continuation of Drumrox, the fork of DrMr, Drumlabooh now is not just the Hydrogen kits sampler, but has a lot of own format kits on the board:
+
+LIST
+
+
+    And for now the state of formats support is following:
+   Drumlabooh: up to 36 instruments at the kit, multi layer (127 layers per instrument), round robin options, note mapping. The ability to clone the kit with sessions sample rate to make it load faster.
+   Quick Kit: the simplified Drumlabooh kit format that allows user load external samples directly at GUI.
+   SFZ: up to 36 instruments at the kit, multi layer (127 layers per instrument), note mapping, sample offset.
+   Hydrogen: up to 36 instruments at the kit, multi layer (127 layers per instrument, but 16 is the limition of the format).
+   Smart hihats mute works automatically for all formats. All pan and volume settings hardcoded to drumkit are ignored to the favour of Drumlabooh built-in mixer.
+
+
+
+
 
    Stay tuned, Peter Semiletov

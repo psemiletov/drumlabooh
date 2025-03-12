@@ -1034,99 +1034,77 @@ void CDrumKit::load_sfz_new (const std::string &data)
              //   just_name = rtrim (just_name); //remove trailing spaces if any
               //  fname = kit_dir + "/" + sfz_default_path + just_name;
 
-                cout << "fname: " << fname << std::endl;
+                      cout << "fname: " << fname << std::endl;
              
-                if (file_exists (fname))
-                   {
-                    cout << "loading to new layer: " << fname << std::endl;
+                      if (file_exists (fname))
+                         {
+                          cout << "loading to new layer: " << fname << std::endl;
  
-                    temp_sample->add_layer();
-                    temp_sample->v_layers.back()->load (fname.c_str(), offset);
-                       
+                          temp_sample->add_layer();
+                          temp_sample->v_layers.back()->load (fname.c_str(), offset);
                     
-                    temp_sample->v_layers.back()->umin = umin;
-                    temp_sample->v_layers.back()->umax = umax;
+                          temp_sample->v_layers.back()->umin = umin;
+                          temp_sample->v_layers.back()->umax = umax;
                     
-                      cout << "temp_sample->v_layers.size(): " << temp_sample->v_layers.size() << std::endl;
-              
-                   }
-                   
-                   
-               } //end if temp_sample
+                         cout << "temp_sample->v_layers.size(): " << temp_sample->v_layers.size() << std::endl;
+                        }
+                     } //end if temp_sample
    
-   
-                  
+                           //cout << "exit from temp_sample != 0 \n";
 
-              //cout << "exit from temp_sample != 0 \n";
-
-   
-              region_scope = false; //reset state 
+    
+                 region_scope = false; //reset state 
                     
-              //key = -1;
-              umin = 0;
-              umax = 127;
-              offset = 0;
+                //key = -1;
+                 umin = 0;
+                 umax = 127;
+                 offset = 0;
                     
-              fname.clear();
-              just_name.clear();
-              temp_sample = 0;
-              
-              //cout << "------------\n";
- 
-            } //end region scope = true
-            
-       
-        } //end cycle
+                 fname.clear();
+                 just_name.clear();
+                 temp_sample = 0;
+                //cout << "------------\n";
+                } //end region scope = true
+           } //end cycle
  
 
-   //последний элемент не выводится! 62
-  
-    //cout << "!!! naming cycle: " << endl;
-
  
-   
+ //finalize 
+ 
      for (size_t i = 0; i < MAX_SAMPLES; i++)
          {
           temp_sample = a_samples[i];
           
       //    cout << "i: " << i << endl;
-          
 //          cout << "temp_sample->name: " << temp_sample->name << endl;
-          
-          
-           
           if (temp_sample)
           if (temp_sample->v_layers.size() > 0)
-          {
-              
-             cout << "^^^^8\n";
-            
-             cout << "temp_sample.v_layers.size():" << temp_sample->v_layers.size() << std::endl;
+             {
+   //           cout << "temp_sample.v_layers.size():" << temp_sample->v_layers.size() << std::endl;
              
-           temp_sample->name = guess_sample_name (temp_sample->v_layers[0]->file_name); 
-           
-        //   cout << "# " << i << " temp_sample->name: " << temp_sample->name << endl;
+          //   cout << "# " << i << " temp_sample->name: " << temp_sample->name << endl;
               
-           for (auto signature: v_hat_open_signatures)
-               {
-                if (findStringIC (temp_sample->name, signature))
-                   {
-                    temp_sample->hihat_open = true;
-                    break;
-                   }
-               }
-               
-                    cout << "^^^^9\n";
+              temp_sample->name = guess_sample_name (temp_sample->v_layers[0]->file_name); 
 
-          for (auto signature: v_hat_close_signatures)
-              {
-               if (findStringIC (temp_sample->name, signature))
-                   {
-                    temp_sample->hihat_close = true;
-                    break;
-                   }
-              }
-          }   
+              for (auto signature: v_hat_open_signatures)
+                  {
+                   if (findStringIC (temp_sample->name, signature))
+                      {
+                       temp_sample->hihat_open = true;
+                       break;
+                      }
+                  }
+               
+
+             for (auto signature: v_hat_close_signatures)
+                 {
+                  if (findStringIC (temp_sample->name, signature))
+                     {
+                      temp_sample->hihat_close = true;
+                      break;
+                     }
+                }
+            }   
       }
  
   
