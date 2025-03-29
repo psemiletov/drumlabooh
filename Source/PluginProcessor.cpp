@@ -464,7 +464,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
        bool isNoteOff = msg.isNoteOff();
 
        //float velocity = msg.getFloatVelocity();
-       uint uvelocity = msg.getVelocity();
+       int uvelocity = msg.getVelocity();
        float velocity = VelocityToLevel (uvelocity);
  
        if (*ignore_midi_velocity > 0.5)
@@ -675,7 +675,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
        bool isNoteOff = msg.isNoteOff();
 
        //float velocity = msg.getFloatVelocity();
-       uint uvelocity = msg.getVelocity();
+       int uvelocity = msg.getVelocity();
        float velocity = VelocityToLevel (uvelocity);
        
        if (*ignore_midi_velocity > 0.5)
