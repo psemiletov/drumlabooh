@@ -216,6 +216,7 @@ target_compile_definitions(drumlabooh
     PUBLIC
         # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
         JUCE_JACK=0
+        NEEDS_WEBVIEW2=0 
         JUCE_PLUGINHOST_LADSPA=0
         JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
         JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
@@ -293,6 +294,7 @@ target_sources(drumlabooh-multi
         # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
         -DMULTICHANNEL=1
         JUCE_JACK=0
+        NEEDS_WEBVIEW2=0 
         JUCE_PLUGINHOST_LADSPA=0
         JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
         JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
