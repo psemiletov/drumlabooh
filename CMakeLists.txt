@@ -165,7 +165,7 @@ juce_add_plugin(drumlabooh
     # VERSION ...                               # Set this if the plugin version is different to the project version
     # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
     # ICON_SMALL ...
-     NEEDS_WEB_BROWSER FALSE
+     NEEDS_WEB_BROWSER=0
      JUCE_DISPLAY_SPLASH_SCREEN=0
      LV2URI https://github.com/psemiletov/drumlabooh
      LV2_SHARED_LIBRARY_NAME drumlabooh
@@ -255,7 +255,7 @@ if(MULTI)
 
   juce_add_plugin(drumlabooh-multi
      JUCE_DISPLAY_SPLASH_SCREEN=0
-     NEEDS_WEB_BROWSER FALSE
+     NEEDS_WEB_BROWSER=0
      LV2URI https://github.com/psemiletov/drumlabooh-multi
      LV2_SHARED_LIBRARY_NAME drumlabooh-multi
      COMPANY_NAME Semiletov                     # Specify the name of the plugin's author
