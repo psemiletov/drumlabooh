@@ -556,7 +556,7 @@ void CDrumKit::load_txt (const std::string &data)
                  {
                   filesystem::path pt (kit_dir + "/" + fname); //full path for samples.txt
  
-                  string fpath = pt.parent_path();  //get path with dirs only
+                  string fpath = pt.parent_path().string();  //get path with dirs only
                   string filename = fpath + "/" + f; // get full path to filename of the each sample
                   temp_sample->add_layer();
 
