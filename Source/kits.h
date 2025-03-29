@@ -47,8 +47,8 @@ public:
   float min;
   float max;
 
-  uint umin;
-  uint umax;
+  int umin; //uint
+  int umax; //uint
   
   
   std::string file_name; //name of the loaded file, full path
@@ -111,7 +111,7 @@ public:
   ~CDrumSample();
 
   size_t map_velo_to_layer_number (float velo);
-  size_t map_uint_velo_to_layer_number (uint velo);
+  size_t map_uint_velo_to_layer_number (int velo);
 
   void add_layer();
 
@@ -120,7 +120,7 @@ public:
 
   void untrigger_sample();
   void trigger_sample (float vel); //not vel actually! измени формулировки!
-  void trigger_sample_uint (uint vel, float velo);
+  void trigger_sample_uint (int vel, float velo);
 
 };
 

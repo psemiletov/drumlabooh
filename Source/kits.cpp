@@ -258,7 +258,7 @@ size_t CDrumSample::map_velo_to_layer_number (float velo)
 
 
 //used for Drumlabooh and SFZ kits
-size_t CDrumSample::map_uint_velo_to_layer_number (uint velo)
+size_t CDrumSample::map_uint_velo_to_layer_number (int velo)
 {
   if (v_layers.size() == 1)
      return 0; //return zero pos layer if we have just one layer
@@ -567,7 +567,7 @@ void CDrumKit::load_txt (const std::string &data)
 
              float part_size = (float) 1 / temp_sample->v_layers.size();
              
-             uint uint_part_size = 127 / temp_sample->v_layers.size();
+             int uint_part_size = 127 / temp_sample->v_layers.size();
              
              CDrumLayer *l;
               //evaluate min and max velocities by the file position in the vector
@@ -896,9 +896,9 @@ void CDrumKit::load_sfz_new (const std::string &data)
   std::string fname;
   std::string just_name;
   int key = -1;
-  uint umin = 0;
-  uint umax = 0;
-  uint offset = 0;
+  int umin = 0;
+  int umax = 0;
+  int offset = 0;
   
   sample_counter = 0;
   
@@ -1723,7 +1723,7 @@ void CDrumSample::trigger_sample (float vel)
 }
 
 
-void CDrumSample::trigger_sample_uint (uint vel, float velo)
+void CDrumSample::trigger_sample_uint (int vel, float velo)
 {
   std::cout << "CDrumSample::trigger_sample_uint: " << name << std::endl;
 std::cout << "vel: " << vel << " velo:" << velo << std::endl;
