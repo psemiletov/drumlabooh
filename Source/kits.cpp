@@ -425,8 +425,8 @@ void CDrumKit::load_txt (const std::string &data)
   if (data.empty())
       return;
 
-  size_t i = kit_dir.rfind (DIR_SEPARATOR);
-  kit_name = kit_dir.substr (i + 1);
+  size_t sep_pos = kit_dir.rfind (DIR_SEPARATOR);
+  kit_name = kit_dir.substr (sep_pos + 1);
 
   kit_type = KIT_TYPE_DRUMLABOOH;
   
@@ -777,7 +777,7 @@ inline std::string& rtrim (std::string &s, const char *t = " \t\n\r\f\v")
   return s;
 }
 
-
+//ПЕРЕПРОВЕРИТЬ КАК РАБОТАЕТ!!!
 std::string get_parameter_from_line (const std::string &line, const std::string &key)
 {
   std::string result;
@@ -797,7 +797,7 @@ std::string get_parameter_from_line (const std::string &line, const std::string 
       if (end != string::npos)
           result = line.substr (pos, end - pos);
       else
-      size_t end = line.find ("\n", pos);
+      end = line.find ("\n", pos);  //БЫЛА РЕДЕКЛАРАЦИЯ И РАБОТАЛО ((((
       
       if (end != string::npos)
           result = line.substr (pos, end - pos);
@@ -871,8 +871,8 @@ void CDrumKit::load_sfz_new (const std::string &data)
   temp_data = string_replace_all (data, "\\", "/");
  
  
-  size_t i = kit_dir.rfind ("/");
-  kit_name = kit_dir.substr (i + 1);
+  size_t sep_pos = kit_dir.rfind ("/");
+  kit_name = kit_dir.substr (sep_pos + 1);
 
   std::string sfz_default_path;
   
