@@ -18,6 +18,8 @@ this code is the public domain
 
 
 
+
+
 CDocumentWindow::CDocumentWindow (const String &name,
                                   Colour backgroundColour,
                                   int requiredButtons,
@@ -723,7 +725,7 @@ void CAudioProcessorEditor::load_kit()
 
    l_kit_name.setText (kitname, juce::dontSendNotification );
 
-   if (file_exists (audioProcessor.drumkit->image_fname))
+   if (!audioProcessor.drumkit->image_fname.empty() && file_exists (audioProcessor.drumkit->image_fname))
       {
        juce::File fl (audioProcessor.drumkit->image_fname);
        juce::Image im = juce::ImageFileFormat::loadFrom (fl);
@@ -731,61 +733,14 @@ void CAudioProcessorEditor::load_kit()
       }
    else
        kit_image.setImage(juce::Image ());
+//      {
+  //     kit_image.setImage (kit_image_default);
+     
+     
+     // }
 
 }
 
-
-/*
-//load_kit just updates GUI, actual kit load is at CAudioProcessor::load_kit 
-void CAudioProcessorEditor::load_kit (const std::string &kitpath)
-{
-  //make all drum labels empty
-
-  std::string real_kitpath = transform_kit_path_to_local (kitpath);
-  
-  for (size_t i = 0; i < 36; i++)
-      {
-       drumcells[i].set_name ("EMPTY CELL");
-       drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
-      }
-
-  if (audioProcessor.scanner.v_scanned_kits.size() == 0)
-      return;
-
-  //find kit at v_scanned_kits
-
-  CDrumKit *k = 0;
-
-  for (size_t i = 0; i < audioProcessor.scanner.v_scanned_kits.size() ; i++)
-      {
-       if (audioProcessor.scanner.v_scanned_kits[i]->kit_filename == real_kitpath)
-          k = audioProcessor.scanner.v_scanned_kits[i];
-      }
-
-  if (! k)
-      return;
-
-  for (size_t i = 0; i < k->v_samples.size(); i++)
-      {
-       drumcells[i].set_name (k->v_samples[i]->name);
-       drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
-      }
-
-   juce::String kitname = k->kit_name.c_str();
-
-   l_kitinfo.setText (kitname, juce::dontSendNotification );
-
-   if (file_exists (k->image_fname))
-      {
-       juce::File fl (k->image_fname);
-       juce::Image im = juce::ImageFileFormat::loadFrom (fl);
-       kit_image.setImage(im);
-      }
-   else
-       kit_image.setImage(juce::Image ());
-
-}
-*/
 
 void CAudioProcessorEditor::log (const std::string &s)
 {
@@ -924,16 +879,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
   need_to_update_cells = true;
   
-  //kits_scanner.scan();
-/*
-  for (size_t i = 0; i < audioProcessor.scanner.v_kits_names.size(); i++)
-      {
-//       cmb_drumkit_selector.addItem (kits_scanner.v_kits_names[i], i + 1);
-       
-       drumkits_model.items.push_back (audioProcessor.scanner.v_kits_names[i]);
-       drumkits_model.indexes.push_back (i);
-      }
-*/
+ // kit_image_default = juce::ImageFileFormat::loadFrom (labooh_png, labooh_pngSize);
+  
+
   update_kits_list();
       
   drumkits_listbox.setRowHeight (32);
@@ -1009,20 +957,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), 
                                (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2));
   
-/*  
-  cmb_drumkit_selector.setText ("CLICK HERE TO SELECT THE DRUMKIT", juce::NotificationType::dontSendNotification);
-  cmb_drumkit_selector.setScrollWheelEnabled (true);
-  cmb_drumkit_selector.setTooltip ("Select from installed drum kits");
+  // kit_image.setImage (kit_image_default);
 
-  cmb_drumkit_selector.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
-  cmb_drumkit_selector.setColour (juce::ComboBox::textColourId, Colours::white);
-
-  addAndMakeVisible (cmb_drumkit_selector);
-
-  cmb_drumkit_selector.addListener (this);
-  cmb_drumkit_selector.setTopLeftPosition (xoffs, 8);
-*/
-
+ 
 //BELOW KIT INFO
 //SOME BUTTONS
 

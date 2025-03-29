@@ -13,6 +13,7 @@ this code is the public domain
 typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
+
 class CAudioProcessorEditor;
 class CDrumCell;
 
@@ -298,6 +299,9 @@ public:
   juce::Font f_kitname_font {20.0f, juce::Font::bold};
   juce::ImageComponent kit_image;
 
+  //juce::Image kit_image_default;
+
+  
   juce::GroupComponent drumcells_group;
   juce::Component drumcells_container;
   juce::Viewport drumcells_viewer;

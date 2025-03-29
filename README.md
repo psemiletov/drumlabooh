@@ -9,7 +9,7 @@ For all details, docs and drumkits see the [Drumlabooh site](https://psemiletov.
 
 * Linux LV2/VSTi, Windows VSTi plugin format
 
-* Supported sample kit formats: Hydrogen, Drumlabooh/Drumrox, SFZ
+* Supported sample kit formats: Drumlabooh/Drumrox, Hydrogen, SFZ
 
 * Stereo (with built-in mixer) or multi (36 channels) output
 
