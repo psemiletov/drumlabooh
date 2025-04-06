@@ -43,7 +43,9 @@ libxcursor-dev
 libxext-dev
 libxinerama-dev
 libxrandr-dev
-libxrender-dev``
+libxrender-dev
+libfontconfig1-dev //FOR UBUNTU 24.x!!!!
+``
 
 
 Dependencies (Arch packages names):

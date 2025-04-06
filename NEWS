@@ -1,62 +1,7 @@
-   Drumlabooh 7.0.0
+   Drumlabooh 7.0.1
 
-   In this version, I removed a lot of legacy code and rewrote SFZ reader, so now Drumlabooh can load alsmost any existing SFZ drumkit, but SFZ's "inlcude" directive and round robin options are not supported.
-   Drumlabooh's own kit format is extended to make complex kits creation easier, you can define the kit part at the single file, and use its file name at the whole kit definition. This brokes Drumlabooh kit compatibility with my legacy drum machine Drumrox, but all previously created and simple kits are stays compatible. Unfortunately, at this moment no new extended format kits are created.
-   Being initially the continuation of Drumrox, the fork of DrMr, Drumlabooh now is not just the Hydrogen kits sampler, but has a lot of own format kits on the board:
-
-*Acoustic kits:
-
-Gretch Jazzkit
-Ludwig Basic
-Ludwig Sixties
-School
-Tamil
-TamilMultiLayered
-The Almighty Sound Drumkit
-Wooden
-
-*Electronic kits:
-
-ARP Axxe
-Bontempi HF222
-Cheetah SpecDrum Afro
-Cheetah SpecDrum Electro
-Cheetah SpecDrum Latin
-Cheetah SpecDrum Standard
-Copyc4t El Nacho Drumkit
-Drumulator
-EKO Ritmo20
-ELI CompuRhythm CR 7030
-Elka Drumstar-80
-Fricke MFB512
-GEM Drum15
-Lel-DR8
-Lel-PSR
-MTI AO-1
-Rokton UDS
-SoundMaster SR-88
-SpecDrum Afro Kit (Cheetah, MC)-1.jpg
-SpecDrum Electro Kit (Cheetah, MC).jpg
-SpecDrum Latin Kit (Cheetah, MC)-1.jpg
-Technics PCM DP50
-Watford Rhythm Generator
-
-*Additional kits from Telegram:
-
-Acetone_Rhythm-Master
-LM2
-Sequential Circuits DrumTraks
-Yamaha RX15
-Yamaha RX11
-BOSS DR-55
-
-
-   And for now the state of formats support is following:
-   Drumlabooh: up to 36 instruments per kit, multi layer (127 layers per instrument), round robin options, note mapping. The ability to clone the kit with sessions sample rate to make it load faster.
-   Quick Kit: the simplified Drumlabooh kit format that allows user load external samples directly with GUI.
-   SFZ: up to 36 instruments per kit, multi layer (127 layers per instrument), note mapping, sample offset.
-   Hydrogen: up to 36 instruments per kit, multi layer (127 layers per instrument, but 16 is the limition of the format).
-   Smart "hihats mute" works automatically for all formats. All pan and volume settings hardcoded to drumkit are ignored to the favour of Drumlabooh built-in mixer.
-
-
++ Ubuntu 24.x "fix" (actually README.md update) - add libfontconfig1-dev to dependencies
++ Build with JUCE 8.0.6
+* Some CMakeLists fixes to turn off unneeded features
+   
    Stay tuned, Peter Semiletov
