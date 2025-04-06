@@ -18,7 +18,7 @@ jobs:
     - name: Install deps
       run: |
           sudo apt update
-          sudo apt install -y git make g++ cmake pkg-config libasound2-dev libfreetype-dev libfreetype6-dev libx11-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libglu1-mesa-dev mesa-common-dev
+          sudo apt install -y git make g++ cmake pkg-config libasound2-dev libfreetype-dev libfontconfig1-dev libx11-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libglu1-mesa-dev mesa-common-dev
     - name: Configure CMake
       run: cmake -DINSTALLKITS=OFF -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
