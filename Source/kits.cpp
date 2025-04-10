@@ -56,6 +56,8 @@ void rnd_init()
 
 
 //WE READ JUST LEFT CHANNEL IF STEREO
+
+/*
 juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fname, int offset)
 {
  // std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
@@ -113,6 +115,126 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
    samplerate = reader->sampleRate;
    length_in_samples = reader->lengthInSamples;
 
+   delete reader;
+   return buffer;
+}
+
+
+juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::string &fname, int sess_samplerate, int offset)
+{
+  
+  juce::AudioBuffer <float>* buffer = load_whole_sample (fname, offset);
+  
+  if (! buffer)
+     {
+      std::cout << "load error: " << fname << std::endl;
+      return 0;
+     }
+
+  if (samplerate == sess_samplerate)
+      return buffer;
+
+  float *input_buffer = buffer->getWritePointer(0);
+  if (! input_buffer)
+     {
+      delete buffer;
+      return 0;
+     }
+
+  //else we need to resample
+
+  float ratio = (float) sess_samplerate / samplerate;
+  size_t output_frames_count = ratio * length_in_samples;
+
+  //make mono (1-channel) buffer out_buf
+  juce::AudioBuffer<float> *out_buf = new juce::AudioBuffer <float> (1, output_frames_count);
+
+  std::shared_ptr <speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
+  rs->read (input_buffer);
+  rs->write (out_buf->getWritePointer(0), output_frames_count);
+
+  samplerate = sess_samplerate;
+  length_in_samples = output_frames_count;
+  
+//  std::cout << "length_in_samples: " << length_in_samples << std::endl;
+
+  delete buffer;
+
+  return out_buf;
+}
+*/
+
+
+juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fname, int offset)
+{
+ // std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
+  
+  if (fname.empty())
+     return 0;
+ 
+  if (! file_exists (fname))
+     return 0;
+
+  
+  juce::File fl (fname);
+  juce::InputStream *fs = new juce::FileInputStream (fl); //will be deleted by reader
+
+  juce::AudioFormatReader *reader = 0;
+  
+  std::string ext = get_file_ext (fname);
+  ext = string_to_lower (ext);
+
+  if (ext == "wav")
+     reader = WavAudioFormat().createReaderFor (fs, true);
+
+  if (ext == "flac")
+     reader = FlacAudioFormat().createReaderFor (fs, true);
+
+  if (ext == "ogg")
+     reader = OggVorbisAudioFormat().createReaderFor (fs, true);
+
+  if (ext == "mp3")
+     reader = MP3AudioFormat().createReaderFor (fs, true);
+
+  if (ext == "aiff")
+     reader = AiffAudioFormat().createReaderFor (fs, true);
+
+  if (! reader)
+      return 0;
+
+   // std::cout << "getFormatName: " << reader->getFormatName()  << std::endl;
+   //juce::AudioBuffer <float> *buffer = new juce::AudioBuffer<float>;
+
+   int bufsize = (int) reader->lengthInSamples - offset; //offset is for SFZ
+   juce::AudioBuffer <float> *buffer = new juce::AudioBuffer<float> (reader->numChannels, bufsize);
+
+      // if (! reader->read (buffer,  0, bufsize, 0,  true, true))
+   if (! reader->read (buffer,  0, bufsize, offset,  true, true)) //read just left channel
+      {
+       std::cout << "! reader->read from: " << fname << std::endl;
+   
+       delete reader;
+       delete buffer;
+       return 0;
+      }
+
+      
+   samplerate = reader->sampleRate;
+   length_in_samples = reader->lengthInSamples;
+
+   if (reader->numChannels > 1) //mix to left channel
+      {
+       float *left_channel = buffer->getWritePointer (0);
+       const float *right_channel = buffer->getReadPointer (1);
+           
+       for (size_t pos; pos < length_in_samples; pos++)
+           {
+            left_channel[pos] = (left_channel[pos] + right_channel[pos]) * 0.5f; 
+         
+           }
+     
+      }
+   
    delete reader;
    return buffer;
 }
