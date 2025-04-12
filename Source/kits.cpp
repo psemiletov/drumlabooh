@@ -488,6 +488,32 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
       if (kit->sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
          return false;
 
+      //is current kit->temp_sample empty?
+       
+      if (kit->temp_sample) 
+         { 
+          if (kit->temp_sample->v_layers.size() == 0)
+             {   
+              kit->sample_counter--; 
+              delete kit->a_samples[kit->sample_counter];
+             }
+       
+     /*
+          if (kit->temp_sample->v_layers.size() > 0)
+             {   
+              kit->sample_counter--; 
+              
+              CDrumLayer *l = kit->temp_sample->v_layers.back();
+              if (! l->audio_buffer)
+                 {
+                  delete kit->a_samples[kit->sample_counter];
+                  kit->a_samples[kit->sample_counter] = 0;
+                 } 
+             }*/
+      }
+      // 
+       
+       
       kit->temp_sample = kit->add_sample (kit->sample_counter++);
 
       if (! kit->layers_supported) //non-layered
@@ -512,6 +538,11 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
       std::string path = kit->kit_dir + "/" + fname;
       std::string sample_name = kit->temp_sample->name;
 
+      if (kit->sample_counter != 0)
+          if (kit->temp_sample->v_layers.size() != 0)
+              kit->temp_sample->v_layers.back()->load (path.c_str());
+
+       
       for (auto signature: kit->v_hat_open_signatures)
           {
            if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
@@ -529,10 +560,6 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
                break;
               }
           }
-
-      if (kit->sample_counter != 0)
-          if (kit->temp_sample->v_layers.size() != 0)
-              kit->temp_sample->v_layers.back()->load (path.c_str());
      }
 
 
@@ -1301,6 +1328,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   //delete empty instruments
   //because we don't want parse them
 
+  /*
   size_t idx_filename = source.rfind ("</filename>");
   size_t idx_instrument = source.find ("<instrument>", idx_filename);
 
@@ -1317,7 +1345,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
       source = source.erase (idx_instrument, sz_to_remove);
      }
-
+*/
 
   pugi::xml_parse_result result = doc.load_buffer (source.c_str(), source.size());
 
