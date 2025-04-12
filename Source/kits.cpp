@@ -367,7 +367,7 @@ size_t CDrumSample::map_velo_to_layer_number (float velo)
   for (size_t i = 0; i < v_layers.size(); i++)
       {
        if (v_layers[i]->min <= velo &&
-          (v_layers[i]->max > velo ||
+          (v_layers[i]->max > velo || //да, тут всё верно 
           (v_layers[i]->max == 1 && velo == 1)))
           {
            result = i;
@@ -1132,14 +1132,14 @@ void CDrumKit::load_sfz_new (const std::string &data)
                    //if (map_samples.count (key) > 0) 
                    if (map_samples.find (key) != map_samples.end()) 
                       {
-                       cout << "map_samples.count (key) > 0" << std::endl;
-                       cout << "key: " << key << " is found" << std::endl;
+                     //  cout << "map_samples.count (key) > 0" << std::endl;
+                       //cout << "key: " << key << " is found" << std::endl;
                        temp_sample = map_samples [key]; //если уже есть сэмпл с таким key, получаем
                       }   
                    else
                        {
-                        cout << "created new sample at array pos: " << sample_counter << std::endl;
-                        cout << "mapped to key: " << key << std::endl;
+                        //cout << "created new sample at array pos: " << sample_counter << std::endl;
+                        //cout << "mapped to key: " << key << std::endl;
                   
                         temp_sample = add_sample (sample_counter++);
                         temp_sample->mapped_note = key;
@@ -1156,11 +1156,11 @@ void CDrumKit::load_sfz_new (const std::string &data)
              //   just_name = rtrim (just_name); //remove trailing spaces if any
               //  fname = kit_dir + "/" + sfz_default_path + just_name;
 
-                      cout << "fname: " << fname << std::endl;
+                      //cout << "fname: " << fname << std::endl;
              
                       if (file_exists (fname))
                          {
-                          cout << "loading to new layer: " << fname << std::endl;
+                        //  cout << "loading to new layer: " << fname << std::endl;
  
                           temp_sample->add_layer();
                           temp_sample->v_layers.back()->load (fname.c_str(), offset);
@@ -1168,7 +1168,7 @@ void CDrumKit::load_sfz_new (const std::string &data)
                           temp_sample->v_layers.back()->umin = umin;
                           temp_sample->v_layers.back()->umax = umax;
                     
-                         cout << "temp_sample->v_layers.size(): " << temp_sample->v_layers.size() << std::endl;
+                         //cout << "temp_sample->v_layers.size(): " << temp_sample->v_layers.size() << std::endl;
                         }
                      } //end if temp_sample
    
