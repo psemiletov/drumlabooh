@@ -222,7 +222,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
    samplerate = reader->sampleRate;
    length_in_samples = reader->lengthInSamples;
 
-   if (reader->numChannels > 1) //mix to left channel
+   if (reader->numChannels > 2) //mix to left channel
       {
        float *left_channel = buffer->getWritePointer (0);
        const float *right_channel = buffer->getReadPointer (1);
@@ -268,6 +268,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
 
   //make mono (1-channel) buffer out_buf
   juce::AudioBuffer<float> *out_buf = new juce::AudioBuffer <float> (1, output_frames_count);
+  out_buf->clear();
 
   std::shared_ptr <speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
   rs->read (input_buffer);
@@ -283,6 +284,84 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   return out_buf;
 }
 
+/*
+// Предполагается, что input_buffer - это float* с моно аудиоданными
+void resampleBuffer(float* input_buffer, juce::AudioBuffer<float>* out_buf, 
+                    int& samplerate, int sess_samplerate, int& length_in_samples)
+{
+    // Проверка входных параметров
+    if (!input_buffer || !out_buf || samplerate <= 0 || sess_samplerate <= 0 || length_in_samples <= 0)
+        return;
+
+    // Вычисляем соотношение частот
+    double ratio = static_cast<double>(sess_samplerate) / samplerate;
+
+    // Рассчитываем количество выходных сэмплов с учетом округления
+    size_t output_frames_count = static_cast<size_t>(std::round(length_in_samples * ratio));
+
+    // Проверяем, что выходной буфер может быть настроен
+    out_buf->setSize(1, static_cast<int>(output_frames_count), false, true, false);
+    out_buf->clear(); // Очищаем буфер для безопасности
+
+    // Создаем интерполятор
+    juce::LagrangeInterpolator interpolator;
+
+    // Подготавливаем указатели на входные и выходные данные
+    const float* input_data = input_buffer;
+    float* output_data = out_buf->getWritePointer(0);
+
+    // Выполняем ресэмплинг
+    interpolator.reset(); // Сбрасываем состояние интерполятора
+    interpolator.process(ratio, input_data, output_data, static_cast<int>(output_frames_count));
+
+    // Обновляем параметры
+    samplerate = sess_samplerate;
+    length_in_samples = static_cast<int>(output_frames_count);
+}
+
+
+juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::string &fname, int sess_samplerate, int offset)
+{
+  
+  juce::AudioBuffer <float>* buffer = load_whole_sample (fname, offset);
+  
+  if (! buffer)
+     {
+      std::cout << "load error: " << fname << std::endl;
+      return 0;
+     }
+
+  if (samplerate == sess_samplerate)
+      return buffer;
+
+  float *input_buffer = buffer->getWritePointer(0);
+  if (! input_buffer)
+     {
+      delete buffer;
+      return 0;
+     }
+
+  //else we need to resample
+  float ratio = (float)sess_samplerate / samplerate;
+  size_t output_frames_count = static_cast<size_t>(ratio * length_in_samples);
+    
+  //make mono (1-channel) buffer out_buf
+  juce::AudioBuffer<float> *out_buf = new juce::AudioBuffer <float> (1, output_frames_count);
+
+  resampleBuffer(input_buffer, out_buf, 
+                 samplerate, sess_samplerate, length_in_samples);
+  
+  
+  samplerate = sess_samplerate;
+  length_in_samples = output_frames_count;
+  
+//  std::cout << "length_in_samples: " << length_in_samples << std::endl;
+
+  delete buffer;
+
+  return out_buf;
+}
+*/
 
 void CDrumLayer::load (const std::string &fname, int offset)
 {
@@ -1257,9 +1336,66 @@ void CDrumKit::load_sfz_new (const std::string &data)
       }
  
   
-       cout << "^^^^10\n";
   
     loaded = true;    
+}
+
+
+
+void CDrumKit::load_hydrogen (const std::string &data)
+{
+//  if (! scan_mode)
+  //   cout << "@@@@@@@@@@@@ void CDrumKit::load: " << fname << "samplerate: " << sample_rate << endl;
+
+  
+  //else Hydrogen format
+  //FIXKIT перенести в отдельную функцию
+  
+  kit_type = KIT_TYPE_HYDROGEN;
+
+  pugi::xml_document doc;
+
+ // cout << "loading kit: " << fname << endl;
+  //cout << "source: " << source << endl;
+
+  size_t r = data.find ("<layer>");
+  if (r != std::string::npos)
+      layers_supported = true;
+   else
+       layers_supported = false;
+
+  //delete empty instruments
+  //because we don't want parse them
+
+  /*
+  size_t idx_filename = source.rfind ("</filename>");
+  size_t idx_instrument = source.find ("<instrument>", idx_filename);
+
+  if (idx_instrument != std::string::npos)
+  if (idx_instrument > idx_filename)
+     //oops, we have empty instruments!
+     {
+      //первый пустой инструмент у нас уже есть, он находится по
+      //idx_instrument
+
+      //теперь найдем конец последнего
+      size_t idx_instrument_end = source.rfind ("</instrument>");
+      size_t sz_to_remove = idx_instrument_end - idx_instrument + 13;
+
+      source = source.erase (idx_instrument, sz_to_remove);
+     }
+*/
+
+  pugi::xml_parse_result result = doc.load_buffer (data.c_str(), data.size());
+
+  if (! result)
+     return;
+
+  CHydrogenXMLWalker walker (this);
+
+  doc.traverse (walker);
+  
+  loaded = true;
 }
 
 
@@ -1312,58 +1448,19 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   //else Hydrogen format
   //FIXKIT перенести в отдельную функцию
   
-  kit_type = KIT_TYPE_HYDROGEN;
-
-  pugi::xml_document doc;
-
- // cout << "loading kit: " << fname << endl;
-  //cout << "source: " << source << endl;
-
-  size_t r = source.find ("<layer>");
-  if (r != std::string::npos)
-      layers_supported = true;
-   else
-       layers_supported = false;
-
-  //delete empty instruments
-  //because we don't want parse them
-
-  /*
-  size_t idx_filename = source.rfind ("</filename>");
-  size_t idx_instrument = source.find ("<instrument>", idx_filename);
-
-  if (idx_instrument != std::string::npos)
-  if (idx_instrument > idx_filename)
-     //oops, we have empty instruments!
-     {
-      //первый пустой инструмент у нас уже есть, он находится по
-      //idx_instrument
-
-      //теперь найдем конец последнего
-      size_t idx_instrument_end = source.rfind ("</instrument>");
-      size_t sz_to_remove = idx_instrument_end - idx_instrument + 13;
-
-      source = source.erase (idx_instrument, sz_to_remove);
-     }
-*/
-
-  pugi::xml_parse_result result = doc.load_buffer (source.c_str(), source.size());
-
-  if (! result)
-     return;
-
-  CHydrogenXMLWalker walker (this);
-
-  doc.traverse (walker);
+  load_hydrogen (source);
+  
 
   auto stop = chrono::high_resolution_clock::now();
-  auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
+  //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
+  load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+  str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
+      
  // std::cout << "loaded at: " << duration_msecs.count() << " msecs" << std::endl;
 
   //seconds_counter_ev = duration_s.count();
-  
-  loaded = true;
+ 
 }
 
 
@@ -1375,6 +1472,7 @@ CDrumKit::CDrumKit()
   loaded = false;
   temp_sample = 0;
   sample_counter = 0;
+  load_duration_msecs = 0;
   
   v_hat_open_signatures.push_back ("hat_o");
   v_hat_open_signatures.push_back ("open");

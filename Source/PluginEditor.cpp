@@ -863,6 +863,7 @@ void CAudioProcessorEditor::adapt_qdrumlabooh()
                
   log (audioProcessor.drumkit->kit_name);
   log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+  log (audioProcessor.drumkit->str_load_duration_msecs);
                                      
   tmr_leds.startTimer (1000 / 15); //15 FPS
 }
@@ -1017,8 +1018,13 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
                                      
                                      need_to_update_cells = false;
                                      
+                                     //log (audioProcessor.drumkit->kit_name);
+                                     //log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+                                     
                                      log (audioProcessor.drumkit->kit_name);
                                      log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+                                     log (audioProcessor.drumkit->str_load_duration_msecs);
+
                                      
                                      //update gui with timer 
                                      tmr_leds.startTimer (1000 / 15); //15 FPS
@@ -1233,8 +1239,11 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
   if (audioProcessor.drumkit)
      {
+      //log (audioProcessor.drumkit->kit_name);
+      //log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
       log (audioProcessor.drumkit->kit_name);
       log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+      log (audioProcessor.drumkit->str_load_duration_msecs);
      }
 
   //load_kit();
@@ -1452,11 +1461,13 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
       editor->load_kit();
         
       editor->log ("***\n");
+      editor->log (editor->audioProcessor.drumkit->str_load_duration_msecs);
       editor->log ("\n");
       editor->log (bytes_to_file_size (editor->audioProcessor.drumkit->total_samples_size()));
       editor->log ("\n");
       editor->log (editor->audioProcessor.drumkit->kit_name);
       editor->log ("loaded:\n");
+
      }
 }
 

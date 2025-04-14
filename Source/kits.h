@@ -70,7 +70,7 @@ public:
 
   void load (const std::string &fname, int offset = 0); //loads the sample, sets internal info, data, file_name
   void print();
-
+  
   juce::AudioBuffer<float> * load_whole_sample (const std::string &fname, int offset = 0); //called from load_whole_sample_resampled
   juce::AudioBuffer<float> * load_whole_sample_resampled (const std::string &fname, int sess_samplerate, int offset = 0); //main function to load the sample layer
 
@@ -146,6 +146,9 @@ public:
   bool layers_supported;
   bool has_mapping;
 
+  size_t load_duration_msecs;
+  std::string str_load_duration_msecs;
+  
   size_t total_samples_size();
   
   //std::vector <CDrumSample*> v_samples;
@@ -163,9 +166,11 @@ public:
   int sample_counter;
   
   void load (const std::string &fname, int sample_rate);
-  void load_txt (const std::string &fname);
-  void load_qtxt (const std::string &fname);
-  void load_sfz_new (const std::string & fname);
+  
+  void load_hydrogen (const std::string &data);
+  void load_txt (const std::string &tdata);
+  void load_qtxt (const std::string &data);
+  void load_sfz_new (const std::string &data);
   
   CDrumSample* load_sample_to_index (size_t index, const std::string &fname, int sample_rate);
   void remove_sample_at_index (size_t index);
