@@ -254,7 +254,9 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   if (samplerate == sess_samplerate)
       return buffer;
 
-  float *input_buffer = buffer->getWritePointer(0);
+  float *input_buffer = buffer->getWritePointer(0); //ЗАМЕНИТЬ НА getReadPointer(0)?
+  
+  
   if (! input_buffer)
      {
       delete buffer;
@@ -264,15 +266,18 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   //else we need to resample
 
   float ratio = (float) sess_samplerate / samplerate;
-  size_t output_frames_count = ratio * length_in_samples;
+  size_t output_frames_count = ratio * length_in_samples; //WAS
 
+  //size_t output_frames_count = static_cast<size_t>(std::ceil(ratio * length_in_samples));
+  
   //make mono (1-channel) buffer out_buf
   juce::AudioBuffer<float> *out_buf = new juce::AudioBuffer <float> (1, output_frames_count);
-  out_buf->clear();
+  
+  //out_buf->clear(); //НЕ БЫЛО И НЕ МЕШАЛО
 
   std::shared_ptr <speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
   rs->read (input_buffer);
-  rs->write (out_buf->getWritePointer(0), output_frames_count);
+  int frames_written = rs->write (out_buf->getWritePointer(0), output_frames_count);
 
   samplerate = sess_samplerate;
   length_in_samples = output_frames_count;
