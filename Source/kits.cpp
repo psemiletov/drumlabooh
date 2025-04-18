@@ -266,7 +266,8 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   //else we need to resample
 
   float ratio = (float) sess_samplerate / samplerate;
-  size_t output_frames_count = ratio * length_in_samples; //WAS
+  //size_t output_frames_count = ratio * length_in_samples; //WAS
+  size_t output_frames_count = (size_t)ceil(ratio * length_in_samples) + 16; // Добавить запас
 
   //size_t output_frames_count = static_cast<size_t>(std::ceil(ratio * length_in_samples));
   
@@ -280,8 +281,22 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   int frames_written = rs->write (out_buf->getWritePointer(0), output_frames_count);
 
   samplerate = sess_samplerate;
-  length_in_samples = output_frames_count;
+  length_in_samples = frames_written;  //output_frames_count;
   
+   out_buf->setSize	(1,//newNumChannels,
+                   length_in_samples,//int	newNumSamples,
+                    true,//  bool	keepExistingContent = false,
+                    true, //bool	clearExtraSpace = false,
+                    true);// bool	avoidReallocating = false )
+
+
+                    /* не помогает от щелчка
+   size_t fade_samples = 16;
+   for (size_t i = output_frames_count - fade_samples; i < output_frames_count; i++) 
+       {
+        out_buf->getWritePointer(0)[i] *= (float)(output_frames_count - i) / fade_samples;
+       }
+  */
 //  std::cout << "length_in_samples: " << length_in_samples << std::endl;
 
   delete buffer;
