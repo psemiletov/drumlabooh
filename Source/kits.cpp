@@ -281,7 +281,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   int frames_written = rs->write (out_buf->getWritePointer(0), output_frames_count);
 
   samplerate = sess_samplerate;
-  length_in_samples = frames_written;  //output_frames_count;
+  length_in_samples = frames_written;  //WAS: output_frames_count
   
    out_buf->setSize	(1,//newNumChannels,
                    length_in_samples,//int	newNumSamples,
