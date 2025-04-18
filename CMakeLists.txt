@@ -209,6 +209,8 @@ target_sources(drumlabooh
         ./Source/resampler_class.cpp
         ./Source/resampler_function.cpp
         ./Source/speex_resampler.c
+        ./Source/resampler.c
+
 )
 
 
@@ -287,6 +289,8 @@ target_sources(drumlabooh-multi
         ./Source/resampler_class.cpp
         ./Source/resampler_function.cpp
         ./Source/speex_resampler.c
+        ./Source/resampler.c
+
 )
 
   target_compile_definitions(drumlabooh-multi

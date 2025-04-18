@@ -22,6 +22,7 @@ this code is the public domain
 #include "kits.h"
 #include "utl.h"
 #include "speex_resampler_cpp.hpp"
+#include "resampler.h"
 
 
 using namespace std;
@@ -240,6 +241,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
 }
 
 
+
 juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::string &fname, int sess_samplerate, int offset)
 {
   
@@ -254,7 +256,9 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   if (samplerate == sess_samplerate)
       return buffer;
 
-  float *input_buffer = buffer->getWritePointer(0); //ЗАМЕНИТЬ НА getReadPointer(0)?
+  //float *input_buffer = buffer->getWritePointer(0); //ЗАМЕНИТЬ НА getReadPointer(0)?
+  
+  const float *input_buffer = buffer->getReadPointer(0); //ЗАМЕНИТЬ НА getReadPointer(0)?
   
   
   if (! input_buffer)
@@ -266,8 +270,14 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   //else we need to resample
 
   float ratio = (float) sess_samplerate / samplerate;
-  size_t output_frames_count = ratio * length_in_samples; //WAS
-
+  
+  //double dratio = (double) sess_samplerate / samplerate;
+  
+  
+  
+  size_t output_frames_count = ratio * length_in_samples; 
+  
+ 
   //size_t output_frames_count = static_cast<size_t>(std::ceil(ratio * length_in_samples));
   
   //make mono (1-channel) buffer out_buf
@@ -275,9 +285,26 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   
   //out_buf->clear(); //НЕ БЫЛО И НЕ МЕШАЛО
 
-  std::shared_ptr <speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
-  rs->read (input_buffer);
-  int frames_written = rs->write (out_buf->getWritePointer(0), output_frames_count);
+  Resample *resampler = resampleInit (1,  //channels
+                                       512,//int numTaps
+                                       512,// int numFilters, 
+                                       0.5d,//double lowpassRatio, 
+                                       0);//int flags);
+  
+  
+  ResampleResult result = resampleProcess (resampler,
+                                           buffer->getArrayOfReadPointers(), 
+                                           length_in_samples, 
+                                           out_buf->getArrayOfWritePointers(),
+                                           output_frames_count, 
+                                           (double)ratio);
+
+  
+  resampleFree (resampler);
+  
+  //std::shared_ptr <speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
+  //rs->read (input_buffer);
+  //int frames_written = rs->write (out_buf->getWritePointer(0), output_frames_count);
 
   samplerate = sess_samplerate;
   length_in_samples = output_frames_count;
