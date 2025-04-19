@@ -205,10 +205,6 @@ target_sources(drumlabooh
         ./Source/kits.cpp
         ./Source/utl.cpp
         ./Source/fx-resofilter.cpp
-        ./Source/exceptions.cpp
-        ./Source/resampler_class.cpp
-        ./Source/resampler_function.cpp
-        ./Source/speex_resampler.c
         ./Source/resampler.c
 
 )
@@ -285,10 +281,6 @@ target_sources(drumlabooh-multi
         ./Source/kits.cpp
         ./Source/utl.cpp
         ./Source/fx-resofilter.cpp
-        ./Source/exceptions.cpp
-        ./Source/resampler_class.cpp
-        ./Source/resampler_function.cpp
-        ./Source/speex_resampler.c
         ./Source/resampler.c
 
 )

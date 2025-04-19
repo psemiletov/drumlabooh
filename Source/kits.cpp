@@ -21,7 +21,7 @@ this code is the public domain
 
 #include "kits.h"
 #include "utl.h"
-#include "speex_resampler_cpp.hpp"
+//#include "speex_resampler_cpp.hpp"
 #include "resampler.h"
 
 
