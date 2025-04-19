@@ -1450,18 +1450,36 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (ends_with (kit_filename, "drumkit.txt"))
      {
       load_txt (source);
+      auto stop = chrono::high_resolution_clock::now();
+  //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
+
+      load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+      str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
+  
       return;
      }
      
   if (ends_with (kit_filename, "drumkitq.txt"))
      {
       load_qtxt (source);
+      auto stop = chrono::high_resolution_clock::now();
+  //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
+
+      load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+      str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
+  
       return;
      }
 
   if (ends_with (kit_filename, ".sfz"))
      {
       load_sfz_new (source);
+      auto stop = chrono::high_resolution_clock::now();
+  //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
+
+      load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+      str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
+  
       return;
      }
 
