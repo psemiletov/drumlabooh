@@ -286,10 +286,10 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   //out_buf->clear(); //НЕ БЫЛО И НЕ МЕШАЛО
 
   Resample *resampler = resampleInit (1,  //channels
-                                       512,//int numTaps
-                                       512,// int numFilters, 
+                                       4,//int numTaps
+                                       4,// int numFilters, 
                                        0.5d,//double lowpassRatio, 
-                                       0);//int flags);
+                                       SUBSAMPLE_INTERPOLATE | BLACKMAN_HARRIS | INCLUDE_LOWPASS);//int flags);
   
   
   ResampleResult result = resampleProcess (resampler,
