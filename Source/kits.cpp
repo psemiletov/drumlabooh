@@ -241,7 +241,91 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
 }
 
 
+juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::string &fname, int sess_samplerate, int offset)
+{
+  
+  juce::AudioBuffer <float>* buffer = load_whole_sample (fname, offset);
+  
+  if (! buffer)
+     {
+      std::cout << "load error: " << fname << std::endl;
+      return 0;
+     }
 
+  if (samplerate == sess_samplerate)
+      return buffer;
+
+  //float *input_buffer = buffer->getWritePointer(0); //ЗАМЕНИТЬ НА getReadPointer(0)?
+  
+  const float *input_buffer = buffer->getReadPointer(0); //ЗАМЕНИТЬ НА getReadPointer(0)?
+  
+  
+  if (! input_buffer)
+     {
+      delete buffer;
+      return 0;
+     }
+
+  //else we need to resample
+
+  float ratio = (float) sess_samplerate / samplerate;
+  
+  std::cout << "ratio: " << ratio << std::endl;
+  
+  //double dratio = (double) sess_samplerate / samplerate;
+  
+  
+  
+  size_t output_frames_count = ratio * length_in_samples; 
+  
+ 
+  //size_t output_frames_count = static_cast<size_t>(std::ceil(ratio * length_in_samples));
+  
+  //make mono (1-channel) buffer out_buf
+  juce::AudioBuffer<float> *out_buf = new juce::AudioBuffer <float> (1, output_frames_count);
+  
+  //out_buf->clear(); //НЕ БЫЛО И НЕ МЕШАЛО
+
+  Resample *resampler = resampleInit (1,  //channels
+                                       4,//int numTaps
+                                       4,// int numFilters, 
+                                       0.5d,//double lowpassRatio, 
+                                       SUBSAMPLE_INTERPOLATE | BLACKMAN_HARRIS | INCLUDE_LOWPASS);//int flags);
+  
+/*
+Resample *resampler = resampleInit (1,  //channels
+                                       256,//int numTaps
+                                       256,// int numFilters, 
+                                       0.5d,//double lowpassRatio, 
+                                       SUBSAMPLE_INTERPOLATE | BLACKMAN_HARRIS | INCLUDE_LOWPASS);//int flags);
+ */
+  
+  ResampleResult result = resampleProcess (resampler,
+                                           buffer->getArrayOfReadPointers(), 
+                                           length_in_samples, 
+                                           out_buf->getArrayOfWritePointers(),
+                                           output_frames_count, 
+                                           (double)ratio);
+
+  
+  resampleFree (resampler);
+  
+  //std::shared_ptr <speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
+  //rs->read (input_buffer);
+  //int frames_written = rs->write (out_buf->getWritePointer(0), output_frames_count);
+
+  samplerate = sess_samplerate;
+  length_in_samples = output_frames_count;
+  
+//  std::cout << "length_in_samples: " << length_in_samples << std::endl;
+
+  delete buffer;
+
+  return out_buf;
+}
+
+
+/*
 juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::string &fname, int sess_samplerate, int offset)
 {
   
@@ -320,19 +404,19 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
 
 
                     /* не помогает от щелчка
-   size_t fade_samples = 16;
-   for (size_t i = output_frames_count - fade_samples; i < output_frames_count; i++) 
-       {
-        out_buf->getWritePointer(0)[i] *= (float)(output_frames_count - i) / fade_samples;
-       }
-  */
+ //  size_t fade_samples = 16;
+//   for (size_t i = output_frames_count - fade_samples; i < output_frames_count; i++) 
+  //     {
+    //    out_buf->getWritePointer(0)[i] *= (float)(output_frames_count - i) / fade_samples;
+       //}
+  
 //  std::cout << "length_in_samples: " << length_in_samples << std::endl;
 
   delete buffer;
 
   return out_buf;
 }
-
+*/
 /*
 // Предполагается, что input_buffer - это float* с моно аудиоданными
 void resampleBuffer(float* input_buffer, juce::AudioBuffer<float>* out_buf, 
@@ -1479,69 +1563,36 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (ends_with (kit_filename, "drumkit.txt"))
      {
       load_txt (source);
-<<<<<<< HEAD
       auto stop = chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
       load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
       str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
-  
-=======
-      
 
-      auto stop = chrono::high_resolution_clock::now();
-  //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
-
-  load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
-  str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
-
->>>>>>> b1
       return;
      }
      
   if (ends_with (kit_filename, "drumkitq.txt"))
      {
       load_qtxt (source);
-<<<<<<< HEAD
       auto stop = chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
       load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
       str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
   
-=======
-      
-
-auto stop = chrono::high_resolution_clock::now();
-  //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
-
-  load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
-  str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
-
->>>>>>> b1
       return;
      }
 
   if (ends_with (kit_filename, ".sfz"))
      {
       load_sfz_new (source);
-<<<<<<< HEAD
       auto stop = chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
       load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
       str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
   
-=======
-      
-
-auto stop = chrono::high_resolution_clock::now();
-  //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
-
-  load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
-  str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
-
->>>>>>> b1
       return;
      }
 

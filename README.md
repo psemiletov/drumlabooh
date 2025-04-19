@@ -87,6 +87,6 @@ By default, Drumlabooh cmake file fetches and installs the all drumkits from htt
 
 [JUCE](https://juce.com) (GPL3)
 
-[speex_resampler_cpp](https://github.com/libaudioverse/speex_resampler_cpp) (Public Domain + Speex License, Copyright (C) 2007 Jean-Marc Valin)
+[resampler by David Bryant](https://github.com/dbry/audio-resampler) (BSD-3-Clause license)
 
 
