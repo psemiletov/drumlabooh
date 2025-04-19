@@ -22,6 +22,7 @@ this code is the public domain
 #include "kits.h"
 #include "utl.h"
 #include "speex_resampler_cpp.hpp"
+#include "resampler.h"
 
 
 using namespace std;
@@ -240,6 +241,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
 }
 
 
+
 juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::string &fname, int sess_samplerate, int offset)
 {
   
@@ -254,7 +256,9 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   if (samplerate == sess_samplerate)
       return buffer;
 
-  float *input_buffer = buffer->getWritePointer(0); //ЗАМЕНИТЬ НА getReadPointer(0)?
+  //float *input_buffer = buffer->getWritePointer(0); //ЗАМЕНИТЬ НА getReadPointer(0)?
+  
+  const float *input_buffer = buffer->getReadPointer(0); //ЗАМЕНИТЬ НА getReadPointer(0)?
   
   
   if (! input_buffer)
@@ -266,9 +270,20 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   //else we need to resample
 
   float ratio = (float) sess_samplerate / samplerate;
+<<<<<<< HEAD
   //size_t output_frames_count = ratio * length_in_samples; //WAS
   size_t output_frames_count = (size_t)ceil(ratio * length_in_samples) + 16; // Добавить запас
 
+=======
+  
+  //double dratio = (double) sess_samplerate / samplerate;
+  
+  
+  
+  size_t output_frames_count = ratio * length_in_samples; 
+  
+ 
+>>>>>>> b1
   //size_t output_frames_count = static_cast<size_t>(std::ceil(ratio * length_in_samples));
   
   //make mono (1-channel) buffer out_buf
@@ -276,9 +291,26 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   
   //out_buf->clear(); //НЕ БЫЛО И НЕ МЕШАЛО
 
-  std::shared_ptr <speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
-  rs->read (input_buffer);
-  int frames_written = rs->write (out_buf->getWritePointer(0), output_frames_count);
+  Resample *resampler = resampleInit (1,  //channels
+                                       4,//int numTaps
+                                       4,// int numFilters, 
+                                       0.5d,//double lowpassRatio, 
+                                       SUBSAMPLE_INTERPOLATE | BLACKMAN_HARRIS | INCLUDE_LOWPASS);//int flags);
+  
+  
+  ResampleResult result = resampleProcess (resampler,
+                                           buffer->getArrayOfReadPointers(), 
+                                           length_in_samples, 
+                                           out_buf->getArrayOfWritePointers(),
+                                           output_frames_count, 
+                                           (double)ratio);
+
+  
+  resampleFree (resampler);
+  
+  //std::shared_ptr <speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
+  //rs->read (input_buffer);
+  //int frames_written = rs->write (out_buf->getWritePointer(0), output_frames_count);
 
   samplerate = sess_samplerate;
   length_in_samples = frames_written;  //WAS: output_frames_count
@@ -1450,36 +1482,69 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (ends_with (kit_filename, "drumkit.txt"))
      {
       load_txt (source);
+<<<<<<< HEAD
       auto stop = chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
       load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
       str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
   
+=======
+      
+
+      auto stop = chrono::high_resolution_clock::now();
+  //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
+
+  load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+  str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
+
+>>>>>>> b1
       return;
      }
      
   if (ends_with (kit_filename, "drumkitq.txt"))
      {
       load_qtxt (source);
+<<<<<<< HEAD
       auto stop = chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
       load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
       str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
   
+=======
+      
+
+auto stop = chrono::high_resolution_clock::now();
+  //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
+
+  load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+  str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
+
+>>>>>>> b1
       return;
      }
 
   if (ends_with (kit_filename, ".sfz"))
      {
       load_sfz_new (source);
+<<<<<<< HEAD
       auto stop = chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
       load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
       str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
   
+=======
+      
+
+auto stop = chrono::high_resolution_clock::now();
+  //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
+
+  load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+  str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
+
+>>>>>>> b1
       return;
      }
 
