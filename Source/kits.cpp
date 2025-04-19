@@ -270,11 +270,9 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   //else we need to resample
 
   float ratio = (float) sess_samplerate / samplerate;
-<<<<<<< HEAD
   //size_t output_frames_count = ratio * length_in_samples; //WAS
   size_t output_frames_count = (size_t)ceil(ratio * length_in_samples) + 16; // Добавить запас
 
-=======
   
   //double dratio = (double) sess_samplerate / samplerate;
   
@@ -283,7 +281,6 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   size_t output_frames_count = ratio * length_in_samples; 
   
  
->>>>>>> b1
   //size_t output_frames_count = static_cast<size_t>(std::ceil(ratio * length_in_samples));
   
   //make mono (1-channel) buffer out_buf
@@ -315,7 +312,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   samplerate = sess_samplerate;
   length_in_samples = frames_written;  //WAS: output_frames_count
   
-   out_buf->setSize	(1,//newNumChannels,
+  out_buf->setSize	(1,//newNumChannels,
                    length_in_samples,//int	newNumSamples,
                     true,//  bool	keepExistingContent = false,
                     true, //bool	clearExtraSpace = false,
