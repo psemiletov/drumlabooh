@@ -1,7 +1,6 @@
-   Drumlabooh 7.0.1
+   Drumlabooh 8.0.0
 
-+ Ubuntu 24.x "fix" (actually README.md update) - add libfontconfig1-dev to dependencies
-+ Build with JUCE 8.0.6
-* Some CMakeLists fixes to turn off unneeded features
+   This release features the new resampler by David Bryant. Why the resampler is important? When drum kit's samples sample rates is not equal to DAW's session sample rate, Drumlabooh resamples the samples during the loading. If the drumkit is large, it can cost a lot of time. Now the resampling is 10x faster!
+   Also, now Drumlabooh more correctly loads stereo samples (was: load just the left sample; now: load both channels, then mix them to mono with a half of the level).
    
    Stay tuned, Peter Semiletov

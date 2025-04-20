@@ -1459,8 +1459,9 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
   if (editor->audioProcessor.drumkit)
      {
       editor->load_kit();
-        
+      
       editor->log ("***\n");
+      editor->log ("\n");
       editor->log (editor->audioProcessor.drumkit->str_load_duration_msecs);
       editor->log ("\n");
       editor->log (bytes_to_file_size (editor->audioProcessor.drumkit->total_samples_size()));

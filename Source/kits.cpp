@@ -270,7 +270,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
 
   float ratio = (float) sess_samplerate / samplerate;
   
-  std::cout << "ratio: " << ratio << std::endl;
+ // std::cout << "ratio: " << ratio << std::endl;
   
   //double dratio = (double) sess_samplerate / samplerate;
   
