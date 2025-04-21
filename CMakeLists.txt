@@ -71,11 +71,8 @@ message("CMake less than 3.2.8")
 FetchContent_Declare(
   drum_sklad
   URL https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
-  GIT_PROGRESS TRUE
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-#since cmake 3.28
-#  EXCLUDE_FROM_ALL
-#  
+  #EXCLUDE_FROM_ALL
 )
 
 FetchContent_GetProperties(drum_sklad)
@@ -90,11 +87,8 @@ else()
 FetchContent_Declare(
   drum_sklad
   URL https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
-  GIT_PROGRESS TRUE
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-#since cmake 3.28
   EXCLUDE_FROM_ALL
-#  
 )
 
 FetchContent_MakeAvailable(drum_sklad)
@@ -108,15 +102,8 @@ if(CMAKE_VERSION VERSION_LESS "3.2.8")
 
 FetchContent_Declare(
   juce
-  GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-#  GIT_TAG        2a27ebcfae7ca7f6eb62b29d5f002ceefdaadbdb # release-7.0.7
-#  GIT_TAG         7.0.10 # release-7.0.10
-#  GIT_TAG         8.0.1 
-   GIT_TAG ${JUCETAG}
-#since cmake 3.28
-#  EXCLUDE_FROM_ALL
-#  
-  GIT_PROGRESS TRUE
+  URL https://github.com/juce-framework/JUCE/archive/refs/tags/${JUCETAG}.tar.gz
+  EXCLUDE_FROM_ALL
 )
 
 FetchContent_GetProperties(juce)
@@ -128,18 +115,12 @@ endif()
 
 else()
 
+cmake_policy(SET CMP0135 NEW)
 FetchContent_Declare(
   juce
-  GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-  GIT_TAG ${JUCETAG}
-
-#  GIT_TAG         7.0.10 # release-7.0.10
-
-#GIT_TAG         8.0.1 
-#since cmake 3.28
+  URL https://github.com/juce-framework/JUCE/archive/refs/tags/${JUCETAG}.tar.gz
+  URL_HASH SHA256=95752f8e8b37d802b4c10182bc757de7d88f0c8899e879afa8798589be306a11
   EXCLUDE_FROM_ALL
-#  
-  GIT_PROGRESS TRUE
 )
 
 
