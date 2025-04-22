@@ -28,6 +28,11 @@ For all details, docs and drumkits see the [Drumlabooh site](https://psemiletov.
 * Written in C++, based on JUCE toolkit
 
 
+## Linux: Quick install
+
+To install/update binaries and kits, use [drumlabooh-net-installer-script.sh](https://github.com/psemiletov/drumlabooh/releases/download/8.0.0/drumlabooh-net-installer-script.sh) or [drumlabooh-net-install](https://github.com/psemiletov/drumlabooh/releases/download/8.0.0/drumlabooh-net-install) (static build console program).
+
+
 ## Linux: Build from the source
 
 To build Drumlabooh form the source, you need to install some dependencies first. Drumlabooh is based on JUCE. JUCE source code will be fetched by configuration process, but JUCE needs additional libraries.
