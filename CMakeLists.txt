@@ -64,26 +64,6 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 if (INSTALLKITS)
 
-if(CMAKE_VERSION VERSION_LESS "3.2.8") 
-
-message("CMake less than 3.2.8")
-
-FetchContent_Declare(
-  drum_sklad
-  URL https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
-  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-  #EXCLUDE_FROM_ALL
-)
-
-FetchContent_GetProperties(drum_sklad)
-if(NOT drum_sklad_POPULATED)
-  FetchContent_Populate(drum_sklad)
-  message (${drum_sklad_SOURCE_DIR})
-endif()
-
-
-else()    
-
 FetchContent_Declare(
   drum_sklad
   URL https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
@@ -95,25 +75,7 @@ FetchContent_MakeAvailable(drum_sklad)
 
 endif()
 
-endif()
 
-
-if(CMAKE_VERSION VERSION_LESS "3.2.8") 
-
-FetchContent_Declare(
-  juce
-  URL https://github.com/juce-framework/JUCE/archive/refs/tags/${JUCETAG}.tar.gz
-  EXCLUDE_FROM_ALL
-)
-
-FetchContent_GetProperties(juce)
-if(NOT juce_POPULATED)
-  FetchContent_Populate(juce)
-  add_subdirectory(${juce_SOURCE_DIR} ${juce_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
-
-
-else()
 
 cmake_policy(SET CMP0135 NEW)
 FetchContent_Declare(
@@ -123,10 +85,7 @@ FetchContent_Declare(
   EXCLUDE_FROM_ALL
 )
 
-
 FetchContent_MakeAvailable(juce)
-
-endif()
 
 
 
