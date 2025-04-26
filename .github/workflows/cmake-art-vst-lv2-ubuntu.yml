@@ -32,7 +32,7 @@ jobs:
        name: drumlabooh.vst3
        path: ${{github.workspace}}/build/drumlabooh_artefacts/Release/VST3
 
-    - name: Archive artifacts VST3
+    - name: Archive artifacts VST3-multi
       uses: actions/upload-artifact@v4
       with:
        name: drumlabooh-multi.vst3
@@ -46,7 +46,7 @@ jobs:
        path: ${{github.workspace}}/build/drumlabooh_artefacts/Release/LV2
 
 
-    - name: Archive artifacts LV2
+    - name: Archive artifacts LV2-multi
       uses: actions/upload-artifact@v4
       with:
        name: drumlabooh-multi.lv2
