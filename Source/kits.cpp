@@ -808,7 +808,11 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        //std::cout << "item_sample " << item_sample.attribute("Filename").value() << "\n";
        temp_sample = add_sample (sample_counter++);
        
-       
+       //load samples
+
+
+       //read params
+
        temp_sample->name = item_sample.attribute("name").value(); 
        str_note = item_sample.attribute("note").value(); 
        
