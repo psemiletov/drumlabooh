@@ -165,7 +165,7 @@ main() {
     source_path_to_lv2_zip="$tempdir/drumlabooh.lv2.zip"
     source_path_to_vst_zip="$tempdir/drumlabooh.vst3.zip"
     source_path_to_lv2m_zip="$tempdir/drumlabooh-multi.lv2.zip"
-    source_path_to_vstm_zip="$tempdir/drumlabooh-multi.lv2.zip"
+    source_path_to_vstm_zip="$tempdir/drumlabooh-multi.vst3.zip"
     
     source_path_to_drum_sklad="$tempdir/drum_sklad.zip"
 
@@ -197,17 +197,17 @@ main() {
     fi
     
     # Скачиваем и распаковываем LV2-multi
-    echo "Processing LV2 plugin..."
+    echo "Processing LV2m plugin..."
     if ! $flag_test; then
-        if downloadFile "$source_path_to_lv2_zip" "$lv2_url"; then
-            Unzip "$source_path_to_lv2_zip" "$dest_lv2_path" "$kits_ver"
+        if downloadFile "$source_path_to_lv2m_zip" "$lv2m_url"; then
+            Unzip "$source_path_to_lv2m_zip" "$dest_lv2_path" "$kits_ver"
         else
-            echo "Failed to process LV2 plugin" >&2
+            echo "Failed to process LV2m plugin" >&2
             exit 1
         fi
     fi
 
-
+    
     # Скачиваем и распаковываем VST3
     echo "Processing VST3 plugin..."
     if ! $flag_test; then
@@ -218,6 +218,20 @@ main() {
             exit 1
         fi
     fi
+    
+
+    # Скачиваем и распаковываем VST3m
+    echo "Processing VST3m plugin..."
+    if ! $flag_test; then
+        if downloadFile "$source_path_to_vstm_zip" "$vstm_url"; then
+            Unzip "$source_path_to_vstm_zip" "$dest_vst_path" "$kits_ver"
+        else
+            echo "Failed to process VST3 plugin" >&2
+            exit 1
+        fi
+    fi
+
+    
 
     # Скачиваем и распаковываем drumkits
     echo "Processing drum kits..."
