@@ -169,6 +169,8 @@ public:
   
   void load_hydrogen (const std::string &data);
   void load_txt (const std::string &tdata);
+  void load_labooh_xml (const std::string &tdata);
+
   void load_qtxt (const std::string &data);
   void load_sfz_new (const std::string &data);
   
@@ -222,6 +224,7 @@ public:
   CHydrogenXMLWalker (CDrumKit *hkit);
   bool for_each (pugi::xml_node& node);
 };
+
 
 
 void rnd_init();

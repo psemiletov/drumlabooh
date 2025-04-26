@@ -18,8 +18,6 @@ this code is the public domain
 
 
 
-
-
 CDocumentWindow::CDocumentWindow (const String &name,
                                   Colour backgroundColour,
                                   int requiredButtons,
@@ -27,6 +25,8 @@ CDocumentWindow::CDocumentWindow (const String &name,
                                   juce::DocumentWindow (name, backgroundColour, requiredButtons, addToDesktop)
 {
 }
+
+
 
 
 void CDocumentWindow::closeButtonPressed()
@@ -868,7 +868,6 @@ void CAudioProcessorEditor::adapt_qdrumlabooh()
   tmr_leds.startTimer (1000 / 15); //15 FPS
 }
 
-
 CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::AudioProcessorValueTreeState &vts)
                                              : AudioProcessorEditor (&parent),
                                                audioProcessor (parent),
@@ -888,6 +887,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   drumkits_listbox.setRowHeight (32);
   drumkits_listbox.setModel (&drumkits_model);    
       
+  //drumkits_listbox.setLookAndFeel(&drumkits_listbox_lookandfeel);
   
 //TOP SECTION
   

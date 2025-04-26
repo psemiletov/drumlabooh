@@ -17,6 +17,8 @@ typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 class CAudioProcessorEditor;
 class CDrumCell;
 
+
+
 class CDrumkitsListBoxModel: public ListBoxModel
 {
 public:
@@ -225,6 +227,8 @@ class CAudioProcessorEditor: public juce::AudioProcessorEditor,
 public:
 
   CAudioProcessor &audioProcessor;
+
+  //CDrumkitsListBoxScroller drumkits_listbox_lookandfeel;
 
   bool need_to_update_cells;
   

@@ -779,6 +779,58 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
 }
 
 
+
+
+void CDrumKit::load_labooh_xml (const std::string &data)
+{
+ 
+  kit_type = KIT_TYPE_DRUMLABOOH;
+
+  pugi::xml_document doc;
+
+ // cout << "loading kit: " << fname << endl;
+  //cout << "source: " << source << endl;
+
+  //    layers_supported = true;
+    //   layers_supported = false;
+
+  
+
+  pugi::xml_parse_result result = doc.load_buffer (data.c_str(), data.size());
+
+  if (! result)
+     return;
+
+  std::string str_note;
+  
+  for (pugi::xml_node item_sample = doc.child ("sample"); item_sample; item_sample = item_sample.next_sibling("sample"))
+      {
+       //std::cout << "item_sample " << item_sample.attribute("Filename").value() << "\n";
+       temp_sample = add_sample (sample_counter++);
+       
+       
+       temp_sample->name = item_sample.attribute("name").value(); 
+       str_note = item_sample.attribute("note").value(); 
+       
+       if (! str_note.empty())
+          { 
+           temp_sample->mapped_note = std::stoi(str_note);
+           map_samples[temp_sample->mapped_note] = temp_sample;
+                // std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
+           has_mapping = true;
+          } 
+
+       
+       
+       if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
+           break;
+      }
+
+  loaded = true;
+
+}
+
+
 void CDrumKit::load_txt (const std::string &data)
 {
   //cout << "void CDrumKit::load_txt (const std::string data)\n";
