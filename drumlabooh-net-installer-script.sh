@@ -157,10 +157,16 @@ main() {
 
     lv2_url="https://github.com/psemiletov/drumlabooh/releases/download/$labooh_ver/drumlabooh.lv2.zip"
     vst_url="https://github.com/psemiletov/drumlabooh/releases/download/$labooh_ver/drumlabooh.vst3.zip"
+    lv2m_url="https://github.com/psemiletov/drumlabooh/releases/download/$labooh_ver/drumlabooh-multi.lv2.zip"
+    vstm_url="https://github.com/psemiletov/drumlabooh/releases/download/$labooh_ver/drumlabooh-multi.vst3.zip"
+    
     drumkits_url="https://github.com/psemiletov/drum_sklad/archive/refs/tags/$kits_ver.zip"
 
-    source_path_to_lv2_zip="$tempdir/labooh_lv2.zip"
-    source_path_to_vst_zip="$tempdir/labooh_vst.zip"
+    source_path_to_lv2_zip="$tempdir/drumlabooh.lv2.zip"
+    source_path_to_vst_zip="$tempdir/drumlabooh.vst3.zip"
+    source_path_to_lv2m_zip="$tempdir/drumlabooh-multi.lv2.zip"
+    source_path_to_vstm_zip="$tempdir/drumlabooh-multi.lv2.zip"
+    
     source_path_to_drum_sklad="$tempdir/drum_sklad.zip"
 
     dest_lv2_path="$home_dir/.lv2"
@@ -170,10 +176,12 @@ main() {
     if $flag_test; then
         dest_lv2_path="${dest_lv2_path}TEST"
         dest_vst_path="${dest_vst_path}TEST"
+
         dest_drumsklad_path="/STEST"
         echo "Using TEST paths:"
         echo "  LV2: $dest_lv2_path"
         echo "  VST: $dest_vst_path"
+
         echo "  Kits: $dest_drumsklad_path"
     fi
 
@@ -187,6 +195,18 @@ main() {
             exit 1
         fi
     fi
+    
+    # Скачиваем и распаковываем LV2-multi
+    echo "Processing LV2 plugin..."
+    if ! $flag_test; then
+        if downloadFile "$source_path_to_lv2_zip" "$lv2_url"; then
+            Unzip "$source_path_to_lv2_zip" "$dest_lv2_path" "$kits_ver"
+        else
+            echo "Failed to process LV2 plugin" >&2
+            exit 1
+        fi
+    fi
+
 
     # Скачиваем и распаковываем VST3
     echo "Processing VST3 plugin..."
