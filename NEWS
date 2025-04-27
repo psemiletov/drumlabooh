@@ -1,6 +1,5 @@
-   Drumlabooh 8.0.1 ("Hope for no crashes")
+   Drumlabooh 8.0.2 ("Finally Fixed")
 
-   Many inner fixes related to vector boundaries check. 
-   drumlabooh-net-installer-script.sh has been fixed (and it adds also Drumlabooh multi-output version)
+   After a long, long time... The crash in Ardour with drumkits list - fixed!
    
    Stay tuned, Peter Semiletov

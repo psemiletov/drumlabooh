@@ -1409,6 +1409,12 @@ int CDrumkitsListBoxModel::getNumRows()
 
 void CDrumkitsListBoxModel::paintListBoxItem (int rowNumber, Graphics &g, int width, int height, bool rowIsSelected)
 {
+  if (rowNumber < 0 || rowNumber > (items.size() - 1))
+     return;
+ 
+  if (items.size() == 0)
+     return;
+    
   if (rowIsSelected)
 	  g.fillAll (Colours::cornflowerblue);
  	  //g.fillAll (Colours::lightblue);
@@ -1416,11 +1422,18 @@ void CDrumkitsListBoxModel::paintListBoxItem (int rowNumber, Graphics &g, int wi
 	  //g.fillAll (Colours::cornflowerblue);
     //g.fillAll (Colours::plum);
       g.fillAll (Colours::paleturquoise);
+  
+  //  std::cout << "items.size(): " << items.size()   << std::endl;
+//    std::cout << "rowNumber: " << rowNumber  << std::endl;
+   
     
-  std::string item_name = items.at(rowNumber);
+  
+  std::string item_name = items.at (rowNumber);
   if (item_name.empty())
      return;
 
+//  std::cout << "item_name: " << item_name << std::endl;
+  
   g.setFont (20); 
   g.drawText (item_name.c_str(), 4, 0, width - 4, height, Justification::centredLeft, true);
 
@@ -1437,8 +1450,16 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
   
   //editor->log ("LOADING NEW KIT, WAIT...\n");
   //std::string full = editor->kits_scanner.map_kits[kits_scanner.v_kits_names [cmb_drumkit_selector.getSelectedId() - 1]];
-  std::string full = editor->audioProcessor.scanner.map_kits[editor->audioProcessor.scanner.v_kits_names [lastRowSelected]]; //why not direct index?
-
+  std::string kitname_short = editor->audioProcessor.scanner.v_kits_names.at (lastRowSelected);
+  if (kitname_short.empty())
+     return;
+  
+  std::string full = editor->audioProcessor.scanner.map_kits[kitname_short]; //why not direct index?
+  if (full.empty())
+     return;
+  
+  
+  
   editor->audioProcessor.drumkit_path = full;
   editor->tmr_leds.stopTimer();
 
