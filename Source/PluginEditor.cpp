@@ -194,7 +194,6 @@ void CLed::paint(Graphics& g)
   if (is_on)
      //g.fillAll (cl_on.withLightness(velocity));
      g.fillAll (cl_on.withSaturation(velocity));
-    
   else
       g.fillAll (cl_off);
 }
@@ -283,7 +282,6 @@ CDrumCell::CDrumCell()
     
                                 };
   
-  //////////////////////////////
   
   xoffs += bt_file_open.getWidth();
   xoffs += XFILLER;
@@ -313,18 +311,18 @@ CDrumCell::CDrumCell()
                                       return;
                                      }
                              
-                                 editor->tmr_leds.stopTimer();
-                                 editor->audioProcessor.suspendProcessing (true);
+                                  editor->tmr_leds.stopTimer();
+                                  editor->audioProcessor.suspendProcessing (true);
                              
-                                 editor->audioProcessor.drumkit->remove_sample_at_index (cell_number);
+                                  editor->audioProcessor.drumkit->remove_sample_at_index (cell_number);
  
-                                 cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
-                                 set_name ("");
-                                 cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
+                                  cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
+                                  set_name ("");
+                                  cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
 
-                                 editor->audioProcessor.suspendProcessing (false);
-                                 editor->tmr_leds.startTimer (1000 / 15); //15 FPS
-                                };
+                                  editor->audioProcessor.suspendProcessing (false);
+                                  editor->tmr_leds.startTimer (1000 / 15); //15 FPS
+                                 };
   
   //xoffs += XFILLER;
 
@@ -515,32 +513,31 @@ CDrumCell::CDrumCell()
   
   bt_cell_clear.onClick = [this] {
     
-                                 if (! editor)
-                                     return;
+                                  if (! editor)
+                                      return;
         
-                                 if (! editor->audioProcessor.drumkit)  
-                                     return;
+                                  if (! editor->audioProcessor.drumkit)  
+                                      return;
                                    
                                     
-                                 if (editor->audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
-                                    {
-                                     editor->log ("WRONG KIT TYPE! NEED TO BE THE QUICK KIT\n"); 
-                                     return;
-                                    }
+                                  if (editor->audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
+                                     {
+                                      editor->log ("WRONG KIT TYPE! NEED TO BE THE QUICK KIT\n"); 
+                                      return;
+                                     }
                              
-                                editor->tmr_leds.stopTimer();
-                                editor->audioProcessor.suspendProcessing (true);
-                             
+                                  editor->tmr_leds.stopTimer();
+                                  editor->audioProcessor.suspendProcessing (true);
                                     
-                                editor->audioProcessor.drumkit->remove_sample_at_index (cell_number);
+                                  editor->audioProcessor.drumkit->remove_sample_at_index (cell_number);
 
-                                cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
-                                set_name ("");
-                                cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
+                                  cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
+                                  set_name ("");
+                                  cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
 
-                                editor->audioProcessor.suspendProcessing (false);
-                                editor->tmr_leds.startTimer (1000 / 15); //15 FPS
-                               };
+                                  editor->audioProcessor.suspendProcessing (false);
+                                  editor->tmr_leds.startTimer (1000 / 15); //15 FPS
+                                 };
   
  
   addAndMakeVisible (cell_label);
@@ -723,7 +720,7 @@ void CAudioProcessorEditor::load_kit()
 
    juce::String kitname = audioProcessor.drumkit->kit_name.c_str();
 
-   l_kit_name.setText (kitname, juce::dontSendNotification );
+   l_kit_name.setText (kitname, juce::dontSendNotification);
 
    if (!audioProcessor.drumkit->image_fname.empty() && file_exists (audioProcessor.drumkit->image_fname))
       {
@@ -732,15 +729,11 @@ void CAudioProcessorEditor::load_kit()
        kit_image.setImage(im);
       }
    else
-       kit_image.setImage(juce::Image ());
+       kit_image.setImage(juce::Image());
 //      {
   //     kit_image.setImage (kit_image_default);
-     
-     
      // }
-
 }
-
 
 void CAudioProcessorEditor::log (const std::string &s)
 {
@@ -756,7 +749,12 @@ void CAudioProcessorEditor::update_kits_list()
   
   for (size_t i = 0; i < audioProcessor.scanner.v_kits_names.size(); i++)
       {
-       drumkits_model.items.push_back (audioProcessor.scanner.v_kits_names[i]);
+       std::string t = audioProcessor.scanner.v_kits_names.at(i); 
+
+       if (t.empty())
+          continue;
+           
+       drumkits_model.items.push_back (t);
        drumkits_model.indexes.push_back (i);
       }
 }
@@ -876,11 +874,9 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   getLookAndFeel().setColour (TextButton::ColourIds::buttonColourId, juce::Colour (87, 110, 113));
 
   drumkits_model.editor = this;
-  
   need_to_update_cells = true;
   
  // kit_image_default = juce::ImageFileFormat::loadFrom (labooh_png, labooh_pngSize);
-  
 
   update_kits_list();
       
