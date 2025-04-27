@@ -1,6 +1,6 @@
-   Drumlabooh 8.0.0
+   Drumlabooh 8.0.1 ("Hope for no crashes")
 
-   This release features the new resampler by David Bryant. Why the resampler is important? When drum kit's samples sample rates is not equal to DAW's session sample rate, Drumlabooh resamples the samples during the loading. If the drumkit is large, it can cost a lot of time. Now the resampling is 10x faster!
-   Also, now Drumlabooh more correctly loads stereo samples (was: load just the left sample; now: load both channels, then mix them to mono with a half of the level).
+   Many inner fixes related to vector boundaries check. 
+   drumlabooh-net-installer-script.sh has been fixed (and it adds also Drumlabooh multi-output version)
    
    Stay tuned, Peter Semiletov

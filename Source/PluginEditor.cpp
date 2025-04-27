@@ -1392,13 +1392,11 @@ CDrumkitsListBoxModel::CDrumkitsListBoxModel()
 {
 //	JgtGetBoards(); //builds board array and sets numBoards
   editor = 0;
-
 }
 
 
 CDrumkitsListBoxModel::~CDrumkitsListBoxModel()
 {
-
   
 }
 
@@ -1417,16 +1415,15 @@ void CDrumkitsListBoxModel::paintListBoxItem (int rowNumber, Graphics &g, int wi
   else
 	  //g.fillAll (Colours::cornflowerblue);
     //g.fillAll (Colours::plum);
-     g.fillAll (Colours::paleturquoise);
+      g.fillAll (Colours::paleturquoise);
     
+  std::string item_name = items.at(rowNumber);
+  if (item_name.empty())
+     return;
+
   g.setFont (20); 
+  g.drawText (item_name.c_str(), 4, 0, width - 4, height, Justification::centredLeft, true);
 
-  if (! items[rowNumber].empty())
-      g.drawText (items[rowNumber].c_str(),
-                  4, 0, width - 4, height,
-		          Justification::centredLeft, true);
-
- 
   //g.drawFittedText (items[rowNumber].c_str(),
 	//	        4, 0, width - 4, height,
 		//        Justification::centredLeft, 2);
@@ -1464,7 +1461,6 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
       editor->log ("\n");
       editor->log (editor->audioProcessor.drumkit->kit_name);
       editor->log ("loaded:\n");
-
      }
 }
 
@@ -1531,8 +1527,8 @@ void CCellLabel::filesDropped (const StringArray &files, int x, int y)
 //                                                            std::cout << "cell_number: " << cell_number << std::endl;
                                                             
   CDrumSample *s = cell->editor->audioProcessor.drumkit->load_sample_to_index (cell->cell_number,
-                                                                         fname, 
-                                                                         cell->editor->audioProcessor.session_samplerate);
+                                                                               fname, 
+                                                                               cell->editor->audioProcessor.session_samplerate);
   
   cell->editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
                                                             

@@ -391,7 +391,8 @@ CDrumSample::~CDrumSample()
 {
   for (size_t i = 0; i < v_layers.size(); i++)
       {
-       delete v_layers[i];
+       if (v_layers[i]) 
+          delete v_layers[i];
       }
 }
 
@@ -535,25 +536,12 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
          { 
           if (kit->temp_sample->v_layers.size() == 0)
              {   
-              kit->sample_counter--; 
-              delete kit->a_samples[kit->sample_counter];
+              kit->sample_counter--;
+              if (kit->sample_counter >= 0) //NEW CHECK!
+                 delete kit->a_samples[kit->sample_counter];
              }
-       
-     /*
-          if (kit->temp_sample->v_layers.size() > 0)
-             {   
-              kit->sample_counter--; 
-              
-              CDrumLayer *l = kit->temp_sample->v_layers.back();
-              if (! l->audio_buffer)
-                 {
-                  delete kit->a_samples[kit->sample_counter];
-                  kit->a_samples[kit->sample_counter] = 0;
-                 } 
-             }*/
       }
       // 
-       
        
       kit->temp_sample = kit->add_sample (kit->sample_counter++);
 
@@ -1129,7 +1117,7 @@ void CDrumKit::load_sfz_new (const std::string &data)
   size_t j = 0;
   for (size_t i = 0; i < t_str.size(); i++)
       {
-       std::string t = t_str[i];   
+       std::string t = t_str.at (i);   
         
        if (t.find ("//") == string::npos) 
            v_str.push_back (t);
@@ -1167,21 +1155,17 @@ void CDrumKit::load_sfz_new (const std::string &data)
            if (index == v_str.size() || index > MAX_SAMPLES)
                break;
         
-           line = v_str[index]; 
+           line = v_str.at(index); 
    //       cout << "PARSE LINE: " << line << std::endl;
-       
-       
+              
            if (line.empty())
               continue;
-
-        
+ 
            if (line.find ("//") != string::npos) //skip the comment
               continue;
-        
           
            if (line.find ("<region>") != string::npos)
               region_scope = true;
-        
         
            //начинаем читать параметры
            //default_path         
@@ -1240,7 +1224,7 @@ void CDrumKit::load_sfz_new (const std::string &data)
         
            std::string next_line; 
            if (index + 1 != v_str.size()) 
-              next_line = v_str [index + 1];
+              next_line = v_str.at (index + 1);
         
          
            if (next_line.find ("<group>") != string::npos || 
@@ -1568,9 +1552,13 @@ size_t CDrumKit::total_samples_size()
  
        for (size_t j = 0; j < s->v_layers.size(); j++)
            {
-            if (s->v_layers[j]->audio_buffer)
-                result += s->v_layers[j]->audio_buffer->getNumSamples(); }
-           }
+            juce::AudioBuffer <float> *audio_buffer = 0;
+            audio_buffer = s->v_layers.at(j)->audio_buffer;
+            
+            if (audio_buffer)
+               result += audio_buffer->getNumSamples(); 
+          }
+     }
 
 //  std::cout << "CDrumKit::total_samples_size() - 2\n";
       
@@ -1600,9 +1588,14 @@ void CDrumKit::adapt() //used at Adapt button handler
   
        for (size_t j = 0; j < s->v_layers.size(); j++)
            {
-            if (s->v_layers[j]->audio_buffer)
+            CDrumLayer *layer = 0; 
+            layer = s->v_layers.at(j);
+            if (! layer)
+                continue;
+                        
+            if (layer->audio_buffer)
                {
-                juce::File fl (s->v_layers[j]->file_name);
+                juce::File fl (layer->file_name);
                 
                 fl.deleteFile();
                 
@@ -1617,25 +1610,25 @@ void CDrumKit::adapt() //used at Adapt button handler
 
                 juce::AudioFormatWriter *writer = 0;
                 
-                std::string ext = get_file_ext (s->v_layers[j]->file_name);
+                std::string ext = get_file_ext (layer->file_name);
                 ext = string_to_lower (ext);
 
                 if (ext == "wav")
-                    writer = WavAudioFormat().createWriterFor (fs, s->v_layers[j]->samplerate, 
+                    writer = WavAudioFormat().createWriterFor (fs, layer->samplerate, 
                                                                1, //channels
                                                                32,//int bitsPerSample, 
                                                                StringPairArray(), 
                                                                0);
                   
                 if (ext == "aiff")
-                    writer = AiffAudioFormat().createWriterFor (fs, s->v_layers[j]->samplerate, 
+                    writer = AiffAudioFormat().createWriterFor (fs, layer->samplerate, 
                                                                 1, //channels
                                                                 32,//int bitsPerSample, 
                                                                 StringPairArray(), 
                                                                 0);
 
                 if (ext == "flac")
-                    writer = FlacAudioFormat().createWriterFor (fs, s->v_layers[j]->samplerate, 
+                    writer = FlacAudioFormat().createWriterFor (fs, layer->samplerate, 
                                                                 1, //channels
                                                                 24,//int bitsPerSample, 
                                                                 StringPairArray(), 
@@ -1645,7 +1638,7 @@ void CDrumKit::adapt() //used at Adapt button handler
                 if (! writer)
                    return;
                  
-                if (! writer->writeFromAudioSampleBuffer (*s->v_layers[j]->audio_buffer, 0, s->v_layers[j]->audio_buffer->getNumSamples()))
+                if (! writer->writeFromAudioSampleBuffer (*layer->audio_buffer, 0, layer->audio_buffer->getNumSamples()))
                     std::cout << "NO write!\n";
                  
                 delete writer;
@@ -1675,18 +1668,22 @@ void CDrumKit::adapt_qkit (std::string new_dir_path) //used at Adapt button hand
        CDrumSample *s = a_samples[i];
        
        if (! s)
-         {
-          result += "#EMPTY\n"; 
-          continue; 
-         } 
+          {
+           result += "#EMPTY\n"; 
+           continue; 
+          } 
    
        if (s->v_layers.size() == 0)
           continue;
   
+        
+       CDrumLayer *layer = 0; 
+       layer = s->v_layers[0];  
+       
           
-       if (s->v_layers[0]->audio_buffer)
+       if (layer->audio_buffer)
           {
-           juce::File fl (s->v_layers[0]->file_name);
+           juce::File fl (layer->file_name);
                                 
            std::string fname_ext = fl.getFileName().toStdString(); 
            std::string pure_fname =  fl.getFileNameWithoutExtension().toStdString(); 
@@ -1697,7 +1694,7 @@ void CDrumKit::adapt_qkit (std::string new_dir_path) //used at Adapt button hand
            
            fl = new_dir_path + "/" + fname_ext;
            
-           s->v_layers[0]->file_name = fl.getFullPathName().toStdString();
+           layer->file_name = fl.getFullPathName().toStdString();
            
            result += pure_fname;
            result += "=";
@@ -1712,31 +1709,31 @@ void CDrumKit::adapt_qkit (std::string new_dir_path) //used at Adapt button hand
            ext = string_to_lower (ext);
 
            if (ext == "wav")
-              writer = WavAudioFormat().createWriterFor (fs, s->v_layers[0]->samplerate, 
+              writer = WavAudioFormat().createWriterFor (fs, layer->samplerate, 
                                                          1, //channels
                                                          32,//int bitsPerSample, 
                                                          StringPairArray(), 
                                                          0);
                   
            if (ext == "aiff")
-               writer = AiffAudioFormat().createWriterFor (fs, s->v_layers[0]->samplerate, 
+               writer = AiffAudioFormat().createWriterFor (fs, layer->samplerate, 
                                                            1, //channels
                                                            32,//int bitsPerSample, 
                                                            StringPairArray(), 
                                                            0);
 
            if (ext == "flac")
-               writer = FlacAudioFormat().createWriterFor (fs, s->v_layers[0]->samplerate, 
-                                                                1, //channels
-                                                                24,//int bitsPerSample, 
-                                                                StringPairArray(), 
-                                                                0);
+               writer = FlacAudioFormat().createWriterFor (fs, layer->samplerate, 
+                                                           1, //channels
+                                                           24,//int bitsPerSample, 
+                                                           StringPairArray(), 
+                                                           0);
 
 
            if (! writer)
               return;
                  
-           if (! writer->writeFromAudioSampleBuffer (*s->v_layers[0]->audio_buffer, 0, s->v_layers[0]->audio_buffer->getNumSamples()))
+           if (! writer->writeFromAudioSampleBuffer (*layer->audio_buffer, 0, layer->audio_buffer->getNumSamples()))
                     std::cout << "NO write!\n";
                  
            delete writer;
@@ -2009,8 +2006,8 @@ void CDrumSample::trigger_sample (float vel)
 
 void CDrumSample::trigger_sample_uint (int vel, float velo)
 {
-  std::cout << "CDrumSample::trigger_sample_uint: " << name << std::endl;
-std::cout << "vel: " << vel << " velo:" << velo << std::endl;
+ // std::cout << "CDrumSample::trigger_sample_uint: " << name << std::endl;
+//  std::cout << "vel: " << vel << " velo:" << velo << std::endl;
 
   //v_layers[current_layer]->sample_offset = 0;
 
