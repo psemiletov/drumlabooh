@@ -144,14 +144,20 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
   return layout;
 }
 
+/*
+ 
+ BusesProperties().withOutput ("Mono Out 1", AudioChannelSet::mono(), true)
+                  .withOutput ("Mono Out 2", AudioChannelSet::mono(), true)
+                  .withOutput ("Mono Out 3", AudioChannelSet::mono(), true)
+                  .withOutput ("Mono Out 4", AudioChannelSet::mono(), true))
+  
+ */ 
 
 #if defined(MULTICHANNEL)
 
 CAudioProcessor::CAudioProcessor()
-                                  :AudioProcessor (BusesProperties()
-                                    .withOutput ("Output", juce::AudioChannelSet::canonicalChannelSet (36), true)
-                                 ),
-   parameters (*this, 0, "Drumlabooh-multi", createParameterLayout())
+                                  :AudioProcessor (BusesProperties().withOutput ("Output", juce::AudioChannelSet::canonicalChannelSet/*discreteChannels*/ (36), true)),
+                                  parameters (*this, 0, "Drumlabooh-multi", createParameterLayout())
 
 {
  //std::cout << "CAudioProcessor::CAudioProcessor()36 - 1" << std::endl;
@@ -383,7 +389,7 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 
 bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-  if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::canonicalChannelSet (36))
+  if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::canonicalChannelSet/*discreteChannels*/ (36))
       return true;
   else
       return false;
