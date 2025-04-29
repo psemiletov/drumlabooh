@@ -622,12 +622,14 @@ void CDrumKit::load_labooh_xml (const std::string &data)
   
   for (pugi::xml_node item_sample = doc.child ("sample"); item_sample; item_sample = item_sample.next_sibling("sample"))
       {
+        if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
+           break;
+       
+        
        //std::cout << "item_sample " << item_sample.attribute("Filename").value() << "\n";
        temp_sample = add_sample (sample_counter++);
        
-       //load samples
-
-
+       
        //read params
 
        temp_sample->name = item_sample.attribute("name").value(); 
@@ -640,12 +642,151 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                 // std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
            has_mapping = true;
           } 
+  
+       
+       std::string layer_index_mode = item_sample.attribute("layer_index_mode").value(); 
+       
+       if (layer_index_mode == "rnd")
+           temp_sample->layer_index_mode = LAYER_INDEX_MODE_RND; 
 
+       if (layer_index_mode == "robin")
+           temp_sample->layer_index_mode = LAYER_INDEX_MODE_ROBIN; 
+
+       if (layer_index_mode == "no_velocity")
+           temp_sample->layer_index_mode = LAYER_INDEX_MODE_NOVELOCITY; 
+       
+       //load samples
+
+       std::string fname = item_sample.text().as_string(); //file name[s]
        
        
-       if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
-           break;
-      }
+       if (fname.empty())
+          continue;
+        
+       size_t check_for_list = fname.find (",");
+       bool check_for_txt = false;
+                  
+         //if (fname.find ("samples.txt") != string::npos || fname.find (".part") != string::npos)
+           //  check_for_txt = true;
+       if (fname.find (".txt") != string::npos)
+          check_for_txt = true;
+  
+       
+       if ((check_for_list != string::npos) || check_for_txt)
+          {
+           std::vector <std::string> v_fnames;
+             
+           if (check_for_txt)
+              {
+               std::string file_data = string_file_load (kit_dir + "/" + fname);
+               v_fnames = split_string_to_vector (file_data, "\n", false);
+              }
+           else
+               v_fnames = split_string_to_vector (fname, ",", false);
+             
+           if (v_fnames.size() == 0)
+              continue;
+
+           //temp_sample = add_sample (sample_counter++);
+           //temp_sample->name = sample_name;
+             
+           if (! check_for_txt) 
+              for (auto f: v_fnames)
+                  {
+                   string filename = kit_dir + "/" + f;
+                   temp_sample->add_layer();
+
+                   if (file_exists (filename))
+                       temp_sample->v_layers.back()->load (filename.c_str());
+                  }
+           else   
+               for (auto f: v_fnames)
+                   {
+                    filesystem::path pt (kit_dir + "/" + fname); //full path for samples.txt
+  
+                    string fpath = pt.parent_path().string();  //get path with dirs only
+                    string filename = fpath + "/" + f; // get full path to filename of the each sample
+                    temp_sample->add_layer();
+
+                    if (file_exists (filename))
+                        temp_sample->v_layers.back()->load (filename.c_str());
+                   }
+                 
+
+           float part_size = (float) 1 / temp_sample->v_layers.size();
+             
+           int uint_part_size = 127 / temp_sample->v_layers.size();
+             
+           CDrumLayer *l;
+              //evaluate min and max velocities by the file position in the vector
+             
+           for (size_t i = 0; i < temp_sample->v_layers.size(); i++)
+                 {
+                  l = temp_sample->v_layers[i];
+
+                  float segment_start = part_size * i;
+                  float segment_end = part_size * (i + 1) - 0.001f;
+
+//                  std::cout << "l->min: " << l->min << std::endl;
+//                  std::cout << "l->max: " << l->max << std::endl;
+
+                  l->min = segment_start; //for Hydrogen
+                  l->max = segment_end;   //for Hydrogen
+                  
+                  l->umin = uint_part_size * i;  //Labooh/SFZ
+                  l->umax = uint_part_size * i + uint_part_size - 1; //Labooh/SFZ
+                  
+//                  std::cout << "l->umin: " << l->umin << std::endl;
+//                  std::cout << "l->umax: " << l->umax << std::endl;
+                 }
+
+             l->umax = 127;    
+             l->max = 1.0f;
+            }
+         else //ONE LAYER PER SAMPLE
+             {
+              string filename = kit_dir + "/" + fname;
+
+              temp_sample->add_layer(); //add default layer
+
+              if (file_exists (filename))
+                 {
+                  temp_sample->v_layers.back()->load (filename.c_str());
+                  if (! str_note.empty())
+                     {
+                      temp_sample->mapped_note = std::stoi (str_note);
+                      map_samples[temp_sample->mapped_note] = temp_sample;
+                    //  std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
+                      has_mapping = true;
+                     } 
+                 } 
+             }
+
+
+         for (auto signature: v_hat_open_signatures)
+             {
+              if (findStringIC (temp_sample->name, signature) || findStringIC (fname, signature)) //заменить на другую функцию проверки?
+                 {
+                  temp_sample->hihat_open = true;
+                  break;
+                 }
+             }
+
+
+         for (auto signature: v_hat_close_signatures)
+             {
+              if (findStringIC (temp_sample->name, signature) || findStringIC (fname, signature))
+                 {
+                  temp_sample->hihat_close = true;
+                  break;
+                 }
+             }
+
+        }
+        
+        
+       
+      
 
   loaded = true;
 
@@ -1429,6 +1570,19 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (source.empty())
       return;
   
+  if (ends_with (kit_filename, "drumkit.labooh"))
+     {
+      load_labooh_xml (source);
+      auto stop = chrono::high_resolution_clock::now();
+  //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
+
+      load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+      str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
+
+      return;
+     }
+  
+  
   if (ends_with (kit_filename, "drumkit.txt"))
      {
       load_txt (source);
@@ -1884,6 +2038,14 @@ void CDrumKitsScanner::scan()
                  fname = kd + "/drumkitq.txt";
                  if (file_exists (fname))
                     kit_exists = true;
+                 else
+                     {
+                      fname = kd + "/drumkit.labooh";
+                      if (file_exists (fname))
+                        kit_exists = true;
+                     }                   
+                   
+                  
                 }
            }
 

@@ -158,7 +158,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 CAudioProcessor::CAudioProcessor()
                                   //:AudioProcessor (BusesProperties().withOutput ("Output", juce::AudioChannelSet::canonicalChannelSet/*discreteChannels*/ (36), true)),
                                  :AudioProcessor (BusesProperties()
-                                  .withOutput("Output", juce::AudioChannelSet::canonicalChannelSet(36), true)),
+                                  .withOutput("Output", juce::AudioChannelSet::/*canonicalChannelSet*/discreteChannels(36), true)),
                                   parameters (*this, 0, "Drumlabooh-multi", createParameterLayout())
 
 {
