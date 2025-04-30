@@ -600,7 +600,10 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
 
 void CDrumKit::load_labooh_xml (const std::string &data)
 {
- 
+  std::cout << "void CDrumKit::load_labooh_xml (const std::string &data)\n";
+  
+  //std::cout << data << std::endl;
+  
   kit_type = KIT_TYPE_DRUMLABOOH;
 
   pugi::xml_document doc;
@@ -618,13 +621,25 @@ void CDrumKit::load_labooh_xml (const std::string &data)
   if (! result)
      return;
 
-  std::string str_note;
   
-  for (pugi::xml_node item_sample = doc.child ("sample"); item_sample; item_sample = item_sample.next_sibling("sample"))
+  std::cout << "0\n";
+  
+   pugi::xml_node samples = doc.child("root");
+
+  
+   for (pugi::xml_node item_sample = samples.first_child(); item_sample; item_sample = item_sample.next_sibling())
+ // for (pugi::xml_node item_sample = doc.child ("sample"); item_sample; item_sample = item_sample.next_sibling("sample"))
       {
+  
+        std::cout << "1\n";
+ 
+        std::cout << item_sample.text().as_string() << std::endl;
+        
         if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
            break;
-       
+  
+        std::cout << "2\n";
+  
         
        //std::cout << "item_sample " << item_sample.attribute("Filename").value() << "\n";
        temp_sample = add_sample (sample_counter++);
@@ -633,7 +648,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        //read params
 
        temp_sample->name = item_sample.attribute("name").value(); 
-       str_note = item_sample.attribute("note").value(); 
+       std::string str_note = item_sample.attribute("note").value(); 
        
        if (! str_note.empty())
           { 
@@ -662,6 +677,9 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        
        if (fname.empty())
           continue;
+        
+       std::cout << "3\n";
+   
         
        size_t check_for_list = fname.find (",");
        bool check_for_txt = false;
@@ -2042,7 +2060,10 @@ void CDrumKitsScanner::scan()
                      {
                       fname = kd + "/drumkit.labooh";
                       if (file_exists (fname))
-                        kit_exists = true;
+                        {
+                         kit_exists = true;
+                         std::cout << "fname:" << fname << std::endl; 
+                        }  
                      }                   
                    
                   
@@ -2073,6 +2094,10 @@ void CDrumKitsScanner::scan()
                //get the last part of kd 
                kit_name = get_last_part (kd);
          
+           if (ext == "labooh")
+               //get the last part of kd 
+               kit_name = get_last_part (kd);
+                     
             
            if (ext == "sfz")
                kit_name = get_last_part (kd);
@@ -2088,6 +2113,9 @@ void CDrumKitsScanner::scan()
               {
                map_kits.insert (pair<string,string> (kit_name, fname));
                v_kits_names.push_back (kit_name);
+               
+             //  std::cout << "ADD kit_name: " << kit_name << " |||| fname: " << fname << std::endl;
+               
               }
           }
 
