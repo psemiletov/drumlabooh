@@ -596,6 +596,25 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
 }
 
 
+#include <cctype> // для std::isspace
+
+std::string trim(const std::string& str) {
+    size_t first = 0;
+    size_t last = str.length();
+
+    // Находим первый непробельный символ
+    while (first < last && std::isspace(static_cast<unsigned char>(str[first]))) {
+        ++first;
+    }
+
+    // Находим последний непробельный символ
+    while (last > first && std::isspace(static_cast<unsigned char>(str[last - 1]))) {
+        --last;
+    }
+
+    // Возвращаем подстроку без начальных и конечных пробелов
+    return str.substr(first, last - first);
+}
 
 
 void CDrumKit::load_labooh_xml (const std::string &data)
@@ -603,6 +622,13 @@ void CDrumKit::load_labooh_xml (const std::string &data)
   std::cout << "void CDrumKit::load_labooh_xml (const std::string &data)\n";
   
   //std::cout << data << std::endl;
+
+  if (data.empty())
+      return;
+
+  size_t sep_pos = kit_dir.rfind (DIR_SEPARATOR);
+  kit_name = kit_dir.substr (sep_pos + 1);
+
   
   kit_type = KIT_TYPE_DRUMLABOOH;
 
@@ -633,7 +659,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
   
         std::cout << "1\n";
  
-        std::cout << item_sample.text().as_string() << std::endl;
+    //    std::cout << item_sample.text().as_string() << std::endl;
         
         if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
            break;
@@ -677,6 +703,8 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        
        if (fname.empty())
           continue;
+        
+       fname = trim (fname); 
         
        std::cout << "3\n";
    
