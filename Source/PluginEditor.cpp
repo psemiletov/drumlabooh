@@ -215,15 +215,15 @@ CDrumCell::CDrumCell()
   xoffs += led.getWidth();
   xoffs += XFILLER;
 
-  addAndMakeVisible (bt_file_open);
+  addAndMakeVisible (bt_cell_plus);
   
-  bt_file_open.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (180, 209, 220));
-  bt_file_open.setButtonText ("+");
-  bt_file_open.setTopLeftPosition (xoffs, YFILLER);
-  bt_file_open.setSize (16, 16);
-  bt_file_open.setTooltip ("Add sample to quick kit");  
+  bt_cell_plus.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (180, 209, 220));
+  bt_cell_plus.setButtonText ("+");
+  bt_cell_plus.setTopLeftPosition (xoffs, YFILLER);
+  bt_cell_plus.setSize (16, 16);
+  bt_cell_plus.setTooltip ("Add sample to quick kit");  
 ///////////////
-  bt_file_open.onClick = [this] {
+  bt_cell_plus.onClick = [this] {
     
                                  if (! editor)
                                      return;
@@ -283,21 +283,21 @@ CDrumCell::CDrumCell()
                                 };
   
   
-  xoffs += bt_file_open.getWidth();
+  xoffs += bt_cell_plus.getWidth();
   xoffs += XFILLER;
   
-  addAndMakeVisible (bt_cell_clear);
+  addAndMakeVisible (bt_cell_minus);
   
-  bt_cell_clear.setColour ( TextButton::ColourIds::buttonColourId, juce::Colour (131, 152, 160));
+  bt_cell_minus.setColour ( TextButton::ColourIds::buttonColourId, juce::Colour (131, 152, 160));
   
-  bt_cell_clear.setButtonText ("-");
-  bt_cell_clear.setTopLeftPosition (bt_file_open.getX(), bt_file_open.getBottom() + 1);
-  bt_cell_clear.setSize (16, 16);
+  bt_cell_minus.setButtonText ("-");
+  bt_cell_minus.setTopLeftPosition (bt_cell_plus.getX(), bt_cell_plus.getBottom() + 1);
+  bt_cell_minus.setSize (16, 16);
 
-  bt_cell_clear.setTooltip ("Remove sample from quick kit");  
+  bt_cell_minus.setTooltip ("Remove sample from quick kit");  
 
   
-  bt_cell_clear.onClick = [this] {
+  bt_cell_minus.onClick = [this] {
                                   if (! editor)
                                       return;
         
@@ -429,15 +429,15 @@ CDrumCell::CDrumCell()
   led.setTopLeftPosition (xoffs, YFILLER);
   led.setSize (16, 32);
   
-  addAndMakeVisible (bt_file_open);
+  addAndMakeVisible (bt_cell_plus);
   
-  bt_file_open.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (180, 209, 220));
-  bt_file_open.setButtonText ("+");
-  bt_file_open.setTopLeftPosition (xoffs, YFILLER);
-  bt_file_open.setSize (16, 16);
-  bt_file_open.setTooltip ("Add sample to quick kit");  
+  bt_cell_plus.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (180, 209, 220));
+  bt_cell_plus.setButtonText ("+");
+  bt_cell_plus.setTopLeftPosition (xoffs, YFILLER);
+  bt_cell_plus.setSize (16, 16);
+  bt_cell_plus.setTooltip ("Add sample to quick kit");  
 ///////////////
-  bt_file_open.onClick = [this] {
+  bt_cell_plus.onClick = [this] {
     
                                  if (! editor)
                                      return;
@@ -498,20 +498,20 @@ CDrumCell::CDrumCell()
   
   //////////////////////////////
   
-  xoffs += bt_file_open.getWidth();
+  xoffs += bt_cell_plus.getWidth();
   xoffs += XFILLER;
   
-  addAndMakeVisible (bt_cell_clear);
+  addAndMakeVisible (bt_cell_minus);
   
-  bt_cell_clear.setColour ( TextButton::ColourIds::buttonColourId, juce::Colour (131, 152, 160));
+  bt_cell_minus.setColour ( TextButton::ColourIds::buttonColourId, juce::Colour (131, 152, 160));
   
-  bt_cell_clear.setButtonText ("-");
-  bt_cell_clear.setTopLeftPosition (bt_file_open.getX(), bt_file_open.getBottom() + 1);
-  bt_cell_clear.setSize (16, 16);
+  bt_cell_minus.setButtonText ("-");
+  bt_cell_minus.setTopLeftPosition (bt_cell_plus.getX(), bt_cell_plus.getBottom() + 1);
+  bt_cell_minus.setSize (16, 16);
 
-  bt_cell_clear.setTooltip ("Remove sample from quick kit");  
+  bt_cell_minus.setTooltip ("Remove sample from quick kit");  
   
-  bt_cell_clear.onClick = [this] {
+  bt_cell_minus.onClick = [this] {
     
                                   if (! editor)
                                       return;

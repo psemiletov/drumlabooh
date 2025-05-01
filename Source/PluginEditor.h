@@ -146,8 +146,8 @@ public:
   CFx fx;
 
   juce::TextButton bt_fx;
-  juce::TextButton bt_file_open;
-  juce::TextButton bt_cell_clear;
+  juce::TextButton bt_cell_plus;
+  juce::TextButton bt_cell_minus;
 
   
   juce::Button *bt_fx_close;
@@ -203,8 +203,8 @@ public:
 
   juce::TextButton bt_fx;
   juce::Button *bt_fx_close;
-  juce::TextButton bt_file_open;
-  juce::TextButton bt_cell_clear;
+  juce::TextButton bt_cell_plus;
+  juce::TextButton bt_cell_minus;
 
   
   CDrumCell();
