@@ -24,6 +24,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
   for (size_t i = 0; i < 36; i++)
       {
+        
+       
+       layer_index[i] = nullptr; 
 
     #ifndef MULTICHANNEL
 
@@ -72,7 +75,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
   for (size_t i = 0; i < 36; i++)
       {
+       layout.add (std::make_unique <juce::AudioParameterFloat> ("layer_index" + std::to_string(i), // parameter ID
+                                                                 "layer_index" + std::to_string(i), // parameter name
+                                                                  juce::NormalisableRange<float> (0, 127, 1, 1), // parameter range
+                                                                  0)); //default value
 
+        
 #ifndef MULTICHANNEL
 
        layout.add (std::make_unique <juce::AudioParameterFloat> ("vol" + std::to_string(i), // parameter ID
@@ -180,6 +188,10 @@ CAudioProcessor::CAudioProcessor()
 
   for (size_t i = 0; i < 36; i++)
       {
+        
+       layer_index[i] = parameters.getRawParameterValue ("layer_index" + std::to_string(i));
+       
+        
        lps[i] = parameters.getRawParameterValue ("lp" + std::to_string(i));
        lp_cutoff[i] = parameters.getRawParameterValue ("lp_cutoff" + std::to_string(i));
        lp_reso[i] = parameters.getRawParameterValue ("lp_reso" + std::to_string(i));
@@ -227,6 +239,9 @@ CAudioProcessor::CAudioProcessor()
 
   for (size_t i = 0; i < 36; i++)
       {
+       layer_index[i] = parameters.getRawParameterValue ("layer_index" + std::to_string(i));
+        
+        
        vols[i] = parameters.getRawParameterValue ("vol" + std::to_string(i));
        pans[i] = parameters.getRawParameterValue ("pan" + std::to_string(i));
        mutes[i] = parameters.getRawParameterValue ("mute" + std::to_string(i));

@@ -28,6 +28,7 @@ this code is the public domain
 #define KIT_TYPE_HYDROGEN 1
 #define KIT_TYPE_SFZ 2
 #define KIT_TYPE_QDRUMLABOOH 3
+#define KIT_TYPE_DRUMLABOOH_BUNDLE 4 //каждый слой - отдельный one shot
 
 #define MAX_SAMPLES 36
 
@@ -83,7 +84,7 @@ public:
 
   std::string name; //sample name, for example "Bass Drum"
   int id; //Hydrogen's. For what? 
-  int current_layer;
+  int current_layer; //оставить для влияния?
 //  int midiOutNote;
   int session_samplerate; //session srate, taken from the upper level object
 

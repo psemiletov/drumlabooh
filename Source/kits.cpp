@@ -648,23 +648,22 @@ void CDrumKit::load_labooh_xml (const std::string &data)
      return;
 
   
-  std::cout << "0\n";
-  
-   pugi::xml_node samples = doc.child("root");
+   pugi::xml_node samples = doc.child ("root");
 
+   std::string str_kit_type = samples.attribute("type").value(); 
+   if (str_kit_type == "bundle")
+      kit_type = KIT_TYPE_DRUMLABOOH_BUNDLE;  
+     
   
    for (pugi::xml_node item_sample = samples.first_child(); item_sample; item_sample = item_sample.next_sibling())
  // for (pugi::xml_node item_sample = doc.child ("sample"); item_sample; item_sample = item_sample.next_sibling("sample"))
       {
   
-        std::cout << "1\n";
  
     //    std::cout << item_sample.text().as_string() << std::endl;
         
         if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
            break;
-  
-        std::cout << "2\n";
   
         
        //std::cout << "item_sample " << item_sample.attribute("Filename").value() << "\n";
@@ -2202,6 +2201,9 @@ void CDrumSample::trigger_sample (float vel)
 
       if (layer_index_mode == LAYER_INDEX_MODE_RND)
           current_layer = get_rnd (0, v_layers.size() - 1);//random layer
+          
+      //if (layer_index_mode == KIT_TYPE_DRUMLABOOH_BUNDLE) 
+          //;
        
       if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
          {

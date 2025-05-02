@@ -26,6 +26,12 @@ public:
 
   juce::AudioProcessorValueTreeState parameters;
 
+  // indexes (layers) for the bundle
+  
+  std::atomic<float>* layer_index[36]; //int
+
+  
+  
   //all mixer strip (drumcell) params
 
 #ifndef MULTICHANNEL
