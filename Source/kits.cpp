@@ -397,6 +397,25 @@ CDrumSample::~CDrumSample()
 }
 
 
+void CDrumSample::sample_next()
+{
+  if (current_layer == v_layers.size() -1) 
+     return;
+  
+  current_layer++;
+}
+
+
+void CDrumSample::sample_prev()
+{
+  if (current_layer == 0) 
+     return;
+  
+  current_layer--;
+}
+
+
+
 //used for Hydrogen-format kits 
 size_t CDrumSample::map_velo_to_layer_number (float velo)
 {
@@ -2222,6 +2241,28 @@ void CDrumSample::trigger_sample (float vel)
 
   v_layers[current_layer]->sample_offset = 0;
 }
+
+
+void CDrumSample::trigger_sample_uint_by_index (int vel, float velo, int index)
+{
+ // std::cout << "CDrumSample::trigger_sample_uint: " << name << std::endl;
+//  std::cout << "vel: " << vel << " velo:" << velo << std::endl;
+
+  //v_layers[current_layer]->sample_offset = 0;
+
+  active = true;
+  velocity = velo;
+
+  ///if (use_random_noice)
+  //    random_number = std::uniform_real_distribution<float> distrib(-noiseLevel, noiseLevel);
+  
+   current_layer = index; 
+
+  //std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
+
+  v_layers[current_layer]->sample_offset = 0;
+}
+
 
 
 void CDrumSample::trigger_sample_uint (int vel, float velo)

@@ -119,9 +119,13 @@ public:
   void print();
   void print_stats();
 
+  void sample_next();
+  void sample_prev();
+  
   void untrigger_sample();
   void trigger_sample (float vel); //not vel actually! измени формулировки!
   void trigger_sample_uint (int vel, float velo);
+  void trigger_sample_uint_by_index (int vel, float velo, int index);
 
 };
 

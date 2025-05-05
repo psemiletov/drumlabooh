@@ -24,9 +24,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
   for (size_t i = 0; i < 36; i++)
       {
-        
-       
-       layer_index[i] = nullptr; 
+
+       layer_index[i] = 0; 
 
     #ifndef MULTICHANNEL
 
@@ -77,7 +76,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
       {
        layout.add (std::make_unique <juce::AudioParameterFloat> ("layer_index" + std::to_string(i), // parameter ID
                                                                  "layer_index" + std::to_string(i), // parameter name
-                                                                  juce::NormalisableRange<float> (0, 127, 1, 1), // parameter range
+                                                                  juce::NormalisableRange<float> (0, 127, 1, 0), // parameter range
                                                                   0)); //default value
 
         
@@ -239,7 +238,7 @@ CAudioProcessor::CAudioProcessor()
 
   for (size_t i = 0; i < 36; i++)
       {
-       layer_index[i] = parameters.getRawParameterValue ("layer_index" + std::to_string(i));
+//       layer_index[i] = parameters.getRawParameterValue ("layer_index" + std::to_string(i));
         
         
        vols[i] = parameters.getRawParameterValue ("vol" + std::to_string(i));
@@ -524,9 +523,15 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                continue;
   
            if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
-               s->trigger_sample (velocity); //
-           else 
-               s->trigger_sample_uint (uvelocity, velocity);
+               s->trigger_sample (velocity);
+           else //new
+               if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
+                 s->trigger_sample_uint_by_index (uvelocity, velocity, s->current_layer);  //ТУПО, current_layer и так уже выставлен
+                      //s->current_layer = layer_index[nn];  //end of new
+               else            
+                   s->trigger_sample_uint (uvelocity, velocity);
+            
+            
             
 //            std::cout << "s->current_layer:" << s->current_layer << std::endl;
   //          std::cout << "s->>v_layers.size():" << s->v_layers.size() << std::endl;
@@ -574,7 +579,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                   continue;
 
               if (! s->active)
-                continue;
+                 continue;
 
 
               //std::cout << "s->current_layer:" << s->current_layer << std::endl;
@@ -738,7 +743,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
 */
             CDrumSample *s = 0;
-/*
+
             if (int_midimap_mode == MIDIMAPMODE_LABOOH)
                 s = drumkit->a_samples[nn];
             else
@@ -749,17 +754,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 //                   std::cout << "play mapped note: " << note_number << std::endl;
                    } 
                }
-  */
-
-            if (int_midimap_mode == MIDIMAPMODE_LABOOH/* || drumkit->kit_type != KIT_TYPE_SFZ*/)
-                s = drumkit->a_samples[nn];
-            else
-                if (drumkit->map_samples.count (note_number) > 0) 
-                  {
-                   s = drumkit->map_samples[note_number];
-                   
-                   //std::cout << "play mapped note: " << note_number << std::endl;
-                  } 
   
 
 
@@ -772,12 +766,22 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             else
                 s->trigger_sample (velocity);
 */
-            
+            /*
            if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
                s->trigger_sample (velocity); //
            else 
                s->trigger_sample_uint (uvelocity, velocity);
-
+            
+*/
+            
+         if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
+               s->trigger_sample (velocity);
+           else //new
+               if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
+                    s->trigger_sample_uint_by_index (uvelocity, velocity, s->current_layer); //ТУПО! Там и так current_layer уже              
+               else            
+                   s->trigger_sample_uint (uvelocity, velocity);
+                     
             
             
 /*          СТАРОЕ     
@@ -1022,6 +1026,13 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
   //std::string  get_home_dir
   
+
+   for (int i = 0; i < 36; i++)
+       {
+        std::string key = "layer_index" + std::to_string (i);
+        save_int_keyval (key, layer_index[i]);
+       }   
+  
   std::string drumkitpath_to_save = transform_kit_path_from_local (drumkit_path); 
   
   std::cout << "SAVE PATH drumkitpath_to_save: " << drumkitpath_to_save << std::endl;
@@ -1050,6 +1061,13 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
          base_note_number = load_int_keyval ("base_note_number", 36);
          drumkit_path = load_string_keyval ("drumkit_path");
          session_samplerate = getSampleRate();
+         
+         for (int i = 0; i < 36; i++)
+            {
+             std::string key = "layer_index" + std::to_string (i);
+             layer_index[i] = load_int_keyval (key, 0);
+            }   
+         
         }
 
   //std::cout << "CAudioProcessor::setStateInformation - 2" << std::endl;
@@ -1118,10 +1136,22 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
 
   for (size_t i = 0; i < 36; i++)
       {
+       //layer_index[i].reset(); 
+        
+        //загрузи в КИТС из layer_index
+       //////////НОВОЕ!!! 
+       CDrumSample* s = a_samples[i];
+       if (s)
+          s->current_layer = layer_index[i];
+        
+        
+       //if (drumkit->a_samples[i])
+         // drumkit->a_samples[i]->current_layer = (*(layer_index[i]))
+        
        lp[i].reset();
        hp[i].reset();
        hp[i].mode = FILTER_MODE_HIGHPASS;
-       hp[i].reset();
+       hp[i].reset(); //FIXME зачем в третий раз??
       }
 
 //resume

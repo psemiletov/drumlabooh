@@ -228,14 +228,43 @@ CDrumCell::CDrumCell()
                                  if (! editor)
                                      return;
         
-                                 if (editor->audioProcessor.drumkit)  
-                                    {
-                                     if (editor->audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
+                                 if (! editor->audioProcessor.drumkit)  
+                                     return;
+
+    /*if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE) 
+                                    { 
+                                     editor->tmr_leds.stopTimer();
+                                     editor->audioProcessor.suspendProcessing (true);
+ 
+                                     editor->need_to_update_cells = false; //чтобы кит не подгрузился по таймеру
+ 
+                                      
+                                     //editor->audioProcessor.drumkit->sample_next();
+                                    // CDrumSample *s = editor->audioProcessor.drumkit->a_samples [cell_number];
+                                     //if (s)
+                                       // s->sample_next();                                                                                           fname, 
+                                                                                                                                   editor->audioProcessor.session_samplerate);
+                                                            
+                                     editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
+                                                      
+                                     std::string cell_caption = s->name + std::tostring (cell_number;)                 
+                                                      
+                                     //cell_label.setText (cell_caption, juce::dontSendNotification);
+                                     set_name (cell_caption);
+                                     
+                                     cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+                                     editor->audioProcessor.suspendProcessing (false);
+                                     editor->tmr_leds.startTimer (1000 / 15); //15 FPS
+
+                                     
+                                    }*/
+                                      
+                                 if (editor->audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
                                         {
                                          editor->log ("WRONG KIT TYPE! NEED TO BE THE QUICK KIT\n"); 
                                          return;
                                         }
-                                    }
+                                    
                                    
   
                                  editor->dlg_fileopen = std::make_unique<juce::FileChooser> ("Select file to load...",
@@ -272,7 +301,7 @@ CDrumCell::CDrumCell()
                                                             
                                                             editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
                                                             
-                                                            cell_label.setText (s->name, juce::dontSendNotification);
+                                                            cell_label.setText (s->name, juce::dontSendNotification); //ЛИШНЕЕ?
                                                             set_name (s->name);
                                                             cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
   

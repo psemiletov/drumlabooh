@@ -28,7 +28,9 @@ public:
 
   // indexes (layers) for the bundle
   
-  std::atomic<float>* layer_index[36]; //int
+//  std::atomic<float>* layer_index[36]; //int
+
+   int layer_index[36]; //int
 
   
   
