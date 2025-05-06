@@ -30,7 +30,7 @@ public:
   
 //  std::atomic<float>* layer_index[36]; //int
 
-   int layer_index[36]; //int
+   int layer_index[36]; //нужно только для загрузки параметров
 
   
   

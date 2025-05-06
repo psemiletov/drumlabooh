@@ -25,8 +25,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
   for (size_t i = 0; i < 36; i++)
       {
 
-       layer_index[i] = 0; 
-
     #ifndef MULTICHANNEL
 
        pans[i] = nullptr;
@@ -74,10 +72,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
   for (size_t i = 0; i < 36; i++)
       {
-       layout.add (std::make_unique <juce::AudioParameterFloat> ("layer_index" + std::to_string(i), // parameter ID
-                                                                 "layer_index" + std::to_string(i), // parameter name
-                                                                  juce::NormalisableRange<float> (0, 127, 1, 0), // parameter range
-                                                                  0)); //default value
+//       layout.add (std::make_unique <juce::AudioParameterFloat> ("layer_index" + std::to_string(i), // parameter ID
+  //                                                               "layer_index" + std::to_string(i), // parameter name
+    //                                                              juce::NormalisableRange<float> (0, 127, 1, 0), // parameter range
+      //                                                            0)); //default value
 
         
 #ifndef MULTICHANNEL
@@ -173,6 +171,10 @@ CAudioProcessor::CAudioProcessor()
 // formatManager = new juce::AudioFormatManager();
  // formatManager->registerBasicFormats();
 
+  for (size_t i = 0; i < 36; i++)
+       layer_index[i] = 0; 
+
+  
   init_db();
   rnd_init();
 
@@ -188,7 +190,7 @@ CAudioProcessor::CAudioProcessor()
   for (size_t i = 0; i < 36; i++)
       {
         
-       layer_index[i] = parameters.getRawParameterValue ("layer_index" + std::to_string(i));
+//       layer_index[i] = parameters.getRawParameterValue ("layer_index" + std::to_string(i));
        
         
        lps[i] = parameters.getRawParameterValue ("lp" + std::to_string(i));
@@ -225,7 +227,10 @@ CAudioProcessor::CAudioProcessor()
 //std::cout << "CAudioProcessor::CAudioProcessor() - 1" << std::endl;
  // formatManager = new juce::AudioFormatManager();
  // formatManager->registerBasicFormats();
+  for (size_t i = 0; i < 36; i++)
+       layer_index[i] = 0; 
 
+  
   init_db();
   rnd_init();
   scanner.scan();
@@ -778,7 +783,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                s->trigger_sample (velocity);
            else //new
                if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
-                    s->trigger_sample_uint_by_index (uvelocity, velocity, s->current_layer); //ТУПО! Там и так current_layer уже              
+                  s->trigger_sample_uint_by_index (uvelocity, velocity, s->current_layer); //ТУПО! Там и так current_layer уже              
                else            
                    s->trigger_sample_uint (uvelocity, velocity);
                      
@@ -1027,11 +1032,24 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
   //std::string  get_home_dir
   
 
+  /*
    for (int i = 0; i < 36; i++)
        {
         std::string key = "layer_index" + std::to_string (i);
         save_int_keyval (key, layer_index[i]);
        }   
+  */
+  
+  if (drumkit)
+     {
+      for (size_t i = 0; i < 36; i++)
+          {
+           CDrumSample *s = drumkit->a_samples[i];
+           if (s)
+                save_int_keyval ("layer_index" + std::to_string(i), s->current_layer);
+             
+          }
+     }
   
   std::string drumkitpath_to_save = transform_kit_path_from_local (drumkit_path); 
   
@@ -1140,9 +1158,9 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
         
         //загрузи в КИТС из layer_index
        //////////НОВОЕ!!! 
-       CDrumSample* s = a_samples[i];
+       CDrumSample* s = drumkit->a_samples[i];
        if (s)
-          s->current_layer = layer_index[i];
+          s->current_layer = layer_index[i]; //в layer_index загружено из параметров плагина
         
         
        //if (drumkit->a_samples[i])
