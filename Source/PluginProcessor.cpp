@@ -1041,6 +1041,7 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
   */
   
   if (drumkit)
+  if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
      {
       for (size_t i = 0; i < 36; i++)
           {
@@ -1080,6 +1081,7 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
          drumkit_path = load_string_keyval ("drumkit_path");
          session_samplerate = getSampleRate();
          
+         if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
          for (int i = 0; i < 36; i++)
             {
              std::string key = "layer_index" + std::to_string (i);
