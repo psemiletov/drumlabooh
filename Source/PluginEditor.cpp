@@ -494,31 +494,6 @@ CDrumCell::CDrumCell()
                                  if (! editor)
                                      return;
         
-                                if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE) 
-                                    { 
-                                     editor->tmr_leds.stopTimer();
-                                     editor->audioProcessor.suspendProcessing (true);
- 
-                                     editor->need_to_update_cells = false; //чтобы кит не подгрузился по таймеру
-                                      
-                                     CDrumSample *s = editor->audioProcessor.drumkit->a_samples [cell_number];
-                                     if (s)
-                                        {
-                                         s->sample_prev();                                                                        
-                                         std::string cell_caption = s->name + std::to_string (s->current_layer);                 
-                                         set_name (cell_caption);
-                                        } 
-                                                                                                                                   
-                                     editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
-
-                                     
-                                     cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
-                                     editor->audioProcessor.suspendProcessing (false);
-                                     editor->tmr_leds.startTimer (1000 / 15); //15 FPS
-                                     return;
-                                    }
-      
-    
                                  if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE) 
                                     { 
                                      editor->tmr_leds.stopTimer();
@@ -529,7 +504,7 @@ CDrumCell::CDrumCell()
                                      CDrumSample *s = editor->audioProcessor.drumkit->a_samples [cell_number];
                                      if (s)
                                         {
-                                         s->sample_prev();                                                                        
+                                         s->sample_next();                                                                        
                                          std::string cell_caption = s->name + std::to_string (s->current_layer);                 
                                          set_name (cell_caption);
                                         } 
@@ -620,7 +595,33 @@ CDrumCell::CDrumCell()
         
                                   if (! editor->audioProcessor.drumkit)  
                                       return;
+    
+    
                                    
+    
+                                 if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE) 
+                                    { 
+                                     editor->tmr_leds.stopTimer();
+                                     editor->audioProcessor.suspendProcessing (true);
+ 
+                                     editor->need_to_update_cells = false; //чтобы кит не подгрузился по таймеру
+                                      
+                                     CDrumSample *s = editor->audioProcessor.drumkit->a_samples [cell_number];
+                                     if (s)
+                                        {
+                                         s->sample_prev();                                                                        
+                                         std::string cell_caption = s->name + std::to_string (s->current_layer);                 
+                                         set_name (cell_caption);
+                                        } 
+                                                                                                                                   
+                                     editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
+
+                                     
+                                     cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+                                     editor->audioProcessor.suspendProcessing (false);
+                                     editor->tmr_leds.startTimer (1000 / 15); //15 FPS
+                                     return;
+                                    }
                                     
                                   if (editor->audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
                                      {
@@ -815,8 +816,12 @@ void CAudioProcessorEditor::load_kit()
        
        if (! s)
           continue;
+       
+       if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
+          drumcells[i].set_name (s->name + std::to_string (i));
+       else
+           drumcells[i].set_name (s->name);
         
-       drumcells[i].set_name (s->name);
        drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
       }
 
@@ -824,7 +829,7 @@ void CAudioProcessorEditor::load_kit()
 
    l_kit_name.setText (kitname, juce::dontSendNotification);
 
-   if (!audioProcessor.drumkit->image_fname.empty() && file_exists (audioProcessor.drumkit->image_fname))
+   if (! audioProcessor.drumkit->image_fname.empty() && file_exists (audioProcessor.drumkit->image_fname))
       {
        juce::File fl (audioProcessor.drumkit->image_fname);
        juce::Image im = juce::ImageFileFormat::loadFrom (fl);
@@ -870,7 +875,7 @@ void CAudioProcessorEditor::adapt()
   if (! audioProcessor.drumkit->loaded)
      return;
   
-  if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH)
+  if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH || audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
      {
       adapt_drumlabooh();
       drumkits_listbox.repaint(); 
@@ -908,7 +913,12 @@ void CAudioProcessorEditor::adapt_drumlabooh()
         return;
        }  
   
-  std::string kitfname = "/drumkit.txt";    
+  std::string kitfname;    
+  
+  if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
+      kitfname = "/drumkit.labooh";
+  else    
+      kitfname = "/drumkit.txt";
      
   audioProcessor.scanner.scan(); 
   update_kits_list();
@@ -920,7 +930,8 @@ void CAudioProcessorEditor::adapt_drumlabooh()
   audioProcessor.load_kit (audioProcessor.drumkit_path);
 
    //update GUI
-  if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH)
+  //УБИРАТЬ ЭТО
+  if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH || audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
       audioProcessor.drumkit->adapt();
       
   load_kit();

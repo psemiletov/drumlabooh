@@ -1789,7 +1789,7 @@ void CDrumKit::adapt() //used at Adapt button handler
   if (sample_counter == 0)
       return;
   
-  if (kit_type != KIT_TYPE_DRUMLABOOH)
+  if (kit_type != KIT_TYPE_DRUMLABOOH || kit_type != KIT_TYPE_DRUMLABOOH_BUNDLE)
       return;
   
 //  std::cout << "CDrumKit::total_samples_size() - 1\n";
