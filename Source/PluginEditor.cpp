@@ -242,7 +242,8 @@ CDrumCell::CDrumCell()
                                      if (s)
                                         {
                                          s->sample_next();                                                                        
-                                         std::string cell_caption = s->name + std::to_string (s->current_layer);                 
+                                        // std::string cell_caption = s->name + std::to_string (s->current_layer);                 
+                                         std::string cell_caption = s->get_name (true);
                                          set_name (cell_caption);
                                         } 
                                                                                                                                    
@@ -342,7 +343,9 @@ CDrumCell::CDrumCell()
                                      if (s)
                                         {
                                          s->sample_prev();                                                                        
-                                         std::string cell_caption = s->name + std::to_string (s->current_layer);                 
+                                        // std::string cell_caption = s->name + std::to_string (s->current_layer);                 
+                                         std::string cell_caption = s->get_name (true);
+                                         
                                          set_name (cell_caption);
                                         } 
                                                                                                                                    
@@ -596,9 +599,6 @@ CDrumCell::CDrumCell()
                                   if (! editor->audioProcessor.drumkit)  
                                       return;
     
-    
-                                   
-    
                                  if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE) 
                                     { 
                                      editor->tmr_leds.stopTimer();
@@ -610,7 +610,7 @@ CDrumCell::CDrumCell()
                                      if (s)
                                         {
                                          s->sample_prev();                                                                        
-                                         std::string cell_caption = s->name + std::to_string (s->current_layer);                 
+                                         std::string cell_caption = s->get_name (true); //s->name + std::to_string (s->current_layer);                 
                                          set_name (cell_caption);
                                         } 
                                                                                                                                    
@@ -816,11 +816,14 @@ void CAudioProcessorEditor::load_kit()
        
        if (! s)
           continue;
-       
+        
+       std::string cell_name;
        if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
-          drumcells[i].set_name (s->name + std::to_string (s->current_layer));
-       else
-           drumcells[i].set_name (s->name);
+          cell_name = s->get_name (true);
+       else  
+           cell_name = s->get_name (false);
+      
+       drumcells[i].set_name (cell_name);
         
        drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
       }
@@ -978,6 +981,7 @@ void CAudioProcessorEditor::adapt_qdrumlabooh()
                                      
   tmr_leds.startTimer (1000 / 15); //15 FPS
 }
+
 
 CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::AudioProcessorValueTreeState &vts)
                                              : AudioProcessorEditor (&parent),
