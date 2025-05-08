@@ -415,6 +415,23 @@ void CDrumSample::sample_prev()
 }
 
 
+std::string CDrumSample::get_name (bool by_current_layer)
+{
+   if (by_current_layer)  
+      {
+       std::string result;
+       if (current_layer > v_layers.size() - 1)
+          return result;
+        
+       result = v_layers[current_layer]->file_name;
+       result = get_last_part (result);
+        
+       return result; 
+      }
+  
+  return name;
+}
+
 
 //used for Hydrogen-format kits 
 size_t CDrumSample::map_velo_to_layer_number (float velo)

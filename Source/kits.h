@@ -114,6 +114,8 @@ public:
   size_t map_velo_to_layer_number (float velo);
   size_t map_uint_velo_to_layer_number (int velo);
 
+  std::string get_name (bool by_current_layer);  
+  
   void add_layer();
 
   void print();
