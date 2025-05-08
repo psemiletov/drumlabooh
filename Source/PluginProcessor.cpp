@@ -190,9 +190,6 @@ CAudioProcessor::CAudioProcessor()
   for (size_t i = 0; i < 36; i++)
       {
         
-//       layer_index[i] = parameters.getRawParameterValue ("layer_index" + std::to_string(i));
-       
-        
        lps[i] = parameters.getRawParameterValue ("lp" + std::to_string(i));
        lp_cutoff[i] = parameters.getRawParameterValue ("lp_cutoff" + std::to_string(i));
        lp_reso[i] = parameters.getRawParameterValue ("lp_reso" + std::to_string(i));
@@ -243,9 +240,6 @@ CAudioProcessor::CAudioProcessor()
 
   for (size_t i = 0; i < 36; i++)
       {
-//       layer_index[i] = parameters.getRawParameterValue ("layer_index" + std::to_string(i));
-        
-        
        vols[i] = parameters.getRawParameterValue ("vol" + std::to_string(i));
        pans[i] = parameters.getRawParameterValue ("pan" + std::to_string(i));
        mutes[i] = parameters.getRawParameterValue ("mute" + std::to_string(i));
@@ -531,8 +525,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                s->trigger_sample (velocity);
            else //new
                if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
-                 s->trigger_sample_uint_by_index (uvelocity, velocity, s->current_layer);  //ТУПО, current_layer и так уже выставлен
-                      //s->current_layer = layer_index[nn];  //end of new
+                 s->trigger_sample_uint_by_index (uvelocity, velocity);  
                else            
                    s->trigger_sample_uint (uvelocity, velocity);
             
@@ -783,7 +776,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                s->trigger_sample (velocity);
            else //new
                if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
-                  s->trigger_sample_uint_by_index (uvelocity, velocity, s->current_layer); //ТУПО! Там и так current_layer уже              
+                  s->trigger_sample_uint_by_index (uvelocity, velocity); 
                else            
                    s->trigger_sample_uint (uvelocity, velocity);
                      
@@ -1030,25 +1023,18 @@ juce::AudioProcessorEditor* CAudioProcessor::createEditor()
 void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
   //std::string  get_home_dir
-  
-
-  /*
-   for (int i = 0; i < 36; i++)
-       {
-        std::string key = "layer_index" + std::to_string (i);
-        save_int_keyval (key, layer_index[i]);
-       }   
-  */
+ 
   
   if (drumkit)
-  if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
+  //if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
      {
       for (size_t i = 0; i < 36; i++)
           {
            CDrumSample *s = drumkit->a_samples[i];
            if (s)
-                save_int_keyval ("layer_index" + std::to_string(i), s->current_layer);
-             
+              save_int_keyval ("layer_index" + std::to_string(i), s->current_layer);
+           else
+               save_int_keyval ("layer_index" + std::to_string(i), 0);
           }
      }
   
@@ -1081,11 +1067,13 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
          drumkit_path = load_string_keyval ("drumkit_path");
          session_samplerate = getSampleRate();
          
-         if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
-         for (int i = 0; i < 36; i++)
+      //   if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
+         for (size_t i = 0; i < 36; i++)
             {
              std::string key = "layer_index" + std::to_string (i);
              layer_index[i] = load_int_keyval (key, 0);
+             
+         //    std::cout << "layer_index[i] : " << layer_index[i]  << std::endl;
             }   
          
         }
@@ -1156,7 +1144,6 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
 
   for (size_t i = 0; i < 36; i++)
       {
-       //layer_index[i].reset(); 
         
         //загрузи в КИТС из layer_index
        //////////НОВОЕ!!! 
@@ -1171,7 +1158,7 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
        lp[i].reset();
        hp[i].reset();
        hp[i].mode = FILTER_MODE_HIGHPASS;
-       hp[i].reset(); //FIXME зачем в третий раз??
+    //   hp[i].reset(); //FIXME зачем в третий раз??
       }
 
 //resume

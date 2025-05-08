@@ -757,7 +757,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
            if (! check_for_txt) 
               for (auto f: v_fnames)
                   {
-                   string filename = kit_dir + "/" + f;
+                   std::string filename = kit_dir + "/" + f;
                    temp_sample->add_layer();
 
                    if (file_exists (filename))
@@ -768,8 +768,8 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                    {
                     filesystem::path pt (kit_dir + "/" + fname); //full path for samples.txt
   
-                    string fpath = pt.parent_path().string();  //get path with dirs only
-                    string filename = fpath + "/" + f; // get full path to filename of the each sample
+                    std::string fpath = pt.parent_path().string();  //get path with dirs only
+                    std::string filename = fpath + "/" + f; // get full path to filename of the each sample
                     temp_sample->add_layer();
 
                     if (file_exists (filename))
@@ -2243,7 +2243,7 @@ void CDrumSample::trigger_sample (float vel)
 }
 
 
-void CDrumSample::trigger_sample_uint_by_index (int vel, float velo, int index)
+void CDrumSample::trigger_sample_uint_by_index (int vel, float velo)
 {
  // std::cout << "CDrumSample::trigger_sample_uint: " << name << std::endl;
 //  std::cout << "vel: " << vel << " velo:" << velo << std::endl;
@@ -2256,7 +2256,7 @@ void CDrumSample::trigger_sample_uint_by_index (int vel, float velo, int index)
   ///if (use_random_noice)
   //    random_number = std::uniform_real_distribution<float> distrib(-noiseLevel, noiseLevel);
   
-   current_layer = index; 
+//   current_layer = index; 
 
   //std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
 

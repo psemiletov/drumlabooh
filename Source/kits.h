@@ -125,7 +125,7 @@ public:
   void untrigger_sample();
   void trigger_sample (float vel); //not vel actually! измени формулировки!
   void trigger_sample_uint (int vel, float velo);
-  void trigger_sample_uint_by_index (int vel, float velo, int index);
+  void trigger_sample_uint_by_index (int vel, float velo);
 
 };
 

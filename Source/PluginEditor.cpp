@@ -818,7 +818,7 @@ void CAudioProcessorEditor::load_kit()
           continue;
        
        if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
-          drumcells[i].set_name (s->name + std::to_string (i));
+          drumcells[i].set_name (s->name + std::to_string (s->current_layer));
        else
            drumcells[i].set_name (s->name);
         
@@ -1113,6 +1113,10 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
                                      if (ends_with (full, "drumkit.txt"))
                                         supported = true;
 
+                                     if (ends_with (full, "drumkit.labooh"))
+                                        supported = true;
+ 
+                                      
                                      if (ends_with (full, "drumkitq.txt"))
                                         supported = true;
 
