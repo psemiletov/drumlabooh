@@ -2091,11 +2091,13 @@ void CDrumKitsScanner::print()
 }
 
 
-void CDrumSample::untrigger_sample()
+void CDrumSample::untrigger_sample (bool bundle)
 {
 //  std::cout << "CDrumSample::UNtrigger_sample" << std::endl;
   active = false;
-  current_layer = 0;
+  
+  if (! bundle)
+     current_layer = 0;
  // for (size_t i = 0; i < v_layers.size(); i++)
    //   v_layers[i]->sample_offset = 0;
 }

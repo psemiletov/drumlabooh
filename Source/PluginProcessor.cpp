@@ -558,7 +558,13 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                        continue;
                       
                     if (s2->hihat_open)
-                        s2->untrigger_sample();
+                       {
+                        if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE) 
+                           s2->untrigger_sample (true);
+                        else
+                           s2->untrigger_sample (false);
+                          
+                       }
                    }
               }
           }
@@ -606,7 +612,12 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
               if (l->sample_offset + 1 == l->length_in_samples)
                  {
-                  s->untrigger_sample();
+                  if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)  
+                     s->untrigger_sample (true);
+                  else 
+                      s->untrigger_sample (false);
+                  
+                  
                   continue;
                  }
 
@@ -787,7 +798,14 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                         continue;
 
                      if (s2->hihat_open)
-                         s2->untrigger_sample();
+                        {
+                         if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)  
+                            s2->untrigger_sample(true);
+                         else 
+                            s2->untrigger_sample(false);
+                         
+                         
+                        }
                    }
                }
            }
@@ -836,7 +854,12 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
              if (l->sample_offset + 1 == l->length_in_samples)
                 {
-                 s->untrigger_sample();
+                 if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)  
+                    s->untrigger_sample(true);
+                 else
+                     s->untrigger_sample(false);
+                   
+                 
                  continue;
                 }
 
