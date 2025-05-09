@@ -178,9 +178,10 @@ CAudioProcessor::CAudioProcessor()
 // formatManager = new juce::AudioFormatManager();
  // formatManager->registerBasicFormats();
 
-  for (size_t i = 0; i < 36; i++)
-       layer_index[i] = 0; 
+//  for (size_t i = 0; i < 36; i++)
+  //     layer_index[i] = 0; 
 
+  //reset_layer_index();
   
   init_db();
   rnd_init();
@@ -196,6 +197,7 @@ CAudioProcessor::CAudioProcessor()
 
   for (size_t i = 0; i < 36; i++)
       {
+       layer_index[i] = 0;  
         
        lps[i] = parameters.getRawParameterValue ("lp" + std::to_string(i));
        lp_cutoff[i] = parameters.getRawParameterValue ("lp_cutoff" + std::to_string(i));
@@ -231,8 +233,8 @@ CAudioProcessor::CAudioProcessor()
 //std::cout << "CAudioProcessor::CAudioProcessor() - 1" << std::endl;
  // formatManager = new juce::AudioFormatManager();
  // formatManager->registerBasicFormats();
-  for (size_t i = 0; i < 36; i++)
-       layer_index[i] = 0; 
+  //for (size_t i = 0; i < 36; i++)
+    //   layer_index[i] = 0; 
 
   
   init_db();
@@ -247,6 +249,8 @@ CAudioProcessor::CAudioProcessor()
 
   for (size_t i = 0; i < 36; i++)
       {
+       layer_index[i] = 0; 
+       
        vols[i] = parameters.getRawParameterValue ("vol" + std::to_string(i));
        pans[i] = parameters.getRawParameterValue ("pan" + std::to_string(i));
        mutes[i] = parameters.getRawParameterValue ("mute" + std::to_string(i));
@@ -417,10 +421,12 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
       return false;
 }
 */
-bool CAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const  {
-    if (layouts.getMainOutputChannelSet().size() == 36)
-        return true;
-    return false;
+bool CAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const  
+{
+  if (layouts.getMainOutputChannelSet().size() == 36)
+      return true;
+  
+  return false;
 }
 
 #else
@@ -499,8 +505,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
        //float velocity = msg.getFloatVelocity();
        int uvelocity = msg.getVelocity();
-       float velocity = VelocityToLevel (uvelocity);
  
+       float velocity = VelocityToLevel (uvelocity);
        if (*ignore_midi_velocity > 0.5)
            velocity = 1;
 
@@ -509,6 +515,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
        if (isNoteOn)
           {
            int nn = note_number - base_note_number; //base_note_number = 36 by default
+           // nn is index for drumkit->a_samples[nn]
            
            if (int_midimap_mode == MIDIMAPMODE_LABOOH)
                if (nn < 0 || nn > 35) // MAX_SAMPLES = 36
@@ -528,15 +535,13 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             if (! s)
                continue;
   
-           if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
-               s->trigger_sample (velocity);
-           else //new
-               if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
-                 s->trigger_sample_uint_by_index (uvelocity, velocity);  
-               else            
+            if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
+                s->trigger_sample (velocity);
+            else //new
+                if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
+                   s->trigger_sample_uint_by_index (uvelocity, velocity);  
+                else            
                    s->trigger_sample_uint (uvelocity, velocity);
-            
-            
             
 //            std::cout << "s->current_layer:" << s->current_layer << std::endl;
   //          std::cout << "s->>v_layers.size():" << s->v_layers.size() << std::endl;
@@ -562,8 +567,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
 
     float *channel_data [MAX_SAMPLES]; //output channels
-
-    if (drumkit->sample_counter > num_channels)
+// was if (drumkit->sample_counter > num_channels)
+    
+    if (drumkit->sample_counter > (num_channels - 1))
        return;
 
     for (size_t i = 0; i < num_channels; i++)
@@ -742,11 +748,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             float gn = db2lin (*(vols[nn]));
             // std::cout << "gn: " << gn << std::endl;
 
-/*            CDrumSample *s = drumkit->v_samples[nn];
-            if (! s)
-               continue;
-
-*/
             CDrumSample *s = 0;
 
             if (int_midimap_mode == MIDIMAPMODE_LABOOH)
@@ -765,19 +766,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             if (! s)
                continue;
   
-            /*
-            if (drumkit->kit_type == KIT_TYPE_SFZ || drumkit->kit_type == KIT_TYPE_DRUMLABOOH ||  drumkit->kit_type == KIT_TYPE_QDRUMLABOOH)
-                s->trigger_sample_uint (uvelocity, velocity);
-            else
-                s->trigger_sample (velocity);
-*/
-            /*
-           if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
-               s->trigger_sample (velocity); //
-           else 
-               s->trigger_sample_uint (uvelocity, velocity);
-            
-*/
             
          if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
                s->trigger_sample (velocity);
@@ -787,18 +775,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                else            
                    s->trigger_sample_uint (uvelocity, velocity);
                      
-            
-            
-/*          СТАРОЕ     
-            if (drumkit->kit_type == KIT_TYPE_SFZ)
-                s->trigger_sample_uint (uvelocity, velocity);
-            else
-                s->trigger_sample (velocity);
-            
-  */          
-        //    std::cout << "s->current_layer:" << s->current_layer << std::endl;
-          //  std::cout << "s->>v_layers.size():" << s->v_layers.size() << std::endl;
-
 
              //also untrigger open hihat if closed hihat triggering
              // so find the open hihat
@@ -827,21 +803,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
     if (num_channels > 1)
        channel_data [1] = buffer.getWritePointer (1);
-/*
-    
-    if (num_channels > 0)
-      {
-       channel_data [0] = buffer.getWritePointer (0);
-       std::fill(channel_data [0], channel_data [0] + out_buf_length, 0.0f);
-      } 
-
-    if (num_channels > 1)
-      {
-       channel_data [1] = buffer.getWritePointer (1);
-       std::fill(channel_data [1], channel_data [1] + out_buf_length, 0.0f);
-     
-      } 
-  */
 
  // juce::ScopedNoDenormals();
   //juce::FloatVectorOperations::disableDenormalisedNumberSupport();
@@ -887,15 +848,11 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  continue;
                 }
 
-        //    if (l->channels == 1)
-//             if (l->channel_data[0])
-              if (l->channel_data)
-
+             if (l->channel_data)
                 {
-
                  //take mono audio data from the current layer with incremented offset
               //   float fl = l->channel_data[0][l->sample_offset++];
-                   float fl = l->channel_data[l->sample_offset++];
+                  float fl = l->channel_data[l->sample_offset++];
                
                  /*
                 if (s->use_random_noice)
@@ -1080,7 +1037,7 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
              std::string key = "layer_index" + std::to_string (i);
              layer_index[i] = load_int_keyval (key, 0);
              
-         //    std::cout << "layer_index[i] : " << layer_index[i]  << std::endl;
+             std::cout << "read to layer_index[i] : " << layer_index[i]  << std::endl;
             }   
          
         }
