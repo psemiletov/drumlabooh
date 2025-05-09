@@ -287,19 +287,22 @@ CDrumSample::~CDrumSample()
 
 void CDrumSample::sample_next()
 {
-  if (current_layer == v_layers.size() - 1) 
-     return;
+  std::cout << "sample_next(), was: " << current_layer << std::endl;
   
-  current_layer++;
+  if (current_layer < v_layers.size() - 1) 
+      current_layer++;
+  
+   std::cout << "sample_next(), now: " << current_layer << std::endl;
+
 }
 
 
 void CDrumSample::sample_prev()
 {
-  if (current_layer == 0) 
-     return;
+  if (current_layer > 0) 
+     current_layer--;
   
-  current_layer--;
+  std::cout << "sample_prev(), now: " << current_layer << std::endl;
 }
 
 
@@ -2172,9 +2175,6 @@ void CDrumSample::trigger_sample_uint_by_index (int vel, float velo)
 
 void CDrumSample::trigger_sample_uint (int vel, float velo)
 {
- // std::cout << "CDrumSample::trigger_sample_uint: " << name << std::endl;
-//  std::cout << "vel: " << vel << " velo:" << velo << std::endl;
-
   //v_layers[current_layer]->sample_offset = 0;
 
   active = true;
@@ -2182,7 +2182,7 @@ void CDrumSample::trigger_sample_uint (int vel, float velo)
 
   ///if (use_random_noice)
   //    random_number = std::uniform_real_distribution<float> distrib(-noiseLevel, noiseLevel);
-  
+  /*
   if (v_layers.size() > 1)
      {
   
@@ -2205,10 +2205,11 @@ void CDrumSample::trigger_sample_uint (int vel, float velo)
       }
    else 
        current_layer = 0; //if layers count == 1
-
+*/
   //std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
 
-  v_layers[current_layer]->sample_offset = 0;
+  if (current_layer < v_layers.size())
+     v_layers[current_layer]->sample_offset = 0;
 }
 
 

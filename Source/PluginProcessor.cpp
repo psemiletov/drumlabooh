@@ -988,6 +988,8 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
   //std::string  get_home_dir
  
+  std::cout << "void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)\n";
+
   
   if (drumkit)
   //if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
@@ -996,9 +998,16 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
           {
            CDrumSample *s = drumkit->a_samples[i];
            if (s)
-              save_int_keyval ("layer_index" + std::to_string(i), s->current_layer);
+              {
+               save_int_keyval ("layer_index" + std::to_string(i), s->current_layer);
+               std::cout << "SAVE layer_index: " << i << " s->current_layer: " << s->current_layer << std::endl;
+              } 
            else
-               save_int_keyval ("layer_index" + std::to_string(i), 0);
+               {
+                save_int_keyval ("layer_index" + std::to_string(i), 0);
+                std::cout << "SAVE ZERO to layer_index: " << i << " : " << 0 << std::endl;
+                
+               } 
           }
      }
   
@@ -1037,7 +1046,7 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
              std::string key = "layer_index" + std::to_string (i);
              layer_index[i] = load_int_keyval (key, 0);
              
-             std::cout << "read to layer_index[i] : " << layer_index[i]  << std::endl;
+             std::cout << "read to layer_index[i] : " << i << ": " << layer_index[i]  << std::endl;
             }   
          
         }
@@ -1088,8 +1097,8 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
   if (fullpath.empty())
       return false;
 
-//  std::cout << "CAudioProcessor::load_kit: " << fullpath << std::endl;
-//  std::cout << session_samplerate << std::endl;
+  std::cout << "CAudioProcessor::load_kit: " << fullpath << std::endl;
+  std::cout << session_samplerate << std::endl;
 
 //STOP PLAY
 
@@ -1115,6 +1124,7 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
        if (s)
           s->current_layer = layer_index[i]; //в layer_index загружено из параметров плагина
         
+       std::cout << "layer_index[i]: " << i << " :" << layer_index[i] << std::endl; 
         
        //if (drumkit->a_samples[i])
          // drumkit->a_samples[i]->current_layer = (*(layer_index[i]))
