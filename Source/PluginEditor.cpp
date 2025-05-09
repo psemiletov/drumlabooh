@@ -930,6 +930,7 @@ void CAudioProcessorEditor::adapt_drumlabooh()
       
   tmr_leds.stopTimer();
       
+  audioProcessor.reset_layer_index();
   audioProcessor.load_kit (audioProcessor.drumkit_path);
 
    //update GUI
@@ -937,6 +938,7 @@ void CAudioProcessorEditor::adapt_drumlabooh()
   if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH || audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
       audioProcessor.drumkit->adapt();
       
+  //audioProcessor.reset_layer_index();
   load_kit();
                
   log (audioProcessor.drumkit->kit_name);
@@ -1131,6 +1133,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
                              
                                      tmr_leds.stopTimer();
 
+                                     audioProcessor.reset_layer_index();
                                      audioProcessor.load_kit (full);
                                      
                                      need_to_update_cells = false;
@@ -1584,6 +1587,7 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
   editor->audioProcessor.drumkit_path = full;
   editor->tmr_leds.stopTimer();
 
+  editor->audioProcessor.reset_layer_index();
   editor->audioProcessor.load_kit (full);
 
   editor->tmr_leds.startTimer (1000 / 15); //15 FPS  

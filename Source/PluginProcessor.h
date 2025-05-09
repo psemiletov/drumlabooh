@@ -96,7 +96,8 @@ public:
   CAudioProcessor();
   ~CAudioProcessor() override;
 
-
+  void reset_layer_index();
+  
 //load the drumkit
   bool load_kit (const std::string &fullpath);
 

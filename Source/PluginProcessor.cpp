@@ -158,6 +158,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
   
  */ 
 
+void CAudioProcessor::reset_layer_index()
+{
+  for (size_t i = 0; i < 36; i++)
+     layer_index[i] = 0;
+}
+
+
 #if defined(MULTICHANNEL)
 
 CAudioProcessor::CAudioProcessor()
