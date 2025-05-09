@@ -145,10 +145,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   if (samplerate == sess_samplerate)
       return buffer;
 
-  //float *input_buffer = buffer->getWritePointer(0); //ЗАМЕНИТЬ НА getReadPointer(0)?
-  
   const float *input_buffer = buffer->getReadPointer(0); //ЗАМЕНИТЬ НА getReadPointer(0)?
-  
   
   if (! input_buffer)
      {
@@ -2155,20 +2152,8 @@ void CDrumSample::trigger_sample (float vel)
 
 void CDrumSample::trigger_sample_uint_by_index (int vel, float velo)
 {
- // std::cout << "CDrumSample::trigger_sample_uint: " << name << std::endl;
-//  std::cout << "vel: " << vel << " velo:" << velo << std::endl;
-
-  //v_layers[current_layer]->sample_offset = 0;
-
   active = true;
   velocity = velo;
-
-  ///if (use_random_noice)
-  //    random_number = std::uniform_real_distribution<float> distrib(-noiseLevel, noiseLevel);
-  
-//   current_layer = index; 
-
-  //std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
 
   v_layers[current_layer]->sample_offset = 0;
 }
