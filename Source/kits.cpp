@@ -2184,7 +2184,7 @@ void CDrumSample::trigger_sample_uint (int vel, float velo)
 
   ///if (use_random_noice)
   //    random_number = std::uniform_real_distribution<float> distrib(-noiseLevel, noiseLevel);
-  /*
+  
   if (v_layers.size() > 1)
      {
   
@@ -2207,7 +2207,7 @@ void CDrumSample::trigger_sample_uint (int vel, float velo)
       }
    else 
        current_layer = 0; //if layers count == 1
-*/
+
   //std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
 
   if (current_layer < v_layers.size())
