@@ -87,7 +87,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
   if (ext == "mp3")
      reader = MP3AudioFormat().createReaderFor (fs, true);
 
-  if (ext == "aiff")
+  if (ext == "aiff" || ext == "aif" )
      reader = AiffAudioFormat().createReaderFor (fs, true);
 
   if (! reader)
@@ -561,11 +561,6 @@ void CDrumKit::load_labooh_xml (const std::string &data)
  // cout << "loading kit: " << fname << endl;
   //cout << "source: " << source << endl;
 
-  //    layers_supported = true;
-    //   layers_supported = false;
-
-  
-
   pugi::xml_parse_result result = doc.load_buffer (data.c_str(), data.size());
 
   if (! result)
@@ -581,9 +576,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
   
    for (pugi::xml_node item_sample = samples.first_child(); item_sample; item_sample = item_sample.next_sibling())
  // for (pugi::xml_node item_sample = doc.child ("sample"); item_sample; item_sample = item_sample.next_sibling("sample"))
-      {
-  
- 
+       {
     //    std::cout << item_sample.text().as_string() << std::endl;
         
         if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
@@ -635,11 +628,9 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        size_t check_for_list = fname.find (",");
        bool check_for_txt = false;
                   
-         //if (fname.find ("samples.txt") != string::npos || fname.find (".part") != string::npos)
-           //  check_for_txt = true;
        if (fname.find (".txt") != string::npos)
           check_for_txt = true;
-  
+ 
        
        if ((check_for_list != string::npos) || check_for_txt)
           {
@@ -656,8 +647,6 @@ void CDrumKit::load_labooh_xml (const std::string &data)
            if (v_fnames.size() == 0)
               continue;
 
-           //temp_sample = add_sample (sample_counter++);
-           //temp_sample->name = sample_name;
              
            if (! check_for_txt) 
               for (auto f: v_fnames)
@@ -696,17 +685,12 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                   float segment_start = part_size * i;
                   float segment_end = part_size * (i + 1) - 0.001f;
 
-//                  std::cout << "l->min: " << l->min << std::endl;
-//                  std::cout << "l->max: " << l->max << std::endl;
-
                   l->min = segment_start; //for Hydrogen
                   l->max = segment_end;   //for Hydrogen
                   
                   l->umin = uint_part_size * i;  //Labooh/SFZ
                   l->umax = uint_part_size * i + uint_part_size - 1; //Labooh/SFZ
                   
-//                  std::cout << "l->umin: " << l->umin << std::endl;
-//                  std::cout << "l->umax: " << l->umax << std::endl;
                  }
 
              l->umax = 127;    
@@ -752,11 +736,16 @@ void CDrumKit::load_labooh_xml (const std::string &data)
              }
 
         }
-        
-        
-       
       
+      
+  std::string kitimg = kit_dir + "/image.jpg";
 
+  if (! file_exists (kitimg))
+      kitimg = kit_dir + "/image.png";
+
+  if (file_exists (kitimg))
+      image_fname = kitimg;
+  
   loaded = true;
 
 }
