@@ -28,7 +28,7 @@ this code is the public domain
 #define KIT_TYPE_HYDROGEN 1
 #define KIT_TYPE_SFZ 2
 #define KIT_TYPE_QDRUMLABOOH 3
-#define KIT_TYPE_DRUMLABOOH_BUNDLE 4 //каждый слой - отдельный one shot
+#define KIT_TYPE_DRUMLABOOH_ALT 4 //каждый слой - отдельный one shot
 
 #define MAX_SAMPLES 36
 
@@ -124,7 +124,7 @@ public:
   void sample_next();
   void sample_prev();
   
-  void untrigger_sample (bool bundle = false);
+  void untrigger_sample (bool alt = false);
   void trigger_sample (float vel); //not vel actually! измени формулировки!
   void trigger_sample_uint (int vel, float velo);
   void trigger_sample_uint_by_index (int vel, float velo);

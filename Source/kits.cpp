@@ -570,8 +570,8 @@ void CDrumKit::load_labooh_xml (const std::string &data)
    pugi::xml_node samples = doc.child ("root");
 
    std::string str_kit_type = samples.attribute("type").value(); 
-   if (str_kit_type == "bundle")
-      kit_type = KIT_TYPE_DRUMLABOOH_BUNDLE;  
+   if (str_kit_type == "alt")
+      kit_type = KIT_TYPE_DRUMLABOOH_ALT;  
      
   
    for (pugi::xml_node item_sample = samples.first_child(); item_sample; item_sample = item_sample.next_sibling())
@@ -1683,7 +1683,7 @@ void CDrumKit::adapt() //used at Adapt button handler
   if (sample_counter == 0)
       return;
   
-  if (kit_type != KIT_TYPE_DRUMLABOOH || kit_type != KIT_TYPE_DRUMLABOOH_BUNDLE)
+  if (kit_type != KIT_TYPE_DRUMLABOOH || kit_type != KIT_TYPE_DRUMLABOOH_ALT)
       return;
   
 //  std::cout << "CDrumKit::total_samples_size() - 1\n";
@@ -2077,12 +2077,12 @@ void CDrumKitsScanner::print()
 }
 
 
-void CDrumSample::untrigger_sample (bool bundle)
+void CDrumSample::untrigger_sample (bool alt)
 {
 //  std::cout << "CDrumSample::UNtrigger_sample" << std::endl;
   active = false;
   
-  if (! bundle)
+  if (! alt)
      current_layer = 0;
  // for (size_t i = 0; i < v_layers.size(); i++)
    //   v_layers[i]->sample_offset = 0;

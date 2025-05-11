@@ -217,11 +217,17 @@ CDrumCell::CDrumCell()
 
   addAndMakeVisible (bt_cell_plus);
   
+  // juce::Colours::black
   bt_cell_plus.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (180, 209, 220));
+  bt_cell_plus.setColour (TextButton::ColourIds::textColourOnId, juce::Colours::black);
+  bt_cell_plus.setColour (TextButton::ColourIds::textColourOffId, juce::Colours::black);
+  
+  //button.setColour(juce::TextButton::textColourOffId, juce::Colours::red);
+  
   bt_cell_plus.setButtonText ("+");
   bt_cell_plus.setTopLeftPosition (xoffs, YFILLER);
-  bt_cell_plus.setSize (16, 16);
-  bt_cell_plus.setTooltip ("Add sample to quick kit");  
+  bt_cell_plus.setSize (24, 16);
+  bt_cell_plus.setTooltip ("Quick kit: Add sample to quick kit\nAlternate-sample drum kit: next sample");  
 ///////////////
   bt_cell_plus.onClick = [this] {
     
@@ -231,7 +237,7 @@ CDrumCell::CDrumCell()
                                  if (! editor->audioProcessor.drumkit)  
                                      return;
 
-                                 if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE) 
+                                 if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT) 
                                     { 
                                      editor->tmr_leds.stopTimer();
                                      editor->audioProcessor.suspendProcessing (true);
@@ -266,7 +272,7 @@ CDrumCell::CDrumCell()
   
                                  editor->dlg_fileopen = std::make_unique<juce::FileChooser> ("Select file to load...",
                                                                                              File::getSpecialLocation (juce::File::userHomeDirectory),
-                                                                                             "*.wav;*.aiff;*.flac;*.mp3;*.ogg");
+                                                                                             "*.wav;*.aiff;*.aif;*.flac;*.mp3;*.ogg");
 
                                  auto folderChooserFlags = juce::FileBrowserComponent::openMode;
 
@@ -315,12 +321,17 @@ CDrumCell::CDrumCell()
   addAndMakeVisible (bt_cell_minus);
   
   bt_cell_minus.setColour ( TextButton::ColourIds::buttonColourId, juce::Colour (131, 152, 160));
+
+  bt_cell_minus.setColour (TextButton::ColourIds::textColourOnId, juce::Colours::black);
+  bt_cell_minus.setColour (TextButton::ColourIds::textColourOffId, juce::Colours::black);
+  
+
   
   bt_cell_minus.setButtonText ("-");
   bt_cell_minus.setTopLeftPosition (bt_cell_plus.getX(), bt_cell_plus.getBottom() + 1);
-  bt_cell_minus.setSize (16, 16);
+  bt_cell_minus.setSize (24, 16);
 
-  bt_cell_minus.setTooltip ("Remove sample from quick kit");  
+  bt_cell_minus.setTooltip ("Quick kit: Remove sample from quick kit\nAlternate-sample drum kit: previous sample");  
 
   
   bt_cell_minus.onClick = [this] {
@@ -332,7 +343,7 @@ CDrumCell::CDrumCell()
                                    
    
     
-                                 if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE) 
+                                 if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT) 
                                     { 
                                      editor->tmr_leds.stopTimer();
                                      editor->audioProcessor.suspendProcessing (true);
@@ -487,17 +498,21 @@ CDrumCell::CDrumCell()
   addAndMakeVisible (bt_cell_plus);
   
   bt_cell_plus.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (180, 209, 220));
+  bt_cell_plus.setColour (TextButton::ColourIds::textColourOnId, juce::Colours::black);
+  bt_cell_plus.setColour (TextButton::ColourIds::textColourOffId, juce::Colours::black);
+
+  
   bt_cell_plus.setButtonText ("+");
   bt_cell_plus.setTopLeftPosition (xoffs, YFILLER);
   bt_cell_plus.setSize (16, 16);
-  bt_cell_plus.setTooltip ("Add sample to quick kit");  
+  bt_cell_plus.setTooltip ("Quick kit: Add sample to quick kit\nAlternate-sample drum kit: next sample");  
 ///////////////
   bt_cell_plus.onClick = [this] {
     
                                  if (! editor)
                                      return;
         
-                                 if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE) 
+                                 if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT) 
                                     { 
                                      editor->tmr_leds.stopTimer();
                                      editor->audioProcessor.suspendProcessing (true);
@@ -534,7 +549,7 @@ CDrumCell::CDrumCell()
   
                                  editor->dlg_fileopen = std::make_unique<juce::FileChooser> ("Select file to load...",
                                                                                              File::getSpecialLocation (juce::File::userHomeDirectory),
-                                                                                             "*.wav;*.aiff;*.flac;*.mp3;*.ogg");
+                                                                                             "*.wav;*.aiff;*.aif;*.flac;*.mp3;*.ogg");
 
                                  auto folderChooserFlags = juce::FileBrowserComponent::openMode;
 
@@ -583,13 +598,15 @@ CDrumCell::CDrumCell()
   
   addAndMakeVisible (bt_cell_minus);
   
-  bt_cell_minus.setColour ( TextButton::ColourIds::buttonColourId, juce::Colour (131, 152, 160));
-  
+//  bt_cell_minus.setColour ( TextButton::ColourIds::buttonColourId, juce::Colour (131, 152, 160));
+  bt_cell_minus.setColour (TextButton::ColourIds::textColourOnId, juce::Colours::black);
+  bt_cell_minus.setColour (TextButton::ColourIds::textColourOffId, juce::Colours::black);
+
   bt_cell_minus.setButtonText ("-");
   bt_cell_minus.setTopLeftPosition (bt_cell_plus.getX(), bt_cell_plus.getBottom() + 1);
   bt_cell_minus.setSize (16, 16);
 
-  bt_cell_minus.setTooltip ("Remove sample from quick kit");  
+  bt_cell_minus.setTooltip ("Quick kit: Remove sample from quick kit\nAlternate-sample drum kit: previous sample");  
   
   bt_cell_minus.onClick = [this] {
     
@@ -599,7 +616,7 @@ CDrumCell::CDrumCell()
                                   if (! editor->audioProcessor.drumkit)  
                                       return;
     
-                                 if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE) 
+                                 if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT) 
                                     { 
                                      editor->tmr_leds.stopTimer();
                                      editor->audioProcessor.suspendProcessing (true);
@@ -818,7 +835,7 @@ void CAudioProcessorEditor::load_kit()
           continue;
         
        std::string cell_name;
-       if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
+       if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT)
           cell_name = s->get_name (true);
        else  
            cell_name = s->get_name (false);
@@ -878,7 +895,7 @@ void CAudioProcessorEditor::adapt()
   if (! audioProcessor.drumkit->loaded)
      return;
   
-  if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH || audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
+  if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH || audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT)
      {
       adapt_drumlabooh();
       drumkits_listbox.repaint(); 
@@ -918,7 +935,7 @@ void CAudioProcessorEditor::adapt_drumlabooh()
   
   std::string kitfname;    
   
-  if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
+  if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT)
       kitfname = "/drumkit.labooh";
   else    
       kitfname = "/drumkit.txt";
@@ -935,7 +952,7 @@ void CAudioProcessorEditor::adapt_drumlabooh()
 
    //update GUI
   //УБИРАТЬ ЭТО
-  if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH || audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_BUNDLE)
+  if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH || audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT)
       audioProcessor.drumkit->adapt();
       
   //audioProcessor.reset_layer_index();
