@@ -183,7 +183,8 @@ public:
   
   CDrumSample* load_sample_to_index (size_t index, const std::string &fname, int sample_rate);
   void remove_sample_at_index (size_t index);
-  
+
+  std::string get_description();
 
   CDrumKit();
   ~CDrumKit();
@@ -193,7 +194,6 @@ public:
   
   void adapt(); //for Adapt function
   void adapt_qkit (std::string new_dir_path); //for Adapt function
-  
   void save_qkit();
   
 };

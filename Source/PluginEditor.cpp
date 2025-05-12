@@ -1622,6 +1622,8 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
       editor->log ("\n");
       editor->log (bytes_to_file_size (editor->audioProcessor.drumkit->total_samples_size()));
       editor->log ("\n");
+      editor->log (editor->audioProcessor.drumkit->get_description());
+      editor->log ("\n");
       editor->log (editor->audioProcessor.drumkit->kit_name);
       editor->log ("loaded:\n");
      }

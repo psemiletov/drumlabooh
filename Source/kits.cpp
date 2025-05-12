@@ -2298,3 +2298,26 @@ void CDrumKit::save_qkit()
     
   string_save_to_file (kit_filename, result);
 }
+
+
+std::string CDrumKit::get_description()
+{
+  std::string result; 
+  
+  if (kit_type == KIT_TYPE_DRUMLABOOH)
+     result += "Type: Drumlabooh"; 
+  
+  if (kit_type == KIT_TYPE_QDRUMLABOOH)
+     result += "Type: Drumlabooh quick"; 
+   
+  if (kit_type == KIT_TYPE_DRUMLABOOH_ALT)
+     result += "Type: Drumlabooh alternative"; 
+
+  if (kit_type == KIT_TYPE_HYDROGEN)
+     result += "Type: Hydrogen"; 
+
+  if (kit_type == KIT_TYPE_SFZ)
+     result += "Type: SFZ"; 
+   
+  return result;
+}
