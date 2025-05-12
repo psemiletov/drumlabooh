@@ -869,7 +869,6 @@ void CAudioProcessorEditor::log (const std::string &s)
   log_area.setCaretPosition (0);
 }
 
-
 void CAudioProcessorEditor::update_kits_list()
 {
   drumkits_model.items.clear();
@@ -958,8 +957,9 @@ void CAudioProcessorEditor::adapt_drumlabooh()
   //audioProcessor.reset_layer_index();
   load_kit();
                
-  log (audioProcessor.drumkit->kit_name);
-  log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+ // log (audioProcessor.drumkit->kit_name);
+ // log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+  log (audioProcessor.drumkit->get_description());
                                      
   tmr_leds.startTimer (1000 / 15); //15 FPS
 }
@@ -993,10 +993,11 @@ void CAudioProcessorEditor::adapt_qdrumlabooh()
 
    //update GUI
   load_kit();
-               
-  log (audioProcessor.drumkit->kit_name);
-  log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
-  log (audioProcessor.drumkit->str_load_duration_msecs);
+     
+  log (audioProcessor.drumkit->get_description());
+  //log (audioProcessor.drumkit->kit_name);
+  //log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+  //log (audioProcessor.drumkit->str_load_duration_msecs);
                                      
   tmr_leds.startTimer (1000 / 15); //15 FPS
 }
@@ -1158,11 +1159,12 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
                                      //log (audioProcessor.drumkit->kit_name);
                                      //log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
                                      
-                                     log (audioProcessor.drumkit->kit_name);
-                                     log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
-                                     log (audioProcessor.drumkit->str_load_duration_msecs);
+                                     //log (audioProcessor.drumkit->kit_name);
+                                    // log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+                                    // log (audioProcessor.drumkit->str_load_duration_msecs);
 
-                                     
+                                     log (audioProcessor.drumkit->get_description());
+
                                      //update gui with timer 
                                      tmr_leds.startTimer (1000 / 15); //15 FPS
                                     });
@@ -1376,11 +1378,13 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
   if (audioProcessor.drumkit)
      {
+      log (audioProcessor.drumkit->get_description());
+  
       //log (audioProcessor.drumkit->kit_name);
       //log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
-      log (audioProcessor.drumkit->kit_name);
-      log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
-      log (audioProcessor.drumkit->str_load_duration_msecs);
+//      log (audioProcessor.drumkit->kit_name);
+//      log (bytes_to_file_size (audioProcessor.drumkit->total_samples_size()));
+  //    log (audioProcessor.drumkit->str_load_duration_msecs);
      }
 
   //load_kit();
@@ -1615,7 +1619,9 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
   if (editor->audioProcessor.drumkit)
      {
       editor->load_kit();
-      
+      editor->log (editor->audioProcessor.drumkit->get_description());
+
+      /*
       editor->log ("***\n");
       editor->log ("\n");
       editor->log (editor->audioProcessor.drumkit->str_load_duration_msecs);
@@ -1625,7 +1631,7 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
       editor->log (editor->audioProcessor.drumkit->get_description());
       editor->log ("\n");
       editor->log (editor->audioProcessor.drumkit->kit_name);
-      editor->log ("loaded:\n");
+      editor->log ("loaded:\n");*/
      }
 }
 

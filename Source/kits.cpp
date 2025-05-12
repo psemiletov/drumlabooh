@@ -1535,7 +1535,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
       load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
-      str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
+      str_load_duration_msecs  = "Loaded, msecs: " + std::to_string (load_duration_msecs);
 
       return;
      }
@@ -2304,6 +2304,8 @@ std::string CDrumKit::get_description()
 {
   std::string result; 
   
+  result = "Name: " + kit_name + "\n"; 
+  
   if (kit_type == KIT_TYPE_DRUMLABOOH)
      result += "Type: Drumlabooh"; 
   
@@ -2319,5 +2321,18 @@ std::string CDrumKit::get_description()
   if (kit_type == KIT_TYPE_SFZ)
      result += "Type: SFZ"; 
    
+  result += "\n";
+   
+  result += "Size: ";
+  
+  result += bytes_to_file_size (total_samples_size());
+  
+  result += "\n";
+   
+  result += str_load_duration_msecs;  
+
+  result += "\n";
+  result += "***\n";
+
   return result;
 }

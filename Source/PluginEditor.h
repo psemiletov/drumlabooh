@@ -327,6 +327,7 @@ public:
   
   void load_kit(); //call after processor's load_kit to update GUI
   void log (const std::string &s);
+ 
   void update_kits_list();
   
   void adapt();
