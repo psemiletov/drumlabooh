@@ -27,8 +27,6 @@ CDocumentWindow::CDocumentWindow (const String &name,
 }
 
 
-
-
 void CDocumentWindow::closeButtonPressed()
 {
   setVisible (false);
@@ -340,34 +338,31 @@ CDrumCell::CDrumCell()
         
                                   if (! editor->audioProcessor.drumkit)  
                                       return;
-                                   
-   
     
-                                 if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT) 
-                                    { 
-                                     editor->tmr_leds.stopTimer();
-                                     editor->audioProcessor.suspendProcessing (true);
+                                  if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT) 
+                                     { 
+                                      editor->tmr_leds.stopTimer();
+                                      editor->audioProcessor.suspendProcessing (true);
  
-                                     editor->need_to_update_cells = false; //чтобы кит не подгрузился по таймеру
+                                      editor->need_to_update_cells = false; //чтобы кит не подгрузился по таймеру
                                       
-                                     CDrumSample *s = editor->audioProcessor.drumkit->a_samples [cell_number];
-                                     if (s)
-                                        {
-                                         s->sample_prev();                                                                        
-                                        // std::string cell_caption = s->name + std::to_string (s->current_layer);                 
-                                         std::string cell_caption = s->get_name (true);
+                                      CDrumSample *s = editor->audioProcessor.drumkit->a_samples [cell_number];
+                                      if (s)
+                                         {
+                                          s->sample_prev();                                                                        
+                                         // std::string cell_caption = s->name + std::to_string (s->current_layer);                 
+                                          std::string cell_caption = s->get_name (true);
                                          
-                                         set_name (cell_caption);
-                                        } 
+                                          set_name (cell_caption);
+                                         } 
                                                                                                                                    
-                                     editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
-
+                                      editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
                                      
-                                     cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
-                                     editor->audioProcessor.suspendProcessing (false);
-                                     editor->tmr_leds.startTimer (1000 / 15); //15 FPS
-                                     return;
-                                    }
+                                      cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+                                      editor->audioProcessor.suspendProcessing (false);
+                                      editor->tmr_leds.startTimer (1000 / 15); //15 FPS
+                                      return;
+                                     }
                                       
     
                                     
