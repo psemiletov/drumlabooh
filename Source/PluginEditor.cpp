@@ -831,18 +831,39 @@ void CAudioProcessorEditor::load_kit()
         
        std::string cell_name;
        if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT)
-          cell_name = s->get_name (true);
+          {
+           cell_name = s->get_name (true);
+           drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colours::thistle); //juce::Colours::yellow)
+          }
        else  
-           cell_name = s->get_name (false);
+           {
+            cell_name = s->get_name (false);
+            drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+           } 
       
        drumcells[i].set_name (cell_name);
         
-       drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
       }
 
-   juce::String kitname = audioProcessor.drumkit->kit_name.c_str();
+      
+   std::string kit_caption = audioProcessor.drumkit->kit_name;  
+   if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT)
+      {
+       kit_caption += " [ALT SAMPLES, +/- TO SELECT]";
+       l_kit_name.setColour(juce::Label::textColourId, juce::Colours::thistle);
+      } 
+   else
+       l_kit_name.setColour(juce::Label::textColourId, juce::Colours::white);
 
+          
+   juce::String kitname = /*audioProcessor.drumkit->kit_name*/kit_caption.c_str();
+
+   
+   
    l_kit_name.setText (kitname, juce::dontSendNotification);
+   
+   
+   
 
    if (! audioProcessor.drumkit->image_fname.empty() && file_exists (audioProcessor.drumkit->image_fname))
       {
@@ -1072,6 +1093,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   gr_kitinfo.setSize (gr_drumkits.getWidth(), 220 + YFILLER); 
   
   addAndMakeVisible (l_kit_name);
+  
+  //l_kit_name.setColour(juce::Label::textColourId, juce::Colours::yellow);
 
   l_kit_name.setText ("EMPTY KIT",  NotificationType::dontSendNotification);
   l_kit_name.setEditable (false, true);
