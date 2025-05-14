@@ -254,7 +254,7 @@ CDrumCell::CDrumCell()
                                      editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
 
                                      
-                                     cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+                                     cell_label.setColour (juce::Label::backgroundColourId,/* juce::Colour (180, 209, 220)*/juce::Colours::thistle);
                                      editor->audioProcessor.suspendProcessing (false);
                                      editor->tmr_leds.startTimer (1000 / 15); //15 FPS
                                      return;
@@ -358,7 +358,7 @@ CDrumCell::CDrumCell()
                                                                                                                                    
                                       editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
                                      
-                                      cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+                                      cell_label.setColour (juce::Label::backgroundColourId, /*juce::Colour (180, 209, 220)*/juce::Colours::thistle);
                                       editor->audioProcessor.suspendProcessing (false);
                                       editor->tmr_leds.startTimer (1000 / 15); //15 FPS
                                       return;
@@ -850,7 +850,7 @@ void CAudioProcessorEditor::load_kit()
    if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT)
       {
        kit_caption += " [ALT SAMPLES, +/- TO SELECT]";
-       l_kit_name.setColour(juce::Label::textColourId, juce::Colours::thistle);
+       l_kit_name.setColour(juce::Label::textColourId, juce::Colours::yellow);
       } 
    else
        l_kit_name.setColour(juce::Label::textColourId, juce::Colours::white);
