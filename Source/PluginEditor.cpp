@@ -53,7 +53,6 @@ const int btplus_pngSize = 142;
 
 
 
-
 CDocumentWindow::CDocumentWindow (const String &name,
                                   Colour backgroundColour,
                                   int requiredButtons,
@@ -1089,6 +1088,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
 
   update_kits_list();
       
+  drumkits_listbox.getViewport()->setScrollBarThickness(24);
   drumkits_listbox.setRowHeight (32);
   drumkits_listbox.setModel (&drumkits_model);    
       
