@@ -17,8 +17,6 @@ typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 class CAudioProcessorEditor;
 class CDrumCell;
 
-
-
 class CDrumkitsListBoxModel: public ListBoxModel
 {
 public:
@@ -146,10 +144,19 @@ public:
   CFx fx;
 
   juce::TextButton bt_fx;
-  juce::TextButton bt_cell_plus;
-  juce::TextButton bt_cell_minus;
-
+  //juce::TextButton bt_cell_plus;
+//  juce::TextButton bt_cell_minus;
   
+  juce::DrawableButton bt_cell_plus { 
+        "bt_cell_plus", 
+        juce::DrawableButton::ImageRaw
+    };
+
+  juce::DrawableButton bt_cell_minus { 
+        "bt_cell_minus", 
+        juce::DrawableButton::ImageRaw
+    };
+
   juce::Button *bt_fx_close;
 
   CCellLabel cell_label;
@@ -203,8 +210,13 @@ public:
 
   juce::TextButton bt_fx;
   juce::Button *bt_fx_close;
-  juce::TextButton bt_cell_plus;
+  //juce::TextButton bt_cell_plus;
   juce::TextButton bt_cell_minus;
+
+  juce::DrawableButton bt_cell_plus { 
+        "bt_cell_plus", 
+        juce::DrawableButton::ImageFitted 
+    };
 
   
   CDrumCell();

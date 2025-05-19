@@ -17,6 +17,42 @@ this code is the public domain
 #define YFILLER 16
 
 
+// JUCER_RESOURCE: btminusb_png, 133, "../../../../0spr/bt-minus-B.png"
+static const unsigned char resource_btminusb_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,24,0,0,0,16,8,6,0,0,0,12,36,191,149,0,0,0,76,73,68,65,84,56,141,99,52,54,80,251,
+207,64,67,192,194,192,192,192,208,90,30,72,19,195,61,34,59,25,152,104,98,50,18,24,181,128,32,96,193,39,233,17,217,73,148,33,59,150,151,227,148,27,250,65,52,176,113,128,47,108,137,5,67,63,136,134,190,5,
+12,208,226,154,102,24,0,151,144,33,106,56,244,44,179,0,0,0,0,73,69,78,68,174,66,96,130,0,0};
+
+const char* btminusb_png = (const char*) resource_btminusb_png;
+const int btminusb_pngSize = 133;
+
+// JUCER_RESOURCE: btminus_png, 133, "../../../../0spr/bt-minus.png"
+static const unsigned char resource_btminus_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,24,0,0,0,16,8,6,0,0,0,12,36,191,149,0,0,0,76,73,68,65,84,56,141,99,52,8,136,249,207,
+64,67,192,194,192,192,192,32,42,35,71,19,195,119,79,105,99,96,162,137,201,72,96,212,2,130,128,5,159,228,238,41,109,68,25,226,154,83,133,83,110,232,7,209,192,198,1,190,176,37,22,12,253,32,26,250,22,48,
+64,139,107,154,97,0,69,150,33,18,87,51,115,12,0,0,0,0,73,69,78,68,174,66,96,130,0,0};
+
+const char* btminus_png = (const char*) resource_btminus_png;
+const int btminus_pngSize = 133;
+
+
+
+// JUCER_RESOURCE: btplusb_png, 142, "../../../../0spr/bt-plus-B.png"
+static const unsigned char resource_btplusb_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,24,0,0,0,16,8,6,0,0,0,12,36,191,149,0,0,0,85,73,68,65,84,56,141,99,52,54,80,251,207,
+64,67,192,194,192,192,192,208,90,30,72,19,195,61,34,59,33,22,16,171,24,25,236,88,94,78,148,62,38,210,220,68,58,24,250,22,224,140,3,244,48,39,36,143,43,78,134,126,16,13,92,28,160,135,233,104,62,160,25,
+32,186,44,34,54,204,49,0,180,184,166,25,6,0,107,221,42,110,139,110,168,114,0,0,0,0,73,69,78,68,174,66,96,130,0,0};
+
+const char* btplusb_png = (const char*) resource_btplusb_png;
+const int btplusb_pngSize = 142;
+
+// JUCER_RESOURCE: btplus_png, 142, "../../../../0spr/bt-plus.png"
+static const unsigned char resource_btplus_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,24,0,0,0,16,8,6,0,0,0,12,36,191,149,0,0,0,85,73,68,65,84,56,141,99,52,8,136,249,207,
+64,67,192,194,192,192,192,32,42,35,71,19,195,119,79,105,131,88,64,172,98,100,224,154,83,69,148,62,38,210,220,68,58,24,250,22,224,140,3,244,48,39,36,143,43,78,134,126,16,13,92,28,160,135,233,104,62,160,
+25,32,186,44,34,54,204,49,0,180,184,166,25,6,0,45,181,42,22,18,164,167,122,0,0,0,0,73,69,78,68,174,66,96,130,0,0};
+
+const char* btplus_png = (const char*) resource_btplus_png;
+const int btplus_pngSize = 142;
+
+
+
 
 CDocumentWindow::CDocumentWindow (const String &name,
                                   Colour backgroundColour,
@@ -214,15 +250,22 @@ CDrumCell::CDrumCell()
   xoffs += XFILLER;
 
   addAndMakeVisible (bt_cell_plus);
+
   
-  // juce::Colours::black
-  bt_cell_plus.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (180, 209, 220));
-  bt_cell_plus.setColour (TextButton::ColourIds::textColourOnId, juce::Colours::black);
-  bt_cell_plus.setColour (TextButton::ColourIds::textColourOffId, juce::Colours::black);
+ // bt_cell_plus.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (180, 209, 220));
+//  bt_cell_plus.setColour (TextButton::ColourIds::textColourOnId, juce::Colours::black);
+//  bt_cell_plus.setColour (TextButton::ColourIds::textColourOffId, juce::Colours::black);
   
-  //button.setColour(juce::TextButton::textColourOffId, juce::Colours::red);
+  juce::Image cachedImage_plusb_png = juce::ImageCache::getFromMemory (btplusb_png, btplusb_pngSize);
+  DrawableImage img_plusb (cachedImage_plusb_png);
+
+  juce::Image cachedImage_plus_png = juce::ImageCache::getFromMemory (btplus_png, btplus_pngSize);
+  DrawableImage img_plus (cachedImage_plus_png);
+ 
+  bt_cell_plus.setImages (&img_plus, &img_plusb);
   
-  bt_cell_plus.setButtonText ("+");
+ // bt_cell_plus.setButtonText ("+");
+  
   bt_cell_plus.setTopLeftPosition (xoffs, YFILLER);
   bt_cell_plus.setSize (24, 16);
   bt_cell_plus.setTooltip ("Quick kit: Add sample to quick kit\nAlternate-sample drum kit: next sample");  
@@ -318,14 +361,21 @@ CDrumCell::CDrumCell()
   
   addAndMakeVisible (bt_cell_minus);
   
-  bt_cell_minus.setColour ( TextButton::ColourIds::buttonColourId, juce::Colour (131, 152, 160));
-
+/*  bt_cell_minus.setColour ( TextButton::ColourIds::buttonColourId, juce::Colour (131, 152, 160));
   bt_cell_minus.setColour (TextButton::ColourIds::textColourOnId, juce::Colours::black);
   bt_cell_minus.setColour (TextButton::ColourIds::textColourOffId, juce::Colours::black);
-  
+  */
 
+  juce::Image cachedImage_minusb_png = juce::ImageCache::getFromMemory (btminusb_png, btminusb_pngSize);
+  DrawableImage img_minusb (cachedImage_minusb_png);
+
+  juce::Image cachedImage_minus_png = juce::ImageCache::getFromMemory (btminus_png, btminus_pngSize);
+  DrawableImage img_minus (cachedImage_minus_png);
+ 
+  bt_cell_minus.setImages (&img_minus, &img_minusb);
+    
   
-  bt_cell_minus.setButtonText ("-");
+ // bt_cell_minus.setButtonText ("-");
   bt_cell_minus.setTopLeftPosition (bt_cell_plus.getX(), bt_cell_plus.getBottom() + 1);
   bt_cell_minus.setSize (24, 16);
 
@@ -496,10 +546,18 @@ CDrumCell::CDrumCell()
   bt_cell_plus.setColour (TextButton::ColourIds::textColourOnId, juce::Colours::black);
   bt_cell_plus.setColour (TextButton::ColourIds::textColourOffId, juce::Colours::black);
 
+  //const char* plus_png = (const char*) resource_plus_png;
+  //const int plus_pngSize = 129;
+  juce::Image cachedImage_plus_png = juce::ImageCache::getFromMemory (btplus_png, btplus_pngSize);
+
+  DrawableImage img_plus (cachedImage_plus_png);
+  bt_cell_plus.setImages (&img_plus);
+
   
-  bt_cell_plus.setButtonText ("+");
+  
+ // bt_cell_plus.setButtonText ("+");
   bt_cell_plus.setTopLeftPosition (xoffs, YFILLER);
-  bt_cell_plus.setSize (16, 16);
+  bt_cell_plus.setSize (24, 16);
   bt_cell_plus.setTooltip ("Quick kit: Add sample to quick kit\nAlternate-sample drum kit: next sample");  
 ///////////////
   bt_cell_plus.onClick = [this] {
@@ -599,7 +657,7 @@ CDrumCell::CDrumCell()
 
   bt_cell_minus.setButtonText ("-");
   bt_cell_minus.setTopLeftPosition (bt_cell_plus.getX(), bt_cell_plus.getBottom() + 1);
-  bt_cell_minus.setSize (16, 16);
+  bt_cell_minus.setSize (24, 16);
 
   bt_cell_minus.setTooltip ("Quick kit: Remove sample from quick kit\nAlternate-sample drum kit: previous sample");  
   
