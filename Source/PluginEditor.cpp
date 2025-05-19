@@ -252,10 +252,6 @@ CDrumCell::CDrumCell()
   addAndMakeVisible (bt_cell_plus);
 
   
- // bt_cell_plus.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (180, 209, 220));
-//  bt_cell_plus.setColour (TextButton::ColourIds::textColourOnId, juce::Colours::black);
-//  bt_cell_plus.setColour (TextButton::ColourIds::textColourOffId, juce::Colours::black);
-  
   juce::Image cachedImage_plusb_png = juce::ImageCache::getFromMemory (btplusb_png, btplusb_pngSize);
   DrawableImage img_plusb (cachedImage_plusb_png);
 
@@ -360,11 +356,6 @@ CDrumCell::CDrumCell()
   xoffs += XFILLER;
   
   addAndMakeVisible (bt_cell_minus);
-  
-/*  bt_cell_minus.setColour ( TextButton::ColourIds::buttonColourId, juce::Colour (131, 152, 160));
-  bt_cell_minus.setColour (TextButton::ColourIds::textColourOnId, juce::Colours::black);
-  bt_cell_minus.setColour (TextButton::ColourIds::textColourOffId, juce::Colours::black);
-  */
 
   juce::Image cachedImage_minusb_png = juce::ImageCache::getFromMemory (btminusb_png, btminusb_pngSize);
   DrawableImage img_minusb (cachedImage_minusb_png);
@@ -542,17 +533,15 @@ CDrumCell::CDrumCell()
   
   addAndMakeVisible (bt_cell_plus);
   
-  bt_cell_plus.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (180, 209, 220));
-  bt_cell_plus.setColour (TextButton::ColourIds::textColourOnId, juce::Colours::black);
-  bt_cell_plus.setColour (TextButton::ColourIds::textColourOffId, juce::Colours::black);
+ juce::Image cachedImage_plusb_png = juce::ImageCache::getFromMemory (btplusb_png, btplusb_pngSize);
+  DrawableImage img_plusb (cachedImage_plusb_png);
 
-  //const char* plus_png = (const char*) resource_plus_png;
-  //const int plus_pngSize = 129;
   juce::Image cachedImage_plus_png = juce::ImageCache::getFromMemory (btplus_png, btplus_pngSize);
-
   DrawableImage img_plus (cachedImage_plus_png);
-  bt_cell_plus.setImages (&img_plus);
+ 
+  bt_cell_plus.setImages (&img_plus, &img_plusb);
 
+  
   
   
  // bt_cell_plus.setButtonText ("+");
@@ -651,11 +640,20 @@ CDrumCell::CDrumCell()
   
   addAndMakeVisible (bt_cell_minus);
   
-//  bt_cell_minus.setColour ( TextButton::ColourIds::buttonColourId, juce::Colour (131, 152, 160));
-  bt_cell_minus.setColour (TextButton::ColourIds::textColourOnId, juce::Colours::black);
+  juce::Image cachedImage_minusb_png = juce::ImageCache::getFromMemory (btminusb_png, btminusb_pngSize);
+  DrawableImage img_minusb (cachedImage_minusb_png);
+
+  juce::Image cachedImage_minus_png = juce::ImageCache::getFromMemory (btminus_png, btminus_pngSize);
+  DrawableImage img_minus (cachedImage_minus_png);
+ 
+  bt_cell_minus.setImages (&img_minus, &img_minusb);
+    
+
+  
+/*  bt_cell_minus.setColour (TextButton::ColourIds::textColourOnId, juce::Colours::black);
   bt_cell_minus.setColour (TextButton::ColourIds::textColourOffId, juce::Colours::black);
 
-  bt_cell_minus.setButtonText ("-");
+  bt_cell_minus.setButtonText ("-");*/
   bt_cell_minus.setTopLeftPosition (bt_cell_plus.getX(), bt_cell_plus.getBottom() + 1);
   bt_cell_minus.setSize (24, 16);
 

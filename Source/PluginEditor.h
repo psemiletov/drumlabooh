@@ -211,13 +211,18 @@ public:
   juce::TextButton bt_fx;
   juce::Button *bt_fx_close;
   //juce::TextButton bt_cell_plus;
-  juce::TextButton bt_cell_minus;
+  //juce::TextButton bt_cell_minus;
 
   juce::DrawableButton bt_cell_plus { 
         "bt_cell_plus", 
         juce::DrawableButton::ImageFitted 
     };
 
+    
+  juce::DrawableButton bt_cell_minus { 
+        "bt_cell_minus", 
+        juce::DrawableButton::ImageRaw
+    };
   
   CDrumCell();
   ~CDrumCell() override;
