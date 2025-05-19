@@ -299,10 +299,10 @@ CDrumCell::CDrumCell()
                                     }
                                       
                                  if (editor->audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
-                                        {
-                                         editor->log ("WRONG KIT TYPE! NEED TO BE THE QUICK KIT\n"); 
-                                         return;
-                                        }
+                                    {
+                                     editor->log ("WRONG KIT TYPE! NEED TO BE THE QUICK KIT\n"); 
+                                     return;
+                                    }
                                     
                                    
   
@@ -904,7 +904,7 @@ void CAudioProcessorEditor::load_kit()
    std::string kit_caption = audioProcessor.drumkit->kit_name;  
    if (audioProcessor.drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT)
       {
-       kit_caption += " [ALT SAMPLES, +/- TO SELECT]";
+       kit_caption += " | ALT SAMPLES: +/-";
        l_kit_name.setColour(juce::Label::textColourId, juce::Colours::yellow);
       } 
    else
@@ -912,12 +912,8 @@ void CAudioProcessorEditor::load_kit()
 
           
    juce::String kitname = /*audioProcessor.drumkit->kit_name*/kit_caption.c_str();
-
-   
    
    l_kit_name.setText (kitname, juce::dontSendNotification);
-   
-   
    
 
    if (! audioProcessor.drumkit->image_fname.empty() && file_exists (audioProcessor.drumkit->image_fname))
@@ -1163,7 +1159,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   kit_image.setSize (gr_kitinfo.getWidth() - XFILLER * 3, 220 - YFILLER * 4);
    //kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2));
   kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), 
-                               (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2));
+                               (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2) + YFILLER /* * 1.5*/);
   
   // kit_image.setImage (kit_image_default);
 
