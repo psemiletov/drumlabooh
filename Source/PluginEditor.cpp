@@ -1051,8 +1051,16 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
                                                audioProcessor (parent),
                                                valueTreeState (vts)
 {
-  getLookAndFeel().setColour (TextButton::ColourIds::buttonColourId, juce::Colour (87, 110, 113));
+  //getLookAndFeel().setColour (TextButton::ColourIds::buttonColourId, juce::Colour (87, 110, 113));
 
+  auto& lookAndFeel = juce::LookAndFeel::getDefaultLookAndFeel();
+  //lookAndFeel.setColour(juce::ScrollBar::thumbColourId, juce::Colours::lightskyblue);
+  
+ /* lookAndFeel.setColour(juce::ScrollBar::backgroundColourId, juce::Colours::darkgrey);
+  lookAndFeel.setColour(juce::ScrollBar::thumbColourId, juce::Colours::gainsboro);
+  lookAndFeel.setColour(juce::ScrollBar::trackColourId, juce::Colours::transparentBlack);*/
+  lookAndFeel.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (87, 110, 113)); 
+  
   drumkits_model.editor = this;
   need_to_update_cells = true;
   
