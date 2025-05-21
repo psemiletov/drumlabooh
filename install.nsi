@@ -40,7 +40,7 @@ UninstallSubCaption 2 ": Done"
 OutFile "drumlabooh-installer.exe"
 
 ; The default installation directory
-InstallDir "$PROGRAMFILES\Common Files\VST3\drumlabooh.vst3"
+InstallDir "$PROGRAMFILES64\Common Files\VST3\drumlabooh.vst3"
 
 ; The stuff to install
 Section "Drumlabooh (Stereo)"
@@ -63,7 +63,7 @@ SectionEnd
 ; The stuff to install
 Section "Drumlabooh (Multi)"
   ; Set output path to the installation directory.
-  SetOutPath "$PROGRAMFILES\Common Files\VST3\drumlabooh-multi.vst3"
+  SetOutPath "$PROGRAMFILES64\Common Files\VST3\drumlabooh-multi.vst3"
   ; Put file there
   File /r "D:\a\drumlabooh\drumlabooh\build\drumlabooh-multi_artefacts\Release\VST3\drumlabooh-multi.vst3\Contents\Resources\moduleinfo.json"
   File /r "D:\a\drumlabooh\drumlabooh\build\drumlabooh-multi_artefacts\Release\VST3\drumlabooh-multi.vst3\Contents\x86_64-win\drumlabooh-multi.vst3"
@@ -96,7 +96,7 @@ Section "Uninstall"
           Delete $INSTDIR\nsUninst.exe
           Delete $INSTDIR\*.*
           Delete "C:\drumlabooh-kits\*.*"
-          Delete "$PROGRAMFILES\Common Files\VST3\drumlabooh-multi.vst3\*.*"
+          Delete "$PROGRAMFILES64\Common Files\VST3\drumlabooh-multi.vst3\*.*"
 
           RMDir /r $INSTDIR
 
