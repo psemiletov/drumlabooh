@@ -223,8 +223,6 @@ CDrumCell::CDrumCell()
 
   juce::Image cachedImage_plus_png = juce::ImageCache::getFromMemory (btplus_png, btplus_pngSize);
   DrawableImage img_plus (cachedImage_plus_png);
-
-  
   
   bt_cell_plus.setImages (&img_plus, &img_plusb, &img_plusc);
   
@@ -506,13 +504,13 @@ CDrumCell::CDrumCell()
   
   juce::Image cachedImage_plusc_png = juce::ImageCache::getFromMemory (btplusc_png, btplusc_pngSize);
   DrawableImage img_plusc (cachedImage_plusc_png);
-    
+  
   juce::Image cachedImage_plusb_png = juce::ImageCache::getFromMemory (btplusb_png, btplusb_pngSize);
   DrawableImage img_plusb (cachedImage_plusb_png);
 
   juce::Image cachedImage_plus_png = juce::ImageCache::getFromMemory (btplus_png, btplus_pngSize);
   DrawableImage img_plus (cachedImage_plus_png);
- 
+  
   bt_cell_plus.setImages (&img_plus, &img_plusb, &img_plusc);
   
   

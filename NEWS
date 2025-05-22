@@ -1,5 +1,17 @@
-   Drumlabooh 8.0.2 ("Finally Fixed")
+   Drumlabooh 9.0.0 ("Alternate samples")
 
-   After a long, long time... The crash in Ardour with drumkits list - fixed!
+   First of all, this release features a new Drumlabooh kit format, based on XML. This new format supports the new kit's type - alternative samples kit. It means that we can have several samples per instrument/slot. To switch between them use "+" and "-" buttons at the slot. If alternative samples are available, the slots has colors different from the usual. 
+   New kits with that feature are bundled:    
+
+ASR-X Pro (~ 200 samples)
+Choosy House Kit (~ 70 samples)
+Formanta Polivoks (~ 90 samples)
+Klone Dual Percussion Synthesiser (~ 600 samples)
+
+   The GUI now is more user-friendly - large scrollbars and some buttons. More informative log area, that show the kit's type (Drumlabooh, Hydrogen, SFZ), RAM used and load time.
+   NSIS installer for Windows is fixed now - the plugins are installed in the proper VST3i location.
+   Linux VST3i multi-out version of Drumlabooh now works at Reaper. There is still a problem with VST3i multi-out Drumlabooh with Ardour, but you can use LV2 version.
+   Current DAW compatiblity you can see here: 
+https://github.com/psemiletov/drumlabooh/wiki/DAW-Compatibility
    
    Stay tuned, Peter Semiletov

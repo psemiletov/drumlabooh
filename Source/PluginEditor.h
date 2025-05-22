@@ -215,15 +215,14 @@ public:
 
   juce::DrawableButton bt_cell_plus { 
         "bt_cell_plus", 
-        juce::DrawableButton::ImageFitted 
+        juce::DrawableButton::ImageRaw
     };
 
-    
   juce::DrawableButton bt_cell_minus { 
         "bt_cell_minus", 
         juce::DrawableButton::ImageRaw
     };
-  
+
   CDrumCell();
   ~CDrumCell() override;
 
