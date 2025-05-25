@@ -186,7 +186,6 @@ endif()
 endif()
 
 
-
 if(MULTI)
 #  add_definitions(-DMULTICHANNEL=1)
   message("+ Build with multi channel support")
