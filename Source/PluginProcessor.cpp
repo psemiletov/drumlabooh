@@ -443,10 +443,19 @@ bool CAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 
 bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-  if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+/*  if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
       return true;
   else
-      return false;
+      return false;*/
+
+  if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+      return true;
+
+ if (layouts.getMainInputChannelSet() != juce::AudioChannelSet::stereo())
+      return true;
+
+   
+   return false;
 }
 
 #endif
