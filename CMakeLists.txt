@@ -81,7 +81,6 @@ cmake_policy(SET CMP0135 NEW)
 FetchContent_Declare(
   juce
   URL https://github.com/juce-framework/JUCE/archive/refs/tags/${JUCETAG}.tar.gz
-#  URL_HASH SHA256=95752f8e8b37d802b4c10182bc757de7d88f0c8899e879afa8798589be306a11
   EXCLUDE_FROM_ALL
 )
 

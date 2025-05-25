@@ -224,11 +224,20 @@ CAudioProcessor::CAudioProcessor()
 
 CAudioProcessor::CAudioProcessor()
                                   :AudioProcessor (BusesProperties()
+                                      .withInput ("Input", juce::AudioChannelSet::stereo(), true)
                                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                                  ),
 
    parameters (*this, 0, "Drumlabooh", createParameterLayout())
 
+/*
+CAudioProcessor::CAudioProcessor()
+                                  :AudioProcessor (BusesProperties()
+                                      .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+                                 ),
+
+   parameters (*this, 0, "Drumlabooh", createParameterLayout())
+*/
 {
 //std::cout << "CAudioProcessor::CAudioProcessor() - 1" << std::endl;
  // formatManager = new juce::AudioFormatManager();
