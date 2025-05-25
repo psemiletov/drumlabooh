@@ -448,8 +448,21 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
   else
       return false;*/
 
- return true;
+ //return true;
 
+ 
+    //const int numInput = layouts.getMainInputChannels();
+    const int numOutput = layouts.getMainOutputChannels();
+
+    /*if ((numInput == 1 && numOutput == 1) ||
+       (numInput == 2 && numOutput == 2) ||
+       (numInput == 1 && numOutput == 2))*/
+    
+    if (numOutput == 2)
+        return true;
+
+    return false;
+ 
    
  //  return false;
 }

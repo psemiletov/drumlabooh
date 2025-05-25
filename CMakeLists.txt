@@ -105,13 +105,14 @@ juce_add_plugin(drumlabooh
     # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
     # ICON_SMALL ...
      NEEDS_WEB_BROWSER=0
+     NEEDS_MIDI_INPUT=TRUE
      JUCE_DISPLAY_SPLASH_SCREEN=0
      LV2URI https://github.com/psemiletov/drumlabooh
      LV2_SHARED_LIBRARY_NAME drumlabooh
      COMPANY_NAME Semiletov                          # Specify the name of the plugin's author
      IS_SYNTH TRUE                       # Is this a synth or an effect?
      NEEDS_MIDI_INPUT TRUE               # Does the plugin need midi input?
-     VST3_CATEGORIES Instrument Sampler Synth Drum
+     VST3_CATEGORIES Instrument Sampler Synth Drum Generator
     # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
     # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
      EDITOR_WANTS_KEYBOARD_FOCUS TRUE    # Does the editor need keyboard focus?
@@ -193,12 +194,13 @@ if(MULTI)
   juce_add_plugin(drumlabooh-multi
      JUCE_DISPLAY_SPLASH_SCREEN=0
      NEEDS_WEB_BROWSER=0
+     NEEDS_MIDI_INPUT=TRUE
      LV2URI https://github.com/psemiletov/drumlabooh-multi
      LV2_SHARED_LIBRARY_NAME drumlabooh-multi
      COMPANY_NAME Semiletov                     # Specify the name of the plugin's author
      IS_SYNTH TRUE                       # Is this a synth or an effect?
      NEEDS_MIDI_INPUT TRUE               # Does the plugin need midi input?
-     VST3_CATEGORIES Instrument Sampler Synth Drum
+     VST3_CATEGORIES Instrument Sampler Synth Drum Generator
      EDITOR_WANTS_KEYBOARD_FOCUS TRUE    # Does the editor need keyboard focus?
      PLUGIN_MANUFACTURER_CODE PEtR               # A four-character manufacturer id with at least one upper-case character
      PLUGIN_CODE PetR                            # A unique four-character plugin id with exactly one upper-case character
@@ -228,6 +230,7 @@ target_sources(drumlabooh-multi
     PUBLIC
         # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
         -DMULTICHANNEL=1
+        NEEDS_MIDI_INPUT=TRUE
         JUCE_JACK=0
         NEEDS_WEBVIEW2=0 
         JUCE_PLUGINHOST_LADSPA=0
