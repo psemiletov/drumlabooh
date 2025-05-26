@@ -166,19 +166,19 @@ void CAudioProcessor::reset_layer_index()
 
 
 #if defined(MULTICHANNEL)
-/*
+//ok Reaper Linux
+
 CAudioProcessor::CAudioProcessor()
                                  :AudioProcessor (BusesProperties()
                                  .withInput ("Input", juce::AudioChannelSet::stereo(), true)
                                  .withOutput("Output", juce::AudioChannelSet::discreteChannels(36), true)),
                                   parameters (*this, 0, "Drumlabooh-multi", createParameterLayout())
-*/
 
 
+/*
 CAudioProcessor::CAudioProcessor()
                                  :AudioProcessor (BusesProperties()
                                  .withInput ("Input", juce::AudioChannelSet::stereo(), true)
-                                 //.withOutput("Output", juce::AudioChannelSet::discreteChannels(36), true)),
                                  .withOutput("Bus 01", AudioChannelSet::mono(), true)
                                  .withOutput("Bus 02", AudioChannelSet::mono(), true)
                                  .withOutput("Bus 03", AudioChannelSet::mono(), true)
@@ -219,7 +219,7 @@ CAudioProcessor::CAudioProcessor()
                                  
                                   parameters (*this, 0, "Drumlabooh-multi", createParameterLayout())
 
-
+*/
 {
  //std::cout << "CAudioProcessor::CAudioProcessor()36 - 1" << std::endl;
 // formatManager = new juce::AudioFormatManager();
@@ -434,33 +434,6 @@ void CAudioProcessor::releaseResources()
     // spare memory, etc.
 }
 
-/*
-#ifndef JucePlugin_PreferredChannelConfigurations
-bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
-{
-  #if JucePlugin_IsMidiEffect
-    juce::ignoreUnused (layouts);
-    return true;
-  #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    // Some plugin hosts, such as certain GarageBand versions, will only
-    // load plugins that support stereo bus layouts.
-    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
-        return false;
-
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-   #endif
-
-    return true;
-  #endif
-}
-#endif
-*/
 
 
 #if defined(MULTICHANNEL)
@@ -473,10 +446,13 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
       return false;
 }
 */
+
+//ok Reaper Linux
 bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const  
 {
-  if (layouts.getMainOutputChannelSet().size() == 36)
-      return true;
+   if (layouts.getMainOutputChannels() == 36)
+     return true;
+
   
   return false;
 }
