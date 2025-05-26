@@ -166,12 +166,59 @@ void CAudioProcessor::reset_layer_index()
 
 
 #if defined(MULTICHANNEL)
+/*
+CAudioProcessor::CAudioProcessor()
+                                 :AudioProcessor (BusesProperties()
+                                 .withInput ("Input", juce::AudioChannelSet::stereo(), true)
+                                 .withOutput("Output", juce::AudioChannelSet::discreteChannels(36), true)),
+                                  parameters (*this, 0, "Drumlabooh-multi", createParameterLayout())
+*/
+
 
 CAudioProcessor::CAudioProcessor()
-                                  //:AudioProcessor (BusesProperties().withOutput ("Output", juce::AudioChannelSet::canonicalChannelSet/*discreteChannels*/ (36), true)),
                                  :AudioProcessor (BusesProperties()
-                                  .withOutput("Output", juce::AudioChannelSet::/*canonicalChannelSet*/discreteChannels(36), true)),
+                                 .withInput ("Input", juce::AudioChannelSet::stereo(), true)
+                                 //.withOutput("Output", juce::AudioChannelSet::discreteChannels(36), true)),
+                                 .withOutput("Bus 01", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 02", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 03", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 04", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 05", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 06", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 07", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 08", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 09", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 10", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 11", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 11", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 12", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 13", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 14", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 15", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 16", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 17", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 18", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 19", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 20", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 21", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 22", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 23", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 24", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 25", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 26", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 27", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 28", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 29", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 30", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 31", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 32", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 33", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 34", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 35", AudioChannelSet::mono(), true)
+                                 .withOutput("Bus 36", AudioChannelSet::mono(), true)),
+                                 
                                   parameters (*this, 0, "Drumlabooh-multi", createParameterLayout())
+
 
 {
  //std::cout << "CAudioProcessor::CAudioProcessor()36 - 1" << std::endl;
@@ -330,11 +377,7 @@ bool CAudioProcessor::producesMidi() const
 
 bool CAudioProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
-    return true;
-   #else
-    return false;
-   #endif
+  return false;
 }
 
 
@@ -430,7 +473,7 @@ bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
       return false;
 }
 */
-bool CAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const  
+bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const  
 {
   if (layouts.getMainOutputChannelSet().size() == 36)
       return true;
@@ -443,28 +486,10 @@ bool CAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 
 bool CAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-/*  if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
-      return true;
-  else
-      return false;*/
+  if (layouts.getMainOutputChannels() == 2)
+     return true;
 
- //return true;
-
- 
-    //const int numInput = layouts.getMainInputChannels();
-    const int numOutput = layouts.getMainOutputChannels();
-
-    /*if ((numInput == 1 && numOutput == 1) ||
-       (numInput == 2 && numOutput == 2) ||
-       (numInput == 1 && numOutput == 2))*/
-    
-    if (numOutput == 2)
-        return true;
-
-    return false;
- 
-   
- //  return false;
+  return false;
 }
 
 #endif
@@ -791,15 +816,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             if (int_midimap_mode == MIDIMAPMODE_LABOOH)
                 s = drumkit->a_samples[nn];
             else
-               {
                 if (drumkit->map_samples.count (note_number) > 0) 
-                   {
-                    s = drumkit->map_samples[note_number];
+                   s = drumkit->map_samples[note_number];
 //                   std::cout << "play mapped note: " << note_number << std::endl;
-                   } 
-               }
-  
-
 
             if (! s)
                continue;
@@ -1038,7 +1057,7 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
   //std::string  get_home_dir
  
-  std::cout << "void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)\n";
+//  std::cout << "void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)\n";
 
   
   if (drumkit)
@@ -1047,16 +1066,9 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
           {
            CDrumSample *s = drumkit->a_samples[i];
            if (s)
-              {
                save_int_keyval ("layer_index" + std::to_string(i), s->current_layer);
-               std::cout << "SAVE layer_index: " << i << " s->current_layer: " << s->current_layer << std::endl;
-              } 
            else
-               {
-                save_int_keyval ("layer_index" + std::to_string(i), 0);
-                std::cout << "SAVE ZERO to layer_index: " << i << " : " << 0 << std::endl;
-                
-               } 
+               save_int_keyval ("layer_index" + std::to_string(i), 0);
           }
      }
   
@@ -1094,7 +1106,7 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
              std::string key = "layer_index" + std::to_string (i);
              layer_index[i] = load_int_keyval (key, 0);
              
-             std::cout << "read to layer_index[i] : " << i << ": " << layer_index[i]  << std::endl;
+//             std::cout << "read to layer_index[i] : " << i << ": " << layer_index[i]  << std::endl;
             }   
          
         }
@@ -1172,7 +1184,7 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
        if (s)
           s->current_layer = layer_index[i]; //в layer_index загружено из параметров плагина
         
-       std::cout << "layer_index[i]: " << i << " :" << layer_index[i] << std::endl; 
+  //     std::cout << "layer_index[i]: " << i << " :" << layer_index[i] << std::endl; 
         
        //if (drumkit->a_samples[i])
          // drumkit->a_samples[i]->current_layer = (*(layer_index[i]))
