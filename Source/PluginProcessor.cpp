@@ -167,15 +167,15 @@ void CAudioProcessor::reset_layer_index()
 
 #if defined(MULTICHANNEL)
 //ok Reaper Linux
-
+/*
 CAudioProcessor::CAudioProcessor()
                                  :AudioProcessor (BusesProperties()
                                  .withInput ("Input", juce::AudioChannelSet::stereo(), true)
                                  .withOutput("Output", juce::AudioChannelSet::discreteChannels(36), true)),
                                   parameters (*this, 0, "Drumlabooh-multi", createParameterLayout())
 
+*/
 
-/*
 CAudioProcessor::CAudioProcessor()
                                  :AudioProcessor (BusesProperties()
                                  .withInput ("Input", juce::AudioChannelSet::stereo(), true)
@@ -189,7 +189,6 @@ CAudioProcessor::CAudioProcessor()
                                  .withOutput("Bus 08", AudioChannelSet::mono(), true)
                                  .withOutput("Bus 09", AudioChannelSet::mono(), true)
                                  .withOutput("Bus 10", AudioChannelSet::mono(), true)
-                                 .withOutput("Bus 11", AudioChannelSet::mono(), true)
                                  .withOutput("Bus 11", AudioChannelSet::mono(), true)
                                  .withOutput("Bus 12", AudioChannelSet::mono(), true)
                                  .withOutput("Bus 13", AudioChannelSet::mono(), true)
@@ -219,7 +218,7 @@ CAudioProcessor::CAudioProcessor()
                                  
                                   parameters (*this, 0, "Drumlabooh-multi", createParameterLayout())
 
-*/
+
 {
  //std::cout << "CAudioProcessor::CAudioProcessor()36 - 1" << std::endl;
 // formatManager = new juce::AudioFormatManager();
