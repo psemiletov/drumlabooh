@@ -267,7 +267,7 @@ CDrumCell::CDrumCell()
                                       
                                  if (editor->audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
                                     {
-                                     editor->log ("WRONG KIT TYPE! NEED TO BE THE QUICK KIT\n"); 
+                                     editor->log ("WRONG KIT TYPE!\n"); 
                                      return;
                                     }
                                     
