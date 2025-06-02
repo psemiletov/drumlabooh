@@ -17,6 +17,10 @@ std::string get_home_dir();
 std::vector <std::string> files_get_list (const std::string &path);
 std::vector <std::string> files_get_list (const std::string &path, const std::string &ext); //ext with dot: ".txt"
 
+std::vector<std::string> get_files_with_extensions (const std::string& directory, const std::vector<std::string>& extensions);
+std::vector<std::string> get_directories (const std::string& directory); 
+
+
 std::string get_file_ext (const std::string &fname);
 std::string get_file_path (const std::string &path);
 std::string string_file_load (const std::string &fname);

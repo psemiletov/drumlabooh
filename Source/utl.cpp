@@ -7,6 +7,9 @@ this code is the public domain
 #include <iostream>
 #include <fstream>
 
+#include <filesystem>
+
+
 #include <algorithm>
 #include <string>
 #include <cctype>
@@ -166,8 +169,6 @@ std::vector <std::string> files_get_list (const std::string &path, const std::st
 
 
 #else
-
-
 
 std::vector <std::string> files_get_list (const std::string &path)
 {
@@ -477,4 +478,69 @@ void string_save_to_file (const std::string &fname, const std::string &s)
   if (file.is_open())
   file << s;
   file.close();
+}
+
+/*
+  
+ std::string directory = "./my_folder";
+    
+    // Список желаемых расширений (например, ".txt", ".cpp")
+    std::vector<std::string> extensions = {".txt", ".cpp"};
+  
+ */ 
+
+// Функция для получения списка файлов с указанными расширениями
+std::vector<std::string> get_files_with_extensions (const std::string& directory, const std::vector<std::string>& extensions) 
+{
+    std::vector<std::string> files;
+
+    // Проходим по всем элементам в директории
+    for (const auto& entry : std::filesystem::directory_iterator(directory)) 
+        {
+        // Проверяем, что это обычный файл
+         if (entry.is_regular_file()) 
+           {
+            // Получаем расширение файла в нижнем регистре
+            std::string ext = entry.path().extension().string();
+            // Приводим к нижнему регистру для нечувствительного сравнения
+            std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+            
+            // Проверяем, есть ли расширение в списке допустимых
+            for (const auto& valid_ext : extensions) {
+                std::string temp_ext = valid_ext;
+                // Приводим искомое расширение к нижнему регистру
+                std::transform(temp_ext.begin(), temp_ext.end(), temp_ext.begin(), ::tolower);
+                
+                // Если расширение совпадает, добавляем путь к файлу в результат
+                if (ext == temp_ext || (ext.empty() && temp_ext == ".")) {
+                    files.push_back(entry.path().string());
+                }
+            }
+        }
+    }
+    
+    std::sort(files.begin(), files.end());
+    
+    return files;
+}
+
+
+// Функция для получения списка каталогов в указанной директории с сортировкой по алфавиту
+std::vector<std::string> get_directories (const std::string& directory) 
+{
+    std::vector<std::string> directories;
+    
+    // Проходим по всем элементам в директории
+    for (const auto& entry : filesystem::directory_iterator(directory)) 
+    {
+        // Проверяем, что это директория
+        if (entry.is_directory()) {
+            directories.push_back(entry.path().string());
+        }
+    }
+    
+    // Сортируем список каталогов по алфавиту
+    std::sort(directories.begin(), directories.end());
+    
+    return directories;
 }

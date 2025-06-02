@@ -163,8 +163,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   //double dratio = (double) sess_samplerate / samplerate;
   
   size_t output_frames_count = ratio * length_in_samples; 
-  
- 
+
   //size_t output_frames_count = static_cast<size_t>(std::ceil(ratio * length_in_samples));
   
   //make mono (1-channel) buffer out_buf
@@ -351,8 +350,6 @@ size_t CDrumSample::map_uint_velo_to_layer_number (int velo)
   if (v_layers.size() == 1)
      return 0; //return zero pos layer if we have just one layer
 
- // std::cout << "CDrumSample::map_uint_velo_to_layer_number: " << velo << std::endl;
-     
   size_t result = 0;
 
   //search for the layer within its umin..umax velo
@@ -520,22 +517,25 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
 }
 
 
-std::string trim(const std::string& str) {
-    size_t first = 0;
-    size_t last = str.length();
+std::string trim (const std::string& str) 
+{
+  size_t first = 0;
+  size_t last = str.length();
 
     // Находим первый непробельный символ
-    while (first < last && std::isspace(static_cast<unsigned char>(str[first]))) {
-        ++first;
-    }
+  while (first < last && std::isspace(static_cast<unsigned char>(str[first]))) 
+        {
+         ++first;
+        }
 
-    // Находим последний непробельный символ
-    while (last > first && std::isspace(static_cast<unsigned char>(str[last - 1]))) {
-        --last;
-    }
+  // Находим последний непробельный символ
+  while (last > first && std::isspace(static_cast<unsigned char>(str[last - 1]))) 
+        {
+         --last;
+        }
 
-    // Возвращаем подстроку без начальных и конечных пробелов
-    return str.substr(first, last - first);
+  // Возвращаем подстроку без начальных и конечных пробелов
+  return str.substr(first, last - first);
 }
 
 
@@ -543,15 +543,12 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 {
 //  std::cout << "void CDrumKit::load_labooh_xml (const std::string &data)\n";
   
-  //std::cout << data << std::endl;
-
   if (data.empty())
       return;
 
   size_t sep_pos = kit_dir.rfind (DIR_SEPARATOR);
   kit_name = kit_dir.substr (sep_pos + 1);
-
-  
+ 
   kit_type = KIT_TYPE_DRUMLABOOH;
 
   pugi::xml_document doc;
@@ -563,7 +560,6 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
   if (! result)
      return;
-
   
    pugi::xml_node samples = doc.child ("root");
 
@@ -576,7 +572,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        {
     //    std::cout << item_sample.text().as_string() << std::endl;
         
-        if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
+       if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
            break;
         
        //std::cout << "item_sample " << item_sample.attribute("Filename").value() << "\n";
@@ -584,17 +580,16 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        
        //read params
 
-       temp_sample->name = item_sample.attribute("name").value(); 
-       std::string str_note = item_sample.attribute("note").value(); 
+       temp_sample->name = item_sample.attribute ("name").value(); 
+       std::string str_note = item_sample.attribute ("note").value(); 
        
        if (! str_note.empty())
           { 
-           temp_sample->mapped_note = std::stoi(str_note);
+           temp_sample->mapped_note = std::stoi (str_note);
            map_samples[temp_sample->mapped_note] = temp_sample;
                 // std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
            has_mapping = true;
           } 
-  
        
        std::string layer_index_mode = item_sample.attribute ("layer_index_mode").value(); 
        
@@ -611,7 +606,6 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
        std::string fname = item_sample.text().as_string(); //file name[s]
        
-       
        if (fname.empty())
           continue;
         
@@ -621,8 +615,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        bool check_for_txt = false;
                   
        if (fname.find (".txt") != string::npos)
-          check_for_txt = true;
- 
+           check_for_txt = true;
        
        if ((check_for_list != string::npos) || check_for_txt)
           {
@@ -1074,7 +1067,7 @@ void CDrumKit::load_qtxt (const std::string &data)
       image_fname = kitimg;
   
   
-  std::cout << " kit_type: " << kit_type << std::endl;
+ // std::cout << " kit_type: " << kit_type << std::endl;
   
   loaded = true;
 }
@@ -1409,10 +1402,9 @@ void CDrumKit::load_sfz_new (const std::string &data)
                 }
             }   
       }
- 
   
   
-    loaded = true;    
+  loaded = true;    
 }
 
 
@@ -1501,7 +1493,26 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   std::string source = string_file_load (kit_filename);
   if (source.empty())
       return;
+
   
+  
+  if (kit_filename.find ("/drum-folders") != string::npos)
+     {
+      //LOAD DIRECTORY
+  
+      //load_labooh_xml (source);
+      
+        
+      auto stop = chrono::high_resolution_clock::now();
+  //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
+
+      load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+      str_load_duration_msecs  = "Loaded, msecs: " + std::to_string (load_duration_msecs);
+
+      return;
+     }
+ 
+   
   if (ends_with (kit_filename, "drumkit.labooh"))
      {
       load_labooh_xml (source);
@@ -2086,9 +2097,6 @@ void CDrumSample::trigger_sample (float vel)
       if (layer_index_mode == LAYER_INDEX_MODE_RND)
           current_layer = get_rnd (0, v_layers.size() - 1);//random layer
           
-      //if (layer_index_mode == KIT_TYPE_DRUMLABOOH_BUNDLE) 
-          //;
-       
       if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
          {
           robin_counter++;
@@ -2139,7 +2147,6 @@ void CDrumSample::trigger_sample_uint (int vel, float velo)
        
       if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
          {
-          
           robin_counter++;
 
           if (robin_counter == v_layers.size())
