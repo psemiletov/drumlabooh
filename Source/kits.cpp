@@ -448,7 +448,7 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
      {
       drumkit_info_passed = true;
 
-      if (kit->sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
+      if (kit->sample_counter > MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
          return false;
 
       //is current kit->temp_sample empty?
@@ -461,7 +461,7 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
               if (kit->sample_counter >= 0) //NEW CHECK!
                  delete kit->a_samples[kit->sample_counter];
              }
-      }
+         }
       // 
        
       kit->temp_sample = kit->add_sample (kit->sample_counter++);
