@@ -452,15 +452,29 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
          return false;
 
       //is current kit->temp_sample empty?
+      //не срабатывает если пуст последний элемент  
        
-      if (kit->temp_sample) 
+      if (kit->temp_sample)
          { 
           if (kit->temp_sample->v_layers.size() == 0)
              {   
               kit->sample_counter--;
               if (kit->sample_counter >= 0) //NEW CHECK!
-                 delete kit->a_samples[kit->sample_counter];
-             }
+                 {
+                  delete kit->a_samples[kit->sample_counter];
+                  kit->temp_sample = 0;
+                 } 
+              }
+          else    
+          if (kit->temp_sample->v_layers.at(0)->file_name.empty())
+             {   
+              kit->sample_counter--;
+              if (kit->sample_counter >= 0) //NEW CHECK!
+                 {
+                  delete kit->a_samples[kit->sample_counter];
+                  kit->temp_sample = 0;
+                 } 
+              }
          }
       // 
        
@@ -1434,7 +1448,9 @@ void CDrumKit::load_hydrogen (const std::string &data)
   //delete empty instruments
   //because we don't want parse them
 
-  /*
+   std::string source = data;
+   
+  
   size_t idx_filename = source.rfind ("</filename>");
   size_t idx_instrument = source.find ("<instrument>", idx_filename);
 
@@ -1451,9 +1467,9 @@ void CDrumKit::load_hydrogen (const std::string &data)
 
       source = source.erase (idx_instrument, sz_to_remove);
      }
-*/
 
-  pugi::xml_parse_result result = doc.load_buffer (data.c_str(), data.size());
+
+  pugi::xml_parse_result result = doc.load_buffer (source.c_str(), source.size());
 
   if (! result)
      return;
@@ -1461,6 +1477,20 @@ void CDrumKit::load_hydrogen (const std::string &data)
   CHydrogenXMLWalker walker (this);
 
   doc.traverse (walker);
+  /*
+        if (temp_sample)
+         { 
+          if (temp_sample->v_layers.size() == 0)
+             {   
+              sample_counter--;
+              if (sample_counter >= 0) //NEW CHECK!
+                 {
+                  delete a_samples[sample_counter];
+                  temp_sample = 0;
+                 } 
+              }
+         }
+*/
   
   loaded = true;
 }
