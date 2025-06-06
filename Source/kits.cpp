@@ -2065,15 +2065,20 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back ("d:\\sfz-kits");
   v_kits_locations.push_back ("d:\\drum_dirs");
 
+  
+  
   //v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
 
   juce::File home_location = File::getSpecialLocation (juce::File::SpecialLocationType::userHomeDirectory);
   const String & fnm = home_location.getFullPathName();
   std::string sfnm (fnm.toStdString());
   sfnm += "\\";
-  sfnm += ".hydrogen/data/drumkits";
+  sfnm += ".hydrogen\\data\\drumkits";
   v_kits_locations.push_back (sfnm);
 
+  v_kits_locations.push_back ("C:\\Program Files\\Hydrogen\\data\\drumkits");
+
+  
   /*
   std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
 
@@ -2186,7 +2191,7 @@ void CDrumKitsScanner::scan()
               {
                std::string fs = string_file_load (fname); 
                kit_name = get_string_between (fs, "<name>", "</name>");
-               }
+              }
            
            if (! kit_name.empty())
               {
