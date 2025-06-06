@@ -751,6 +751,102 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 }
 
 
+void CDrumKit::load_directory (const std::string &path)
+{
+//  std::cout << "void CDrumKit::load_labooh_xml (const std::string &data)\n";
+  
+  if (path.empty())
+      return;
+
+  //size_t sep_pos = kit_dir.rfind (DIR_SEPARATOR);
+   
+  kit_dir = path;
+   
+  kit_name = get_last_part (path);
+ 
+  kit_type = KIT_TYPE_DRUMLABOOH_ALT;
+
+ 
+  std::vector<std::string> instrument_dirs = get_directories (path); 
+
+  if (instrument_dirs.size() == 0)
+      return;
+  
+  if (instrument_dirs.size() > 36)
+      instrument_dirs.resize (36);
+   
+   
+  std::vector<std::string> extensions = {".wav", ".aiff", ".aif", ".flac", ".mp3", ".ogg"};
+ 
+  
+  for (size_t i = 0; i < instrument_dirs.size(); i++)
+      {
+       if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
+           break;
+          
+       std::string directory = instrument_dirs[i];
+       
+       std::vector<std::string> v_fnames = get_files_with_extensions (directory, extensions);
+       
+       if (v_fnames.size() == 0)
+           continue;
+         
+       if (v_fnames.size() > 127)
+           v_fnames.resize (127);
+         
+         
+        
+       temp_sample = add_sample (sample_counter++);
+       temp_sample->name = get_last_part (directory);
+              
+       for (size_t j = 0; j < v_fnames.size(); j++)
+           {
+            std::string fname = v_fnames.at(j); 
+            
+            if (file_exists (fname))
+               {
+                temp_sample->add_layer();
+                temp_sample->v_layers.back()->load (fname.c_str());
+                
+
+                for (auto signature: v_hat_open_signatures)
+                    {
+                     if (findStringIC (temp_sample->name, signature) || findStringIC (fname, signature)) //заменить на другую функцию проверки?
+                        {
+                         temp_sample->hihat_open = true;
+                         break;
+                        }
+                   }
+
+
+             for (auto signature: v_hat_close_signatures)
+                 {
+                  if (findStringIC (temp_sample->name, signature) || findStringIC (fname, signature))
+                     {
+                      temp_sample->hihat_close = true;
+                      break;
+                     }
+                }
+            }   
+                
+           } 
+       }
+  
+
+      
+  std::string kitimg = kit_dir + "/image.jpg";
+
+  if (! file_exists (kitimg))
+      kitimg = kit_dir + "/image.png";
+
+  if (file_exists (kitimg))
+      image_fname = kitimg;
+  
+  loaded = true;
+}
+
+
+
 void CDrumKit::load_txt (const std::string &data)
 {
   //cout << "void CDrumKit::load_txt (const std::string data)\n";
@@ -1520,18 +1616,11 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   kit_filename = filename;
   kit_dir = get_file_path (kit_filename);
   
-  std::string source = string_file_load (kit_filename);
-  if (source.empty())
-      return;
-
-  
-  
-  if (kit_filename.find ("/drum-folders") != string::npos)
+  if (is_kit_dir (kit_filename))
      {
       //LOAD DIRECTORY
   
-      //load_labooh_xml (source);
-      
+      load_directory (kit_filename);    
         
       auto stop = chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
@@ -1542,6 +1631,17 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
       return;
      }
  
+  
+  
+  std::string source = string_file_load (kit_filename);
+  if (source.empty())
+      return;
+
+  
+   
+   
+  
+  
    
   if (ends_with (kit_filename, "drumkit.labooh"))
      {
@@ -1941,7 +2041,9 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back (get_home_dir() + "/drumrox-kits");
   v_kits_locations.push_back (get_home_dir() + "/drumlabooh-kits");
   v_kits_locations.push_back (get_home_dir() + "/drum_sklad");
+  v_kits_locations.push_back (get_home_dir() + "/drum_dirs");
 
+  
   v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
 /*
   juce::File home_location = File::getSpecialLocation	(juce::File::SpecialLocationType::userHomeDirectory);
@@ -1955,11 +2057,13 @@ void CDrumKitsScanner::scan()
 
 
   v_kits_locations.push_back ("c:\\drum_sklad");
+  v_kits_locations.push_back ("c:\\drum_dirs");
 
   v_kits_locations.push_back ("c:\\drumlabooh-kits");
   v_kits_locations.push_back ("c:\\sfz-kits");
   v_kits_locations.push_back ("d:\\drumlabooh-kits");
   v_kits_locations.push_back ("d:\\sfz-kits");
+  v_kits_locations.push_back ("d:\\drum_dirs");
 
   //v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
 
@@ -1996,6 +2100,29 @@ void CDrumKitsScanner::scan()
        //cout << get_kit_name (kd + "/drumkit.xml") << endl;
 
        bool kit_exists = false;
+       
+       //входит ли в имя "drum-dirs"?
+       
+       if (is_kit_dir (kd))
+          {
+           std::cout << "kd: " << kd << endl;
+         
+             
+//           kit_exists = true;
+           std::string kit_name = get_last_part (kd);
+           
+           std::cout << "kit name: " << kit_name << std::endl;
+         
+           
+           map_kits.insert (pair<string,string> (kit_name, kd));
+           v_kits_names.push_back (kit_name);
+           
+           continue;
+          }
+       
+       
+       //
+       
 
        std::string fname = kd + "/drumkit.xml";
 
@@ -2017,7 +2144,7 @@ void CDrumKitsScanner::scan()
                       if (file_exists (fname))
                         {
                          kit_exists = true;
-                         std::cout << "fname:" << fname << std::endl; 
+                        // std::cout << "fname:" << fname << std::endl; 
                         }  
                      }                   
                 }

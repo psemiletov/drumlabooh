@@ -29,6 +29,7 @@ this code is the public domain
 #define KIT_TYPE_SFZ 2
 #define KIT_TYPE_QDRUMLABOOH 3
 #define KIT_TYPE_DRUMLABOOH_ALT 4 //каждый слой - отдельный one shot
+//#define KIT_TYPE_DIRECTORY 5 
 
 #define MAX_SAMPLES 36
 
@@ -177,6 +178,7 @@ public:
   void load_hydrogen (const std::string &data);
   void load_txt (const std::string &tdata);
   void load_labooh_xml (const std::string &tdata);
+  void load_directory (const std::string &path);
 
   void load_qtxt (const std::string &data);
   void load_sfz_new (const std::string &data);
