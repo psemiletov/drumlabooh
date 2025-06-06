@@ -567,11 +567,11 @@ bool is_kit_dir (const std::string& path)
  
   bool result = false;
   
-  if (path.find ("C:\\drum_dirs") != std::string::npos)
+  if (path.find ("c:\\drum_dirs") != std::string::npos)
      result = true;
 
    
- if (path.find ("D:\\drum_dirs") != std::string::npos)
+ if (path.find ("d:\\drum_dirs") != std::string::npos)
      result = true;
 
  // dir_pattern += DIR_SEPARATOR; 
