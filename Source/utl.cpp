@@ -546,7 +546,7 @@ std::vector<std::string> get_directories (const std::string& directory)
 }
 
 
-#if !defined(_WIN32) || !defined(_WIN64)
+//#if !defined(_WIN32) || !defined(_WIN64)
 bool is_kit_dir (const std::string& path)
 {
   std::string dir_pattern;
@@ -560,8 +560,8 @@ bool is_kit_dir (const std::string& path)
        
   return (path.find (dir_pattern) != std::string::npos);  
 }
-#else
-
+//#else
+/*
 bool is_kit_dir (const std::string& path)
 {
  
@@ -584,3 +584,4 @@ bool is_kit_dir (const std::string& path)
 }
 
 #endif
+*/
