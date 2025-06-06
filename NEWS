@@ -2,7 +2,7 @@
 
    Hello! This version features drum kits of a new kind. Any directory with subdirectories full of samples can serve as a drum kit. Just put the top level directory of such "kit" to the $HOME/drum_dirs (Linux) or C:\drum_dirs or D:\drum_dirs (Windows). The drumkit of that type will act as Drumlabooh's Alternative samples kits, so you can select samples within each slot by +/= buttons. Please read the Manual for details. 
    Just small example.
-   We have a folder "My Drum" with subdirectories "01-Kick", "02-Snare", "03-Hihats". At "Kick" we have samples bass-rock.wav, bass-gabber.wav, bass-triphop.wav. The same for other subfolders. We put  "My Drum" directory to $HOME/drum_dirs and "My Drum" drumkit will be available at Drum;abooh's kit selector list. Yes, it's a kind of magic.
+   We have a folder "My Drum" with subdirectories "01-Kick", "02-Snare", "03-Hihats". At "01-Kick" we have samples bass-rock.wav, bass-gabber.wav, bass-triphop.wav. The same for other subfolders. We put  "My Drum" directory to $HOME/drum_dirs and "My Drum" drumkit will be available at Drumlabooh's kit selector list. Yes, it's a kind of magic.
    Other news.
    For all systems - milti-output ports are named now in a more meaningful way. 
    Some fixes at Hydrogen kits loader.
