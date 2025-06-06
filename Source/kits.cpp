@@ -2073,7 +2073,7 @@ void CDrumKitsScanner::scan()
   const String & fnm = home_location.getFullPathName();
   std::string sfnm (fnm.toStdString());
   sfnm += "\\";
-  sfnm += ".hydrogen\\data\\drumkits";
+  sfnm += ".hydrogen\\data\\drumkits"; //for example. C://Users/test/.hydrogen/data/
   v_kits_locations.push_back (sfnm);
 
   v_kits_locations.push_back ("C:\\Program Files\\Hydrogen\\data\\drumkits");
@@ -2156,7 +2156,7 @@ void CDrumKitsScanner::scan()
            }
 
 
-       if (kd.find ("/sfz-kits") != string::npos)
+       if (kd.find ("sfz-kits") != string::npos)
           {
            //search sfz file
            std::vector <std::string> v = files_get_list (kd, ".sfz");
