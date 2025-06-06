@@ -2110,13 +2110,13 @@ void CDrumKitsScanner::scan()
        
        if (is_kit_dir (kd))
           {
-           std::cout << "kd: " << kd << endl;
+//           std::cout << "kd: " << kd << endl;
          
              
 //           kit_exists = true;
            std::string kit_name = get_last_part (kd);
            
-           std::cout << "kit name: " << kit_name << std::endl;
+  //         std::cout << "kit name: " << kit_name << std::endl;
          
            
            map_kits.insert (pair<string,string> (kit_name, kd));
