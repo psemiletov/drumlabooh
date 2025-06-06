@@ -2058,9 +2058,9 @@ void CDrumKitsScanner::scan()
 
   v_kits_locations.push_back ("c:\\drum_sklad");
   v_kits_locations.push_back ("c:\\drum_dirs");
-
   v_kits_locations.push_back ("c:\\drumlabooh-kits");
   v_kits_locations.push_back ("c:\\sfz-kits");
+  
   v_kits_locations.push_back ("d:\\drumlabooh-kits");
   v_kits_locations.push_back ("d:\\sfz-kits");
   v_kits_locations.push_back ("d:\\drum_dirs");

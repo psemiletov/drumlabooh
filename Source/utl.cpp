@@ -546,16 +546,41 @@ std::vector<std::string> get_directories (const std::string& directory)
 }
 
 
+#if !defined(_WIN32) || !defined(_WIN64)
 bool is_kit_dir (const std::string& path)
 {
   std::string dir_pattern;
   
-  dir_pattern += DIR_SEPARATOR; 
+ // dir_pattern += DIR_SEPARATOR; 
   
   dir_pattern += "drum_dirs";
    
-  dir_pattern += DIR_SEPARATOR;
+  //dir_pattern += DIR_SEPARATOR;
   
        
   return (path.find (dir_pattern) != std::string::npos);  
 }
+#else
+
+bool is_kit_dir (const std::string& path)
+{
+ 
+  bool result = false;
+  
+  if (path.find ("C:\\drum_dirs") != std::string::npos)
+     result = true;
+
+   
+ if (path.find ("D:\\drum_dirs") != std::string::npos)
+     result = true;
+
+ // dir_pattern += DIR_SEPARATOR; 
+  
+   
+  //dir_pattern += DIR_SEPARATOR;
+  
+       
+  return result;
+}
+
+#endif
