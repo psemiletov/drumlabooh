@@ -80,7 +80,7 @@ SectionEnd
 
 Section "Basic drumkits"
   ; Set output path to the installation directory.
-  SetOutPath "C:\drum_sklad"
+  SetOutPath "C:\drumlabooh-kits"
 ;D:/a/drumlabooh/drumlabooh/build/_deps/drum_sklad-src
   ; Put file there
   File /r "C:\a\drumlabooh\drumlabooh\build\_deps\drum_sklad-src\*.*"
