@@ -29,10 +29,19 @@ jobs:
        cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
        rm build\drumlabooh_artefacts\Release\VST3\drumlabooh.lib
        rm build\drumlabooh_artefacts\Release\VST3\drumlabooh.exp
+       rm build\drumlabooh-multi_artefacts\Release\VST3\drumlabooh-multi.vst3.lib
+       rm build\drumlabooh-multi_artefacts\Release\VST3\drumlabooh-multi.vst3.exp
 
 
-    - name: Archive artifacts
+    - name: Archive artifacts Stereo
       uses: actions/upload-artifact@v4
       with:
        name: drumlabooh.vst3
        path: build\drumlabooh_artefacts\Release\VST3\
+
+    - name: Archive artifacts Multi
+      uses: actions/upload-artifact@v4
+      with:
+       name: drumlabooh-multi.vst3
+       path: build\drumlabooh-multi_artefacts\Release\VST3\
+
