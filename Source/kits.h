@@ -1,5 +1,5 @@
 /*
-written at 2023-24 by Peter Semiletov
+written at 2023-25 by Peter Semiletov
 this code is the public domain
  */
 
@@ -28,7 +28,7 @@ this code is the public domain
 #define KIT_TYPE_HYDROGEN 1
 #define KIT_TYPE_SFZ 2
 #define KIT_TYPE_QDRUMLABOOH 3
-#define KIT_TYPE_DRUMLABOOH_ALT 4 //каждый слой - отдельный one shot
+#define KIT_TYPE_ALTDRUMLABOOH 4 //каждый слой - отдельный one shot
 //#define KIT_TYPE_DIRECTORY 5 
 
 #define MAX_SAMPLES 36

@@ -526,6 +526,7 @@ std::vector<std::string> get_files_with_extensions (const std::string& directory
 
 
 // Функция для получения списка каталогов в указанной директории с сортировкой по алфавиту
+
 std::vector<std::string> get_directories (const std::string& directory) 
 {
     std::vector<std::string> directories;
@@ -545,6 +546,39 @@ std::vector<std::string> get_directories (const std::string& directory)
     return directories;
 }
 
+/*
+std::vector<std::string> get_directories(const std::string& directory) 
+{
+    std::vector<std::string> directories;
+    
+        for (const auto& entry : filesystem::directory_iterator(directory)) 
+        {
+            // Явная проверка через путь и статус
+            if (filesystem::is_directory(entry.path())) {
+                directories.push_back(entry.path().string());
+            }
+            
+            // Для отладки можно добавить вывод
+            // std::cout << "Found: " << entry.path() << " is_dir: " << fs::is_directory(entry.path()) << "\n";
+        }
+        
+      std::sort(directories.begin(), directories.end());
+    
+    
+    return directories;
+}
+*/
+
+
+bool is_directory_safe(const std::string& path) {
+    std::error_code ec;
+    bool result = filesystem::is_directory(path, ec);
+    if (ec) {
+        // Обработка ошибки (нет прав, путь не существует и т.д.)
+        return false;
+    }
+    return result;
+}
 
 //#if !defined(_WIN32) || !defined(_WIN64)
 bool is_kit_dir (const std::string& path)

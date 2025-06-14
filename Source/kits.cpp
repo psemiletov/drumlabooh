@@ -579,7 +579,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
    std::string str_kit_type = samples.attribute("type").value(); 
    if (str_kit_type == "alt")
-      kit_type = KIT_TYPE_DRUMLABOOH_ALT;  
+      kit_type = KIT_TYPE_ALTDRUMLABOOH;  
      
   
    for (pugi::xml_node item_sample = samples.first_child(); item_sample; item_sample = item_sample.next_sibling())
@@ -764,8 +764,7 @@ void CDrumKit::load_directory (const std::string &path)
    
   kit_name = get_last_part (path);
  
-  kit_type = KIT_TYPE_DRUMLABOOH_ALT;
-
+  kit_type = KIT_TYPE_ALTDRUMLABOOH;
  
   std::vector<std::string> instrument_dirs = get_directories (path); 
 
@@ -1798,7 +1797,7 @@ void CDrumKit::adapt() //used at Adapt button handler
   if (sample_counter == 0)
       return;
   
-  if (kit_type != KIT_TYPE_DRUMLABOOH || kit_type != KIT_TYPE_DRUMLABOOH_ALT)
+  if (kit_type != KIT_TYPE_DRUMLABOOH || kit_type != KIT_TYPE_ALTDRUMLABOOH)
       return;
   
 //  std::cout << "CDrumKit::total_samples_size() - 1\n";
@@ -2109,6 +2108,7 @@ void CDrumKitsScanner::scan()
        //входит ли в имя "drum-dirs"?
        
        if (is_kit_dir (kd))
+       if (is_directory_safe (kd))  
           {
 //           std::cout << "kd: " << kd << endl;
          
@@ -2449,7 +2449,7 @@ std::string CDrumKit::get_description()
   if (kit_type == KIT_TYPE_QDRUMLABOOH)
      result += "Type: Drumlabooh quick"; 
    
-  if (kit_type == KIT_TYPE_DRUMLABOOH_ALT)
+  if (kit_type == KIT_TYPE_ALTDRUMLABOOH)
      result += "Type: Drumlabooh alternative"; 
 
   if (kit_type == KIT_TYPE_HYDROGEN)

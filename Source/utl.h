@@ -20,6 +20,7 @@ std::vector <std::string> files_get_list (const std::string &path, const std::st
 std::vector<std::string> get_files_with_extensions (const std::string& directory, const std::vector<std::string>& extensions);
 std::vector<std::string> get_directories (const std::string& directory); 
 bool is_kit_dir (const std::string& path);
+bool is_directory_safe(const std::string& path);
 
 
 std::string get_file_ext (const std::string &fname);

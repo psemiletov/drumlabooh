@@ -572,7 +572,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
                 s->trigger_sample (velocity);
             else //new
-                if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT)
+                if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)
                    s->trigger_sample_uint_by_index (uvelocity, velocity);  
                 else            
                    s->trigger_sample_uint (uvelocity, velocity);
@@ -593,7 +593,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                       
                     if (s2->hihat_open)
                        {
-                        if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT) 
+                        if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH) 
                            s2->untrigger_sample (true);
                         else
                            s2->untrigger_sample (false);
@@ -651,7 +651,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
               if (l->sample_offset + 1 == l->length_in_samples)
                  {
-                  if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT)  
+                  if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)  
                      s->untrigger_sample (true);
                   else 
                       s->untrigger_sample (false);
@@ -793,7 +793,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
            if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
                s->trigger_sample (velocity);
            else //new
-               if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT)
+               if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)
                   s->trigger_sample_uint_by_index (uvelocity, velocity); 
                else            
                    s->trigger_sample_uint (uvelocity, velocity);
@@ -811,7 +811,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
                     if (s2->hihat_open)
                        {
-                        if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT)  
+                        if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)  
                             s2->untrigger_sample(true);
                         else 
                            s2->untrigger_sample(false);
@@ -862,7 +862,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
              if (l->sample_offset + 1 == l->length_in_samples)
                 {
-                 if (drumkit->kit_type == KIT_TYPE_DRUMLABOOH_ALT)  
+                 if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)  
                     s->untrigger_sample(true);
                  else
                      s->untrigger_sample(false);
