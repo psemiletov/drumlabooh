@@ -119,7 +119,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
        float *left_channel = buffer->getWritePointer (0);
        const float *right_channel = buffer->getReadPointer (1);
            
-       for (size_t pos; pos < length_in_samples; pos++)
+       for (size_t pos = 0; pos < length_in_samples; pos++)
            {
             left_channel[pos] = (left_channel[pos] + right_channel[pos]) * 0.5f; 
          
