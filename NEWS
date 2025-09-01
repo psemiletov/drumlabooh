@@ -1,5 +1,7 @@
-   Drumlabooh 10.0.1 (Hotfix)
+   Drumlabooh 10.1.0
 
-   Fixes Quick kits/Alternative samples kits clash, also fixes kits scanner.  
+* Stereo samples loading - fixed
+* ASR-X Pro kit - missed samples fixed  
+
  
    Stay tuned, Peter Semiletov
