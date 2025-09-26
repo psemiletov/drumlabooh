@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 include(FetchContent)
 
 
-project(DRUMLABOOH LANGUAGES CXX C VERSION 10.1.0)
+project(DRUMLABOOH LANGUAGES CXX C VERSION 10.2.0)
 
 #add_definitions(-DVERSION_NUMBER="\\"${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}\\"")
 
@@ -42,7 +42,7 @@ IF (WIN32)
 set (JUCETAG 7.0.10)
   # set stuff for windows
 ELSE()
-set (JUCETAG 8.0.6)
+set (JUCETAG 8.0.9)
   # set stuff for other systems
 ENDIF()
 
