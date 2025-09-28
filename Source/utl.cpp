@@ -104,7 +104,7 @@ std::string resolve_symlink (const std::string &path)
 #endif
 }
 
-
+/*
 #if !defined(_WIN32) || !defined(_WIN64)
 
 std::vector <std::string> files_get_list (const std::string &path)
@@ -128,7 +128,7 @@ std::vector <std::string> files_get_list (const std::string &path)
          t = dir_entry->d_name;
 
          if (t != "." && t != "..")
-             result.push_back (path + "/" + t);
+             result.push_back (path + "/" DIR_SEPARATOR + t);
         }
 
   closedir (directory);
@@ -245,6 +245,49 @@ std::vector <std::string> files_get_list (const std::string &path, const std::st
 
 
 #endif
+
+
+*/
+
+
+
+std::vector<std::string> files_get_list(const std::string &path) {
+    std::vector<std::string> result;
+    if (path.empty()) return result;
+
+    namespace fs = std::filesystem;
+    try {
+        for (const auto& entry : fs::directory_iterator(path)) {
+            std::string name = entry.path().filename().string();
+            if (name != "." && name != "..") {
+                result.push_back(path + "/" + name);
+            }
+        }
+    } catch (...) {
+        // Игнорируем ошибки
+    }
+    return result;
+}
+
+
+std::vector<std::string> files_get_list(const std::string &path, const std::string &ext) {
+    std::vector<std::string> result;
+    if (path.empty()) return result;
+
+    namespace fs = std::filesystem;
+    try {
+        for (const auto& entry : fs::directory_iterator(path)) {
+            std::string name = entry.path().filename().string();
+            if (name.rfind(ext) != std::string::npos) {
+                result.push_back(path + "/" + name);
+            }
+        }
+    } catch (...) {
+        // Игнорируем ошибки
+    }
+    return result;
+}
+
 
 
 
