@@ -104,7 +104,7 @@ std::string resolve_symlink (const std::string &path)
 #endif
 }
 
-
+/*
 #if !defined(_WIN32) || !defined(_WIN64)
 
 std::vector <std::string> files_get_list (const std::string &path)
@@ -245,6 +245,39 @@ std::vector <std::string> files_get_list (const std::string &path, const std::st
 
 
 #endif
+*/
+
+
+     
+     // Эта функция может заменить обе старые версии files_get_list
+     std::vector<std::string> files_get_list(const std::string& path) {
+         std::vector<std::string> result;
+         if (path.empty() || !std::filesystem::is_directory(path)) {
+             return result;
+         }
+     
+        for (const auto& entry : std::filesystem::directory_iterator(path)) {
+            result.push_back(entry.path().string());
+        }
+        return result;
+    }
+    
+    // Эта функция может заменить вторую перегрузку (с фильтром по расширению)
+    std::vector<std::string> files_get_list(const std::string& path, const std::string& 
+      ext) {
+        std::vector<std::string> result;
+        if (path.empty() || !std::filesystem::is_directory(path)) {
+            return result;
+        }
+    
+        for (const auto& entry : std::filesystem::directory_iterator(path)) {
+            if (entry.path().extension() == ext) {
+                result.push_back(entry.path().string());
+            }
+        }
+        return result;
+    }
+
 
 
 
