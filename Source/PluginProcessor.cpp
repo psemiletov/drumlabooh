@@ -583,6 +583,30 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
            //also untrigger open hihat if closed hihat triggering
            // so find the open hihat
+             
+          //AUTOMUTE START
+  
+             
+           if (s->mute_group != -1)
+              {
+               for (size_t i = 0; i < MAX_SAMPLES; i++)
+                   {
+                    CDrumSample *s2 = drumkit->a_samples[i]; //point to the sample
+                    if (! s2 || s == s2)
+                       continue;
+                      
+                    if (s2->mute_group == s->mute_group)
+                       {
+                        if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH) 
+                           s2->untrigger_sample (true);
+                        else
+                           s2->untrigger_sample (false);
+                          
+                       }
+                   }
+              }
+           
+          /*   
            if (s->hihat_close)
               {
                for (size_t i = 0; i < MAX_SAMPLES; i++)
@@ -601,6 +625,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                        }
                    }
               }
+            */  
+           //AUTOMUTE END   
+              
           }
 
      } //end of cycle for juce::MidiMessageMetadata metadata: midiMessages
@@ -801,6 +828,30 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
              //also untrigger open hihat if closed hihat triggering
              // so find the open hihat
+             
+            //AUTOMUTE START
+  
+           if (s->mute_group != -1)
+              {
+               for (size_t i = 0; i < MAX_SAMPLES; i++)
+                   {
+                    CDrumSample *s2 = drumkit->a_samples[i]; //point to the sample
+                    if (! s2 || s == s2)
+                       continue;
+                      
+                    if (s2->mute_group == s->mute_group)
+                       {
+                        if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH) 
+                           s2->untrigger_sample (true);
+                        else
+                           s2->untrigger_sample (false);
+                          
+                       }
+                   }
+              }
+          
+             //automute end
+/*             
            if (s->hihat_close)
               {
                for (size_t i = 0; i < 36; i++)
@@ -818,6 +869,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                        }
                    }
                }
+               */
            }
 
       }

@@ -263,12 +263,13 @@ CDrumSample::CDrumSample (int sample_rate)
   session_samplerate = sample_rate;
   current_layer = 0;
   velocity = 0.0f;
-  hihat_open = false;
-  hihat_close = false;
+  //hihat_open = false;
+  //hihat_close = false;
   active = false;
   robin_counter = -1;
   layer_index_mode = LAYER_INDEX_MODE_VEL;
   mapped_note = -1;
+  mute_group = -1;
 }
 
 
@@ -491,7 +492,13 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
           kit->temp_sample->add_layer();
      }
 
-
+  if (node_name == "muteGroup" && kit->temp_sample)
+     {
+      kit->temp_sample->mute_group = txt.as_int();
+      kit->mute_groups_auto = false;
+     }
+     
+     
   if (node_name == "filename" && kit->temp_sample)
      {
       std::string fname = txt.as_string();
@@ -506,7 +513,22 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
           if (kit->temp_sample->v_layers.size() != 0)
               kit->temp_sample->v_layers.back()->load (path.c_str());
 
-       
+     
+      /*  
+      if (kit->temp_sample->mute_group != 7777)  
+      if (kit->mute_groups_auto)  
+         {
+          for (auto signature: kit->v_auto_mute_signatures)
+              {
+               if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
+                 {
+                  kit->temp_sample->mute_group = 7777;   
+                  break;  
+                 }   
+              }    
+         }
+*/
+      /*   
       for (auto signature: kit->v_hat_open_signatures)
           {
            if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
@@ -524,6 +546,8 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
                break;
               }
           }
+          */
+          
      }
 
 
@@ -715,7 +739,21 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                  } 
              }
 
-
+/*                    
+      if (mute_groups_auto)  
+         {
+          for (auto signature: v_auto_mute_signatures)
+              {
+               if (findStringIC (temp_sample->name, signature) || findStringIC (fname, signature))
+                 {
+                  temp_sample->mute_group = 7777;   
+                  break;  
+                 }   
+              }    
+         }
+*/
+             
+/*
          for (auto signature: v_hat_open_signatures)
              {
               if (findStringIC (temp_sample->name, signature) || findStringIC (fname, signature)) //заменить на другую функцию проверки?
@@ -734,7 +772,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                   break;
                  }
              }
-
+*/
         }
       
       
@@ -807,7 +845,20 @@ void CDrumKit::load_directory (const std::string &path)
                 temp_sample->add_layer();
                 temp_sample->v_layers.back()->load (fname.c_str());
                 
-
+/*                                
+      if (mute_groups_auto)  
+         {
+          for (auto signature: v_auto_mute_signatures)
+              {
+               if (findStringIC (temp_sample->name, signature) || findStringIC (fname, signature))
+                 {
+                  temp_sample->mute_group = 7777;   
+                  break;  
+                 }   
+              }    
+         }
+         */
+/*
                 for (auto signature: v_hat_open_signatures)
                     {
                      if (findStringIC (temp_sample->name, signature) || findStringIC (fname, signature)) //заменить на другую функцию проверки?
@@ -825,7 +876,7 @@ void CDrumKit::load_directory (const std::string &path)
                       temp_sample->hihat_close = true;
                       break;
                      }
-                }
+                } */
             }   
                 
            } 
@@ -1044,7 +1095,20 @@ void CDrumKit::load_txt (const std::string &data)
                  } 
              }
 
-
+    /*                         
+      if (mute_groups_auto)  
+         {
+          for (auto signature: v_auto_mute_signatures)
+              {
+               if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
+                 {
+                  temp_sample->mute_group = 7777;   
+                  break;  
+                 }   
+              }    
+         }
+*/
+             /*
          for (auto signature: v_hat_open_signatures)
              {
               if (findStringIC (sample_name, signature) || findStringIC (fname, signature)) //заменить на другую функцию проверки?
@@ -1063,6 +1127,8 @@ void CDrumKit::load_txt (const std::string &data)
                   break;
                  }
              }
+             
+          */
 
         }
 
@@ -1145,7 +1211,21 @@ void CDrumKit::load_qtxt (const std::string &data)
           if (file_exists (filename))
               temp_sample->v_layers.back()->load (filename.c_str());
 
+           /*
+        if (mute_groups_auto)  
+         {
+          for (auto signature: v_auto_mute_signatures)
+              {
+               if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
+                 {
+                  temp_sample->mute_group = 7777;   
+                  break;  
+                 }   
+              }    
+         } */
 
+
+           /*
           for (auto signature: v_hat_open_signatures)
               {
                if (findStringIC (sample_name, signature) || findStringIC (fname, signature)) //заменить на другую функцию проверки?
@@ -1164,6 +1244,7 @@ void CDrumKit::load_qtxt (const std::string &data)
                   break;
                  }
              }
+             */
 
         }
 
@@ -1491,6 +1572,20 @@ void CDrumKit::load_sfz_new (const std::string &data)
               
               temp_sample->name = guess_sample_name (temp_sample->v_layers[0]->file_name); 
 
+/*        if (mute_groups_auto)  
+         {
+          for (auto signature: v_auto_mute_signatures)
+              {
+               if (findStringIC (temp_sample->name, signature))
+                 {
+                  temp_sample->mute_group = 7777;   
+                  break;  
+                 }   
+              }    
+         }
+*/
+              
+              /*
               for (auto signature: v_hat_open_signatures)
                   {
                    if (findStringIC (temp_sample->name, signature))
@@ -1509,6 +1604,9 @@ void CDrumKit::load_sfz_new (const std::string &data)
                       break;
                      }
                 }
+                */
+                
+                
             }   
       }
   
@@ -1620,6 +1718,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
       //LOAD DIRECTORY
   
       load_directory (kit_filename);    
+      setup_auto_mute();
         
       auto stop = chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
@@ -1636,15 +1735,12 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (source.empty())
       return;
 
-  
-   
-   
-  
-  
    
   if (ends_with (kit_filename, "drumkit.labooh"))
      {
       load_labooh_xml (source);
+      setup_auto_mute();
+      
       auto stop = chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
@@ -1658,6 +1754,9 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (ends_with (kit_filename, "drumkit.txt"))
      {
       load_txt (source);
+      setup_auto_mute();
+
+      
       auto stop = chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
@@ -1670,6 +1769,8 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (ends_with (kit_filename, "drumkitq.txt"))
      {
       load_qtxt (source);
+      setup_auto_mute();
+
       auto stop = chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
@@ -1682,6 +1783,8 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (ends_with (kit_filename, ".sfz"))
      {
       load_sfz_new (source);
+      setup_auto_mute();
+
       auto stop = chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
@@ -1695,6 +1798,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   //FIXKIT перенести в отдельную функцию
   
   load_hydrogen (source);
+  setup_auto_mute();
   
 
   auto stop = chrono::high_resolution_clock::now();
@@ -1713,13 +1817,23 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 CDrumKit::CDrumKit()
 {
   //scan_mode = false;
+  mute_groups_auto = true;
   layers_supported = false;
   has_mapping = false;
   loaded = false;
   temp_sample = 0;
   sample_counter = 0;
   load_duration_msecs = 0;
-  
+
+  v_auto_mute_signatures.push_back ("hihat");
+  v_auto_mute_signatures.push_back ("hat_");
+  v_auto_mute_signatures.push_back ("open");
+  v_auto_mute_signatures.push_back ("swish");
+  v_auto_mute_signatures.push_back ("HHO");
+  v_auto_mute_signatures.push_back ("close");
+  v_auto_mute_signatures.push_back ("choke");
+  v_auto_mute_signatures.push_back ("HHC");
+ /* 
   v_hat_open_signatures.push_back ("hat_o");
   v_hat_open_signatures.push_back ("open");
   v_hat_open_signatures.push_back ("swish");
@@ -1729,7 +1843,7 @@ CDrumKit::CDrumKit()
   v_hat_close_signatures.push_back ("choke");
   v_hat_close_signatures.push_back ("hat_c");
   v_hat_close_signatures.push_back ("HHC");
-  
+  */
   for (int i = 0; i < 36; i++)
       a_samples [i] = 0;
 }
@@ -2354,6 +2468,7 @@ CDrumSample* CDrumKit::load_sample_to_index (size_t index, const std::string &fn
   s->name = file_without_extension;
   
 /////////  
+  /*
   for (auto signature: v_hat_open_signatures)
       {
        if (findStringIC (fname, signature) || findStringIC (fname, signature))
@@ -2371,7 +2486,22 @@ CDrumSample* CDrumKit::load_sample_to_index (size_t index, const std::string &fn
                break;
               }
           }
-  
+*/
+      if (mute_groups_auto)  
+         {
+          for (auto signature: v_auto_mute_signatures)
+              {
+               if (findStringIC (fname, signature))
+                 {
+                  s->mute_group = 7777;   
+                  break;  
+                 }   
+              }    
+         }
+
+
+            
+            
   a_samples[index] = s;
 
   //  std::cout << "CDrumKit::load_sample_to_index - end" << std::endl;
@@ -2473,3 +2603,37 @@ std::string CDrumKit::get_description()
 
   return result;
 }
+
+
+void CDrumKit::setup_auto_mute()
+{
+  if (! mute_groups_auto)
+     return;
+   
+  for (size_t i = 0; i < MAX_SAMPLES; i++)
+      {
+       CDrumSample *s = a_samples[i]; //point to the sample
+       if (! s)  
+          continue;
+         
+       for (auto signature: v_auto_mute_signatures)
+           {
+              
+            if (findStringIC (s->name, signature))
+               {
+                s->mute_group = 7777;   
+                break;  
+               } 
+
+            if (findStringIC (s->v_layers[0]->file_name, signature))
+               {
+                s->mute_group = 7777;   
+                break;  
+               } 
+                 
+                 
+                 
+          }    
+      }   
+}
+  

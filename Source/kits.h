@@ -85,6 +85,9 @@ public:
 
   std::string name; //sample name, for example "Bass Drum"
   int id; //Hydrogen's. For what? 
+  
+  int mute_group; //-1 no; 7777 hihat
+  
   int current_layer; //оставить для влияния?
 //  int midiOutNote;
   int session_samplerate; //session srate, taken from the upper level object
@@ -104,8 +107,8 @@ public:
   
   float velocity;
 
-  bool hihat_open;
-  bool hihat_close;
+  //bool hihat_open;
+  //bool hihat_close;
 
   std::vector <CDrumLayer*> v_layers; //container for the actual sounds 
 
@@ -145,6 +148,7 @@ public:
   
   int kit_type;  //SFZ, Hydrogen of Drumlabooh?
   
+  bool mute_groups_auto; //true if not defined at the kit file
   bool loaded; //is kit fully loaded?
   
   std::string image_fname; //full path to the kit's picture
@@ -165,8 +169,9 @@ public:
   
   std::map <int, CDrumSample*> map_samples; //just a map, actual samples are at v_samples
   
-  std::vector <std::string> v_hat_open_signatures;
-  std::vector <std::string> v_hat_close_signatures;
+  std::vector <std::string> v_auto_mute_signatures;
+//  std::vector <std::string> v_hat_open_signatures;
+//  std::vector <std::string> v_hat_close_signatures;
 
   CDrumSample* add_sample (size_t index);
   CDrumSample* temp_sample;
@@ -182,6 +187,8 @@ public:
 
   void load_qtxt (const std::string &data);
   void load_sfz_new (const std::string &data);
+  
+  void setup_auto_mute(); //if not defined at the kit
   
   CDrumSample* load_sample_to_index (size_t index, const std::string &fname, int sample_rate);
   void remove_sample_at_index (size_t index);
