@@ -628,7 +628,15 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                 // std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
            has_mapping = true;
           } 
+  
+       std::string str_mute_group = item_sample.attribute ("mute_group").value(); 
+       if (! str_mute_group.empty())
+          {
+           temp_sample->mute_group = std::stoi (str_mute_group);
+           mute_groups_auto = false;
+          } 
        
+    
        std::string layer_index_mode = item_sample.attribute ("layer_index_mode").value(); 
        
        if (layer_index_mode == "rnd")
