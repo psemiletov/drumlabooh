@@ -186,7 +186,7 @@ public:
   void load_directory (const std::string &path);
 
   void load_qtxt (const std::string &data);
-  void load_sfz_new (const std::string &data);
+  void load_sfz (const std::string &data);
   
   void setup_auto_mute(); //if not defined at the kit
   

@@ -1371,9 +1371,9 @@ std::string sfz_extract_sample_filename (const std::string &line)
 }
 
 
-void CDrumKit::load_sfz_new (const std::string &data)
+void CDrumKit::load_sfz (const std::string &data)
 {
-  //cout << "void CDrumKit::load_sfz_new (const std::string data)\n";
+  std::cout << "void CDrumKit::load_sfz (const std::string data)\n";
 
   if (data.empty())
       return;
@@ -1394,17 +1394,22 @@ void CDrumKit::load_sfz_new (const std::string &data)
   std::string sfz_default_path;
   
   std::vector <std::string> t_str = split_string_to_vector (temp_data, "\n", false);
+  std::cout << "t_str.size()" << t_str.size() << "\n";
   
-  std::vector <std::string> v_str;
+  //std::vector <std::string> v_str;
   
+  /*
   size_t j = 0;
   for (size_t i = 0; i < t_str.size(); i++)
       {
        std::string t = t_str.at (i);   
         
-       if (t.find ("//") == string::npos) 
+       if (t.find ("//") == string::npos) //we don't need commented lines
            v_str.push_back (t);
       }
+  */
+  
+  //std::cout << "v_str.size()" << v_str.size() << "\n";
   
   std::string line;
 
@@ -1416,22 +1421,25 @@ void CDrumKit::load_sfz_new (const std::string &data)
   int umin = 0;
   int umax = 0;
   int offset = 0;
+  int mute_group = -1;
   
   sample_counter = 0;
   
   bool region_scope = false;
   
-  size_t index = -1;
+  size_t line_index = -1;
   
-  while (index != v_str.size())
+  while (line_index != t_str.size())
         {
-         index++;
+         line_index++;
  
-         if (index == v_str.size() || index > MAX_SAMPLES)
+         std::cout << "index: " << line_index << "\n";
+         
+         if (line_index == t_str.size())
             break;
         
-         line = v_str.at(index); 
-   //       cout << "PARSE LINE: " << line << std::endl;
+         line = t_str.at(line_index); 
+         cout << "PARSE LINE: " << line << std::endl;
               
          if (line.empty())
             continue;
@@ -1453,7 +1461,7 @@ void CDrumKit::load_sfz_new (const std::string &data)
            //offset
         
          std::string str_offset = get_parameter_from_line (line, "offset");
-          //cout << "str_key: " << str_key << std::endl;
+          //cout << "str_offset: " << str_offset << std::endl;
           
          if (! str_offset.empty())
             offset = std::stoi (str_offset); 
@@ -1467,6 +1475,16 @@ void CDrumKit::load_sfz_new (const std::string &data)
 
          //таким образом key может быть -1 только с самого начала
          //пустое key не присваивается
+           
+         std::string str_mute_group = get_parameter_from_line (line, "off_by");
+        //cout << "str_mute_group: " << str_mute_group << std::endl;
+          
+         if (! str_mute_group.empty())
+            {
+             mute_group = std::stoi (str_mute_group); 
+             mute_groups_auto = false;
+            } 
+ 
             
          //читаем имя файла из sample   
          
@@ -1498,13 +1516,13 @@ void CDrumKit::load_sfz_new (const std::string &data)
          //а что у нас в следующей строке?
         
          std::string next_line; 
-         if (index + 1 != v_str.size()) 
-            next_line = v_str.at (index + 1);
+         if (line_index + 1 != t_str.size()) 
+            next_line = t_str.at (line_index + 1);
         
          
          if (next_line.find ("<group>") != string::npos || 
              next_line.find ("<region>") != string::npos ||
-             index + 1 == v_str.size()) //EOF
+             line_index + 1 == t_str.size()) //EOF
              if (region_scope) 
                 {
                  //cout << "-----region_scope-------\n";
@@ -1532,10 +1550,15 @@ void CDrumKit::load_sfz_new (const std::string &data)
                      }                  
                  
                 
+                //added
+                 if (temp_sample && mute_group != -1)
+                     temp_sample->mute_group = mute_group;
+                //end   
+                
                  if (temp_sample)    
                      if (file_exists (fname))
                         {
-                        //  cout << "loading to new layer: " << fname << std::endl;
+                         std::cout << "loading to new layer: " << fname << std::endl;
                          temp_sample->add_layer();
                          temp_sample->v_layers.back()->load (fname.c_str(), offset);
                     
@@ -1790,7 +1813,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
   if (ends_with (kit_filename, ".sfz"))
      {
-      load_sfz_new (source);
+      load_sfz (source);
       setup_auto_mute();
 
       auto stop = chrono::high_resolution_clock::now();
