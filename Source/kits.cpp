@@ -1605,7 +1605,7 @@ void CDrumKit::load_sfz (const std::string &data)
 
 void CDrumKit::load_sfz (const std::string &data)
 {
-  std::cout << "void CDrumKit::load_sfz (const std::string data)\n";
+//  std::cout << "void CDrumKit::load_sfz (const std::string data)\n";
 
   if (data.empty())
       return;
@@ -1651,147 +1651,116 @@ void CDrumKit::load_sfz (const std::string &data)
   // A lambda to commit the parsed region data.
   // This avoids duplicating the save logic.
   auto commit_region = [&]()
-  {
-    if (!region_scope || fname.empty())
-    {
-      return; // Nothing to commit
-    }
+       {
+        if (! region_scope || fname.empty())
+           return; // Nothing to commit
 
-    // Find existing sample or create a new one
-    if (map_samples.find(key) != map_samples.end())
-    {
-      temp_sample = map_samples[key]; // Get existing sample
-    }
-    else
-    {
-      temp_sample = add_sample(sample_counter++);
-      temp_sample->mapped_note = key;
-      map_samples.insert({key, temp_sample});
-    }
+        // Find existing sample or create a new one
+        if (map_samples.find(key) != map_samples.end())
+           temp_sample = map_samples[key]; // Get existing sample
+        else
+            {
+             temp_sample = add_sample(sample_counter++);
+             temp_sample->mapped_note = key;
+             map_samples.insert({key, temp_sample});
+            }
 
-    // Assign mute group if specified
-    if (temp_sample && mute_group != -1)
-    {
-      temp_sample->mute_group = mute_group;
-    }
+        // Assign mute group if specified
+        if (temp_sample && mute_group != -1)
+           temp_sample->mute_group = mute_group;
 
-    // Add the new layer if the file exists
-    if (temp_sample && file_exists(fname))
-    {
-      std::cout << "loading to new layer: " << fname << std::endl;
-      temp_sample->add_layer();
-      temp_sample->v_layers.back()->load(fname.c_str(), offset);
-      temp_sample->v_layers.back()->umin = umin;
-      temp_sample->v_layers.back()->umax = umax;
-    }
+        // Add the new layer if the file exists
+        if (temp_sample && file_exists(fname))
+           {
+            //std::cout << "loading to new layer: " << fname << std::endl;
+            temp_sample->add_layer();
+            temp_sample->v_layers.back()->load(fname.c_str(), offset);
+            temp_sample->v_layers.back()->umin = umin;
+            temp_sample->v_layers.back()->umax = umax;
+           }
 
-    // Reset state for the next region
-    region_scope = false;
-    umin = 0;
-    umax = 127;
-    offset = 0;
-    fname.clear();
-    just_name.clear();
-    temp_sample = 0;
-    // Note: 'key' and 'mute_group' are intentionally not reset here
-    // as they can be defined at a <group> level and apply to multiple regions.
-  };
+         // Reset state for the next region
+        region_scope = false;
+        umin = 0;
+        umax = 127;
+        offset = 0;
+        fname.clear();
+        just_name.clear();
+        temp_sample = 0;
+        // Note: 'key' and 'mute_group' are intentionally not reset here
+       // as they can be defined at a <group> level and apply to multiple regions.
+      };
 
 
   for (const auto& current_line : t_str)
-  {
-    line = current_line;
-    cout << "PARSE LINE: " << line << std::endl;
+      {
+       line = current_line;
+       //cout << "PARSE LINE: " << line << std::endl;
 
-    if (line.empty() || line.rfind("//", 0) == 0)
-    {
-      continue;
-    }
+       if (line.empty() || line.rfind ("//", 0) == 0)
+           continue;
 
-    // A new region or group marks the end of the previous one.
-    if (line.find("<region>") != string::npos || line.find("<group>") != string::npos)
-    {
-      commit_region();
-      region_scope = true;
-    }
+       // A new region or group marks the end of the previous one.
+       if (line.find ("<region>") != string::npos || line.find ("<group>") != string::npos)
+          {
+           commit_region();
+           region_scope = true;
+          }
 
-    if (!region_scope)
-    {
-      continue; // Skip lines until we are in a region
-    }
+       if (! region_scope)
+          continue; // Skip lines until we are in a region
 
-    // Parse parameters from the current line
-    std::string temp_sfz_default_path = get_parameter_from_line(line, "default_path");
-    if (!temp_sfz_default_path.empty())
-    {
-      sfz_default_path = string_replace_all(temp_sfz_default_path, "\\", "/");
-    }
+       // Parse parameters from the current line
+       std::string temp_sfz_default_path = get_parameter_from_line (line, "default_path");
+       if (! temp_sfz_default_path.empty())
+          sfz_default_path = string_replace_all(temp_sfz_default_path, "\\", "/");
 
-    std::string str_offset = get_parameter_from_line(line, "offset");
-    if (!str_offset.empty())
-    {
-      offset = std::stoi(str_offset);
-    }
+       std::string str_offset = get_parameter_from_line (line, "offset");
+       if (! str_offset.empty())
+          offset = std::stoi(str_offset);
 
-    std::string str_key = get_parameter_from_line(line, "key");
-    if (!str_key.empty())
-    {
-      key = std::stoi(str_key);
-    }
+       std::string str_key = get_parameter_from_line (line, "key");
+       if (! str_key.empty())
+          key = std::stoi(str_key);
 
-    std::string str_mute_group = get_parameter_from_line(line, "off_by");
-    if (!str_mute_group.empty())
-    {
-      mute_group = std::stoi(str_mute_group);
-      mute_groups_auto = false;
-    }
+       std::string str_mute_group = get_parameter_from_line(line, "off_by");
+       if (! str_mute_group.empty())
+          {
+           mute_group = std::stoi(str_mute_group);
+           mute_groups_auto = false;
+          }
 
-    std::string temp_file_just_name;
-    if (line.find("sample=") != string::npos)
-    {
-      temp_file_just_name = sfz_extract_sample_filename(line);
-    }
+       std::string temp_file_just_name;
+       if (line.find ("sample=") != string::npos)
+          temp_file_just_name = sfz_extract_sample_filename (line);
 
-    if (!temp_file_just_name.empty())
-    {
-      just_name = rtrim(temp_file_just_name);
-      fname = kit_dir + "/" + sfz_default_path + just_name;
-    }
+       if (! temp_file_just_name.empty())
+          {
+           just_name = rtrim (temp_file_just_name);
+           fname = kit_dir + "/" + sfz_default_path + just_name;
+          }
 
-    std::string lovel = get_parameter_from_line(line, "lovel");
-    if (!lovel.empty())
-    {
-      umin = std::stoi(lovel);
-    }
-
-    std::string hivel = get_parameter_from_line(line, "hivel");
-    if (!hivel.empty())
-    {
-      umax = std::stoi(hivel);
-    }
-  }
+       std::string lovel = get_parameter_from_line (line, "lovel");
+       if (! lovel.empty())
+          umin = std::stoi(lovel);
+    
+       std::string hivel = get_parameter_from_line(line, "hivel");
+       if (! hivel.empty())
+          umax = std::stoi(hivel);
+      }
 
   // After the loop, commit the very last region's data
   commit_region();                                                                 
-                                                  
- 
  
  //finalize 
  
-     for (size_t i = 0; i < MAX_SAMPLES; i++)
-         {
-          temp_sample = a_samples[i];
-          
-      //    cout << "i: " << i << endl;
-//          cout << "temp_sample->name: " << temp_sample->name << endl;
-          if (temp_sample)
-          if (temp_sample->v_layers.size() > 0)
-             {
-   //           cout << "temp_sample.v_layers.size():" << temp_sample->v_layers.size() << std::endl;
-             
-          //   cout << "# " << i << " temp_sample->name: " << temp_sample->name << endl;
-              temp_sample->name = guess_sample_name (temp_sample->v_layers[0]->file_name); 
-            }   
+  for (size_t i = 0; i < MAX_SAMPLES; i++)
+      {
+       temp_sample = a_samples[i];
+         
+       if (temp_sample)
+       if (temp_sample->v_layers.size() > 0)
+           temp_sample->name = guess_sample_name (temp_sample->v_layers[0]->file_name); 
       }
   
   

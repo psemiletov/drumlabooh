@@ -86,7 +86,7 @@ public:
   std::string name; //sample name, for example "Bass Drum"
   int id; //Hydrogen's. For what? 
   
-  int mute_group; //-1 no; 7777 hihat
+  int mute_group; //-1 no; 7777 hihat auto
   
   int current_layer; //оставить для влияния?
 //  int midiOutNote;
