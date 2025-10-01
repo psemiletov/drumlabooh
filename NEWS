@@ -1,6 +1,5 @@
-   Drumlabooh 10.1.0
+   Drumlabooh 11.0.0
 
-* Stereo samples loading - fixed
-* ASR-X Pro kit  missed samples - fixed  
+  Hi, this release features not just some fixes and an upgrade to the new JUCE version, but also provides a new implementation of kit-defined mute groups. It works for Hydrogen, SFZ, and Drumlabooh XML kit formats. The automatic hi-hat muting still works if no other mute groups are defined in the kit file.
  
    Stay tuned, Peter Semiletov
