@@ -948,6 +948,7 @@ void CAudioProcessorEditor::log (const std::string &s)
   log_area.setCaretPosition (0);
 }
 
+
 void CAudioProcessorEditor::update_kits_list()
 {
   drumkits_model.items.clear();

@@ -26,7 +26,7 @@
 </p>
 
 <p style="text-align:center;">
-<a href="./v10.png"><img src="./v10-small.png" alt="screen shot"></a>
+<a href="./v11.png"><img src="./v11-small.png" alt="screen shot"></a>
 
 <br>
 
@@ -45,7 +45,7 @@
 
 * Linux LV2/VST3i, Windows VST3i plugin format<br>
 
-* Supported sample drumkit formats: Drumlabooh, Hydrogen, SFZ<br>
+* Supported sample drumkit formats: Drumlabooh, Hydrogen, SFZ, and simple directories with samples<br>
 
 * Bundled with high quality drumkits designed after legendary acoustic drums and drum machines<br>
 
@@ -61,7 +61,11 @@
 
 * Layer change by MIDI velocity, Round Robin or Random order<br>
 
+* Multi single-shot samples per slot<br>
+
 * Automatic open hihat mute on hihat close<br>
+
+* Kit-defined (user-defined) mute groups<br>
 
 * Drumkit image (if provided) at plugin window<br>
 
@@ -74,7 +78,7 @@
 
 Drumlabooh was written as the replacement of <a href="https://github.com/psemiletov/drumrox">Drumrox</a>, my fork of DrMr (see <a href="https://github.com/nicklan/drmr">Nicklan's DrMr</a> and <a href="https://github.com/falkTX/drmr">Filipe Coelho's fork</a>.
 
-<p>DrMr is cool C/GTK+2 LV2 plugin that I used for a years, but then DrMr stopped support current Hydrogen's drumkit format. First I "fixed" kits XML files manually, and at the some point I made the fork of DrMr called Drumrox and fix it at the XML parsing level.</p>
+<p>DrMr is cool C/GTK+2 LV2 plugin that I used for years, but then DrMr stopped support current Hydrogen's drumkit format. First I "fixed" kits XML files manually, and at the some point I made the fork of DrMr called Drumrox and fix it at the XML parsing level.</p>
 
 <p>It was the spring 2023.</p>
 
@@ -95,9 +99,9 @@ Drumlabooh was written as the replacement of <a href="https://github.com/psemile
 
 * Формат плагинов: Linux LV2/VST3i, Windows VST3i<br>
 
-* Поддерживаемые форматы драмкитов:  Drumlabooh, Hydrogen, SFZ<br>
+* Поддерживаемые форматы драмкитов:  Drumlabooh, Hydrogen, SFZ, обычные папки с сэмплами<br>
 
-* Поставляется с дюжинами драмкитов, созданными на основе сэмплов легендарных акустических ударных и драм-машин.<br>
+* Драмлабух поставляется с десятками драмкитов, созданными на основе сэмплов легендарных акустических ударных и драм-машин.<br>
 
 * Встроенный редактор китов (просто добавьте свои сэмплы!)<br>
 
@@ -109,9 +113,13 @@ Drumlabooh was written as the replacement of <a href="https://github.com/psemile
 
 * Сэмплерный движок на 36 инструментов с поддержкой 127 слоев в каждом<br>
 
+* Поддержка множества вариантов сэмплов на один слот (удобно для скаченных из сети архивов, где лежат папки с сэмплами)<br>
+
 * Режимы воспроизведения слоев: MIDI velocity, Round Robin, Random Order<br>
 
 * Автоматические заглушение открытого хайхета если играется закрытый<br>
+
+* Определенные в ките (или пользователем) группы заглушения<br>
 
 * Отображение картинки драмкита, если таковая включена в его состав<br>
 
