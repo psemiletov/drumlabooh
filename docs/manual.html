@@ -34,7 +34,8 @@
 
 <td class="table_top_cell">
 
-<p>Drumlabooh is aimed to not interfere with the creativity. All that you need is to create a new MIDI track at your DAW, select the drumkit from the list, and play. Drumlabooh uses the existing, sampled drumkits or the samples from the sample packs.</p>
+<p>Drumlabooh is designed not to interfere with creativity. All you need to do is create a new MIDI track in your DAW, select a drumkit from the list, and play. Drumlabooh uses existing sampled drumkits or samples from sample packs.</p>
+
 
 <a href="#mni_modes">1. Stereo vs Multi-channel modes</a><br>
 <a href="#mni_kits">2.0 Kits</a><br>
@@ -44,9 +45,10 @@
 
 <a href="#mni_kits_alt">2.4 Drumlabooh Alternate Samples Kits</a><br>
 
-<a href="#mni_kits_qlabooh">2.5 Quick Custom Kits</a><br>
+<a href="#mni_kits_dir">2.5 Folder Kits</a><br>
 
-<a href="#mni_kits_dir">2.6 Directory or Folder Kits</a><br>
+<a href="#mni_kits_qlabooh">2.6 Quick Custom Kits</a><br>
+
 
 <a href="#mni_mixer">3. Mixer</a><br>
 <a href="#mni_options">4. Options</a><br>
@@ -59,107 +61,95 @@
 <a name="mni_modes"></a>
 <h3>1. Stereo vs Multi-channel modes</h3>
 
-<p>The first thing that you need to know that there are two versions of Drumlabooh - <b>Stereo </b>and <b>Multi</b> (Multi-channel or Multi-outputs). The last one gives you the separated output mono channel for each instrument from the drum kit, so 36 channels at all. To use the Stereo version, add to track <i>Drumlabooh</i> plugin. And for Multi-channel version, add <i>Drumlabooh-multi</i>.</p>
+<p>The first thing you need to know is that there are two versions of Drumlabooh - <b>Stereo</b> and <b>Multi</b> (Multi-channel or Multi-output). The latter provides a separate mono output channel for each instrument in the drum kit - 36 channels in total. To use the Stereo version, add the <i>Drumlabooh</i> plugin to a track. To use the Multi-channel version, add <i>Drumlabooh-multi</i>.</p>
 
-<p>At Multi-channel version, the plugin's pan, volume and mute controls <b>are disabled</b>, because you can control them via tracks or buses in DAW. Read the <a href="#multi">DETAILS</a> how to use Multi-mode in DAW, how to attach each drum to the individual track or the bus.
-</p>
+<p>In the Multi-channel version, the plugin's pan, volume, and mute controls <b>are disabled</b> because you can control them via tracks or buses in your DAW. Read the <a href="#multi">DETAILS</a> section to learn how to use Multi mode in your DAW and how to route each drum to an individual track or bus.</p>
 
 
 <a name="mni_kits"></a>
 <h3>2.0 Kits</h3>
 
-<p>Drumlabooh at start scans all kits and <b>shows the list with them</b> to select. Also, you can press <b>Open</b> button below the kit info section, to select the drumkit file manually from any location. Select xml (Hydrogen formet), sfz (SFZ) or drumkit.txt (Drumlabooh format) file at the drumkit's folder.</p>
+<p>When Drumlabooh starts, it scans all available kits and <b>displays a list of them</b> for you to choose from. You can also click the <b>Open</b> button below the kit information section to manually select a drumkit file from any location. Choose an <code>.xml</code> (Hydrogen format), <code>.sfz</code> (SFZ), or <code>drumkit.txt</code> or <code>drumkit.labooh</code> (Drumlabooh format) file in the drumkit’s folder.</p>
 
-<p>Important note: when loading the drumkit, Drumlabooh converts the samples in the memory with the DAW's session samplerate. So the large kit can be loaded slowly if the samples are, for example, at 48 kHz, but session's rate is 44.1. The same with the FLAC-compressed samples. If you try to load such large drumkit, please wait, don't think that the plugin or DAW is frozen.</p>
+<p><b>Important note:</b> when loading a drumkit, Drumlabooh converts the samples (in RAM) to match the DAW session’s sample rate. Large kits may take longer to load if, for example, the samples are at 48 kHz but the session rate is 44.1 kHz. The same applies to FLAC-compressed samples. If you try to load a large drumkit, please wait - do not assume that the plugin or DAW has frozen.</p>
 
-<p>The best way to deal with it - use <b>Adapt</b> button, that saves the copy of current drumkit with the <b>session's</b> samplerate, and 32 bit float data format (24 bit for FLAC), at <i>drum_sklad</i> directory. Then, this copy will be used as the current drumkit. The next time the copy will be loaded faster than the original kit.</p>
+<p>The best way to handle this is to use the <b>Adapt</b> button, which saves a copy of the current drumkit using the <b>session’s</b> sample rate and 32-bit float data format (24-bit for FLAC) in the <i>drum_sklad</i> directory. This copy will then be used as the active drumkit, and the next time it will load faster than the original kit.</p>
 
-<p>This function works with Drumlabooh kit format only, and with samples WAV, AIFF and FLAC.</p>
+<p>This function works only with the Drumlabooh kit format and with samples in WAV, AIFF, or FLAC formats.</p>
 
-<p>Let's talk about how Drumlabooh supports 
-drum kit formats.</p>
+<p>Now, let’s talk about how Drumlabooh supports different drum kit formats.</p>
 
 
 <a name="mni_kits_hydrogen"></a>
-<h3>2.1 Hydrogen drum kits</h3>
+<h3>2.1 Hydrogen Drum Kits</h3>
 
-<p>At start, Drumlabooh searches all installed <a href="http://hydrogen-music.org">Hydrogen drum machine</a> kits at their proper places. Dozens cool kits are created for <b>Hydrogen</b>, but to install them you need to run <b>Hydrogen</b>, and there go to <b>Drumkits - Online import</b> menu, where you can select and download kits from Hydrogen or Musical Artifacts repositories.</p>
+<p>When Drumlabooh starts, it searches for all installed <a href="http://hydrogen-music.org">Hydrogen Drum Machine</a> kits in their default locations. Dozens of great kits have been created for <b>Hydrogen</b>. To install them you need to run <b>Hydrogen</b> and go to the <b>Drumkits - Online Import</b> menu, where you can select and download kits from the Hydrogen or Musical Artifacts repositories.</p>
 
-<p>Some of Hydrogen kits may be already installed at your Linux. Currently, for Linux and Windows, the best way to get new Hydrogen kits is <b>Online import</b> feature, because you simple cannot find public download links.</p>
+<p>Some Hydrogen kits may already be installed on your Linux system. Currently, for both Linux and Windows, the best way to get new Hydrogen kits is through the <b>Online Import</b> feature, since public download links are generally not available.</p>
 
 
 <a name="mni_kits_sfz"></a>
-<h3>2.2 SFZ drum kits</h3>
+<h3>2.2 SFZ Drum Kits</h3>
 
-<p>Drumlabooh scans installed SFZ kits at pre-defined locations: <i>$HOME/sfz-kits</i> (Linux), <i>c:\sfz-kits</i> and <i>d:\sfz-kits</i> (Windows). SFZ kit directories must be placed there to be available for Drumlabooh.</p>
+<p>Drumlabooh scans for installed SFZ kits in the following predefined locations: <i>$HOME/sfz-kits</i> (Linux), <i>C:\sfz-kits</i> and <i>D:\sfz-kits</i> (Windows). SFZ kit directories must be placed in amy of these locations to be recognized by Drumlabooh.</p>
 
-<p>The kits of excellent quiality - AVL Drumkits - you can download in SFZ format from <a href="http://www.bandshed.net/sounds/AVLDrumkits_SFZ/">AVLDrumkits_SFZ</a>. A lot of big SFZ's you can download from <a href="https://sfzinstruments.github.io/drums/">here</a>.</p>
+<p>High-quality kits <b>AVL Drumkits</b> can be downloaded in SFZ format from <a href="http://www.bandshed.net/sounds/AVLDrumkits_SFZ/">AVLDrumkits_SFZ</a>. You can also find many large SFZ drum kits <a href="https://sfzinstruments.github.io/drums/">here</a>.</p>
 
-<p>Drumlabooh supports limited SFZ opcodes and parameters set: group, region, key, sample, default_path, offset, lovel, hivel. Drumlabooh does not support sample file names with the spaces (because it is obscure to parse them from SFZ file)
-</p>
+<p>Drumlabooh supports a limited set of SFZ opcodes and parameters: <code>group</code>, <code>off_by</code>, <code>region</code>, <code>key</code>, <code>sample</code>, <code>default_path</code>, <code>offset</code>, <code>lovel</code>, and <code>hivel</code>. Drumlabooh does not support sample file names that contain spaces (because they are difficult to parse correctly from the SFZ file).</p>
 
 <a name="mni_kits_labooh"></a>
-<h3>2.3 Drumlabooh drum kits</h3>
+<h3>2.3 Drumlabooh Drum Kits</h3>
 
-<p>The own kit format of Dramlabooh. One kit = one directory, placed to <i>$HOME/drumlabooh-kits</i>, <i>$HOME/drum_sklad</i> or <i>/usr/share/drumlabooh-kits</i> on Linux, and, for Windows, to <i>c:\drumlabooh-kits</i>, <i>d:\drumlabooh-kits</i>, <i>c:\drum_sklad</i> or <i>d:\drum_sklad</i>.</p> 
+<p>Drumlabooh uses its own kit formats. One kit equals one directory, which should be placed in <i>$HOME/drumlabooh-kits</i>, <i>$HOME/drum_sklad</i>, or <i>/usr/share/drumlabooh-kits</i> on Linux, and in <i>C:\drumlabooh-kits</i>, <i>D:\drumlabooh-kits</i>, <i>C:\drum_sklad</i>, or <i>D:\drum_sklad</i> on Windows.</p>
 
-<p>Dramlabooh usually automatically installs  the kits from its official <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad on Github</a> repo. Also, there you can <b>read a details about the format</b>, it is quite simple. And, the word "sklad" means "warehouse", "storage", "repository".</p>
+<p>Drumlabooh usually installs kits automatically from its official <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad repository on GitHub</a>. You can also <b>read detailed information about formats</b> there - it is quite simple. The word "sklad" means "warehouse," "storage," or "repository."</p>
 
-<p>Additional kits those are not hosted on Github can be downloaded from <a href="https://t.me/drum_sklad">Drum Sklad at Telegram</a>. So the full Drumlabooh kits collection is Drum Sklad on Github + Drum Sklad on Telegram.</p>
+<p>Additional kits that are not hosted on GitHub can be downloaded from the <a href="https://t.me/drum_sklad">Drum Sklad channel on Telegram</a>. The complete Drumlabooh kit collection therefore includes Drum Sklad on GitHub and Drum Sklad on Telegram.</p>
 
-<p>All natural Drumlabooh kits have built-in, optional General MIDI mapping settings, you can use it at the <b>MIDI map mode </b>, by selecting the <b>Kit</b> value there.</p>
+<p>All native Drumlabooh kits include optional built-in General MIDI mapping settings, which can be used in <b>MIDI Map mode</b> by selecting the <b>Kit</b> option there.</p>
+
 
 <a name="mni_kits_alt"></a>
-<h3>2.4 Drumlabooh Alternate Samples Kits</h3>
+<h3>2.4 Drumlabooh Alternate Sample Kits</h3>
 
-<p>Some Drumlabooh kits contain several alternative samples for each instrument slot. When you load such kit, it's name is shown by yellow color and the hint:
-</p>
+<p>Some Drumlabooh kits contain several alternative samples for each instrument slot. When you load such a kit, its name is shown in yellow and accompanied by a hint:</p>
 
 <p style="text-align:center;">
 <img src="alt.png">
 </p>
 
-<p>Also, drum cells will be colored with a special color. For switch samples, use "+" and "-" buttons for each drum cell/slot.</p>
+<p>Also, drum cells will be highlighted with a special color. To switch samples, use the "+" and "-" buttons for each drum cell or slot.</p>
 
-<a name="mni_kits_qlabooh"></a>
-<h3>2.5 Quick Custom Kits</h3>
+<a name="mni_kits_dir"></a>
+<h3>2.5 Folder kits</h3>
 
-<p>Running Drumlabooh you can quickly make you own kit with external one-shot samples, for example from some drum sample pack. Here are the good resources with free stuff - <a href="https://www.reddit.com/r/Drumkits/">www.reddit.com/r/Drumkits/</a>, <a href="https://www.goldbaby.co.nz/freestuff.html">www.goldbaby.co.nz/freestuff.html</a>.</p>
+<p>Drumlabooh can use directories placed at <i>$HOME/drum_dirs</i>, <i>C://drum_dirs</i>, or <i>D://drum_dirs</i> as ready-to-use Alternative Samples kits. Just create a <i>drum_dirs</i> directory and put, for example, a <i>My Drumkit</i> folder inside, where you place the samples in subdirectories in the following way (names can vary!):</p>
 
-<p>Quick kit is the "proxy" and simplified kit, that you can make for yourself just from Drumlabooh. To create such kit, do the following steps:</p>
+<pre>
+1. Kick
+           kick01.wav
+           kick02.wav
+           kick03.wav
+2. Snare
+             snare01.wav
+             snare02.wav
+             snare03.wav
+</pre>
 
-<p>1. At your DAW project, add Drumlabooh to the track. Now you have empty drum cells/slots.</p>
+<p>Where <i>1. Kick</i> and <i>2. Snare</i> are subdirectories, and the others are files inside them. The numbers in directory or file names help Drumlabooh sort them alphabetically.</p>
 
-<p>2. At any cell, you see the two small buttons on the left of the cell name:</p>
+<p>It is a simple way to use many sample packs by just unpacking them into the <i>drum_kits</i> directory. Many such kits are available from <a href="https://www.reddit.com/r/Drumkits/">https://www.reddit.com/r/Drumkits/</a>.</p>
 
-<p style="text-align:center;"><img src="qpic01.png"></p>
+<p>There are some limits for Folder Kits per kit: 36 instrument folders max, 128 samples in each directory/folder.</p>
 
-<p>3. The upper button shows the file open dialog. Select some sample for this slot. The lower button clears the cell.</p>
 
-<p>4. Add other samples to other slots.</p>
-
-<p>5. Now you can save the quick kit. Double click at kit's name ("EMPTY KIT" caption):</p>
-
-<p style="text-align:center;"><img src="qpic02.png"></p>
-
-<p>6. Edit the kit name, press Enter to finish.</p>
-
-<p>7. Press <b>Save</b> button:</p>
-
-<p style="text-align:center;"><img src="qpic03.png"></p>
-
-<p>8. Now your quick kit is saved at <i>drum_sklad</i> directory at your home folder. This kit will be scanned by Drumlabooh as all other kits.</p>
-
-<p>The quick kit's folder doesn't hold samples. Quick kit config file keeps absolute paths to samples. The sample files are stays in their folders. But if you want to create the "bundle", press <b>Adapt</b> button to create the copy of quick kit, and then use that copy.
-</p>
-
-<p>You can load the quick kit as the normal kit, and can edit it, just don't forget to <b>Save</b> it. The "bundled" quick kit is also editable, but newly added samples will be added as file paths and not copied to the kit's folder.</p>
 
 <h3>Supported sample formats</h3>
 
-<p>Drumlabooh supports the samples in the following formats: WAV, AIFF, FLAC, OGG, MP3. OGG and MP3 cannot be <b>adapted</b>. Stereo samples will be readed as mono (left channel used), because pre-panned (from the kit) drums make internal mixing just weird.</p>
+<p>Drumlabooh supports samples in the following formats: WAV, AIFF, FLAC, OGG, and MP3. OGG and MP3 samples cannot be <b>adapted</b>. Stereo samples are read as mono (using the left channel), because pre-panned drums (from the kit) can make internal mixing sound unnatural.</p>
 
-<h3>Full directories list, where Drumalbooh searches for the kits</h3>
+<h3>Full list of directories where Drumlabooh searches for kits</h3>
+
 
 <p>Drumlabooh/Drumrox format:</p>
 
@@ -186,30 +176,6 @@ $HOME/.drmr/drumkits</pre>
 C:\sfz-kits
 D:\sfz-kits
 </pre>
-
-<a name="mni_kits_dir"></a>
-<h3>2.5 Drumlabooh Directory or Folder kits</h3>
-
-<p>Drumlabooh (since 10.0) can take the directories, placed at   <i>$HOME/drum_dirs</i> or <i>C://drum_dirs</i> or <i>D://drum_dirs</i> as the ready-to-use Alternative Samples kits. Just create <i>drum_dirs</i> directory and put there, for example, <i>My Drumkit</i> folder, where place the samples at subdirectories in the following way (names can vary!):</p>
-
-<pre>
-1. Kick
-           kick01.wav
-           kick02.wav
-           kick03.wav
-2. Snare
-             snare01.wav
-             snare02.wav
-             snare03.wav
-</pre>
-
-<p>Where <i>1. Kick</i> and <i>2. Snare</i> are subdirectories, and others are files in them. The numbers in directory or file names help Drumlabooh to sort them alphabetically.</p>
-
-<p>It is a simple way to use many sample packs by just unpacking them to <i>drum_kits</i> directory. Many of such kits are available from <a href="https://www.reddit.com/r/Drumkits/">https://www.reddit.com/r/Drumkits/</a>.</p>
-
-<p>There are some limits for Folder Kits per the kit - 36 instrument folders max, 128 samples at each directory/folder.
-</p>
-
 
 
 <a name="mni_mixer"></a>

@@ -296,7 +296,7 @@ public:
   std::unique_ptr <juce::FileChooser> dlg_fileopen;
   
   juce::TextButton bt_kit_adapt;
-  juce::TextButton bt_kit_save;
+  //juce::TextButton bt_kit_save;
     
   juce::TooltipWindow tooltip_window;
 
@@ -352,7 +352,7 @@ public:
   void adapt_qdrumlabooh();
   
   
-  void save_quick_kit();
+  //void save_quick_kit();
     
   void paint (juce::Graphics&) override;
   void resized() override;

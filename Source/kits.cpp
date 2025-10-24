@@ -811,6 +811,7 @@ void CDrumKit::load_directory (const std::string &path)
   kit_name = get_last_part (path);
  
   kit_type = KIT_TYPE_ALTDRUMLABOOH;
+  is_dir_kit = true;
  
   std::vector<std::string> instrument_dirs = get_directories (path); 
 
@@ -1626,7 +1627,7 @@ void CDrumKit::load_sfz (const std::string &data)
   std::string sfz_default_path;
   
   std::vector <std::string> t_str = split_string_to_vector (temp_data, "\n", false);
-  std::cout << "t_str.size()" << t_str.size() << "\n";
+  //std::cout << "t_str.size()" << t_str.size() << "\n";
   
     //std::vector <std::string> v_str;
   
@@ -1971,6 +1972,7 @@ CDrumKit::CDrumKit()
   mute_groups_auto = true;
   layers_supported = false;
   has_mapping = false;
+  is_dir_kit = false;
   loaded = false;
   temp_sample = 0;
   sample_counter = 0;
@@ -2065,6 +2067,9 @@ void CDrumKit::adapt() //used at Adapt button handler
   if (kit_type != KIT_TYPE_DRUMLABOOH || kit_type != KIT_TYPE_ALTDRUMLABOOH)
       return;
   
+  if (is_dir_kit) 
+     return; 
+   
 //  std::cout << "CDrumKit::total_samples_size() - 1\n";
  
   for (size_t i = 0; i < 36; i++)

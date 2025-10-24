@@ -148,6 +148,7 @@ public:
   
   int kit_type;  //SFZ, Hydrogen of Drumlabooh?
   
+  bool is_dir_kit; //true if kit is just a directory
   bool mute_groups_auto; //true if not defined at the kit file
   bool loaded; //is kit fully loaded?
   
