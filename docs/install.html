@@ -36,8 +36,7 @@
 
 <p><a href="https://github.com/psemiletov/drumlabooh/releases/tag/11.0.0">Latest release (11.0.0)</a> - sources, binaries</p>
 
-
-<p><a href="https://github.com/psemiletov/drumlabooh/releases/download/11.0.0/drumlabooh-net-installer-script.sh">Net Install for Linux</a> <b>The fastest and the preferred way</b>. This Bash script installs the latest release binaries and kits locally (at user directory subdirs). Use it for non-root install. Note: if Drumlabooh and kits were been installed previously system-wide, remove them first.</p>
+<p><a href="https://github.com/psemiletov/drumlabooh/releases/download/11.0.0/drumlabooh-net-installer-script.sh">Net Install for Linux</a> <b>The fastest and preferred way</b>. This Bash script installs the latest release binaries and kits locally (in user directory subdirectories). Use it for a non-root install. <i>Note: if Drumlabooh and the kits were installed previously system-wide, remove them first</i>.</p>
 
 <p><a href="https://github.com/psemiletov/drumlabooh/releases/download/11.0.0/drumlabooh-installer.exe">Windows VST3i installer</a> (installs to <i>C:\Program Files\Common Files\VST3)</i>
 </p>
@@ -50,13 +49,11 @@
 
 <h3>Windows: installation</h3>
 
-<p>Download and run <a href="https://github.com/psemiletov/drumlabooh/releases/download/11.0.0/drumlabooh-installer.exe">this installer</a> - installs to <i>C:\Program Files\Common Files\VST3</i>. 
-It install also some drumkits to <i>C:\drumlabooh_kits</i>, but you can get more with <a href="http://hydrogen-music.org">Hydrogen</a>, or additional Drumlabooh kits manually from Telegram at <a href="https://t.me/drum_sklad">Drum sklad</a>. (just copy/unpack kit directories to <i>C:\drumlabooh_kits</i> or <i>D:\drumlabooh_kits</i> or, for SFZ format <i>C:\sfz_kits</i> or <i>D:\sfz_kits</i>. Please read <a href="manual.html">the Manual for a details.</a></p>
-
+<p>Download and run <a href="https://github.com/psemiletov/drumlabooh/releases/download/11.0.0/drumlabooh-installer.exe">this installer</a> – installs to <i>C:\Program Files\Common Files\VST3</i>. It also installs some drumkits to <i>C:\drumlabooh_kits</i>, but you can get more with <a href="http://hydrogen-music.org">Hydrogen</a>, or additional Drumlabooh kits manually from Telegram at <a href="https://t.me/drum_sklad">Drum Sklad</a> (just copy/unpack kit directories to <i>C:\drumlabooh_kits</i> or <i>D:\drumlabooh_kits</i>, or for SFZ format <i>C:\sfz_kits</i> or <i>D:\sfz_kits</i>). Please read <a href="manual.html">the Manual for details</a>.</p>
 
 <h3>Linux: Build from the source</h3>
 
-<p>To build Drumlabooh form the source, you need to install some dependencies first. Drumlabooh is based on JUCE. JUCE source code will be fetched by configuration process, but JUCE needs additional libraries.</p>
+ <p>To build Drumlabooh from the source, you need to install some dependencies first. Drumlabooh is based on JUCE. The JUCE source code will be fetched during the configuration process, but JUCE requires additional libraries.</p>
 
 <p>Dependencies (Ubuntu packages names):</p>
 
@@ -94,8 +91,8 @@ cmake ..
 make
 make install</pre>
 
+<p>This installs LV2 and VSTi versions of the plugin to /usr/local/lib/LV2 and /usr/local/lib/VST3 by default. To redefine the destination directory, set another destination via the CMAKE_INSTALL_PREFIX variable. For example, from <i>/usr/local</i> to <i>/usr</i>:</p>
 
-<p>This installs LV2 and VSTi versions of the plugin to /usr/local/lib/LV2 and /usr/local/lib/VST3 by default. To redefine te destination dir, set another dest dir via CMAKE_INSTALL_PREFIX variable. For example, from <i>/usr/local</i> to <i>/usr</i>:</p>
 
 <pre>cmake -DCMAKE_INSTALL_PREFIX=/usr ..</pre>
 
