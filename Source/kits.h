@@ -65,7 +65,7 @@ public:
   juce::AudioBuffer <float> *audio_buffer; //holds audio data
   //const float *channel_data [2]; // pointers to channels of audio_buffer, 2 is legacy from stereo support
   //now we use just first channel
-  const float *channel_data; // pointer to the first channel of audio_buffer
+  const float *channel_data; // pointer to the first (element 0) channel of audio_buffer
   
   CDrumLayer (CDrumSample *s);
   ~CDrumLayer();

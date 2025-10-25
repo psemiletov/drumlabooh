@@ -667,7 +667,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
               //std::cout << "s->current_layer:" << s->current_layer << std::endl;
 
-              CDrumLayer *l = s->v_layers.at(s->current_layer);
+              CDrumLayer *l = s->v_layers.at (s->current_layer);
 
               if (! l)
                  {
@@ -903,8 +903,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
              if (! s->active)
                 continue;
 
-             CDrumLayer *l = s->v_layers.at(s->current_layer);
-
+//             CDrumLayer *l = s->v_layers.at(s->current_layer);
+               CDrumLayer *l = s->v_layers[s->current_layer];
+  
              if (! l)
                 {
                  std::cout << "!l at s->current_layer:" << s->current_layer << std::endl;
