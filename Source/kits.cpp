@@ -113,7 +113,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
       
    samplerate = reader->sampleRate;
    length_in_samples = reader->lengthInSamples;
-
+/*
    if (reader->numChannels > 2) //mix to left channel
       {
        float *left_channel = buffer->getWritePointer (0);
@@ -122,11 +122,22 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
        for (size_t pos = 0; pos < length_in_samples; pos++)
            {
             left_channel[pos] = (left_channel[pos] + right_channel[pos]) * 0.5f; 
-         
            }
      
       }
-   
+ */  
+
+if (reader->numChannels > 2)
+{
+    float* left  = buffer->getWritePointer(0);
+    const float* right = buffer->getReadPointer(1);
+    int n = (int) length_in_samples;
+
+    // left = left * 0.5f
+    juce::FloatVectorOperations::multiply(left, 0.5f, n);
+    // left += right * 0.5f  -> итог: left = 0.5*left_orig + 0.5*right
+    juce::FloatVectorOperations::addWithMultiply(left, right, 0.5f, n);
+}
    delete reader;
    return buffer;
 }
