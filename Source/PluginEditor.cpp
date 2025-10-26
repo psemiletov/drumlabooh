@@ -1687,7 +1687,38 @@ void CDrumkitsListBoxModel::paintListBoxItem (int rowNumber, Graphics &g, int wi
 		//        Justification::centredLeft, 2);
 }
 
+void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
+{
+  if (! editor)
+      return;
 
+  std::string kitname_short = editor->audioProcessor.scanner.v_kits_names.at (lastRowSelected);
+  if (kitname_short.empty())
+     return;
+
+  std::string full = editor->audioProcessor.scanner.map_kits[kitname_short]; //why not direct index?
+  if (full.empty())
+     return;
+
+  editor->audioProcessor.drumkit_path = full;
+  editor->tmr_leds.stopTimer();
+
+  editor->audioProcessor.reset_layer_index();
+
+  //НОВОЕ!!!!
+  // Prevent the hi-res timer from calling load_kit() again while we are loading now
+  editor->need_to_update_cells = false;
+
+  editor->audioProcessor.load_kit (full);
+
+  editor->tmr_leds.startTimer (1000 / 15); //15 FPS  
+
+  // update GUI
+  if (editor->audioProcessor.drumkit)
+     editor->load_kit();
+}
+
+/*
 void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
 {
   if (! editor)
@@ -1722,7 +1753,7 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
      // editor->log (editor->audioProcessor.drumkit->get_description());
      }
 }
-
+*/
 
 bool CCellLabel::isInterestedInFileDrag (const StringArray &files)
 {
