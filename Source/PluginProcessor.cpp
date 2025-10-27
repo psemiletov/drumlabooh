@@ -1,5 +1,5 @@
 /*
-2023-24, Peter Semiletov
+2023-25, Peter Semiletov
 */
 
 #include <random>
@@ -765,6 +765,33 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   if (drumkit->sample_counter == 0)
       return;
 
+   //////////////////////
+   
+   //out of the loop will be faster?
+   
+  /* lp_ons [0] = *(lps[0]) > 0.5f;
+   lp_ons [1] = *(lps[1]) > 0.5f;
+   lp_ons [2] = *(lps[2]) > 0.5f;
+   lp_ons [3] = *(lps[3]) > 0.5f;
+   lp_ons [4] = *(lps[4]) > 0.5f;
+   lp_ons [5] = *(lps[5]) > 0.5f;
+   lp_ons [6] = *(lps[6]) > 0.5f;
+   lp_ons [7] = *(lps[7]) > 0.5f;
+   lp_ons [8] = *(lps[8]) > 0.5f;
+   lp_ons [9] = *(lps[9]) > 0.5f;
+   lp_ons [10] = *(lps[10]) > 0.5f;
+   lp_ons [11] = *(lps[11]) > 0.5f;
+   lp_ons [12] = *(lps[12]) > 0.5f;
+   lp_ons [13] = *(lps[13]) > 0.5f;
+   lp_ons [0] = *(lps[0]) > 0.5f;
+   lp_ons [0] = *(lps[0]) > 0.5f;
+   lp_ons [0] = *(lps[0]) > 0.5f;
+   */
+  
+  
+  
+  ///////////////////
+   
   for (const juce::MidiMessageMetadata metadata: midiMessages)
       {
         //  if (metadata.numBytes == 3)
@@ -851,25 +878,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
               }
           
              //automute end
-/*             
-           if (s->hihat_close)
-              {
-               for (size_t i = 0; i < 36; i++)
-                   {
-                    CDrumSample *s2 = drumkit->a_samples[i]; //point to the sample
-                    if (! s2)
-                       continue;
 
-                    if (s2->hihat_open)
-                       {
-                        if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)  
-                            s2->untrigger_sample(true);
-                        else 
-                           s2->untrigger_sample(false);
-                       }
-                   }
-               }
-               */
            }
 
       }
@@ -904,7 +913,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                 continue;
 
 //             CDrumLayer *l = s->v_layers.at(s->current_layer);
-               CDrumLayer *l = s->v_layers[s->current_layer];
+             CDrumLayer *l = s->v_layers[s->current_layer];
   
              if (! l)
                 {
@@ -937,15 +946,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  //take mono audio data from the current layer with incremented offset
               //   float fl = l->channel_data[0][l->sample_offset++];
                   float fl = l->channel_data[l->sample_offset++];
-               
-                 /*
-                if (s->use_random_noice)
-                    {
-                      std::uniform_int_distribution <> distrib (-0.001f, 0.001f); 
-                     fl = fl + distrib (rnd_mt19937);
-                     
-                    } 
-*/
+              
                  
                 // float fr = fl;
 
@@ -954,11 +955,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  bool analog_on = *(analog[drum_sample_index]) > 0.5f;
 
                  if (analog_on)
-                    {
-                     fl = warmify (fl,*(analog_amount[drum_sample_index]));
-                  //   fr = fl;
-                    }
-
+                    fl = warmify (fl,*(analog_amount[drum_sample_index]));
+           
 
                  bool lp_on = *(lps[drum_sample_index]) > 0.5f;
 
@@ -968,7 +966,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      lp[drum_sample_index].set_resonance (*(lp_reso[drum_sample_index]));
 
                      fl = softLimit (lp[drum_sample_index].process (fl));
-                    // fr = fl;
                     }
 
 

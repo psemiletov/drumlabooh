@@ -32,6 +32,13 @@ public:
 
    int layer_index[36]; //нужно только для загрузки параметров
 
+  //массивы куда читаются пан, громкость и тд чтобы использовать внутри цикла
+  
+  bool lp_ons [36] = {false};
+  bool hp_ons [36] = {false};
+  bool analog_ons [36] = {false};
+
+   
   
   
   //all mixer strip (drumcell) params
