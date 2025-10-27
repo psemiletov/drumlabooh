@@ -1,5 +1,6 @@
-   Drumlabooh 11.0.0
+   Drumlabooh 11.1.0
 
-  Hi, this release features not just some fixes and an upgrade to the new JUCE version, but also provides a new implementation of kit-defined mute groups. It works for Hydrogen, SFZ, and Drumlabooh XML kit formats. The automatic hi-hat muting still works if no other mute groups are defined in the kit file.
+   This release fixes a bug where the drum kit was loaded twice on the plugin’s initial start. The main processing loop has been slightly optimized. A new version of the pugixml library is bundled. The documentation has undergone a major rewrite.The    
+  Drumlabooh Quick Kit format is deprecated (but still supported) because it had an obscure GUI. Therefore, the Quick Kit editor components have been removed from the plugin window. You can use directories with samples instead if you need to create a simple kit quickly.
  
    Stay tuned, Peter Semiletov

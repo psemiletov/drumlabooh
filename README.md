@@ -23,6 +23,8 @@ For all details, docs and drumkits see the [Drumlabooh site](https://psemiletov.
 
 * Automatic open hihat mute on hihat close
 
+* Kit-defined mute groups
+
 * Drumkit image (if provided) at plugin window
 
 * Written in C++, based on JUCE toolkit
@@ -30,12 +32,11 @@ For all details, docs and drumkits see the [Drumlabooh site](https://psemiletov.
 
 ## Linux: Quick install
 
-To install/update binaries and kits, use [drumlabooh-net-installer-script.sh](https://github.com/psemiletov/drumlabooh/releases/download/8.0.0/drumlabooh-net-installer-script.sh) or [drumlabooh-net-install](https://github.com/psemiletov/drumlabooh/releases/download/8.0.0/drumlabooh-net-install) (static build console program).
-
+To install/update binaries and kits, use [drumlabooh-net-installer-script.sh](https://github.com/psemiletov/drumlabooh/releases/download/11.1.0/drumlabooh-net-installer-script.sh)
 
 ## Linux: Build from the source
 
-To build Drumlabooh form the source, you need to install some dependencies first. Drumlabooh is based on JUCE. JUCE source code will be fetched by configuration process, but JUCE needs additional libraries.
+To build Drumlabooh from the source, you need to install some dependencies first. Drumlabooh is based on JUCE. The JUCE source code will be fetched during the configuration process, but JUCE requires some additional libraries.
 
 Dependencies (Debian/Ubuntu packages names):
 
@@ -76,7 +77,7 @@ make
 make install
 ```
 
-This installs LV2 and VSTi versions of the plugin to ``/usr/local/lib/LV2`` and ``/usr/local/lib/VST3`` by default. To redefine te destination dir, set another dest dir via ``CMAKE_INSTALL_PREFIX`` variable. For example, from ``/usr/local`` to ``/usr``:
+This installs LV2 and VSTi versions of the plugin to ``/usr/local/lib/LV2`` and ``/usr/local/lib/VST3`` by default. To redefine the destination directory, set another destination directory via ``CMAKE_INSTALL_PREFIX`` variable. For example, from ``/usr/local`` to ``/usr``:
 
 ```
 cmake -DCMAKE_INSTALL_PREFIX=/usr ..
@@ -84,7 +85,7 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 
 ## Notes for packagers/maintainers
 
-By default, Drumlabooh cmake file fetches and installs the all drumkits from https://github.com/psemiletov/drum_sklad. You can turn this behavior off using ```cmake .. -DINSTALLKITS=OFF``` option, and make the separated data package with drum kits from 
+By default, the Drumlabooh CMake file fetches and installs all drumkits from https://github.com/psemiletov/drum_sklad. You can turn this behavior off using ```cmake .. -DINSTALLKITS=OFF``` option and create the separated data package with drum kits from 
 ```https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip```
 
 
@@ -94,4 +95,4 @@ By default, Drumlabooh cmake file fetches and installs the all drumkits from htt
 
 [resampler by David Bryant](https://github.com/dbry/audio-resampler) (BSD-3-Clause license)
 
-
+[pugixml](https://pugixml.org) (MIT license)
