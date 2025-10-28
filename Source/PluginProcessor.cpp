@@ -498,6 +498,238 @@ float VelocityToLevel (int velocity)
 
 #if defined(MULTICHANNEL)
 
+void CAudioProcessor::processBlock_OLD (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+{
+  //the code block below allows Ardour load kit properly when session rate is ready
+  if (fresh_start)
+     {
+      session_samplerate = getSampleRate();
+
+      if (! drumkit_path.empty())
+         {
+          load_kit (drumkit_path);
+          fresh_start = false;
+         }
+     }
+
+  int num_channels = buffer.getNumChannels();
+
+  if (num_channels < 1)
+     return;
+
+  int out_buf_length = buffer.getNumSamples();
+   
+  for (size_t i = 0; i < num_channels; i++)
+      buffer.clear (i, 0, out_buf_length);
+   //  buffer.clear(); 
+
+  if (! drumkit)
+      return;
+   
+  if (drumkit->sample_counter == 0)
+      return;
+   
+  int int_midimap_mode = (int) *midimap_mode;
+
+  
+  for (const juce::MidiMessageMetadata metadata: midiMessages)
+      {
+       juce::MidiMessage msg = metadata.getMessage();
+
+       bool isNoteOn = msg.isNoteOn();
+       bool isNoteOff = msg.isNoteOff();
+
+       //float velocity = msg.getFloatVelocity();
+       int uvelocity = msg.getVelocity();
+       float velocity = VelocityToLevel (uvelocity);
+       
+       if (*ignore_midi_velocity > 0.5)
+           velocity = 1;
+
+       int note_number = msg.getNoteNumber();
+       
+       if (isNoteOn)
+          {
+           int nn = note_number - base_note_number; //base_note_number = 36 by default
+                                                    // nn is index for drumkit->a_samples[nn]
+           
+           if (int_midimap_mode == MIDIMAPMODE_LABOOH)
+               if (nn < 0 || nn > 35) // MAX_SAMPLES = 36
+                   continue;
+
+           CDrumSample *s = 0;
+
+           if (int_midimap_mode == MIDIMAPMODE_LABOOH)
+               s = drumkit->a_samples[nn];
+            else
+                if (drumkit->map_samples.count (note_number) > 0) 
+                    s = drumkit->map_samples[note_number];
+//                    std::cout << "play mapped note: " << note_number << std::endl;
+  
+            if (! s)
+               continue;
+  
+            if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
+                s->trigger_sample (velocity);
+            else //new
+                if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)
+                   s->trigger_sample_uint_by_index (uvelocity, velocity);  
+                else            
+                   s->trigger_sample_uint (uvelocity, velocity);
+            
+//            std::cout << "s->current_layer:" << s->current_layer << std::endl;
+  //          std::cout << "s->>v_layers.size():" << s->v_layers.size() << std::endl;
+
+
+           //also untrigger open hihat if closed hihat triggering
+           // so find the open hihat
+             
+          //AUTOMUTE START
+  
+             
+           if (s->mute_group != -1)
+              {
+               for (size_t i = 0; i < MAX_SAMPLES; i++)
+                   {
+                    CDrumSample *s2 = drumkit->a_samples[i]; //point to the sample
+                    if (! s2 || s == s2)
+                       continue;
+                      
+                    if (s2->mute_group == s->mute_group)
+                       {
+                        if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH) 
+                           s2->untrigger_sample (true);
+                        else
+                           s2->untrigger_sample (false);
+                          
+                       }
+                   }
+              }
+           
+          /*   
+           if (s->hihat_close)
+              {
+               for (size_t i = 0; i < MAX_SAMPLES; i++)
+                   {
+                    CDrumSample *s2 = drumkit->a_samples[i]; //point to the sample
+                    if (! s2)
+                       continue;
+                      
+                    if (s2->hihat_open)
+                       {
+                        if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH) 
+                           s2->untrigger_sample (true);
+                        else
+                           s2->untrigger_sample (false);
+                          
+                       }
+                   }
+              }
+            */  
+           //AUTOMUTE END   
+              
+          }
+
+     } //end of cycle for juce::MidiMessageMetadata metadata: midiMessages
+
+
+     //if (drumkit->sample_counter > (num_channels - 1)) //WAS
+       // return;
+
+     if (drumkit->sample_counter > num_channels) //YES????????????????????????????????????
+        return;
+
+       
+     float *channel_data [MAX_SAMPLES]; //output channels
+// was if (drumkit->sample_counter > num_channels)
+    
+
+     for (size_t i = 0; i < num_channels; i++)
+         channel_data[i] = buffer.getWritePointer(i);
+
+ // juce::ScopedNoDenormals();
+
+
+    //for each drum instrument
+    for (int drum_sample_index = 0; drum_sample_index < MAX_SAMPLES; drum_sample_index++)
+        {
+         //for each sample out_buf_offs
+         for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
+             {
+              CDrumSample *s = drumkit->a_samples[drum_sample_index];
+              if (! s)
+                 // std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
+                  continue;
+
+              if (! s->active)
+                 continue;
+
+
+              //std::cout << "s->current_layer:" << s->current_layer << std::endl;
+
+              CDrumLayer *l = s->v_layers.at (s->current_layer);
+
+              if (! l)
+                 {
+                  std::cout << "!l at s->current_layer:" << s->current_layer << std::endl;
+                  break;
+                 }
+
+
+              if (l->sample_offset + 1 == l->length_in_samples)
+                 {
+                  if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)  
+                     s->untrigger_sample (true);
+                  else 
+                      s->untrigger_sample (false);
+                  
+                  
+                  continue;
+                 }
+
+               if (l->channel_data)
+                   {
+                    float fl = l->channel_data[l->sample_offset++];
+
+                 //DSP
+                    bool analog_on = *(analog[drum_sample_index]) > 0.5f;
+ 
+                    if (analog_on)
+                       fl = warmify (fl,*(analog_amount[drum_sample_index]));
+
+
+                    bool lp_on = *(lps[drum_sample_index]) > 0.5f;
+
+                    if (lp_on)
+                       {
+                        lp[drum_sample_index].set_cutoff (*(lp_cutoff[drum_sample_index]));
+                        lp[drum_sample_index].set_resonance (*(lp_reso[drum_sample_index]));
+                        fl = softLimit (lp[drum_sample_index].process (fl));
+                       }
+
+
+                   bool hp_on = *(hps[drum_sample_index]) > 0.5f;
+
+                   if (hp_on)
+                      {
+                       hp[drum_sample_index].set_cutoff (*(hp_cutoff[drum_sample_index]));
+                       hp[drum_sample_index].set_resonance (*(hp_reso[drum_sample_index]));
+
+                       fl = softLimit (hp[drum_sample_index].process (fl));
+                      }
+ 
+                   if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
+                       fl *= s->velocity;
+                  
+                   channel_data[drum_sample_index][out_buf_offs] = fl;
+                  }
+
+             }
+        } 
+ //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
+  //}
+}
+
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
   //the code block below allows Ardour load kit properly when session rate is ready
@@ -730,6 +962,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   //}
 }
 
+
 #else
 //STEREO
 
@@ -765,31 +998,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   if (drumkit->sample_counter == 0)
       return;
 
-   //////////////////////
    
-   //out of the loop will be faster?
-   
-  /* lp_ons [0] = *(lps[0]) > 0.5f;
-   lp_ons [1] = *(lps[1]) > 0.5f;
-   lp_ons [2] = *(lps[2]) > 0.5f;
-   lp_ons [3] = *(lps[3]) > 0.5f;
-   lp_ons [4] = *(lps[4]) > 0.5f;
-   lp_ons [5] = *(lps[5]) > 0.5f;
-   lp_ons [6] = *(lps[6]) > 0.5f;
-   lp_ons [7] = *(lps[7]) > 0.5f;
-   lp_ons [8] = *(lps[8]) > 0.5f;
-   lp_ons [9] = *(lps[9]) > 0.5f;
-   lp_ons [10] = *(lps[10]) > 0.5f;
-   lp_ons [11] = *(lps[11]) > 0.5f;
-   lp_ons [12] = *(lps[12]) > 0.5f;
-   lp_ons [13] = *(lps[13]) > 0.5f;
-   lp_ons [0] = *(lps[0]) > 0.5f;
-   lp_ons [0] = *(lps[0]) > 0.5f;
-   lp_ons [0] = *(lps[0]) > 0.5f;
-   */
-  
-  
-  
   ///////////////////
    
   for (const juce::MidiMessageMetadata metadata: midiMessages)
@@ -1028,6 +1237,304 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      {
                       coef_right = pan_right * vol;
                       coef_left = pan_left * vol;
+                     }
+                 
+                 channel_data[0][out_buf_offs] += fl * coef_left;
+                 //channel_data[1][out_buf_offs] += fr * coef_right;
+                 channel_data[1][out_buf_offs] += fl * coef_right;
+
+                }
+             }
+             
+             if (*global_analog_on > 0.5f)
+                {
+                 channel_data[0][out_buf_offs] = warmify (channel_data[0][out_buf_offs],*(global_analog_amount));
+                 channel_data[1][out_buf_offs] = warmify (channel_data[1][out_buf_offs],*(global_analog_amount));
+                }
+      
+    }
+ //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
+}
+
+void CAudioProcessor::processBlock_OLD (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+{
+  //this code allow Ardour load kit properly when session rate is ready
+  if (fresh_start)
+     {
+      session_samplerate = getSampleRate();
+
+      if (! drumkit_path.empty())
+         {
+          load_kit (drumkit_path);
+          fresh_start = false;
+         }
+     }
+
+
+  int num_channels = buffer.getNumChannels();
+  int out_buf_length = buffer.getNumSamples();
+  
+  int int_midimap_mode = (int) *midimap_mode;
+
+  //clearing input buffer, good for Reaper
+  for (int i = 0; i < num_channels; ++i)
+      buffer.clear (i, 0, out_buf_length);
+
+  if (! drumkit)
+      return;
+
+//  size_t v_samples_size = drumkit->v_samples.size();
+
+  if (drumkit->sample_counter == 0)
+      return;
+
+   
+  int int_panner_mode = *panner_mode;
+
+   
+   //////////////////////
+   
+   //out of the loop will be faster?
+   
+  for (size_t i = 0; i < 35; i++)
+      a_analog_on [i] = *(lps[i]) > 0.5f;
+   
+  for (size_t i = 0; i < 35; i++)
+     {
+      float pan = *(pans[i]); //float pan = *(pans[drum_sample_index]);
+      
+      if (int_panner_mode == PANMODE01)
+         pan_sincos (a_pan_left[i], a_pan_right[i], pan);
+      else
+      if (int_panner_mode == PANMODE02)
+          pan_sqrt (a_pan_left[i], a_pan_right[i], pan);
+      else
+      if (int_panner_mode == PANMODE03)
+         pan_linear0 (a_pan_left[i], a_pan_right[i], pan);
+      else
+      if (int_panner_mode == PANMODE04)
+             pan_linear6 (a_pan_left[i], a_pan_right[i], pan);
+      else
+      if (int_panner_mode == PANMODE05)
+          pan_powsin_45 (a_pan_left[i], a_pan_right[i], pan); //ok
+      else
+      if (int_panner_mode == PANMODE06) // на деле - -4.5
+          pan_powsin_6 (a_pan_left[i], a_pan_right[i], pan);
+      else
+      if (int_panner_mode == PANMODE07) //на деле -4.3
+         pan_sin_1_3 (a_pan_left[i], a_pan_right[i], pan);
+             
+     }
+   
+           
+  
+  ///////////////////
+   
+  for (const juce::MidiMessageMetadata metadata: midiMessages)
+      {
+        //  if (metadata.numBytes == 3)
+            //Logger::writeToLog (metadata.getMessage().getDescription());
+          // std::cout << metadata.getMessage().getDescription() << std::endl;
+
+       juce::MidiMessage msg = metadata.getMessage();
+
+       bool isNoteOn = msg.isNoteOn();
+       bool isNoteOff = msg.isNoteOff();
+
+       //float velocity = msg.getFloatVelocity();
+       int uvelocity = msg.getVelocity();
+       float velocity = VelocityToLevel (uvelocity);
+       
+       if (*ignore_midi_velocity > 0.5)
+           velocity = 1;
+
+       int note_number = msg.getNoteNumber(); //36 starting note
+
+       if (isNoteOn)
+          {
+            //std::cout << "note_number: " << note_number << std::endl;
+            //std::cout << "velocity: " << velocity << std::endl;
+
+//          int nn = note_number - (int) *base_note_number;
+            int nn = note_number - base_note_number;
+
+
+            if (int_midimap_mode == MIDIMAPMODE_LABOOH/* && drumkit->kit_type != KIT_TYPE_SFZ*/)
+                if (nn < 0 || nn > 35)
+                    continue;
+
+                    //std::cout << "nn < 0 || nn > 35: " << nn << std::endl; 
+//             std::cout << "GO ON with n: " << nn << std::endl;
+
+            float gn = db2lin (*(vols[nn]));
+            // std::cout << "gn: " << gn << std::endl;
+
+            CDrumSample *s = 0;
+
+            if (int_midimap_mode == MIDIMAPMODE_LABOOH)
+                s = drumkit->a_samples[nn];
+            else
+                if (drumkit->map_samples.count (note_number) > 0) 
+                   s = drumkit->map_samples[note_number];
+//                   std::cout << "play mapped note: " << note_number << std::endl;
+
+            if (! s)
+               continue;
+  
+            
+           if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
+               s->trigger_sample (velocity);
+           else //new
+               if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)
+                  s->trigger_sample_uint_by_index (uvelocity, velocity); 
+               else            
+                   s->trigger_sample_uint (uvelocity, velocity);
+                     
+
+             //also untrigger open hihat if closed hihat triggering
+             // so find the open hihat
+             
+            //AUTOMUTE START
+  
+           if (s->mute_group != -1)
+              {
+               for (size_t i = 0; i < MAX_SAMPLES; i++)
+                   {
+                    CDrumSample *s2 = drumkit->a_samples[i]; //point to the sample
+                    if (! s2 || s == s2)
+                       continue;
+                      
+                    if (s2->mute_group == s->mute_group)
+                       {
+                        if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH) 
+                           s2->untrigger_sample (true);
+                        else
+                           s2->untrigger_sample (false);
+                          
+                       }
+                   }
+              }
+          
+             //automute end
+
+           }
+
+      }
+
+
+    float *channel_data[2]; //output channels
+
+    
+    if (num_channels > 0)
+       channel_data [0] = buffer.getWritePointer (0);
+
+    if (num_channels > 1)
+       channel_data [1] = buffer.getWritePointer (1);
+
+
+   //for each sample out_buf_offs
+    for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
+        //for each drum instrument
+        {
+         for (int drum_sample_index = 0; drum_sample_index < 36; drum_sample_index++)
+            {
+             CDrumSample *s = drumkit->a_samples[drum_sample_index];
+
+             if (! s)
+                // std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
+                 continue;
+
+             if (! s->active)
+                continue;
+
+//             CDrumLayer *l = s->v_layers.at(s->current_layer);
+             CDrumLayer *l = s->v_layers[s->current_layer];
+  
+             if (! l)
+                {
+                 std::cout << "!l at s->current_layer:" << s->current_layer << std::endl;
+                 break;
+                }
+
+
+             if (l->sample_offset + 1 == l->length_in_samples)
+                {
+                 if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)  
+                    s->untrigger_sample(true);
+                 else
+                     s->untrigger_sample(false);
+                   
+                 
+                 continue;
+                }
+
+             bool mute = *(mutes[drum_sample_index]) > 0.5f;
+
+             if (mute)
+                {
+                 l->sample_offset++;
+                 continue;
+                }
+
+             if (l->channel_data)
+                {
+                 //take mono audio data from the current layer with incremented offset
+              //   float fl = l->channel_data[0][l->sample_offset++];
+                  float fl = l->channel_data[l->sample_offset++];
+              
+                 
+                // float fr = fl;
+
+                 //DSP
+
+             //    bool analog_on = *(analog[drum_sample_index]) > 0.5f;
+
+               //  if (analog_on)
+                 if (a_analog_on [drum_sample_index]) 
+                    fl = warmify (fl,*(analog_amount[drum_sample_index]));
+           
+
+                 bool lp_on = *(lps[drum_sample_index]) > 0.5f;
+
+                 if (lp_on)
+                    {
+                     lp[drum_sample_index].set_cutoff (*(lp_cutoff[drum_sample_index]));
+                     lp[drum_sample_index].set_resonance (*(lp_reso[drum_sample_index]));
+
+                     fl = softLimit (lp[drum_sample_index].process (fl));
+                    }
+
+
+                 bool hp_on = *(hps[drum_sample_index]) > 0.5f;
+
+                 if (hp_on)
+                    {
+                     hp[drum_sample_index].set_cutoff (*(hp_cutoff[drum_sample_index]));
+                     hp[drum_sample_index].set_resonance (*(hp_reso[drum_sample_index]));
+
+                     fl = softLimit (hp[drum_sample_index].process (fl));
+                     //fr = fl;
+                    }
+
+                 //AFTER DSP
+
+//                 float vol = juce::Decibels::decibelsToGain ((float)*(vols[drum_sample_index]));
+                 float vol = db2lin(*(vols[drum_sample_index]));
+
+            
+                 float coef_right = 0.000f;                    
+                 float coef_left = 0.000f;  
+
+
+                 if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
+                    {
+                     coef_right = a_pan_right[drum_sample_index] * vol * s->velocity;
+                     coef_left = a_pan_left[drum_sample_index] * vol * s->velocity;
+                    }
+                 else
+                     {
+                      coef_right = a_pan_right[drum_sample_index] * vol;
+                      coef_left = a_pan_left[drum_sample_index] * vol;
                      }
                  
                  channel_data[0][out_buf_offs] += fl * coef_left;

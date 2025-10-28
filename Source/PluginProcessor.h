@@ -36,9 +36,10 @@ public:
   
   bool lp_ons [36] = {false};
   bool hp_ons [36] = {false};
-  bool analog_ons [36] = {false};
+  bool a_analog_on [36] = {false};
 
-   
+  float a_pan_left [36] = {0.000f};  
+  float a_pan_right [36] = {0.000f};  
   
   
   //all mixer strip (drumcell) params
@@ -126,6 +127,7 @@ public:
 //#endif
 
   void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+  void processBlock_OLD (juce::AudioBuffer<float>&, juce::MidiBuffer&); 
 
 
   //==============================================================================
