@@ -7,15 +7,8 @@ read_url_as_string() {
 }
 
 userHomeDir() {
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        if [ -n "${XDG_CONFIG_HOME:-}" ]; then
-            echo "$XDG_CONFIG_HOME"
-            return
-        fi
-    fi
     echo "${HOME:-}"
 }
-
 
 downloadFile() {
     local filepath="$1"
