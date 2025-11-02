@@ -1491,38 +1491,20 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
    //////////////////////
   // CACHE ALL ATOMIC PARAMETERS
 
-
-  
-  for (size_t i = 0; i < 35; i++)
-      a_vols [i] = db2lin(*(vols[i]));
-   
-   
-  for (size_t i = 0; i < 35; i++)
-      a_analog_amount [i] = *(analog_amount[i]);
-  
-  
-  
-  for (size_t i = 0; i < 35; i++)
-      a_mutes [i] = *(mutes[i]) > 0.5f;
-  
-  
-  for (size_t i = 0; i < 35; i++)
-      a_lps [i] = *(lps[i]) > 0.5f;
-   
-   
-  for (size_t i = 0; i < 35; i++)
-      a_hps [i] = *(hps[i]) > 0.5f;
-  
-   
-   for (size_t i = 0; i < 35; i++)
-      a_analog_on [i] = *(analog[i]);
   
    
    mix_analog_amount = *(global_analog_amount);
    
-   
+ 
   for (size_t i = 0; i < 35; i++)
      {
+      a_vols [i] = db2lin(*(vols[i]));
+      a_analog_amount [i] = *(analog_amount[i]);
+      a_mutes [i] = *(mutes[i]) > 0.5f;
+      a_lps [i] = *(lps[i]) > 0.5f;
+      a_hps [i] = *(hps[i]) > 0.5f;
+      a_analog_on [i] = *(analog[i]);
+
       float pan = *(pans[i]); //float pan = *(pans[drum_sample_index]);
       
       if (int_panner_mode == PANMODE01)
@@ -1546,9 +1528,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       if (int_panner_mode == PANMODE07) //на деле -4.3
          pan_sin_1_3 (a_pan_left[i], a_pan_right[i], pan);
              
-     }
+     } 
    
-           
+  
+          
   
   ///////////////////
    
