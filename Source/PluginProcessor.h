@@ -34,12 +34,21 @@ public:
 
   //массивы куда читаются пан, громкость и тд чтобы использовать внутри цикла
   
-  bool lp_ons [36] = {false};
-  bool hp_ons [36] = {false};
+  bool a_lps [36] = {false};
+  bool a_hps [36] = {false};
   bool a_analog_on [36] = {false};
+  
+  float a_analog_amount [36] = {0.000f};  
 
   float a_pan_left [36] = {0.000f};  
   float a_pan_right [36] = {0.000f};  
+  
+  float a_vols [36] = {0.000f};  
+  float a_mutes [36] = {0.000f};  
+  
+  float mix_analog_amount;   //of the mizx
+  
+  
   
   
   //all mixer strip (drumcell) params
