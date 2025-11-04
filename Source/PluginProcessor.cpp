@@ -8,6 +8,12 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+
+#include <juce_dsp/juce_dsp.h>
+
+
+
+
 #include "utl.h"
 #include "dsp.h"
 
@@ -1452,6 +1458,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 //STEREO
 
 
+
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
   //this code allow Ardour load kit properly when session rate is ready
@@ -1564,7 +1571,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             int nn = note_number - base_note_number;
 
 
-            if (int_midimap_mode == MIDIMAPMODE_LABOOH/* && drumkit->kit_type != KIT_TYPE_SFZ*/)
+            if (int_midimap_mode == MIDIMAPMODE_LABOOH)
                 if (nn < 0 || nn > 35)
                     continue;
 
@@ -1687,14 +1694,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
               //   float fl = l->channel_data[0][l->sample_offset++];
                   float fl = l->channel_data[l->sample_offset++];
               
-                 
-                // float fr = fl;
-
                  //DSP
 
-             //    bool analog_on = *(analog[drum_sample_index]) > 0.5f;
 
-               //  if (analog_on)
                  if (a_analog_on [drum_sample_index]) 
                     fl = warmify (fl, a_analog_amount[drum_sample_index]);
            
@@ -1758,6 +1760,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     }
  //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
 }
+
 
 
 
