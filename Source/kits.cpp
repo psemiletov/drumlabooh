@@ -29,8 +29,10 @@ this code is the public domain
 using namespace std;
 
 
-
 std::mt19937 rnd_mt19937;
+const uint64_t SEED = 123456789ULL;
+//UltraFastRNG rng(SEED);
+
 
 
 std::string get_part (std::string &s)
@@ -2806,3 +2808,91 @@ void CDrumKit::setup_auto_mute()
       }   
 }
   
+  
+/*
+ *include <iostream>
+#include <random>
+#include <cstdint>
+#include <algorithm>
+
+
+long long generateDeterministicRandom(int64_t currentPosition, long long minVal, long long maxVal)
+{
+    // Убеждаемся, что minVal не больше maxVal
+    if (minVal > maxVal)
+    {
+        std::swap(minVal, maxVal);
+    }
+
+    // 1. Инициализируем генератор (mersenne twister) с помощью позиции в качестве зерна.
+    // std::mt19937_64 используется для 64-битного зерна (int64_t).
+    std::mt19937_64 rng(static_cast<uint64_t>(currentPosition));
+
+    // 2. Определяем равномерное распределение для нужного диапазона.
+    std::uniform_int_distribution<long long> dist(minVal, maxVal);
+
+    // 3. Генерируем и возвращаем число.
+    return dist(rng);
+}
+
+// --- Пример использования ---
+
+int main()
+{
+    long long min = 10;
+    long long max = 50;
+
+    // Позиция 100500 должна всегда давать одинаковый результат
+    int64_t pos1 = 100500;
+    std::cout << "For position " << pos1 << ", random value 1: "
+              << generateDeterministicRandom(pos1, min, max) << std::endl;
+
+    std::cout << "For position " << pos1 << ", random value 2: "
+              << generateDeterministicRandom(pos1, min, max) << std::endl;
+
+    std::cout << "For position " << pos1 << ", random value 3: "
+              << generateDeterministicRandom(pos1, min, max) << std::endl;
+
+    // Другая позиция даст другой, но тоже повторяемый результат
+    int64_t pos2 = 999;
+    std::cout << "\nFor position " << pos2 << ", random value 1: "
+              << generateDeterministicRandom(pos2, min, max) << std::endl;
+
+    std::cout << "For position " << pos2 << ", random value 2: "
+              << generateDeterministicRandom(pos2, min, max) << std::endl;
+
+    return 0;
+}
+
+Используйте код с осторожностью.
+
+
+void processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) override
+{
+    // ... (other processBlock code) ...
+
+    if (auto* playHead = getPlayHead())
+    {
+        juce::AudioPlayHead::PositionInfo positionInfo;
+
+        if (playHead->getPosition(positionInfo))
+        {
+            if (positionInfo.getTimeInSamples().hasValue())
+            {
+                int64 currentSamplePosition = *positionInfo.getTimeInSamples();
+                // Use the sample position
+            }
+
+            if (positionInfo.getTimeInSeconds().hasValue())
+            {
+                double currentTimeInSeconds = *positionInfo.getTimeInSeconds();
+                // Use the time in seconds
+            }
+
+            // Check if playing
+            bool isPlaying = positionInfo.getIsPlaying();
+        }
+    }
+}
+
+*/  

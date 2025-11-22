@@ -9,6 +9,46 @@ this code is the public domain
 #include <string>
 #include <vector>
 
+
+class FastDeterministicRNG {
+public:
+    FastDeterministicRNG(uint64_t seed) : state(seed) {}
+    uint64_t nextRaw() {
+        uint64_t z = (state += 0x9E3779B97f4A7C15);
+        z = (z ^ (z >> 30)) * 0xBF58476d1CE4e5B9;
+        z = (z ^ (z >> 27)) * 0x94D049BB133111EB;
+        return z ^ (z >> 31);
+    }
+    long long next(long long minVal, long long maxVal) {
+        if (minVal > maxVal) std::swap(minVal, maxVal);
+        uint64_t range = maxVal - minVal + 1;
+        return minVal + (nextRaw() % range);
+    }
+private:
+    uint64_t state;
+};
+
+
+/*
+ 
+  #include <random>
+
+class DeterministicRNG {
+public:
+    DeterministicRNG(int64_t blockSeed)
+        : rng(static_cast<uint64_t>(blockSeed)) {}
+
+    long long next(long long minVal, long long maxVal) {
+        if (minVal > maxVal) std::swap(minVal, maxVal);
+        std::uniform_int_distribution<long long> dist(minVal, maxVal);
+        return dist(rng);
+    }
+private:
+    std::mt19937_64 rng;
+};
+  
+ */ 
+
 bool file_exists (const std::string &name);
 bool ends_with (std::string const &value, std::string const &ending);
 std::string resolve_symlink (const std::string &path);

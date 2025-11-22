@@ -447,6 +447,8 @@ void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
   if (drumkit)
      if (drumkit->samplerate != session_samplerate)
         load_kit (drumkit_path);
+   
+  //SEED RANDOMIZER HERE 
 }
 
 
