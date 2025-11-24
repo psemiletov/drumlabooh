@@ -19,6 +19,9 @@ this code is the public domain
 #include "pugixml.hpp"
 //JUCE_END_IGNORE_WARNINGS_GCC_LIKE
 
+#include "utl.h"
+
+
 #define LAYER_INDEX_MODE_VEL 0
 #define LAYER_INDEX_MODE_RND 1
 #define LAYER_INDEX_MODE_ROBIN 2
@@ -32,71 +35,6 @@ this code is the public domain
 //#define KIT_TYPE_DIRECTORY 5 
 
 #define MAX_SAMPLES 36
-
-
-
-class UltraFastRNG {
-    std::mt19937_64 engine;
-
-public:
-    // Конструктор с начальным seed
-    explicit UltraFastRNG(uint64_t seed = 0) { reseed(seed); }
-
-    // === ИЗМЕНЕНИЕ SEED НА ЛЕТУ ===
-    void reseed(uint64_t seed) {
-        engine.seed(seed);
-    }
-
-    void set_seed(uint64_t seed) {  // синоним — удобнее читать
-        reseed(seed);
-    }
-    // ===============================
-
-    // [0, n) — целое
-    uint64_t below(uint64_t n) {
-        if (n == 0) return 0;
-        const uint64_t threshold = (-n) % n;
-        while (true) {
-            uint64_t r = engine();
-            if (r >= threshold) return r % n;
-        }
-    }
-
-    // [0, 1) — float
-    float unit_float() {
-        uint32_t x = static_cast<uint32_t>(engine() >> 32);
-        x = (x >> 9) | 0x3F800000U;
-        float f;
-        std::memcpy(&f, &x, sizeof(f));
-        return f - 1.0f;
-    }
-
-    // [0, 1) — double
-    double unit_double() {
-        uint64_t x = engine();
-        x = (x >> 11) | 0x3FF0000000000000ULL;
-        double d;
-        std::memcpy(&d, &x, sizeof(d));
-        return d - 1.0;
-    }
-
-    // [min, max] — целое
-    int64_t range_int(int64_t min, int64_t max) {
-        return min + static_cast<int64_t>(below(static_cast<uint64_t>(max - min + 1)));
-    }
-
-    // [min, max) — double
-    double range_double(double min, double max) {
-        return min + (max - min) * unit_double();
-    }
-
-    // [a, b) — float
-    float next_float(float a, float b) {
-        return a + (b - a) * unit_float();
-    }
-};
-
-
 
 
 class CDrumSample;
@@ -154,7 +92,7 @@ public:
   int mute_group; //-1 no; 7777 hihat auto
   
   int current_layer; //оставить для влияния?
-//  int midiOutNote;
+
   int session_samplerate; //session srate, taken from the upper level object
 
   bool active; //is sample triggered to play? 
@@ -167,7 +105,10 @@ public:
   //float noise_level;
   
   int layer_index_mode; //0 - velocity, 1 - rnd, 2 - round robin
-  
+
+  //FastDeterministicRNG rnd_generator;
+ 
+    
   size_t robin_counter; 
   
   float velocity;
@@ -207,7 +148,7 @@ public:
 
 //  bool scan_mode; //if false, we do not load kit's samples
 
-  UltraFastRNG rng(123456789UL);
+  //UltraFastRNG rng(123456789UL);
  
    
   std::string kit_name; //parsed from XML or evaluated in other way
@@ -312,6 +253,7 @@ public:
 
 
 void rnd_init();
+int get_rnd (int ta, int tb);
 
 
 

@@ -1494,6 +1494,43 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       return;
 
    
+  //juce::AudioPlayHead::PositionInfo positionInfo;
+ 
+  /*
+  if (play_head)
+     {
+      auto positionInfo = play_head->getPosition();  
+        
+      if (positionInfo->getTimeInSamples().hasValue())
+         currentSamplePosition = positionInfo->getTimeInSamples();
+                // Use the sample position
+
+            if (positionInfo.getTimeInSeconds().hasValue())
+            {
+                double currentTimeInSeconds = *positionInfo.getTimeInSeconds();
+                // Use the time in seconds
+            }
+     }
+   */
+  
+  
+AudioPlayHead* play_head = getPlayHead();
+int64_t currentSamplePosition = 777;
+if (play_head)
+{
+    auto positionInfo = play_head->getPosition();
+    if (positionInfo)
+    {
+        auto timeInSamples = positionInfo->getTimeInSamples();
+        // Безопасно получить значение, если оно есть, иначе оставить currentSamplePosition как 0:
+        
+        if (timeInSamples.hasValue())
+            currentSamplePosition = *timeInSamples; // Используем оператор * для получения значения
+            
+    }
+}
+
+   
   int int_panner_mode = *panner_mode;
 
    
@@ -1503,6 +1540,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   
    
    mix_analog_amount = *(global_analog_amount);
+   
+   float pan_sum = 0.0f;
+   float vol_sum = 0.0f;
    
  
   for (size_t i = 0; i < 35; i++)
@@ -1515,6 +1555,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       a_analog_on [i] = *(analog[i]);
 
       float pan = *(pans[i]); //float pan = *(pans[drum_sample_index]);
+      
+      vol_sum += a_vols [i];
+      pan_sum += pan;
       
       if (int_panner_mode == PANMODE01)
          pan_sincos (a_pan_left[i], a_pan_right[i], pan);
@@ -1543,7 +1586,21 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
           
   
   ///////////////////
+  
+  //std::cout << "currentSamplePosition " << currentSamplePosition << "\n";
+  
+  //ПЕРЕПИСАТЬ ТУТ! ДОБАВИТЬ currentSamplePosition ПАРАМЕТРЫ НАПРИМЕР ПАНОРАМЫ И ТД
+  
+  
+  if (currentSamplePosition == 0)
+     currentSamplePosition = get_rnd (1, 777); 
+  //else 
+   rnd_generator.setSeed (currentSamplePosition + (vol_sum * 10000) + (pan_sum * 10000)); 
+
+  // std::cout << "currentSamplePosition: " << currentSamplePosition << "\n";
    
+      
+      
   for (const juce::MidiMessageMetadata metadata: midiMessages)
       {
         //  if (metadata.numBytes == 3)
@@ -1645,7 +1702,15 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     if (num_channels > 1)
        channel_data [1] = buffer.getWritePointer (1);
 
+ 
+      //инит сид в каждому инструменту, на начало блока  
+/*       for (int drum_sample_index = 0; drum_sample_index < 36; drum_sample_index++)
+            {
+             CDrumSample *s = drumkit->a_samples[drum_sample_index];
+             s->rnd_generator.setSeed (currentSamplePosition);
 
+            } 
+*/
    //for each sample out_buf_offs
     for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
         //for each drum instrument
@@ -1661,6 +1726,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
              if (! s->active)
                 continue;
 
+               
 //             CDrumLayer *l = s->v_layers.at(s->current_layer);
              CDrumLayer *l = s->v_layers[s->current_layer];
   

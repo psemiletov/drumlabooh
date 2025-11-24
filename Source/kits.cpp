@@ -33,6 +33,8 @@ std::mt19937 rnd_mt19937;
 const uint64_t SEED = 123456789ULL;
 //UltraFastRNG rng(SEED);
 
+FastDeterministicRNG rnd_generator;
+
 
 
 std::string get_part (std::string &s)
@@ -2542,7 +2544,12 @@ void CDrumSample::trigger_sample (float vel)
           current_layer = map_velo_to_layer_number (vel);
 
       if (layer_index_mode == LAYER_INDEX_MODE_RND)
-          current_layer = get_rnd (0, v_layers.size() - 1);//random layer
+          //current_layer = get_rnd (0, v_layers.size() - 1);//random layer
+          current_layer = rnd_generator.next (0, v_layers.size() - 1);//random layer
+         
+                  
+     std::cout << "current_layer : " << current_layer  << std::endl;
+         
           
       if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
          {
@@ -2590,7 +2597,11 @@ void CDrumSample::trigger_sample_uint (int vel, float velo)
           current_layer = map_uint_velo_to_layer_number (vel);
 
       if (layer_index_mode == LAYER_INDEX_MODE_RND)
-          current_layer = get_rnd (0, v_layers.size() - 1);//random layer
+         // current_layer = get_rnd (0, v_layers.size() - 1);//random layer
+          current_layer = rnd_generator.next (0, v_layers.size() - 1);//random layer
+   
+        std::cout << "current_layer : " << current_layer  << std::endl;
+      
        
       if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
          {
