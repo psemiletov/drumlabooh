@@ -184,6 +184,7 @@ CFx::~CFx()
 
   att_analog = nullptr;
   att_analog_amount = nullptr;
+  
 }
 
 
@@ -1435,21 +1436,47 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
  
   addAndMakeVisible (sl_global_analog_amount);
-  sl_global_analog_amount.setTopLeftPosition (cmb_pan_mode.getX(), bt_global_analog_on.getY() + YFILLER);
-  sl_global_analog_amount.setSize (192, 48);
+  sl_global_analog_amount.setTopLeftPosition (cmb_pan_mode.getX(), l_pan_mode.getBottom() + YFILLER);
+  sl_global_analog_amount.setSize (182, 48);
   sl_global_analog_amount.setRange (0.0f, 1.0f, 0.01f);
   sl_global_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
-  sl_global_analog_amount.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_global_analog_amount.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 20);
   sl_global_analog_amount.setColour (juce::Slider::thumbColourId, juce::Colours::orange);
   sl_global_analog_amount.setTooltip ("Level of Analog saturator");
 
   att_global_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "global_analog_amount", sl_global_analog_amount));
+  
+  
+ ///////////////////  NEW
+  
+  
+  addAndMakeVisible (l_randomizer_seed);
+  l_randomizer_seed.setSize (100, 48);
+  l_randomizer_seed.setTopLeftPosition (l_pan_mode.getX(), sl_global_analog_amount.getBottom() + YFILLER);
    
+  //l_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments in Auto mode,\n default 36");
+
+  addAndMakeVisible (sl_randomizer_seed);
+  //sl_randomizer_seed.setSliderStyle (juce::Slider::SliderStyle::IncDecButtons);
+  //sl_randomizer_seed.setSliderStyle (juce::Slider::SliderStyle::Rotary);
+  
+  sl_randomizer_seed.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_randomizer_seed.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 20);
+  
+  sl_randomizer_seed.setTopLeftPosition (l_randomizer_seed.getX() + l_randomizer_seed.getWidth(), sl_global_analog_amount.getBottom() + YFILLER);
+  sl_randomizer_seed.setSize (182, 48);
+  sl_randomizer_seed.setRange (1, 65536, 1.0);
+  sl_randomizer_seed.setValue (audioProcessor.randomizer_seed, dontSendNotification);
+  sl_randomizer_seed.addListener (this);
+  //sl_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
+ 
+ 
+//////////////   
   
   addAndMakeVisible (log_area);
   log_area.setMultiLine (true, true);
   log_area.setReadOnly (true);
-  log_area.setTopLeftPosition (sl_global_analog_amount.getRight(), l_midimap_mode.getY());
+  log_area.setTopLeftPosition (sl_global_analog_amount.getRight() + XFILLER, l_midimap_mode.getY());
   log_area.setSize (224, 148);
     
   gr_options.setSize (drumcells_group.getRight(), sl_base_note.getHeight() + 
@@ -1506,7 +1533,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
 CAudioProcessorEditor::~CAudioProcessorEditor()
 {
   att_ignore_midi_velocity = nullptr;
-  att_base_note = nullptr;
+ // att_base_note = nullptr;
+  //att_randomizer_seed = nullptr;
   
 #ifndef MULTICHANNEL
 
@@ -1585,6 +1613,13 @@ void CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
      {
       audioProcessor.base_note_number = sl_base_note.getValue();
      }
+     
+  if (slider == &sl_randomizer_seed)
+     {
+      audioProcessor.randomizer_seed = sl_randomizer_seed.getValue();
+     }
+     
+     
 }
 
 void CTimer::hiResTimerCallback()

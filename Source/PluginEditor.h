@@ -99,7 +99,6 @@ public:
   juce::ToggleButton bt_analog;
   juce::Slider sl_analog_amount;
 
-
   CFx();
   ~CFx() override;
 };
@@ -283,13 +282,18 @@ public:
   juce::Label l_midimap_mode { {}, "MIDI map mode" };
   juce::ComboBox cmb_midimap_mode;
   
-  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_base_note;
+  //std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> att_base_note;
   juce::Label l_base_note { {}, "Base MIDI note" };
   juce::Slider sl_base_note;
+  
 
+  //std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_randomizer_seed;
+  juce::Label l_randomizer_seed { {}, "Rnd seed tweak" };
+  juce::Slider sl_randomizer_seed;
+  
   juce::GroupComponent gr_options;
 
-
+  
 //END OF OPTIONS CONTROLS  
 
   juce::TextButton bt_file_open;

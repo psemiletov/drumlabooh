@@ -146,7 +146,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                                juce::NormalisableRange<float> (0.001f, 1.0f, 0.001f), // parameter range
                                                                0.001f));
       
-      
+   /* layout.add (std::make_unique<juce::AudioParameterFloat> ("randomizer_seed",
+                                                              "randomizer_seed",
+                                                               juce::NormalisableRange<float> (1, 65536, 1), // parameter range
+                                                               1));
+     */ 
   return layout;
 }
 
@@ -267,6 +271,7 @@ CAudioProcessor::CAudioProcessor()
   drumkit = 0;
   drumkit_path = "";
   base_note_number = 36;
+  randomizer_seed = 777; //сменить на рэндом
   session_samplerate = 0;
 
   for (size_t i = 0; i < 36; i++)
@@ -323,6 +328,7 @@ CAudioProcessor::CAudioProcessor()
   drumkit = 0;
   drumkit_path = "";
   base_note_number = 36;
+  randomizer_seed = 777; //сменить на рэндом
   session_samplerate = 0;
 
   for (size_t i = 0; i < 36; i++)
@@ -448,7 +454,6 @@ void CAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
      if (drumkit->samplerate != session_samplerate)
         load_kit (drumkit_path);
    
-  //SEED RANDOMIZER HERE 
 }
 
 
@@ -1079,6 +1084,9 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
   save_string_keyval ("drumkit_path", drumkitpath_to_save);
   
   save_int_keyval ("base_note_number", base_note_number);
+  save_int_keyval ("randomizer_seed", randomizer_seed);
+  
+  
   auto state = parameters.copyState();
   std::unique_ptr <juce::XmlElement> xml (state.createXml());
   copyXmlToBinary (*xml, destData);
@@ -1096,6 +1104,8 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
         {
          parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
          base_note_number = load_int_keyval ("base_note_number", 36);
+         randomizer_seed = load_int_keyval ("randomizer_seed", 777);
+         
          drumkit_path = load_string_keyval ("drumkit_path");
          session_samplerate = getSampleRate();
          
@@ -1253,9 +1263,44 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
    
   if (drumkit->sample_counter == 0)
       return;
+
+  
+AudioPlayHead* play_head = getPlayHead();
+int64_t currentSamplePosition = 777;
+if (play_head)
+{
+    auto positionInfo = play_head->getPosition();
+    if (positionInfo)
+    {
+        auto timeInSamples = positionInfo->getTimeInSamples();
+        // Безопасно получить значение, если оно есть, иначе оставить currentSamplePosition как 0:
+        
+        if (timeInSamples.hasValue())
+            currentSamplePosition = *timeInSamples; // Используем оператор * для получения значения
+            
+    }
+}
+
+
+
+  if (currentSamplePosition == 0)
+     currentSamplePosition = get_rnd (1, 777); 
+  //else 
+   
+   
+   
+   //int rseed = (int) *randomizer_seed;
+   
+   rnd_generator.setSeed (currentSamplePosition + randomizer_seed); 
+
+
    
   int int_midimap_mode = (int) *midimap_mode;
 
+  
+  
+  
+  
   
   for (const juce::MidiMessageMetadata metadata: midiMessages)
       {
@@ -1493,26 +1538,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   if (drumkit->sample_counter == 0)
       return;
 
-   
-  //juce::AudioPlayHead::PositionInfo positionInfo;
- 
-  /*
-  if (play_head)
-     {
-      auto positionInfo = play_head->getPosition();  
-        
-      if (positionInfo->getTimeInSamples().hasValue())
-         currentSamplePosition = positionInfo->getTimeInSamples();
-                // Use the sample position
-
-            if (positionInfo.getTimeInSeconds().hasValue())
-            {
-                double currentTimeInSeconds = *positionInfo.getTimeInSeconds();
-                // Use the time in seconds
-            }
-     }
-   */
-  
   
 AudioPlayHead* play_head = getPlayHead();
 int64_t currentSamplePosition = 777;
@@ -1531,9 +1556,11 @@ if (play_head)
 }
 
    
-  int int_panner_mode = *panner_mode;
-
+  //int rseed = (int) *randomizer_seed;
    
+   rnd_generator.setSeed (currentSamplePosition + randomizer_seed); 
+
+ 
    //////////////////////
   // CACHE ALL ATOMIC PARAMETERS
 
@@ -1558,6 +1585,8 @@ if (play_head)
       
       vol_sum += a_vols [i];
       pan_sum += pan;
+      
+      int int_panner_mode = *panner_mode;
       
       if (int_panner_mode == PANMODE01)
          pan_sincos (a_pan_left[i], a_pan_right[i], pan);
@@ -1589,14 +1618,15 @@ if (play_head)
   
   //std::cout << "currentSamplePosition " << currentSamplePosition << "\n";
   
-  //ПЕРЕПИСАТЬ ТУТ! ДОБАВИТЬ currentSamplePosition ПАРАМЕТРЫ НАПРИМЕР ПАНОРАМЫ И ТД
-  
   
   if (currentSamplePosition == 0)
      currentSamplePosition = get_rnd (1, 777); 
   //else 
-   rnd_generator.setSeed (currentSamplePosition + (vol_sum * 10000) + (pan_sum * 10000)); 
+  // rnd_generator.setSeed (currentSamplePosition + (vol_sum * 10000) + (pan_sum * 10000)); 
 
+    rnd_generator.setSeed (currentSamplePosition + randomizer_seed); 
+
+   
   // std::cout << "currentSamplePosition: " << currentSamplePosition << "\n";
    
       

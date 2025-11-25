@@ -30,7 +30,7 @@ public:
   
 //  std::atomic<float>* layer_index[36]; //int
 
-   int layer_index[36]; //нужно только для загрузки параметров
+  int layer_index[36]; //нужно только для загрузки параметров
 
   //массивы куда читаются пан, громкость и тд чтобы использовать внутри цикла
   
@@ -47,9 +47,7 @@ public:
   float a_mutes [36] = {0.000f};  
   
   float mix_analog_amount;   //of the mizx
-  
-  
-  
+
   
   //all mixer strip (drumcell) params
 
@@ -89,6 +87,7 @@ public:
   std::atomic<float>* ignore_midi_velocity = nullptr;
   std::atomic<float>* global_analog_on = nullptr;
   std::atomic<float>* global_analog_amount = nullptr;
+  std::atomic<float>* global_randomizer_seed = nullptr;
 
   //Filters
 
@@ -97,7 +96,8 @@ public:
 
 
   int base_note_number; //default 36, the base for note number mapping to array index (i.e. MIDI note minus base note to get the array index)
-
+  int randomizer_seed;  
+  
   bool fresh_start; //need to determine when we need to load the kit
   //see  CAudioProcessor::processBlock
   //invented as hack to Ardour
