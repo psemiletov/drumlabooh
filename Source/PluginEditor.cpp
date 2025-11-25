@@ -1452,7 +1452,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
   addAndMakeVisible (l_randomizer_seed);
   l_randomizer_seed.setSize (100, 48);
-  l_randomizer_seed.setTopLeftPosition (l_pan_mode.getX(), sl_global_analog_amount.getBottom() + YFILLER);
+  l_randomizer_seed.setTopLeftPosition (l_pan_mode.getX(), sl_global_analog_amount.getBottom()/* + YFILLER*/);
    
   //l_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments in Auto mode,\n default 36");
 
@@ -1463,7 +1463,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   sl_randomizer_seed.setSliderStyle (juce::Slider::LinearHorizontal);
   sl_randomizer_seed.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 20);
   
-  sl_randomizer_seed.setTopLeftPosition (l_randomizer_seed.getX() + l_randomizer_seed.getWidth(), sl_global_analog_amount.getBottom() + YFILLER);
+  sl_randomizer_seed.setTopLeftPosition (l_randomizer_seed.getX() + l_randomizer_seed.getWidth(), sl_global_analog_amount.getBottom()/* + YFILLER*/);
   sl_randomizer_seed.setSize (182, 48);
   sl_randomizer_seed.setRange (1, 65536, 1.0);
   sl_randomizer_seed.setValue (audioProcessor.randomizer_seed, dontSendNotification);
