@@ -13,7 +13,12 @@ this code is the public domain
 //for FastDeterministicRNG
 #include <cstdint>
 #include <algorithm>
+//#include <random>
+#include <limits>
 
+
+
+/*
 class FastDeterministicRNG {
 public:
     FastDeterministicRNG() : state(0) {}
@@ -39,7 +44,56 @@ public:
 private:
     uint64_t state;
 };
+*/
 
+
+// МИНИМАЛЬНЫЕ значения:
+//minVal = LLONG_MIN  // -9,223,372,036,854,775,808
+//maxVal = LLONG_MAX  // +9,223,372,036,854,775,807
+
+
+
+class FastDeterministicRNG {
+public:
+    FastDeterministicRNG() : state(0xDEADBEEFCAFEBABE) {}  // Дефолтное seed
+    
+    void setSeed(uint64_t seed) {
+        state = seed ? seed : 0xDEADBEEFCAFEBABE;  // Защита от 0
+    }
+    
+    uint64_t nextRaw() {
+        // Улучшенный алгоритм (хотя для криптографии нужно что-то серьезнее)
+        state ^= state >> 12;
+        state ^= state << 25;
+        state ^= state >> 27;
+        return state * 0x2545F4914F6CDD1DULL;
+    }
+    
+    long long next(long long minVal, long long maxVal) {
+        if (minVal > maxVal) std::swap(minVal, maxVal);
+        
+        uint64_t range = static_cast<uint64_t>(maxVal) - static_cast<uint64_t>(minVal);
+        if (range == 0) return minVal;  // Защита от деления на 0
+        
+        // Корректное равномерное распределение
+        uint64_t raw = nextRaw();
+        if (range == std::numeric_limits<uint64_t>::max()) {
+            return minVal + static_cast<long long>(raw);
+        }
+        
+        // Метод отбраковки для устранения смещения
+        uint64_t limit = std::numeric_limits<uint64_t>::max() - 
+                        (std::numeric_limits<uint64_t>::max() % (range + 1));
+        while (raw > limit) {
+            raw = nextRaw();
+        }
+        
+        return minVal + static_cast<long long>(raw % (range + 1));
+    }
+
+private:
+    uint64_t state;
+};
 extern FastDeterministicRNG rnd_generator;
  
 

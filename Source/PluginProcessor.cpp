@@ -1104,7 +1104,7 @@ void CAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
         {
          parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
          base_note_number = load_int_keyval ("base_note_number", 36);
-         randomizer_seed = load_int_keyval ("randomizer_seed", 777);
+         randomizer_seed = load_int_keyval ("randomizer_seed", get_rnd (1, 65536));
          
          drumkit_path = load_string_keyval ("drumkit_path");
          session_samplerate = getSampleRate();
@@ -1284,7 +1284,7 @@ if (play_head)
 
 
   if (currentSamplePosition == 0)
-     currentSamplePosition = get_rnd (1, 777); 
+     currentSamplePosition = get_rnd (1, 65536); 
   //else 
    
    
@@ -1620,7 +1620,7 @@ if (play_head)
   
   
   if (currentSamplePosition == 0)
-     currentSamplePosition = get_rnd (1, 777); 
+     currentSamplePosition = get_rnd (1, 65536); 
   //else 
   // rnd_generator.setSeed (currentSamplePosition + (vol_sum * 10000) + (pan_sum * 10000)); 
 
