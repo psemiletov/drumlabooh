@@ -1467,6 +1467,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   sl_randomizer_seed.setSize (182, 48);
   sl_randomizer_seed.setRange (1, 65536, 1.0);
   sl_randomizer_seed.setValue (audioProcessor.randomizer_seed, dontSendNotification);
+  sl_randomizer_seed.setColour (juce::Slider::thumbColourId, juce::Colours::cornsilk);
+  
   sl_randomizer_seed.addListener (this);
   //sl_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
  
@@ -1477,7 +1479,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   log_area.setMultiLine (true, true);
   log_area.setReadOnly (true);
   log_area.setTopLeftPosition (sl_global_analog_amount.getRight() + XFILLER, l_midimap_mode.getY());
-  log_area.setSize (224, 148);
+  log_area.setSize (240, 148);
     
   gr_options.setSize (drumcells_group.getRight(), sl_base_note.getHeight() + 
                       cmb_pan_mode.getHeight() + 

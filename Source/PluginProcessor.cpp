@@ -271,7 +271,7 @@ CAudioProcessor::CAudioProcessor()
   drumkit = 0;
   drumkit_path = "";
   base_note_number = 36;
-  randomizer_seed = 777; //сменить на рэндом
+  randomizer_seed = get_rnd (1, 65536);
   session_samplerate = 0;
 
   for (size_t i = 0; i < 36; i++)
@@ -328,7 +328,9 @@ CAudioProcessor::CAudioProcessor()
   drumkit = 0;
   drumkit_path = "";
   base_note_number = 36;
-  randomizer_seed = 777; //сменить на рэндом
+  randomizer_seed = get_rnd (1, 65536);
+
+  
   session_samplerate = 0;
 
   for (size_t i = 0; i < 36; i++)
@@ -619,26 +621,6 @@ void CAudioProcessor::processBlock_OLD (juce::AudioBuffer<float>& buffer, juce::
                    }
               }
            
-          /*   
-           if (s->hihat_close)
-              {
-               for (size_t i = 0; i < MAX_SAMPLES; i++)
-                   {
-                    CDrumSample *s2 = drumkit->a_samples[i]; //point to the sample
-                    if (! s2)
-                       continue;
-                      
-                    if (s2->hihat_open)
-                       {
-                        if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH) 
-                           s2->untrigger_sample (true);
-                        else
-                           s2->untrigger_sample (false);
-                          
-                       }
-                   }
-              }
-            */  
            //AUTOMUTE END   
               
           }
@@ -1265,20 +1247,20 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       return;
 
   
-AudioPlayHead* play_head = getPlayHead();
-int64_t currentSamplePosition = 777;
-if (play_head)
-{
-    auto positionInfo = play_head->getPosition();
-    if (positionInfo)
-    {
-        auto timeInSamples = positionInfo->getTimeInSamples();
-        // Безопасно получить значение, если оно есть, иначе оставить currentSamplePosition как 0:
-        
-        if (timeInSamples.hasValue())
-            currentSamplePosition = *timeInSamples; // Используем оператор * для получения значения
-            
-    }
+  AudioPlayHead* play_head = getPlayHead();
+  int64_t currentSamplePosition = 777;
+  if (play_head)
+     {
+      auto positionInfo = play_head->getPosition();
+      if (positionInfo)
+         {
+          auto timeInSamples = positionInfo->getTimeInSamples();
+          // Безопасно получить значение, если оно есть, иначе оставить currentSamplePosition как 0:
+          if (timeInSamples.hasValue())
+             currentSamplePosition = *timeInSamples; // Используем оператор * для получения значения
+          else
+              currentSamplePosition = get_rnd (1, 65536);
+        }
 }
 
 
@@ -1376,26 +1358,6 @@ if (play_head)
                    }
               }
            
-          /*   
-           if (s->hihat_close)
-              {
-               for (size_t i = 0; i < MAX_SAMPLES; i++)
-                   {
-                    CDrumSample *s2 = drumkit->a_samples[i]; //point to the sample
-                    if (! s2)
-                       continue;
-                      
-                    if (s2->hihat_open)
-                       {
-                        if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH) 
-                           s2->untrigger_sample (true);
-                        else
-                           s2->untrigger_sample (false);
-                          
-                       }
-                   }
-              }
-            */  
            //AUTOMUTE END   
               
           }
@@ -1539,21 +1501,24 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       return;
 
   
-AudioPlayHead* play_head = getPlayHead();
-int64_t currentSamplePosition = 777;
-if (play_head)
-{
-    auto positionInfo = play_head->getPosition();
-    if (positionInfo)
-    {
+  AudioPlayHead* play_head = getPlayHead();
+  int64_t currentSamplePosition = 777;
+  
+  if (play_head)
+     {
+      auto positionInfo = play_head->getPosition();
+      if (positionInfo)
+         {
         auto timeInSamples = positionInfo->getTimeInSamples();
         // Безопасно получить значение, если оно есть, иначе оставить currentSamplePosition как 0:
         
         if (timeInSamples.hasValue())
             currentSamplePosition = *timeInSamples; // Используем оператор * для получения значения
+        else
+             currentSamplePosition = get_rnd (1, 65536);
             
+       }
     }
-}
 
    
   //int rseed = (int) *randomizer_seed;
