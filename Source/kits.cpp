@@ -596,7 +596,7 @@ std::string trim (const std::string& str)
 
 void CDrumKit::load_labooh_xml (const std::string &data)
 {
-  std::cout << "void CDrumKit::load_labooh_xml (const std::string &data)\n";
+ // std::cout << "void CDrumKit::load_labooh_xml (const std::string &data)\n";
   
   if (data.empty())
       return;
@@ -625,7 +625,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
   
    for (pugi::xml_node item_sample = samples.first_child(); item_sample; item_sample = item_sample.next_sibling())
        {
-        std::cout << item_sample.text().as_string() << std::endl;
+       // std::cout << item_sample.text().as_string() << std::endl;
         
        if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
            break;
@@ -656,7 +656,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
     
        std::string layer_index_mode = item_sample.attribute ("layer_index_mode").value(); 
 
-       std::cout << "layer_index_mode" << layer_index_mode << std::endl;
+    //   std::cout << "layer_index_mode" << layer_index_mode << std::endl;
 
        temp_sample->layer_index_mode = LAYER_INDEX_MODE_VEL; //default
        
@@ -678,7 +678,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
         
        fname = trim (fname); 
        
-       std::cout << "fname" << fname << std::endl;
+      // std::cout << "fname" << fname << std::endl;
 
        
        size_t check_for_list = fname.find (",");
@@ -932,7 +932,7 @@ void CDrumKit::load_directory (const std::string &path)
 
 void CDrumKit::load_txt (const std::string &data)
 {
-  cout << "void CDrumKit::load_txt (const std::string data)\n";
+ // cout << "void CDrumKit::load_txt (const std::string data)\n";
 
   if (data.empty())
       return;
@@ -2424,7 +2424,7 @@ void CDrumKitsScanner::scan()
           kit_exists = true;
        else
            {
-            fname = kd + "/drumkit.labooh";
+            fname = kd + "/drumkit.labooh"; //приоритет перед txt
             if (file_exists (fname))
                kit_exists = true;
             else
