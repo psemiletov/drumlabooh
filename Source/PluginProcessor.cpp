@@ -1261,7 +1261,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
           else
               currentSamplePosition = get_rnd (1, 65536);
         }
-}
+     }
 
 
 
@@ -1698,14 +1698,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
        channel_data [1] = buffer.getWritePointer (1);
 
  
-      //инит сид в каждому инструменту, на начало блока  
-/*       for (int drum_sample_index = 0; drum_sample_index < 36; drum_sample_index++)
-            {
-             CDrumSample *s = drumkit->a_samples[drum_sample_index];
-             s->rnd_generator.setSeed (currentSamplePosition);
-
-            } 
-*/
    //for each sample out_buf_offs
     for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
         //for each drum instrument

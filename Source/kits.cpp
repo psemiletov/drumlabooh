@@ -596,7 +596,7 @@ std::string trim (const std::string& str)
 
 void CDrumKit::load_labooh_xml (const std::string &data)
 {
-//  std::cout << "void CDrumKit::load_labooh_xml (const std::string &data)\n";
+  std::cout << "void CDrumKit::load_labooh_xml (const std::string &data)\n";
   
   if (data.empty())
       return;
@@ -625,7 +625,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
   
    for (pugi::xml_node item_sample = samples.first_child(); item_sample; item_sample = item_sample.next_sibling())
        {
-    //    std::cout << item_sample.text().as_string() << std::endl;
+        std::cout << item_sample.text().as_string() << std::endl;
         
        if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
            break;
@@ -655,6 +655,10 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        
     
        std::string layer_index_mode = item_sample.attribute ("layer_index_mode").value(); 
+
+       std::cout << "layer_index_mode" << layer_index_mode << std::endl;
+
+       temp_sample->layer_index_mode = LAYER_INDEX_MODE_VEL; //default
        
        if (layer_index_mode == "rnd")
            temp_sample->layer_index_mode = LAYER_INDEX_MODE_RND; 
@@ -673,7 +677,10 @@ void CDrumKit::load_labooh_xml (const std::string &data)
           continue;
         
        fname = trim (fname); 
-        
+       
+       std::cout << "fname" << fname << std::endl;
+
+       
        size_t check_for_list = fname.find (",");
        bool check_for_txt = false;
                   
@@ -925,7 +932,7 @@ void CDrumKit::load_directory (const std::string &path)
 
 void CDrumKit::load_txt (const std::string &data)
 {
-  //cout << "void CDrumKit::load_txt (const std::string data)\n";
+  cout << "void CDrumKit::load_txt (const std::string data)\n";
 
   if (data.empty())
       return;
@@ -974,7 +981,7 @@ void CDrumKit::load_txt (const std::string &data)
          bool check_for_rnd = false;
          bool check_for_robin = false;
          bool check_for_novelocity = false;
-         bool check_for_random_noice = false;
+  //       bool check_for_random_noice = false;
          bool check_for_txt = false;
                   
          //if (fname.find ("samples.txt") != string::npos || fname.find (".part") != string::npos)
@@ -1000,12 +1007,6 @@ void CDrumKit::load_txt (const std::string &data)
              sample_name.erase (0, 1);
             } 
 
-    /*     if (sample_name.rfind ("~", 0) == 0) 
-            { 
-             check_for_random_noice = true; 
-             sample_name.erase (0, 1);
-            } 
-  */
             
          if ((check_for_list != string::npos) || check_for_txt)
             {
@@ -1033,6 +1034,7 @@ void CDrumKit::load_txt (const std::string &data)
                  has_mapping = true;
                 } 
          
+             temp_sample->layer_index_mode = LAYER_INDEX_MODE_VEL; //default
          
              if (check_for_rnd)
                  temp_sample->layer_index_mode = LAYER_INDEX_MODE_RND; 
@@ -2422,7 +2424,7 @@ void CDrumKitsScanner::scan()
           kit_exists = true;
        else
            {
-            fname = kd + "/drumkit.txt";
+            fname = kd + "/drumkit.labooh";
             if (file_exists (fname))
                kit_exists = true;
             else
@@ -2432,7 +2434,7 @@ void CDrumKitsScanner::scan()
                     kit_exists = true;
                  else
                      {
-                      fname = kd + "/drumkit.labooh";
+                      fname = kd + "/drumkit.txt";
                       if (file_exists (fname))
                         {
                          kit_exists = true;
@@ -2548,7 +2550,7 @@ void CDrumSample::trigger_sample (float vel)
           current_layer = rnd_generator.next (0, v_layers.size() - 1);//random layer
          
                   
-     std::cout << "current_layer : " << current_layer  << std::endl;
+     std::cout << "rnd current_layer : " << current_layer  << std::endl;
          
           
       if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
@@ -2557,8 +2559,11 @@ void CDrumSample::trigger_sample (float vel)
 
           if (robin_counter == v_layers.size())
               robin_counter = 0;
-         
+            
           current_layer = robin_counter;
+          
+          std::cout << "robin current_layer : " << current_layer  << std::endl;
+
          } 
       }
    else 
@@ -2592,16 +2597,19 @@ void CDrumSample::trigger_sample_uint (int vel, float velo)
   
   if (v_layers.size() > 1)
      {
-  
+      std::cout << "layer_index_mode : " << layer_index_mode << std::endl;
+      
+        
+        
       if (layer_index_mode == LAYER_INDEX_MODE_VEL || layer_index_mode == LAYER_INDEX_MODE_NOVELOCITY)
           current_layer = map_uint_velo_to_layer_number (vel);
 
       if (layer_index_mode == LAYER_INDEX_MODE_RND)
          // current_layer = get_rnd (0, v_layers.size() - 1);//random layer
+         {
           current_layer = rnd_generator.next (0, v_layers.size() - 1);//random layer
-   
-        std::cout << "current_layer : " << current_layer  << std::endl;
-      
+          std::cout << "rnd current_layer : " << current_layer  << std::endl;
+         }   
        
       if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
          {
@@ -2611,6 +2619,10 @@ void CDrumSample::trigger_sample_uint (int vel, float velo)
               robin_counter = 0;
          
           current_layer = robin_counter;
+          
+          
+         std::cout << "robin current_layer : " << current_layer  << std::endl;
+
          } 
       }
    else 
@@ -2820,90 +2832,3 @@ void CDrumKit::setup_auto_mute()
 }
   
   
-/*
- *include <iostream>
-#include <random>
-#include <cstdint>
-#include <algorithm>
-
-
-long long generateDeterministicRandom(int64_t currentPosition, long long minVal, long long maxVal)
-{
-    // Убеждаемся, что minVal не больше maxVal
-    if (minVal > maxVal)
-    {
-        std::swap(minVal, maxVal);
-    }
-
-    // 1. Инициализируем генератор (mersenne twister) с помощью позиции в качестве зерна.
-    // std::mt19937_64 используется для 64-битного зерна (int64_t).
-    std::mt19937_64 rng(static_cast<uint64_t>(currentPosition));
-
-    // 2. Определяем равномерное распределение для нужного диапазона.
-    std::uniform_int_distribution<long long> dist(minVal, maxVal);
-
-    // 3. Генерируем и возвращаем число.
-    return dist(rng);
-}
-
-// --- Пример использования ---
-
-int main()
-{
-    long long min = 10;
-    long long max = 50;
-
-    // Позиция 100500 должна всегда давать одинаковый результат
-    int64_t pos1 = 100500;
-    std::cout << "For position " << pos1 << ", random value 1: "
-              << generateDeterministicRandom(pos1, min, max) << std::endl;
-
-    std::cout << "For position " << pos1 << ", random value 2: "
-              << generateDeterministicRandom(pos1, min, max) << std::endl;
-
-    std::cout << "For position " << pos1 << ", random value 3: "
-              << generateDeterministicRandom(pos1, min, max) << std::endl;
-
-    // Другая позиция даст другой, но тоже повторяемый результат
-    int64_t pos2 = 999;
-    std::cout << "\nFor position " << pos2 << ", random value 1: "
-              << generateDeterministicRandom(pos2, min, max) << std::endl;
-
-    std::cout << "For position " << pos2 << ", random value 2: "
-              << generateDeterministicRandom(pos2, min, max) << std::endl;
-
-    return 0;
-}
-
-Используйте код с осторожностью.
-
-
-void processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) override
-{
-    // ... (other processBlock code) ...
-
-    if (auto* playHead = getPlayHead())
-    {
-        juce::AudioPlayHead::PositionInfo positionInfo;
-
-        if (playHead->getPosition(positionInfo))
-        {
-            if (positionInfo.getTimeInSamples().hasValue())
-            {
-                int64 currentSamplePosition = *positionInfo.getTimeInSamples();
-                // Use the sample position
-            }
-
-            if (positionInfo.getTimeInSeconds().hasValue())
-            {
-                double currentTimeInSeconds = *positionInfo.getTimeInSeconds();
-                // Use the time in seconds
-            }
-
-            // Check if playing
-            bool isPlaying = positionInfo.getIsPlaying();
-        }
-    }
-}
-
-*/  
