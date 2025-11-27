@@ -357,7 +357,7 @@ CDrumCell::CDrumCell()
   bt_cell_minus.setTopLeftPosition (bt_cell_plus.getX(), bt_cell_plus.getBottom() + 1);
   bt_cell_minus.setSize (24, 16);
 
-  bt_cell_minus.setTooltip ("Quick kit: Remove sample from quick kit\nAlternate-sample drum kit: previous sample");  
+  bt_cell_minus.setTooltip ("Alternate-sample drum kit: previous sample");  
 
   
   bt_cell_minus.onClick = [this] {
@@ -374,8 +374,7 @@ CDrumCell::CDrumCell()
                                      }
 
      
-                                  //if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH) 
-                                     { 
+                                      
                                       editor->tmr_leds.stopTimer();
                                       editor->audioProcessor.suspendProcessing (true);
  
@@ -397,7 +396,7 @@ CDrumCell::CDrumCell()
                                       editor->audioProcessor.suspendProcessing (false);
                                       editor->tmr_leds.startTimer (1000 / 15); //15 FPS
                                       return;
-                                     }
+                                     
                                       
     
                                     /*
@@ -543,7 +542,7 @@ CDrumCell::CDrumCell()
  // bt_cell_plus.setButtonText ("+");
   bt_cell_plus.setTopLeftPosition (xoffs, YFILLER);
   bt_cell_plus.setSize (24, 16);
-  bt_cell_plus.setTooltip ("Quick kit: Add sample to quick kit\nAlternate-sample drum kit: next sample");  
+  bt_cell_plus.setTooltip ("Alternate-sample drum kit: next sample");  
 ///////////////
     bt_cell_plus.onClick = [this] {
     
@@ -592,13 +591,13 @@ CDrumCell::CDrumCell()
                                      return;
                                     }
                               
-
-                                  if (editor->audioProcessor.drumkit)
-                                  if (editor->audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
-                                    {
-                                     editor->log ("WRONG KIT TYPE!\n"); 
-                                     return;
-                                    } 
+/*
+                                //  if (editor->audioProcessor.drumkit)
+//                                  if (editor->audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
+                                  //  {
+                                    // editor->log ("WRONG KIT TYPE!\n"); 
+                                    // return;
+                                    //} 
                               
                                  //иначе тут может быть только editor->audioProcessor.drumkit->kit_type == KIT_TYPE_QDRUMLABOOH
                                  //или никакого
@@ -643,7 +642,7 @@ CDrumCell::CDrumCell()
   
                                                             editor->audioProcessor.suspendProcessing (false);
                                                             editor->tmr_leds.startTimer (1000 / 15); //15 FPS
-                                                           });
+                                                           });*/
     
                                 };
 
@@ -674,9 +673,9 @@ CDrumCell::CDrumCell()
   bt_cell_minus.setTopLeftPosition (bt_cell_plus.getX(), bt_cell_plus.getBottom() + 1);
   bt_cell_minus.setSize (24, 16);
 
-  bt_cell_minus.setTooltip ("Quick kit: Remove sample from quick kit\nAlternate-sample drum kit: previous sample");  
+  bt_cell_minus.setTooltip ("Alternate-sample drum kit: previous sample");  
   
- bt_cell_minus.onClick = [this] {
+  bt_cell_minus.onClick = [this] {
                                   if (! editor)
                                       return;
         
@@ -1251,7 +1250,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
 
                                      if (ends_with (full, "drumkit.labooh"))
                                         supported = true;
- 
                                       
                                      if (ends_with (full, "drumkitq.txt"))
                                         supported = true;
@@ -1449,7 +1447,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
  ///////////////////  NEW
   
-  
   addAndMakeVisible (l_randomizer_seed);
   l_randomizer_seed.setSize (100, 48);
   l_randomizer_seed.setTopLeftPosition (l_pan_mode.getX(), sl_global_analog_amount.getBottom()/* + YFILLER*/);
@@ -1492,18 +1489,44 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
 
 #else
   
+  
+  ///////////////////  NEW
+  
+  addAndMakeVisible (l_randomizer_seed);
+  l_randomizer_seed.setSize (100, 48);
+  l_randomizer_seed.setTopLeftPosition (bt_ignore_midi_velocity.getX() + bt_ignore_midi_velocity.getWidth() - XFILLER, bt_ignore_midi_velocity.getY());
+   
+  //l_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments in Auto mode,\n default 36");
+
+  addAndMakeVisible (sl_randomizer_seed);
+  //sl_randomizer_seed.setSliderStyle (juce::Slider::SliderStyle::IncDecButtons);
+  //sl_randomizer_seed.setSliderStyle (juce::Slider::SliderStyle::Rotary);
+  
+  sl_randomizer_seed.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_randomizer_seed.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 20);
+  
+  sl_randomizer_seed.setTopLeftPosition (l_randomizer_seed.getX() + l_randomizer_seed.getWidth(), bt_ignore_midi_velocity.getY());
+  sl_randomizer_seed.setSize (182, 48);
+  sl_randomizer_seed.setRange (1, 65536, 1.0);
+  sl_randomizer_seed.setValue (audioProcessor.randomizer_seed, dontSendNotification);
+  sl_randomizer_seed.setColour (juce::Slider::thumbColourId, juce::Colours::cornsilk);
+  
+  sl_randomizer_seed.addListener (this);
+  //sl_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
+ 
+ 
+  
   addAndMakeVisible (log_area);
   log_area.setFont (f_log);
-  log_area.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER * 2, l_midimap_mode.getY());
-  log_area.setSize (354, 148);
+  log_area.setTopLeftPosition (sl_randomizer_seed.getRight() + XFILLER, l_midimap_mode.getY());
+  log_area.setSize (240, 148);
   
-  gr_options.setSize (/*810*/gr_topbar.getRight(), sl_base_note.getHeight() + 
-                           cmb_midimap_mode.getHeight() +
-                           bt_ignore_midi_velocity.getHeight() + YFILLER * 2);
-   //gr_options.setSize (810, bt_ignore_midi_velocity.getBottom());
+  gr_options.setSize (gr_topbar.getRight(), sl_base_note.getHeight() + 
+                      cmb_midimap_mode.getHeight() +
+                      bt_ignore_midi_velocity.getHeight() + YFILLER * 2);
 
-   setSize (gr_topbar.getRight() + XFILLER / 2, 
-            gr_options.getBottom() + 2);
+  setSize (gr_topbar.getRight() + XFILLER / 2, 
+           gr_options.getBottom() + 2);
   
 #endif  
   

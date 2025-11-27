@@ -101,20 +101,15 @@ public:
 
   int mapped_note; //the assigned MIDI note, if defined
   
-  //float random_number; //changes as sample triggers
-  //float noise_level;
-  
+ 
   int layer_index_mode; //0 - velocity, 1 - rnd, 2 - round robin
 
-  //FastDeterministicRNG rnd_generator;
+  FastDeterministicRNG rnd_generator;
  
     
   size_t robin_counter; 
   
   float velocity;
-
-  //bool hihat_open;
-  //bool hihat_close;
 
   std::vector <CDrumLayer*> v_layers; //container for the actual sounds 
 
@@ -146,10 +141,6 @@ class CDrumKit
 {
 public:
 
-//  bool scan_mode; //if false, we do not load kit's samples
-
-  //UltraFastRNG rng(123456789UL);
- 
    
   std::string kit_name; //parsed from XML or evaluated in other way
   std::string kit_filename; //full path to the kit xml, txt or sfz file
@@ -208,6 +199,9 @@ public:
   CDrumKit();
   ~CDrumKit();
 
+  void rnd_set_rnd_seed (uint64_t seed);
+
+  
   void print();
   void print_stats();
   
@@ -254,8 +248,6 @@ public:
 
 void rnd_init();
 int get_rnd (int ta, int tb);
-
-
 
 
 #endif

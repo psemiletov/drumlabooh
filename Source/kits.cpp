@@ -31,9 +31,8 @@ using namespace std;
 
 std::mt19937 rnd_mt19937;
 const uint64_t SEED = 123456789ULL;
-//UltraFastRNG rng(SEED);
 
-FastDeterministicRNG rnd_generator;
+//FastDeterministicRNG rnd_generator;
 
 
 
@@ -2828,6 +2827,19 @@ void CDrumKit::setup_auto_mute()
                  
                  
           }    
+      }   
+}
+  
+  
+void CDrumKit::rnd_set_rnd_seed (uint64_t seed)
+{
+  for (size_t i = 0; i < MAX_SAMPLES; i++)
+      {
+       CDrumSample *s = a_samples[i]; //point to the sample
+       if (! s)  
+          continue;
+         
+       s->rnd_generator.setSeed (seed);  
       }   
 }
   

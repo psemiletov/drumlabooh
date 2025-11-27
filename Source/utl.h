@@ -94,7 +94,7 @@ public:
 private:
     uint64_t state;
 };
-extern FastDeterministicRNG rnd_generator;
+//extern FastDeterministicRNG rnd_generator;
  
 
 /*

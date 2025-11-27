@@ -1247,8 +1247,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       return;
 
   
-  AudioPlayHead* play_head = getPlayHead();
-  int64_t currentSamplePosition = 777;
+  AudioPlayHead *play_head = getPlayHead();
+  int64_t currentSamplePosition = 0;
+  
   if (play_head)
      {
       auto positionInfo = play_head->getPosition();
@@ -1273,8 +1274,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
    
    //int rseed = (int) *randomizer_seed;
    
-   rnd_generator.setSeed (currentSamplePosition + randomizer_seed); 
-
+   //rnd_generator.setSeed (currentSamplePosition + randomizer_seed); 
+   drumkit->rnd_set_rnd_seed (currentSamplePosition + randomizer_seed);
 
    
   int int_midimap_mode = (int) *midimap_mode;
@@ -1502,7 +1503,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
   
   AudioPlayHead* play_head = getPlayHead();
-  int64_t currentSamplePosition = 777;
+  int64_t currentSamplePosition = 0;
   
   if (play_head)
      {
@@ -1519,12 +1520,27 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             
        }
     }
+    
+    
+    
+  if (currentSamplePosition == 0)
+     currentSamplePosition = get_rnd (1, 65536); 
+  //else 
+  // rnd_generator.setSeed (currentSamplePosition + (vol_sum * 10000) + (pan_sum * 10000)); 
+
+   // rnd_generator.setSeed (currentSamplePosition + randomizer_seed); 
+  drumkit->rnd_set_rnd_seed (currentSamplePosition + randomizer_seed);
+
+  
 
    
   //int rseed = (int) *randomizer_seed;
    
-   rnd_generator.setSeed (currentSamplePosition + randomizer_seed); 
+  // rnd_generator.setSeed (currentSamplePosition + randomizer_seed); 
+ // drumkit->rnd_set_rnd_seed (currentSamplePosition + randomizer_seed);
 
+
+ 
  
    //////////////////////
   // CACHE ALL ATOMIC PARAMETERS
@@ -1583,14 +1599,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   
   //std::cout << "currentSamplePosition " << currentSamplePosition << "\n";
   
-  
-  if (currentSamplePosition == 0)
-     currentSamplePosition = get_rnd (1, 65536); 
-  //else 
-  // rnd_generator.setSeed (currentSamplePosition + (vol_sum * 10000) + (pan_sum * 10000)); 
-
-    rnd_generator.setSeed (currentSamplePosition + randomizer_seed); 
-
    
   // std::cout << "currentSamplePosition: " << currentSamplePosition << "\n";
    
