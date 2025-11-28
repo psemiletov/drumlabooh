@@ -239,20 +239,6 @@ CDrumCell::CDrumCell()
                                  if (! editor)
                                      return;
 
-                                 // //if (editor->audioProcessor.drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH) 
-                                 // if (editor->audioProcessor.drumkit)  
-                                   // editor->log (std::to_string (editor->audioProcessor.drumkit->kit_type)); 
-                                  
-     /*
-                                 if (editor->audioProcessor.drumkit)  //если драмкит уже существует
-                                 //но не альтернативный и не быстрый   
-                                 if (editor->audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH ||
-                                     editor->audioProcessor.drumkit->kit_type != KIT_TYPE_ALTDRUMLABOOH)
-                                    {
-                                     editor->log ("WRONG KIT TYPE!\n"); 
-                                     return;
-                                    } 
-     */
                                   
                                  //кит уже есть и альт?
                                  if (editor->audioProcessor.drumkit)  
@@ -775,9 +761,6 @@ void CAudioProcessorEditor::load_kit()
        l_kit_name.setColour(juce::Label::textColourId, juce::Colours::white);
 
           
-   juce::String kitname = /*audioProcessor.drumkit->kit_name*/kit_caption.c_str();
-   
-   l_kit_name.setText (kitname, juce::dontSendNotification);
    
 
    if (! audioProcessor.drumkit->image_fname.empty() && file_exists (audioProcessor.drumkit->image_fname))
@@ -785,9 +768,21 @@ void CAudioProcessorEditor::load_kit()
        juce::File fl (audioProcessor.drumkit->image_fname);
        juce::Image im = juce::ImageFileFormat::loadFrom (fl);
        kit_image.setImage(im);
+       kit_image.setVisible (true);
+
+       l_kit_name.setVisible (false);
+
       }
    else
-       kit_image.setImage(juce::Image());
+       {
+        kit_image.setImage(juce::Image());
+        kit_image.setVisible (false);
+        l_kit_name.setVisible (true);
+        
+       juce::String kitname = /*audioProcessor.drumkit->kit_name*/kit_caption.c_str();
+       l_kit_name.setText (kitname, juce::dontSendNotification);
+       }
+         
 //      {
   //     kit_image.setImage (kit_image_default);
      // }
@@ -1029,17 +1024,43 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   l_kit_name.setText ("EMPTY KIT",  NotificationType::dontSendNotification);
   //l_kit_name.setEditable (false, true);
   l_kit_name.setFont (f_kitname_font);
-  l_kit_name.setTopLeftPosition (gr_kitinfo.getX() + XFILLER, gr_kitinfo.getY());
+  //l_kit_name.setTopLeftPosition (gr_kitinfo.getX() + XFILLER, gr_kitinfo.getY());
   l_kit_name.setSize (280, 48);
 
-  addAndMakeVisible (kit_image);
-  //kit_image.setSize (gr_kitinfo.getWidth() - XFILLER * 3, 200 - YFILLER * 3);
-  kit_image.setSize (gr_kitinfo.getWidth() - XFILLER * 3, 220 - YFILLER * 4);
-   //kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2));
-  kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), 
-                               (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2) + YFILLER /* * 1.5*/);
   
-  // kit_image.setImage (kit_image_default);
+  auto kitinfoBounds = gr_kitinfo.getBounds();
+int lWidth  = l_kit_name.getWidth();
+int lHeight = l_kit_name.getHeight();
+
+int yCenter = kitinfoBounds.getY() + (kitinfoBounds.getHeight() - lHeight) / 2;
+  l_kit_name.setTopLeftPosition(kitinfoBounds.getX(), yCenter);
+  
+  addAndMakeVisible (kit_image);
+  
+ // kit_image.setSize (gr_kitinfo.getWidth() - XFILLER * 3, 220 - YFILLER * 4);
+  // kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), 
+    //                           (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2) + YFILLER /* * 1.5*/);
+
+  kit_image.setBounds (gr_kitinfo.getBounds().reduced (8));
+
+/*
+auto kitinfoBounds = gr_kitinfo.getBounds();
+int topY = l_kit_name.getBottom();
+int extraMargin = 8;
+int sideMargin = 8;
+
+juce::Rectangle<int> imgArea(
+    kitinfoBounds.getX() + sideMargin,
+    topY + extraMargin,
+    kitinfoBounds.getWidth() - 2 * sideMargin,
+    kitinfoBounds.getBottom() - (topY + extraMargin) - sideMargin
+);
+
+kit_image.setBounds(imgArea);
+
+// СОХРАНЯЕМ СОГЛАСОВАНИЕ СТОРОН БЕЗ ИСКАЖЕНИЙ!
+kit_image.setImagePlacement(juce::RectanglePlacement::centred);  
+*/
 
  
 //BELOW KIT INFO
@@ -1660,29 +1681,6 @@ bool CCellLabel::isInterestedInFileDrag (const StringArray &files)
 };
 
 
-/*
-void CCellLabel::filesDropped (const StringArray &files, int x, int y)
-{
-  if (! editor)
-      return;
-  
-  std::string fname = files[0].toStdString();   
-  
-  if (! editor->audioProcessor.drumkit)
-      editor->audioProcessor.drumkit = new CDrumKit();
-    
-  
-  CDrumSample *s = editor->audioProcessor.drumkit->load_sample_to_index (cell->cell_number,
-                                                                         fname, 
-                                                                         editor->audioProcessor.session_samplerate);
-  
-  setText (s->name, juce::dontSendNotification);
-
-  cell->set_name (s->name);
-  setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
-};
-*/
-
 void CCellLabel::filesDropped (const StringArray &files, int x, int y)
 {
   if (! cell->editor)
@@ -1718,69 +1716,3 @@ void CCellLabel::filesDropped (const StringArray &files, int x, int y)
   cell->editor->audioProcessor.suspendProcessing (false);
 }                                                          
 
-/*
-void CAudioProcessorEditor::save_quick_kit()
-{
-  if (! audioProcessor.drumkit)
-     {
-      log ("NO DRUMKIT\n");
-      return;
-     }
-  
-  std::string kit_name = l_kit_name.getText().toStdString(); 
-  if (kit_name == "EMPTY KIT")  
-     {
-      log ("GIVE OTHER NAME TO THE KIT\n");
-      return;
-     }
-   
-  if (audioProcessor.drumkit->kit_type != KIT_TYPE_QDRUMLABOOH)
-     {
-      log ("WRONG DRUMKIT TYPE, YOU CAN SAVE QUICK KITS ONLY\n");
-      return;
-     }
-   
-   
-  std::string kit_path;
-   
-#if !defined(_WIN32) || !defined(_WIN64)  
-   
-  kit_path = get_home_dir() + "/drum_sklad/" + kit_name;
-
-#else
-
- kit_path = "c:\\drum_sklad\\" + kit_name;
-  
-#endif
-
- std::filesystem::path p (kit_path);
- 
- //std::filesystem::create_directories (kit_path);
- std::filesystem::create_directories (p);
-
- log ("created directory: " + kit_path + "\n");
- 
- std::string kit_filename;
- kit_filename = kit_path + "/drumkitq.txt";
-
- audioProcessor.drumkit->kit_filename = kit_filename;
- audioProcessor.drumkit_path = kit_filename;
- audioProcessor.drumkit->kit_dir = kit_path; 
- audioProcessor.drumkit->kit_name = kit_name;
- 
- tmr_leds.stopTimer();
- audioProcessor.suspendProcessing (true); 
-  
- audioProcessor.drumkit->save_qkit(); 
-
- audioProcessor.scanner.scan(); 
- update_kits_list();
-
- drumkits_listbox.repaint(); 
- 
- need_to_update_cells = false;
- 
- audioProcessor.suspendProcessing (false);
- tmr_leds.startTimer (1000 / 15); //15 FPS
-}
-*/

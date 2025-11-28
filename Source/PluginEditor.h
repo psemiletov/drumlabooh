@@ -323,6 +323,8 @@ public:
   juce::Font f_kitname_font {20.0f, juce::Font::bold};
   juce::ImageComponent kit_image;
 
+  
+  
   //juce::Image kit_image_default;
 
   
@@ -354,6 +356,7 @@ public:
   
   void adapt_drumlabooh();
   void adapt_qdrumlabooh();
+  
   
   
   //void save_quick_kit();
