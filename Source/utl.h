@@ -77,9 +77,14 @@ public:
         
         // Корректное равномерное распределение
         uint64_t raw = nextRaw();
-        if (range == std::numeric_limits<uint64_t>::max()) {
-            return minVal + static_cast<long long>(raw);
-        }
+       
+       //if (range == std::numeric_limits<uint64_t>::max()) {
+//            return minVal + static_cast<long long>(raw);
+        //}
+       
+       if (range == (std::numeric_limits<uint64_t>::max)()) {
+             return minVal + static_cast<long long>(raw);
+}
         
         // Метод отбраковки для устранения смещения
         uint64_t limit = std::numeric_limits<uint64_t>::max() - 
