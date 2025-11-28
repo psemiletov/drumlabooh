@@ -751,7 +751,10 @@ void CAudioProcessorEditor::load_kit()
       }
 
       
+   std::cout << "audioProcessor.drumkit->kit_name: " << audioProcessor.drumkit->kit_name << std::endl;   
+   /*   
    std::string kit_caption = audioProcessor.drumkit->kit_name;  
+
    if (audioProcessor.drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)
       {
        kit_caption += " | ALT SAMPLES: +/-";
@@ -759,28 +762,27 @@ void CAudioProcessorEditor::load_kit()
       } 
    else
        l_kit_name.setColour(juce::Label::textColourId, juce::Colours::white);
-
+*/
           
+     juce::String kitname = audioProcessor.drumkit->kit_name;//*kit_caption.c_str()*/;
+     l_kit_name.setText (kitname, juce::dontSendNotification);
    
 
    if (! audioProcessor.drumkit->image_fname.empty() && file_exists (audioProcessor.drumkit->image_fname))
       {
-       juce::File fl (audioProcessor.drumkit->image_fname);
-       juce::Image im = juce::ImageFileFormat::loadFrom (fl);
-       kit_image.setImage(im);
+  //     l_kit_name.setVisible (false);
        kit_image.setVisible (true);
 
-       l_kit_name.setVisible (false);
-
+       juce::File fl (audioProcessor.drumkit->image_fname);
+       juce::Image im = juce::ImageFileFormat::loadFrom (fl);
+       kit_image.setImage (im);
       }
    else
        {
-        kit_image.setImage(juce::Image());
+//        kit_image.setImage(juce::Image());
         kit_image.setVisible (false);
         l_kit_name.setVisible (true);
         
-       juce::String kitname = /*audioProcessor.drumkit->kit_name*/kit_caption.c_str();
-       l_kit_name.setText (kitname, juce::dontSendNotification);
        }
          
 //      {
