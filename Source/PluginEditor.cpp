@@ -1348,7 +1348,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   addAndMakeVisible (log_area);
   log_area.setFont (f_log);
   log_area.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER, l_midimap_mode.getY());
-  log_area.setSize (350, 100);
+  log_area.setSize (358, 100);
   
   gr_options.setSize (gr_topbar.getRight(), sl_base_note.getHeight() + 
                       cmb_midimap_mode.getHeight() +
