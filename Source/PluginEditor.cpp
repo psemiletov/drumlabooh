@@ -947,9 +947,6 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   auto& lookAndFeel = juce::LookAndFeel::getDefaultLookAndFeel();
   //lookAndFeel.setColour(juce::ScrollBar::thumbColourId, juce::Colours::lightskyblue);
   
- /* lookAndFeel.setColour(juce::ScrollBar::backgroundColourId, juce::Colours::darkgrey);
-  lookAndFeel.setColour(juce::ScrollBar::thumbColourId, juce::Colours::gainsboro);
-  lookAndFeel.setColour(juce::ScrollBar::trackColourId, juce::Colours::transparentBlack);*/
   lookAndFeel.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (87, 110, 113)); 
   
   drumkits_model.editor = this;
@@ -1013,11 +1010,13 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
     
   gr_drumkits.setSize (drumkits_listbox.getWidth() + XFILLER * 4, drumkits_listbox.getHeight() + YFILLER * 2);
 
+  //gr_drumkits.setSize (drumkits_listbox.getWidth() + XFILLER * 4, drumkits_listbox.getHeight() + YFILLER);
+
   //KIT INFO
 
   addAndMakeVisible (gr_kitinfo);
   gr_kitinfo.setTopLeftPosition (gr_drumkits.getX(), gr_drumkits.getBottom());
-  gr_kitinfo.setSize (gr_drumkits.getWidth(), 220 + YFILLER); 
+  gr_kitinfo.setSize (gr_drumkits.getWidth(), 220 + YFILLER / 2); 
   
   addAndMakeVisible (l_kit_name);
   
@@ -1031,11 +1030,11 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
 
   
   auto kitinfoBounds = gr_kitinfo.getBounds();
-int lWidth  = l_kit_name.getWidth();
-int lHeight = l_kit_name.getHeight();
+  int lWidth  = l_kit_name.getWidth();
+  int lHeight = l_kit_name.getHeight();
 
-int yCenter = kitinfoBounds.getY() + (kitinfoBounds.getHeight() - lHeight) / 2;
-  l_kit_name.setTopLeftPosition(kitinfoBounds.getX(), yCenter);
+  int yCenter = kitinfoBounds.getY() + (kitinfoBounds.getHeight() - lHeight) / 2;
+  l_kit_name.setTopLeftPosition (kitinfoBounds.getX() + 16, yCenter);
   
   addAndMakeVisible (kit_image);
   
@@ -1044,42 +1043,32 @@ int yCenter = kitinfoBounds.getY() + (kitinfoBounds.getHeight() - lHeight) / 2;
     //                           (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2) + YFILLER /* * 1.5*/);
 
   kit_image.setBounds (gr_kitinfo.getBounds().reduced (8));
-
-/*
-auto kitinfoBounds = gr_kitinfo.getBounds();
-int topY = l_kit_name.getBottom();
-int extraMargin = 8;
-int sideMargin = 8;
-
-juce::Rectangle<int> imgArea(
-    kitinfoBounds.getX() + sideMargin,
-    topY + extraMargin,
-    kitinfoBounds.getWidth() - 2 * sideMargin,
-    kitinfoBounds.getBottom() - (topY + extraMargin) - sideMargin
-);
-
-kit_image.setBounds(imgArea);
-
-// СОХРАНЯЕМ СОГЛАСОВАНИЕ СТОРОН БЕЗ ИСКАЖЕНИЙ!
-kit_image.setImagePlacement(juce::RectanglePlacement::centred);  
-*/
-
  
 //BELOW KIT INFO
+  
+ //ЛОГ СЮДА 
+
+  addAndMakeVisible (gr_kit_tools);
+  gr_kit_tools.setSize (gr_kitinfo.getWidth(), 128); 
+  gr_kit_tools.setTopLeftPosition (gr_kitinfo.getX(), gr_kitinfo.getBottom());
+  
+  
+  addAndMakeVisible (log_area);
+  log_area.setMultiLine (true, true);
+  log_area.setReadOnly (true);
+  log_area.setTopLeftPosition (gr_kit_tools.getX() + XFILLER, gr_kit_tools.getY() + YFILLER);
+  log_area.setSize (gr_kit_tools.getWidth() - XFILLER - XFILLER, 100);
+  
+  
 //SOME BUTTONS
 
-  addAndMakeVisible (gr_kitbuttons);
-  gr_kitbuttons.setSize (gr_kitinfo.getWidth(), 48 + YFILLER); 
-  gr_kitbuttons.setTopLeftPosition (gr_kitinfo.getX(), gr_kitinfo.getBottom());
-  
   
   bt_file_open.setButtonText ("OPEN");
   addAndMakeVisible (bt_file_open);
   bt_file_open.setTooltip ("Select the drumkit file to open");
-
   
-  bt_file_open.setTopLeftPosition (gr_kitbuttons.getX() + XFILLER, gr_kitbuttons.getY() + YFILLER);
-  bt_file_open.setSize (54, 40);
+  bt_file_open.setTopLeftPosition (gr_kit_tools.getX() + XFILLER, log_area.getBottom() + YFILLER / 2);
+  bt_file_open.setSize (54, 32);
     
   bt_file_open.onClick = [this] {
 
@@ -1140,8 +1129,11 @@ kit_image.setImagePlacement(juce::RectanglePlacement::centred);
   
   bt_kit_adapt.setTooltip ("Clone the current kit\n with the current samplerate");
 
-  bt_kit_adapt.setTopLeftPosition (bt_file_open.getRight() + XFILLER, gr_kitbuttons.getY() + YFILLER);
-  bt_kit_adapt.setSize (54, 40);
+  //bt_kit_adapt.setTopLeftPosition (bt_file_open.getRight() + XFILLER, gr_kitbuttons.getY() + YFILLER);
+  bt_kit_adapt.setTopLeftPosition (bt_file_open.getX() + bt_file_open.getWidth() + XFILLER, bt_file_open.getY());
+  
+  
+  bt_kit_adapt.setSize (54, 32);
     
   bt_kit_adapt.onClick = [this] { 
                                  adapt(); 
@@ -1172,12 +1164,14 @@ kit_image.setImagePlacement(juce::RectanglePlacement::centred);
 
   drumcells_viewer.setViewedComponent (&drumcells_container, false);
   drumcells_viewer.setScrollBarsShown (true, false);
-  drumcells_viewer.setSize (drumcells_container.getWidth() + (XFILLER * 5), 525);
+  //drumcells_viewer.setSize (drumcells_container.getWidth() + (XFILLER * 5), 525);
+  drumcells_viewer.setSize (drumcells_container.getWidth() + (XFILLER * 5), 450);
 
+  
   drumcells_viewer.setScrollBarThickness (24);
 
   drumcells_group.setTopLeftPosition (gr_drumkits.getRight() + XFILLER, gr_topbar.getBottom());
-  drumcells_group.setSize (drumcells_viewer.getWidth() + (XFILLER * 3), 570);
+  drumcells_group.setSize (drumcells_viewer.getWidth() + (XFILLER * 3), 500);
 
   drumcells_viewer.setTopLeftPosition (drumcells_group.getX() + XFILLER, drumcells_group.getY() + YFILLER);
 
@@ -1192,7 +1186,7 @@ kit_image.setImagePlacement(juce::RectanglePlacement::centred);
 ////////////OPTIONS
   
   addAndMakeVisible (gr_options);
-  gr_options.setTopLeftPosition (gr_kitbuttons.getX(), gr_kitbuttons.getBottom());
+  gr_options.setTopLeftPosition (gr_kit_tools.getWidth() + XFILLER, drumcells_group.getBottom());
   
   addAndMakeVisible (l_midimap_mode);
   l_midimap_mode.setTopLeftPosition (gr_options.getX() + XFILLER, gr_options.getY() + YFILLER);
@@ -1320,11 +1314,7 @@ kit_image.setImagePlacement(juce::RectanglePlacement::centred);
  
 //////////////   
   
-  addAndMakeVisible (log_area);
-  log_area.setMultiLine (true, true);
-  log_area.setReadOnly (true);
-  log_area.setTopLeftPosition (sl_global_analog_amount.getRight() + XFILLER, l_midimap_mode.getY());
-  log_area.setSize (240, 148);
+  //ОТСЮДА ВЫНУТА log_area
     
   gr_options.setSize (drumcells_group.getRight(), sl_base_note.getHeight() + 
                       cmb_pan_mode.getHeight() + 
@@ -1367,12 +1357,12 @@ kit_image.setImagePlacement(juce::RectanglePlacement::centred);
   //sl_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
  
  
-  
+  /*
   addAndMakeVisible (log_area);
   log_area.setFont (f_log);
   log_area.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER, l_midimap_mode.getY());
   log_area.setSize (358, 100);
-  
+  */
   gr_options.setSize (gr_topbar.getRight(), sl_base_note.getHeight() + 
                       cmb_midimap_mode.getHeight() +
                       bt_ignore_midi_velocity.getHeight() + YFILLER * 2);

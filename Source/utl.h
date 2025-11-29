@@ -24,35 +24,6 @@ this code is the public domain
 #endif
 
 
-/*
-class FastDeterministicRNG {
-public:
-    FastDeterministicRNG() : state(0) {}
-
-    // Установка seed в любой момент времени
-    void setSeed(uint64_t seed) {
-        state = seed;
-    }
-
-    uint64_t nextRaw() {
-        uint64_t z = (state += 0x9E3779B97f4A7C15);
-        z = (z ^ (z >> 30)) * 0xBF58476d1CE4e5B9;
-        z = (z ^ (z >> 27)) * 0x94D049BB133111EB;
-        return z ^ (z >> 31);
-    }
-
-    long long next(long long minVal, long long maxVal) {
-        if (minVal > maxVal) std::swap(minVal, maxVal);
-        uint64_t range = static_cast<uint64_t>(maxVal - minVal) + 1;
-        return minVal + static_cast<long long>(nextRaw() % range);
-    }
-
-private:
-    uint64_t state;
-};
-*/
-
-
 // МИНИМАЛЬНЫЕ значения:
 //minVal = LLONG_MIN  // -9,223,372,036,854,775,808
 //maxVal = LLONG_MAX  // +9,223,372,036,854,775,807

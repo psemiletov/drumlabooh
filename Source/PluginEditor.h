@@ -336,7 +336,7 @@ public:
   juce::TextButton bt_drumkit_info;
 
   juce::GroupComponent gr_drumkits;
-  juce::GroupComponent gr_kitbuttons;
+  juce::GroupComponent gr_kit_tools;
 
  
 //  juce::Label l_drumkit_selector { {}, "Drumkit selector" };
