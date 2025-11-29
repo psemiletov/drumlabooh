@@ -16,6 +16,12 @@ this code is the public domain
 //#include <random>
 #include <limits>
 
+#ifdef max
+#undef max
+#endif
+#ifdef min
+#undef min
+#endif
 
 
 /*
