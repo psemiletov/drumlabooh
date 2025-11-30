@@ -1042,7 +1042,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   // kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), 
     //                           (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2) + YFILLER /* * 1.5*/);
 
-  kit_image.setBounds (gr_kitinfo.getBounds().reduced (8));
+  kit_image.setBounds (gr_kitinfo.getBounds().reduced (10));
  
 //BELOW KIT INFO
   
@@ -1056,8 +1056,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   addAndMakeVisible (log_area);
   log_area.setMultiLine (true, true);
   log_area.setReadOnly (true);
-  log_area.setTopLeftPosition (gr_kit_tools.getX() + XFILLER, gr_kit_tools.getY() + YFILLER);
-  log_area.setSize (gr_kit_tools.getWidth() - XFILLER - XFILLER, 100);
+  log_area.setTopLeftPosition (gr_kit_tools.getX() + XFILLER + XFILLER , gr_kit_tools.getY() + YFILLER);
+  log_area.setSize (gr_kit_tools.getWidth() - (XFILLER * 4), 124);
   
   
 //SOME BUTTONS
@@ -1067,7 +1067,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   addAndMakeVisible (bt_file_open);
   bt_file_open.setTooltip ("Select the drumkit file to open");
   
-  bt_file_open.setTopLeftPosition (gr_kit_tools.getX() + XFILLER, log_area.getBottom() + YFILLER / 2);
+  bt_file_open.setTopLeftPosition (gr_kit_tools.getX() + XFILLER + 2, log_area.getBottom() + 2);
   bt_file_open.setSize (54, 32);
     
   bt_file_open.onClick = [this] {
