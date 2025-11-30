@@ -1220,7 +1220,16 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   sl_base_note.setRange (0, 127, 1.0);
   sl_base_note.setValue (audioProcessor.base_note_number, dontSendNotification);
   sl_base_note.addListener (this);
-  sl_base_note.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
+  /*
+  sl_base_note.onValueChange = [this](int newValue)
+        {
+            audioProcessor.base_note_number = newValue;
+        };
+  
+        //sl_base_note.setRange(0, 127);
+        sl_base_note.setValue(36);
+        */
+  //sl_base_note.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
      
   addAndMakeVisible (bt_ignore_midi_velocity);
   
@@ -1477,7 +1486,7 @@ void CAudioProcessorEditor::comboBoxChanged (juce::ComboBox *comboBox)
 
 void CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
 {
-  if (slider == &sl_base_note)
+  if (slider == &sl_base_note) 
      {
       audioProcessor.base_note_number = sl_base_note.getValue();
      }
