@@ -1016,7 +1016,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
 
   addAndMakeVisible (gr_kitinfo);
   gr_kitinfo.setTopLeftPosition (gr_drumkits.getX(), gr_drumkits.getBottom());
-  gr_kitinfo.setSize (gr_drumkits.getWidth(), 220 + YFILLER / 2); 
+  gr_kitinfo.setSize (gr_drumkits.getWidth(), 228); 
   
   addAndMakeVisible (l_kit_name);
   
@@ -1207,12 +1207,12 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   att_midimap_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "midimap_mode", cmb_midimap_mode));
   
   addAndMakeVisible (l_base_note);
-  l_base_note.setSize (120, 48);
+  l_base_note.setSize (120, 32);
   l_base_note.setTopLeftPosition (gr_options.getX() + XFILLER, cmb_midimap_mode.getBottom() + YFILLER);
   
   
   l_base_note.setTooltip ("Number of MIDI note from which\n we start to map instruments in Auto mode,\n default 36");
-
+/*
   addAndMakeVisible (sl_base_note);
   sl_base_note.setSliderStyle (juce::Slider::SliderStyle::IncDecButtons);
   sl_base_note.setTopLeftPosition (l_base_note.getRight() + XFILLER, l_base_note.getY());
@@ -1220,17 +1220,27 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   sl_base_note.setRange (0, 127, 1.0);
   sl_base_note.setValue (audioProcessor.base_note_number, dontSendNotification);
   sl_base_note.addListener (this);
-  /*
-  sl_base_note.onValueChange = [this](int newValue)
+   //sl_base_note.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
+  */   
+  
+  addAndMakeVisible (sl_base_note);
+
+  //sl_base_note.setTopLeftPosition (l_base_note.getRight() + XFILLER, l_base_note.getY());
+  //sl_base_note.setSize (120, 38);
+  
+   sl_base_note.setBounds (l_base_note.getRight() + XFILLER, l_base_note.getY(), 100, 32); 
+
+  sl_base_note.setRange(0, 127);
+
+        sl_base_note.setValue(audioProcessor.base_note_number);
+        
+        // ПРАВИЛЬНОЕ подключение callback
+        sl_base_note.onValueChange = [this](int newValue)
         {
             audioProcessor.base_note_number = newValue;
+            DBG("Value changed to: " << newValue); // для отладки
         };
   
-        //sl_base_note.setRange(0, 127);
-        sl_base_note.setValue(36);
-        */
-  //sl_base_note.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
-     
   addAndMakeVisible (bt_ignore_midi_velocity);
   
   att_ignore_midi_velocity.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "ignore_midi_velocity", bt_ignore_midi_velocity));
@@ -1279,13 +1289,13 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   //bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
   bt_global_analog_on.setSize (80, 48);
   bt_global_analog_on.setTopLeftPosition (l_pan_mode.getX(), 
-                                          l_base_note.getY());
+                                          l_base_note.getY() - 8);
 
   att_global_analog_on.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "global_analog_on", bt_global_analog_on));
   
  
   addAndMakeVisible (sl_global_analog_amount);
-  sl_global_analog_amount.setTopLeftPosition (cmb_pan_mode.getX(), l_base_note.getY());
+  sl_global_analog_amount.setTopLeftPosition (cmb_pan_mode.getX(), bt_global_analog_on.getY());
   sl_global_analog_amount.setSize (182, 48);
   sl_global_analog_amount.setRange (0.0f, 1.0f, 0.01f);
   sl_global_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
@@ -1311,7 +1321,8 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   sl_randomizer_seed.setSliderStyle (juce::Slider::LinearHorizontal);
   sl_randomizer_seed.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 20);
   
-  sl_randomizer_seed.setTopLeftPosition (l_randomizer_seed.getX() + l_randomizer_seed.getWidth(), sl_global_analog_amount.getBottom()/* + YFILLER*/);
+  sl_randomizer_seed.setTopLeftPosition (l_randomizer_seed.getX() + l_randomizer_seed.getWidth(),  
+                                         l_randomizer_seed.getY()/* + YFILLER*/);
   sl_randomizer_seed.setSize (182, 48);
   sl_randomizer_seed.setRange (1, 65536, 1.0);
   sl_randomizer_seed.setValue (audioProcessor.randomizer_seed, dontSendNotification);
@@ -1333,7 +1344,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
   
   setSize (drumcells_viewer.getRight() + XFILLER * 2, 
-           gr_options.getBottom());
+           gr_options.getBottom() + YFILLER);
 
 #else
 
@@ -1486,10 +1497,10 @@ void CAudioProcessorEditor::comboBoxChanged (juce::ComboBox *comboBox)
 
 void CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
 {
-  if (slider == &sl_base_note) 
+/*  if (slider == &sl_base_note) 
      {
       audioProcessor.base_note_number = sl_base_note.getValue();
-     }
+     }*/
      
   if (slider == &sl_randomizer_seed)
      {
