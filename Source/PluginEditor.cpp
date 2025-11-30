@@ -1049,7 +1049,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
  //ЛОГ СЮДА 
 
   addAndMakeVisible (gr_kit_tools);
-  gr_kit_tools.setSize (gr_kitinfo.getWidth(), 128); 
+  gr_kit_tools.setSize (gr_kitinfo.getWidth(), 180); 
   gr_kit_tools.setTopLeftPosition (gr_kitinfo.getX(), gr_kitinfo.getBottom());
   
   
@@ -1197,7 +1197,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   cmb_midimap_mode.setColour (juce::ComboBox::textColourId, Colours::white);
  
   addAndMakeVisible (cmb_midimap_mode);
-  cmb_midimap_mode.setSize (180 + XFILLER, 42);
+  cmb_midimap_mode.setSize (120 + XFILLER, 42);
   cmb_midimap_mode.setTopLeftPosition (l_midimap_mode.getX() + l_midimap_mode.getWidth(),
                                        l_midimap_mode.getY());
   
@@ -1270,13 +1270,13 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   //bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
   bt_global_analog_on.setSize (80, 48);
   bt_global_analog_on.setTopLeftPosition (l_pan_mode.getX(), 
-                                          l_pan_mode.getBottom() + YFILLER);
+                                          l_base_note.getY());
 
   att_global_analog_on.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "global_analog_on", bt_global_analog_on));
   
  
   addAndMakeVisible (sl_global_analog_amount);
-  sl_global_analog_amount.setTopLeftPosition (cmb_pan_mode.getX(), l_pan_mode.getBottom() + YFILLER);
+  sl_global_analog_amount.setTopLeftPosition (cmb_pan_mode.getX(), l_base_note.getY());
   sl_global_analog_amount.setSize (182, 48);
   sl_global_analog_amount.setRange (0.0f, 1.0f, 0.01f);
   sl_global_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
@@ -1316,9 +1316,10 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
   //ОТСЮДА ВЫНУТА log_area
     
-  gr_options.setSize (drumcells_group.getRight(), sl_base_note.getHeight() + 
-                      cmb_pan_mode.getHeight() + 
-                      cmb_midimap_mode.getHeight() + 
+  //gr_options.setSize (drumcells_group.getRight(), 
+  gr_options.setSize (drumcells_group.getWidth(), 
+  
+                      sl_base_note.getHeight() + cmb_pan_mode.getHeight() + cmb_midimap_mode.getHeight() + 
                       bt_ignore_midi_velocity.getHeight());
   
   
