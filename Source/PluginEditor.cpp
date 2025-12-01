@@ -836,7 +836,9 @@ void CAudioProcessorEditor::load_kit()
        drumcells[i].set_name (cell_name);
       }
 
-      
+
+    l_kit_name.setText (audioProcessor.drumkit->kit_name, juce::dontSendNotification);
+   
    std::cout << "audioProcessor.drumkit->kit_name: " << audioProcessor.drumkit->kit_name << std::endl;   
    /*   
    std::string kit_caption = audioProcessor.drumkit->kit_name;  
@@ -861,19 +863,12 @@ void CAudioProcessorEditor::load_kit()
        juce::File fl (audioProcessor.drumkit->image_fname);
        juce::Image im = juce::ImageFileFormat::loadFrom (fl);
        kit_image.setImage (im);
-//                 this->repaint();
-
       }
    else
        {
-       juce::String kitname = audioProcessor.drumkit->kit_name;//*kit_caption.c_str()*/;
-     l_kit_name.setText (kitname, juce::dontSendNotification);
-   
-//        kit_image.setImage(juce::Image());
-        //kit_image.setVisible (false);
-        //l_kit_name.setVisible (true);
-  //        this->repaint();
-        //l_kit_name.setVisible (true);
+        juce::String kitname = audioProcessor.drumkit->kit_name;//*kit_caption.c_str()*/;
+        l_kit_name.setText (kitname, juce::dontSendNotification);
+        kit_image.setImage (juce::Image());
        }
          
 //      {
