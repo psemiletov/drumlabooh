@@ -712,6 +712,92 @@ void CDrumCell::set_name (const std::string &n)
 
 
 //load_kit just updates GUI, actual kit load is at CAudioProcessor::load_kit 
+/*
+void CAudioProcessorEditor::load_kit()
+{
+  //std::string real_kitpath = transform_kit_path_to_local (kitpath);
+
+  //make all drum labels empty
+  
+  for (size_t i = 0; i < 36; i++)
+      {
+       drumcells[i].set_name ("EMPTY CELL");
+       drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
+      }
+  
+  if (! audioProcessor.drumkit)
+     return;
+ 
+
+  for (size_t i = 0; i < 36; i++)
+      {
+       CDrumSample *s = audioProcessor.drumkit->a_samples[i];
+       
+       if (! s)
+          continue;
+        
+       std::string cell_name;
+       if (audioProcessor.drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)
+          {
+           cell_name = s->get_name (true);
+           drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colours::thistle); //juce::Colours::yellow)
+          }
+       else  
+           {
+            cell_name = s->get_name (false);
+            drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+           } 
+      
+       drumcells[i].set_name (cell_name);
+      }
+
+      
+   std::cout << "audioProcessor.drumkit->kit_name: " << audioProcessor.drumkit->kit_name << std::endl;   
+      
+//   std::string kit_caption = audioProcessor.drumkit->kit_name;  
+
+//   if (audioProcessor.drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)
+  //    {
+       //kit_caption += " | ALT SAMPLES: +/-";
+//       l_kit_name.setColour(juce::Label::textColourId, juce::Colours::yellow);
+      //} 
+   //else
+     //  l_kit_name.setColour(juce::Label::textColourId, juce::Colours::white);
+//
+          
+     juce::String kitname = audioProcessor.drumkit->kit_name;
+     l_kit_name.setText (kitname, juce::dontSendNotification);
+   
+
+     bool has_image = !audioProcessor.drumkit->image_fname.empty() && file_exists                          
+        (audioProcessor.drumkit->image_fname);                                                                     
+    
+    l_kit_name.setVisible (!has_image);                                                                   
+     kit_image.setVisible (has_image);                                                                     
+    if (has_image)                                                                                        
+      {                                                                                                  
+        juce::File fl (audioProcessor.drumkit->image_fname);                                              
+         juce::Image im = juce::ImageFileFormat::loadFrom (fl);                                            
+        kit_image.setImage (im);                                                                          
+        kit_image.toFront (true);
+     //   l_kit_name.toBack (false);
+
+      }                                                                                                  
+    else                                                                                                  
+        {
+        kit_image.setImage (juce::Image());                                                              
+        l_kit_name.toFront (false);
+       // kit_image.toBack (false);
+         
+        } 
+     
+   
+   repaint();
+     
+   log (audioProcessor.drumkit->get_description());
+}
+*/
+
 void CAudioProcessorEditor::load_kit()
 {
   //std::string real_kitpath = transform_kit_path_to_local (kitpath);
@@ -770,11 +856,10 @@ void CAudioProcessorEditor::load_kit()
 
    if (! audioProcessor.drumkit->image_fname.empty() && file_exists (audioProcessor.drumkit->image_fname))
       {
-       l_kit_name.setVisible (false);
+       //l_kit_name.setVisible (false);
         //l_kit_name.setText ("", juce::dontSendNotification);
  
        kit_image.setVisible (true);
-
        juce::File fl (audioProcessor.drumkit->image_fname);
        juce::Image im = juce::ImageFileFormat::loadFrom (fl);
        kit_image.setImage (im);
@@ -784,8 +869,8 @@ void CAudioProcessorEditor::load_kit()
    else
        {
 //        kit_image.setImage(juce::Image());
-        kit_image.setVisible (false);
-        l_kit_name.setVisible (true);
+        //kit_image.setVisible (false);
+        //l_kit_name.setVisible (true);
   //        this->repaint();
         //l_kit_name.setVisible (true);
        }
@@ -796,6 +881,7 @@ void CAudioProcessorEditor::load_kit()
    
    log (audioProcessor.drumkit->get_description());
 }
+
 
 void CAudioProcessorEditor::log (const std::string &s)
 {
@@ -1018,8 +1104,12 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   //gr_drumkits.setSize (drumkits_listbox.getWidth() + XFILLER * 4, drumkits_listbox.getHeight() + YFILLER);
 
   //KIT INFO
-
   
+    
+ 
+  
+
+//лабел была тут  
   addAndMakeVisible (gr_kitinfo);
   gr_kitinfo.setTopLeftPosition (gr_drumkits.getX(), gr_drumkits.getBottom());
   gr_kitinfo.setSize (gr_drumkits.getWidth(), 228); 
@@ -1050,8 +1140,12 @@ addAndMakeVisible (kit_image);
   kit_image.setBounds (gr_kitinfo.getBounds().reduced (10));
  
   
+  /////////
   
-  
+   addAndMakeVisible (gr_kitinfo);
+  gr_kitinfo.setTopLeftPosition (gr_drumkits.getX(), gr_drumkits.getBottom());
+  gr_kitinfo.setSize (gr_drumkits.getWidth(), 228); 
+
   //ЛОГ СЮДА 
 
   addAndMakeVisible (gr_kit_tools);
