@@ -1153,7 +1153,7 @@ addAndMakeVisible (kit_image);
   log_area.setMultiLine (true, true);
   log_area.setReadOnly (true);
   log_area.setTopLeftPosition (gr_kit_tools.getX() + XFILLER + XFILLER , gr_kit_tools.getY() + YFILLER);
-  log_area.setSize (gr_kit_tools.getWidth() - (XFILLER * 4), 110);
+  log_area.setSize (gr_kit_tools.getWidth() - (XFILLER * 4), 108);
   
   
 //SOME BUTTONS
@@ -1420,7 +1420,7 @@ addAndMakeVisible (kit_image);
   sl_randomizer_seed.setTopLeftPosition (l_randomizer_seed.getX() + l_randomizer_seed.getWidth(),  
                                          l_randomizer_seed.getY());
   sl_randomizer_seed.setSize (182, 48);
-  sl_randomizer_seed.setRange (1, 65536, 1.0);
+  sl_randomizer_seed.setRange (1, RND_MAX_TWEAK, 1.0);
   sl_randomizer_seed.setValue (audioProcessor.randomizer_seed, dontSendNotification);
   sl_randomizer_seed.setColour (juce::Slider::thumbColourId, juce::Colours::cornsilk);
   
@@ -1466,7 +1466,7 @@ addAndMakeVisible (kit_image);
   
   sl_randomizer_seed.setTopLeftPosition (l_randomizer_seed.getX() + l_randomizer_seed.getWidth(), bt_ignore_midi_velocity.getY());
   sl_randomizer_seed.setSize (182, 48);
-  sl_randomizer_seed.setRange (1, 65536, 1.0);
+  sl_randomizer_seed.setRange (1, RND_MAX_TWEAK, 1.0);
   sl_randomizer_seed.setValue (audioProcessor.randomizer_seed, dontSendNotification);
   sl_randomizer_seed.setColour (juce::Slider::thumbColourId, juce::Colours::cornsilk);
   

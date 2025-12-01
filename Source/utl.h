@@ -28,7 +28,7 @@ this code is the public domain
 //minVal = LLONG_MIN  // -9,223,372,036,854,775,808
 //maxVal = LLONG_MAX  // +9,223,372,036,854,775,807
 
-
+#define RND_MAX_TWEAK 16777216
 
 class FastDeterministicRNG {
 public:
