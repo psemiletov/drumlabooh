@@ -850,9 +850,7 @@ void CAudioProcessorEditor::load_kit()
        l_kit_name.setColour(juce::Label::textColourId, juce::Colours::white);
 */
           
-     juce::String kitname = audioProcessor.drumkit->kit_name;//*kit_caption.c_str()*/;
-     l_kit_name.setText (kitname, juce::dontSendNotification);
-   
+     
 
    if (! audioProcessor.drumkit->image_fname.empty() && file_exists (audioProcessor.drumkit->image_fname))
       {
@@ -868,6 +866,9 @@ void CAudioProcessorEditor::load_kit()
       }
    else
        {
+       juce::String kitname = audioProcessor.drumkit->kit_name;//*kit_caption.c_str()*/;
+     l_kit_name.setText (kitname, juce::dontSendNotification);
+   
 //        kit_image.setImage(juce::Image());
         //kit_image.setVisible (false);
         //l_kit_name.setVisible (true);
