@@ -770,19 +770,24 @@ void CAudioProcessorEditor::load_kit()
 
    if (! audioProcessor.drumkit->image_fname.empty() && file_exists (audioProcessor.drumkit->image_fname))
       {
-  //     l_kit_name.setVisible (false);
+       l_kit_name.setVisible (false);
+        //l_kit_name.setText ("", juce::dontSendNotification);
+ 
        kit_image.setVisible (true);
 
        juce::File fl (audioProcessor.drumkit->image_fname);
        juce::Image im = juce::ImageFileFormat::loadFrom (fl);
        kit_image.setImage (im);
+//                 this->repaint();
+
       }
    else
        {
 //        kit_image.setImage(juce::Image());
         kit_image.setVisible (false);
         l_kit_name.setVisible (true);
-        
+  //        this->repaint();
+        //l_kit_name.setVisible (true);
        }
          
 //      {
@@ -1014,18 +1019,15 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
 
   //KIT INFO
 
+  
   addAndMakeVisible (gr_kitinfo);
   gr_kitinfo.setTopLeftPosition (gr_drumkits.getX(), gr_drumkits.getBottom());
   gr_kitinfo.setSize (gr_drumkits.getWidth(), 228); 
   
   addAndMakeVisible (l_kit_name);
   
-  //l_kit_name.setColour(juce::Label::textColourId, juce::Colours::yellow);
-
   l_kit_name.setText ("EMPTY KIT",  NotificationType::dontSendNotification);
-  //l_kit_name.setEditable (false, true);
   l_kit_name.setFont (f_kitname_font);
-  //l_kit_name.setTopLeftPosition (gr_kitinfo.getX() + XFILLER, gr_kitinfo.getY());
   l_kit_name.setSize (280, 48);
 
   
@@ -1036,7 +1038,10 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   int yCenter = kitinfoBounds.getY() + (kitinfoBounds.getHeight() - lHeight) / 2;
   l_kit_name.setTopLeftPosition (kitinfoBounds.getX() + 16, yCenter);
   
-  addAndMakeVisible (kit_image);
+  
+//BELOW KIT INFO
+  
+addAndMakeVisible (kit_image);
   
  // kit_image.setSize (gr_kitinfo.getWidth() - XFILLER * 3, 220 - YFILLER * 4);
   // kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), 
@@ -1044,12 +1049,13 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
 
   kit_image.setBounds (gr_kitinfo.getBounds().reduced (10));
  
-//BELOW KIT INFO
   
- //ЛОГ СЮДА 
+  
+  
+  //ЛОГ СЮДА 
 
   addAndMakeVisible (gr_kit_tools);
-  gr_kit_tools.setSize (gr_kitinfo.getWidth(), 180); 
+  gr_kit_tools.setSize (gr_kitinfo.getWidth(), 164); 
   gr_kit_tools.setTopLeftPosition (gr_kitinfo.getX(), gr_kitinfo.getBottom());
   
   
@@ -1057,7 +1063,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   log_area.setMultiLine (true, true);
   log_area.setReadOnly (true);
   log_area.setTopLeftPosition (gr_kit_tools.getX() + XFILLER + XFILLER , gr_kit_tools.getY() + YFILLER);
-  log_area.setSize (gr_kit_tools.getWidth() - (XFILLER * 4), 124);
+  log_area.setSize (gr_kit_tools.getWidth() - (XFILLER * 4), 100);
   
   
 //SOME BUTTONS
@@ -1310,7 +1316,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
   addAndMakeVisible (l_randomizer_seed);
   l_randomizer_seed.setSize (100, 48);
-  l_randomizer_seed.setTopLeftPosition (l_pan_mode.getX(), sl_global_analog_amount.getBottom()/* + YFILLER*/);
+  l_randomizer_seed.setTopLeftPosition (l_pan_mode.getX(), bt_ignore_midi_velocity.getY()/* + YFILLER*/);
    
   //l_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments in Auto mode,\n default 36");
 
@@ -1322,7 +1328,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   sl_randomizer_seed.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 20);
   
   sl_randomizer_seed.setTopLeftPosition (l_randomizer_seed.getX() + l_randomizer_seed.getWidth(),  
-                                         l_randomizer_seed.getY()/* + YFILLER*/);
+                                         l_randomizer_seed.getY());
   sl_randomizer_seed.setSize (182, 48);
   sl_randomizer_seed.setRange (1, 65536, 1.0);
   sl_randomizer_seed.setValue (audioProcessor.randomizer_seed, dontSendNotification);
@@ -1344,7 +1350,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   
   
   setSize (drumcells_viewer.getRight() + XFILLER * 2, 
-           gr_options.getBottom() + YFILLER);
+           gr_options.getBottom());
 
 #else
 
