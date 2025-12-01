@@ -857,7 +857,7 @@ void CAudioProcessorEditor::load_kit()
    if (! audioProcessor.drumkit->image_fname.empty() && file_exists (audioProcessor.drumkit->image_fname))
       {
        //l_kit_name.setVisible (false);
-        //l_kit_name.setText ("", juce::dontSendNotification);
+        l_kit_name.setText (" ", juce::dontSendNotification);
  
        kit_image.setVisible (true);
        juce::File fl (audioProcessor.drumkit->image_fname);
@@ -1153,7 +1153,7 @@ addAndMakeVisible (kit_image);
   log_area.setMultiLine (true, true);
   log_area.setReadOnly (true);
   log_area.setTopLeftPosition (gr_kit_tools.getX() + XFILLER + XFILLER , gr_kit_tools.getY() + YFILLER);
-  log_area.setSize (gr_kit_tools.getWidth() - (XFILLER * 4), 100);
+  log_area.setSize (gr_kit_tools.getWidth() - (XFILLER * 4), 110);
   
   
 //SOME BUTTONS
