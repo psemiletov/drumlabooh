@@ -1293,7 +1293,9 @@ addAndMakeVisible (kit_image);
   cmb_midimap_mode.setColour (juce::ComboBox::textColourId, Colours::white);
  
   addAndMakeVisible (cmb_midimap_mode);
-  cmb_midimap_mode.setSize (120 + XFILLER, 42);
+  //cmb_midimap_mode.setSize (120 + XFILLER, 42);
+  cmb_midimap_mode.setSize (100, 42);
+  
   cmb_midimap_mode.setTopLeftPosition (l_midimap_mode.getX() + l_midimap_mode.getWidth(),
                                        l_midimap_mode.getY());
   
@@ -1324,7 +1326,7 @@ addAndMakeVisible (kit_image);
   //sl_base_note.setTopLeftPosition (l_base_note.getRight() + XFILLER, l_base_note.getY());
   //sl_base_note.setSize (120, 38);
   
-   sl_base_note.setBounds (l_base_note.getRight() + XFILLER, l_base_note.getY(), 100, 32); 
+   sl_base_note.setBounds (cmb_midimap_mode.getX(), l_base_note.getY(), 100, 32); 
 
   sl_base_note.setRange(0, 127);
 
