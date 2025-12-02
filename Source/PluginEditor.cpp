@@ -564,7 +564,7 @@ CDrumCell::CDrumCell()
   addAndMakeVisible (cell_label);
 
   cell_label.setTopLeftPosition (xoffs, YFILLER);
-  cell_label.setSize (262, 32);
+  cell_label.setSize (380, 32);
 
   cell_label.setColour (juce::Label::textColourId, juce::Colours::black);
   cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
@@ -1145,7 +1145,7 @@ addAndMakeVisible (kit_image);
   //ЛОГ СЮДА 
 
   addAndMakeVisible (gr_kit_tools);
-  gr_kit_tools.setSize (gr_kitinfo.getWidth(), 164); 
+  gr_kit_tools.setSize (gr_kitinfo.getWidth(), 154); 
   gr_kit_tools.setTopLeftPosition (gr_kitinfo.getX(), gr_kitinfo.getBottom());
   
   
@@ -1153,7 +1153,7 @@ addAndMakeVisible (kit_image);
   log_area.setMultiLine (true, true);
   log_area.setReadOnly (true);
   log_area.setTopLeftPosition (gr_kit_tools.getX() + XFILLER + XFILLER , gr_kit_tools.getY() + YFILLER);
-  log_area.setSize (gr_kit_tools.getWidth() - (XFILLER * 4), 108);
+  log_area.setSize (gr_kit_tools.getWidth() - (XFILLER * 4), 98);
   
   
 //SOME BUTTONS
@@ -1294,7 +1294,7 @@ addAndMakeVisible (kit_image);
  
   addAndMakeVisible (cmb_midimap_mode);
   //cmb_midimap_mode.setSize (120 + XFILLER, 42);
-  cmb_midimap_mode.setSize (100, 42);
+  cmb_midimap_mode.setSize (80, 42);
   
   cmb_midimap_mode.setTopLeftPosition (l_midimap_mode.getX() + l_midimap_mode.getWidth(),
                                        l_midimap_mode.getY());
@@ -1304,6 +1304,9 @@ addAndMakeVisible (kit_image);
   
   att_midimap_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "midimap_mode", cmb_midimap_mode));
   
+  
+  
+  //MIDI MAP MODE
   addAndMakeVisible (l_base_note);
   l_base_note.setSize (120, 32);
   l_base_note.setTopLeftPosition (gr_options.getX() + XFILLER, cmb_midimap_mode.getBottom() + YFILLER);
@@ -1326,7 +1329,7 @@ addAndMakeVisible (kit_image);
   //sl_base_note.setTopLeftPosition (l_base_note.getRight() + XFILLER, l_base_note.getY());
   //sl_base_note.setSize (120, 38);
   
-   sl_base_note.setBounds (cmb_midimap_mode.getX(), l_base_note.getY(), 100, 32); 
+  sl_base_note.setBounds (cmb_midimap_mode.getX(), l_base_note.getY(), 80, 32); 
 
   sl_base_note.setRange(0, 127);
 
@@ -1347,15 +1350,47 @@ addAndMakeVisible (kit_image);
   bt_ignore_midi_velocity.setSize (180 + XFILLER, 48);
   bt_ignore_midi_velocity.setTopLeftPosition (l_base_note.getX(), sl_base_note.getBottom());
   
+ 
+//RND 
+  
+   addAndMakeVisible (l_randomizer_seed);
+  l_randomizer_seed.setSize (100, 48);
+  //l_randomizer_seed.setTopLeftPosition (l_pan_mode.getX(), bt_ignore_midi_velocity.getY()/* + YFILLER*/);
+  l_randomizer_seed.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER * 4, 
+                                 l_midimap_mode.getY() - 8);
+   
+  //l_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments in Auto mode,\n default 36");
 
+  addAndMakeVisible (sl_randomizer_seed);
+  //sl_randomizer_seed.setSliderStyle (juce::Slider::SliderStyle::IncDecButtons);
+  //sl_randomizer_seed.setSliderStyle (juce::Slider::SliderStyle::Rotary);
+  
+  sl_randomizer_seed.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_randomizer_seed.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 20);
+  
+  sl_randomizer_seed.setTopLeftPosition (l_randomizer_seed.getX() + l_randomizer_seed.getWidth(),  
+                                         l_randomizer_seed.getY());
+  sl_randomizer_seed.setSize (182, 48);
+  sl_randomizer_seed.setRange (1, RND_MAX_TWEAK, 1.0);
+  sl_randomizer_seed.setValue (audioProcessor.randomizer_seed, dontSendNotification);
+  sl_randomizer_seed.setColour (juce::Slider::thumbColourId, juce::Colours::cornsilk);
+  
+  sl_randomizer_seed.addListener (this);
+  //sl_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
+ 
+  
 #ifndef MULTICHANNEL
   
-   // PAN MODE
+  
+  // PAN MODE
   
   addAndMakeVisible (l_pan_mode);
   
-  l_pan_mode.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER * 4, 
-                                 l_midimap_mode.getY());
+  //l_pan_mode.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER * 4, 
+    //                             l_midimap_mode.getY());
+  
+  l_pan_mode.setTopLeftPosition (l_randomizer_seed.getX(), 
+                                 l_base_note.getY());
   
   l_pan_mode.setSize (100, 32);
   cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
@@ -1377,6 +1412,12 @@ addAndMakeVisible (kit_image);
 
   cmb_pan_mode.setTopLeftPosition (l_pan_mode.getRight(), l_pan_mode.getY());
   
+
+  
+  
+ 
+//////////////   
+
   //////////////NEW GLOBAL ANALOG
   addAndMakeVisible (bt_global_analog_on);
   bt_global_analog_on.setButtonText ("Analog");
@@ -1387,7 +1428,7 @@ addAndMakeVisible (kit_image);
   //bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
   bt_global_analog_on.setSize (80, 48);
   bt_global_analog_on.setTopLeftPosition (l_pan_mode.getX(), 
-                                          l_base_note.getY() - 8);
+                                          bt_ignore_midi_velocity.getY());
 
   att_global_analog_on.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "global_analog_on", bt_global_analog_on));
   
@@ -1404,92 +1445,18 @@ addAndMakeVisible (kit_image);
   att_global_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "global_analog_amount", sl_global_analog_amount));
   
   
- ///////////////////  NEW
-  
-  addAndMakeVisible (l_randomizer_seed);
-  l_randomizer_seed.setSize (100, 48);
-  l_randomizer_seed.setTopLeftPosition (l_pan_mode.getX(), bt_ignore_midi_velocity.getY()/* + YFILLER*/);
-   
-  //l_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments in Auto mode,\n default 36");
-
-  addAndMakeVisible (sl_randomizer_seed);
-  //sl_randomizer_seed.setSliderStyle (juce::Slider::SliderStyle::IncDecButtons);
-  //sl_randomizer_seed.setSliderStyle (juce::Slider::SliderStyle::Rotary);
-  
-  sl_randomizer_seed.setSliderStyle (juce::Slider::LinearHorizontal);
-  sl_randomizer_seed.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 20);
-  
-  sl_randomizer_seed.setTopLeftPosition (l_randomizer_seed.getX() + l_randomizer_seed.getWidth(),  
-                                         l_randomizer_seed.getY());
-  sl_randomizer_seed.setSize (182, 48);
-  sl_randomizer_seed.setRange (1, RND_MAX_TWEAK, 1.0);
-  sl_randomizer_seed.setValue (audioProcessor.randomizer_seed, dontSendNotification);
-  sl_randomizer_seed.setColour (juce::Slider::thumbColourId, juce::Colours::cornsilk);
-  
-  sl_randomizer_seed.addListener (this);
-  //sl_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
- 
- 
-//////////////   
-  
-  //ОТСЮДА ВЫНУТА log_area
     
-  //gr_options.setSize (drumcells_group.getRight(), 
-  gr_options.setSize (drumcells_group.getWidth(), 
   
-                      sl_base_note.getHeight() + cmb_pan_mode.getHeight() + cmb_midimap_mode.getHeight() + 
-                      bt_ignore_midi_velocity.getHeight());
+#endif  
+
+  gr_options.setSize (drumcells_group.getWidth(), 
+                      cmb_midimap_mode.getHeight() +                       
+                      sl_base_note.getHeight() +  
+                      bt_ignore_midi_velocity.getHeight() + 32);
   
   
   setSize (drumcells_viewer.getRight() + XFILLER * 2, 
            gr_options.getBottom());
-
-#else
-
-  //MULTI  
-  
-  ///////////////////  NEW
-  
-  addAndMakeVisible (l_randomizer_seed);
-  l_randomizer_seed.setSize (100, 48);
-  //l_randomizer_seed.setTopLeftPosition (bt_ignore_midi_velocity.getX() + bt_ignore_midi_velocity.getWidth() - XFILLER, bt_ignore_midi_velocity.getY());
-  l_randomizer_seed.setTopLeftPosition (cmb_midimap_mode.getRight(), bt_ignore_midi_velocity.getY());
-   
-  
-  
-  //l_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments in Auto mode,\n default 36");
-
-  addAndMakeVisible (sl_randomizer_seed);
-  //sl_randomizer_seed.setSliderStyle (juce::Slider::SliderStyle::IncDecButtons);
-  //sl_randomizer_seed.setSliderStyle (juce::Slider::SliderStyle::Rotary);
-  
-  sl_randomizer_seed.setSliderStyle (juce::Slider::LinearHorizontal);
-  sl_randomizer_seed.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 20);
-  
-  sl_randomizer_seed.setTopLeftPosition (l_randomizer_seed.getX() + l_randomizer_seed.getWidth(), bt_ignore_midi_velocity.getY());
-  sl_randomizer_seed.setSize (182, 48);
-  sl_randomizer_seed.setRange (1, RND_MAX_TWEAK, 1.0);
-  sl_randomizer_seed.setValue (audioProcessor.randomizer_seed, dontSendNotification);
-  sl_randomizer_seed.setColour (juce::Slider::thumbColourId, juce::Colours::cornsilk);
-  
-  sl_randomizer_seed.addListener (this);
-  //sl_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments, \n default 36");
- 
- 
-  /*
-  addAndMakeVisible (log_area);
-  log_area.setFont (f_log);
-  log_area.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER, l_midimap_mode.getY());
-  log_area.setSize (358, 100);
-  */
-  gr_options.setSize (gr_topbar.getRight(), sl_base_note.getHeight() + 
-                      cmb_midimap_mode.getHeight() +
-                      bt_ignore_midi_velocity.getHeight() + YFILLER * 2);
-
-  setSize (gr_topbar.getRight() + XFILLER / 2, 
-           gr_options.getBottom() + 2);
-  
-#endif  
   
 ////////////////////////              
   
