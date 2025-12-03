@@ -17,91 +17,8 @@ typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 class CAudioProcessorEditor;
 class CDrumCell;
 
-/*
-
 
 class CompactIncDecControl : public juce::Component
-{
-public:
-    CompactIncDecControl()
-    {
-        // Текстовое поле
-        addAndMakeVisible(valueLabel);
-        valueLabel.setJustificationType(juce::Justification::centred);
-        valueLabel.setEditable(true);
-        valueLabel.onTextChange = [this] { updateValueFromText(); };
-        
-        // Кнопка уменьшения
-        addAndMakeVisible(decButton);
-        decButton.setButtonText("-");
-        decButton.onClick = [this] { updateValue(-1); };
-        
-        // Кнопка увеличения  
-        addAndMakeVisible(incButton);
-        incButton.setButtonText("+");
-        incButton.onClick = [this] { updateValue(1); };
-        
-        setRange(0, 127);
-        setValue(64);
-    }
-    
-    void resized() override
-    {
-        auto area = getLocalBounds();
-        int buttonWidth = 25;
-        
-        decButton.setBounds(area.removeFromLeft(buttonWidth));
-        incButton.setBounds(area.removeFromRight(buttonWidth));
-        valueLabel.setBounds(area);
-    }
-    
-    void setRange(int minVal, int maxVal, int stepVal = 1) 
-    { 
-        minValue = minVal; 
-        maxValue = maxVal;
-        step = stepVal;
-    }
-    
-    void setValue(int newValue, juce::NotificationType notification = juce::sendNotification)
-    { 
-        currentValue = juce::jlimit(minValue, maxValue, newValue);
-        updateText();
-        
-        if (notification != juce::dontSendNotification && onValueChange != nullptr)
-            onValueChange(currentValue);
-    }
-    
-    int getValue() const { return currentValue; }
-    
-    std::function<void(int)> onValueChange;
-
-private:
-    void updateValue(int delta)
-    {
-        setValue(currentValue + delta * step, juce::sendNotification);
-    }
-    
-    void updateValueFromText()
-    {
-        int newValue = valueLabel.getText().getIntValue();
-        setValue(newValue, juce::sendNotification);
-    }
-    
-    void updateText()
-    {
-        valueLabel.setText(juce::String(currentValue), juce::dontSendNotification);
-    }
-    
-    juce::Label valueLabel;
-    juce::TextButton decButton, incButton;
-    int currentValue = 0;
-    int minValue = 0, maxValue = 127, step = 1;
-};
-
-
-*/
-
- class CompactIncDecControl : public juce::Component
 {
 public:
     CompactIncDecControl()
@@ -138,9 +55,9 @@ public:
         valueLabel.setBounds(area);
         
         // Явно устанавливаем одинаковую высоту для всех элементов
-        decButton.setSize(decButton.getWidth(), totalHeight);
+     /*   decButton.setSize(decButton.getWidth(), totalHeight);
         incButton.setSize(incButton.getWidth(), totalHeight);
-        valueLabel.setSize(valueLabel.getWidth(), totalHeight);
+        valueLabel.setSize(valueLabel.getWidth(), totalHeight);*/
     }
     
     void setRange(int minVal, int maxVal, int stepVal = 1) 
