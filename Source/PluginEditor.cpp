@@ -1424,8 +1424,8 @@ addAndMakeVisible (kit_image);
   
  
   addAndMakeVisible (sl_global_analog_amount);
-  sl_global_analog_amount.setTopLeftPosition (cmb_pan_mode.getX(), bt_global_analog_on.getY());
-  sl_global_analog_amount.setSize (/*182*/cmb_pan_mode.getWidth(), 32);
+  sl_global_analog_amount.setTopLeftPosition (cmb_pan_mode.getX() - 8, bt_global_analog_on.getY());
+  sl_global_analog_amount.setSize (/*182*/cmb_pan_mode.getWidth() + 8, 32);
   sl_global_analog_amount.setRange (0.0f, 1.0f, 0.01f);
   sl_global_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
   sl_global_analog_amount.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 20);
