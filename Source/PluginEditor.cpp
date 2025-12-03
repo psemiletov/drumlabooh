@@ -1245,6 +1245,7 @@ addAndMakeVisible (kit_image);
                             
 
   drumcells_container.setSize (drumcells[0].getWidth() + XFILLER, drumcells[0].getHeight() * 36);
+                                
 
   for (size_t i = 0; i < 36; i++)
       {
@@ -1260,14 +1261,17 @@ addAndMakeVisible (kit_image);
 
   drumcells_viewer.setViewedComponent (&drumcells_container, false);
   drumcells_viewer.setScrollBarsShown (true, false);
-  //drumcells_viewer.setSize (drumcells_container.getWidth() + (XFILLER * 5), 525);
-  drumcells_viewer.setSize (drumcells_container.getWidth() + (XFILLER * 5), 450);
+  //drumcells_viewer.setSize (drumcells_container.getWidth() + (XFILLER * 5), 450); //WAS
+
+  drumcells_viewer.setSize (drumcells_container.getWidth() + (XFILLER * 5), 420); //WAS
 
   
   drumcells_viewer.setScrollBarThickness (24);
 
   drumcells_group.setTopLeftPosition (gr_drumkits.getRight() + XFILLER, gr_topbar.getBottom());
-  drumcells_group.setSize (drumcells_viewer.getWidth() + (XFILLER * 3), 500);
+  //drumcells_group.setSize (drumcells_viewer.getWidth() + (XFILLER * 3), 500);
+  drumcells_group.setSize (drumcells_viewer.getWidth() + (XFILLER * 3), 460);
+
 
   drumcells_viewer.setTopLeftPosition (drumcells_group.getX() + XFILLER, drumcells_group.getY() + YFILLER);
 
@@ -1353,11 +1357,11 @@ addAndMakeVisible (kit_image);
  
 //RND 
   
-   addAndMakeVisible (l_randomizer_seed);
+  addAndMakeVisible (l_randomizer_seed);
   l_randomizer_seed.setSize (100, 48);
   //l_randomizer_seed.setTopLeftPosition (l_pan_mode.getX(), bt_ignore_midi_velocity.getY()/* + YFILLER*/);
-  l_randomizer_seed.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER * 4, 
-                                 l_midimap_mode.getY() - 8);
+  l_randomizer_seed.setTopLeftPosition (bt_ignore_midi_velocity.getX(), 
+                                        bt_ignore_midi_velocity.getBottom());
    
   //l_randomizer_seed.setTooltip ("Number of MIDI note from which\n we start to map instruments in Auto mode,\n default 36");
 
@@ -1386,13 +1390,10 @@ addAndMakeVisible (kit_image);
   
   addAndMakeVisible (l_pan_mode);
   
-  //l_pan_mode.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER * 4, 
-    //                             l_midimap_mode.getY());
-  
-  l_pan_mode.setTopLeftPosition (l_randomizer_seed.getX(), 
-                                 l_base_note.getY());
-  
+  l_pan_mode.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER * 4, 
+                                 l_midimap_mode.getY());
   l_pan_mode.setSize (100, 32);
+  
   cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
   cmb_pan_mode.setColour (juce::ComboBox::textColourId, Colours::white);
 
@@ -1411,9 +1412,7 @@ addAndMakeVisible (kit_image);
   att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
 
   cmb_pan_mode.setTopLeftPosition (l_pan_mode.getRight(), l_pan_mode.getY());
-  
-
-  
+    
   
  
 //////////////   
@@ -1428,13 +1427,13 @@ addAndMakeVisible (kit_image);
   //bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
   bt_global_analog_on.setSize (80, 48);
   bt_global_analog_on.setTopLeftPosition (l_pan_mode.getX(), 
-                                          bt_ignore_midi_velocity.getY());
+                                         (l_pan_mode.getBottom() + YFILLER));
 
   att_global_analog_on.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "global_analog_on", bt_global_analog_on));
   
  
   addAndMakeVisible (sl_global_analog_amount);
-  sl_global_analog_amount.setTopLeftPosition (cmb_pan_mode.getX(), bt_global_analog_on.getY());
+  sl_global_analog_amount.setTopLeftPosition (bt_global_analog_on.getRight(), bt_global_analog_on.getY());
   sl_global_analog_amount.setSize (182, 48);
   sl_global_analog_amount.setRange (0.0f, 1.0f, 0.01f);
   sl_global_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
@@ -1449,14 +1448,27 @@ addAndMakeVisible (kit_image);
   
 #endif  
 
+  //gr_options.setSize (drumcells_group.getWidth(), 
+    //                  cmb_midimap_mode.getHeight() +                       
+      //                sl_base_note.getHeight() +  
+        //              bt_ignore_midi_velocity.getHeight() + 32);
+  //
+
   gr_options.setSize (drumcells_group.getWidth(), 
+                      
                       cmb_midimap_mode.getHeight() +                       
                       sl_base_note.getHeight() +  
-                      bt_ignore_midi_velocity.getHeight() + 32);
+                      bt_ignore_midi_velocity.getHeight() + 
+                      l_randomizer_seed.getHeight() +
+                      32);
+  
   
   
   setSize (drumcells_viewer.getRight() + XFILLER * 2, 
-           gr_options.getBottom());
+           gr_kit_tools.getBottom());
+  
+  //setSize (drumcells_viewer.getRight() + XFILLER * 2, 
+    //       gr_options.getBottom());
   
 ////////////////////////              
   
