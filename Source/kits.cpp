@@ -32,8 +32,13 @@ using namespace std;
 std::mt19937 rnd_mt19937;
 const uint64_t SEED = 123456789ULL;
 
-//FastDeterministicRNG rnd_generator;
 
+
+int get_rnd (int ta, int tb)
+{
+  std::uniform_int_distribution <> distrib (ta, tb);
+  return distrib (rnd_mt19937);
+}
 
 
 std::string get_part (std::string &s)
@@ -112,7 +117,6 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
        delete buffer;
        return 0;
       }
-
       
    samplerate = reader->sampleRate;
    length_in_samples = reader->lengthInSamples;
@@ -128,21 +132,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
            }
      
       }
-   
-/*
-if (reader->numChannels > 2)
-{
-    float* left  = buffer->getWritePointer(0);
-    const float* right = buffer->getReadPointer(1);
-    int n = (int) length_in_samples;
 
-    // left = left * 0.5f
-    juce::FloatVectorOperations::multiply(left, 0.5f, n);
-    // left += right * 0.5f  -> итог: left = 0.5*left_orig + 0.5*right
-    juce::FloatVectorOperations::addWithMultiply(left, right, 0.5f, n);
-}
-
-*/
    delete reader;
    return buffer;
 }
@@ -188,10 +178,10 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   //out_buf->clear(); //НЕ БЫЛО И НЕ МЕШАЛО
 
   Resample *resampler = resampleInit (1,  //channels
-                                       4,//int numTaps
-                                       4,// int numFilters, 
-                                       0.5,//double lowpassRatio, 
-                                       SUBSAMPLE_INTERPOLATE | BLACKMAN_HARRIS | INCLUDE_LOWPASS);//int flags);
+                                      4,//int numTaps
+                                      4,// int numFilters, 
+                                      0.5,//double lowpassRatio, 
+                                      SUBSAMPLE_INTERPOLATE | BLACKMAN_HARRIS | INCLUDE_LOWPASS);//int flags);
   
 /*
 Resample *resampler = resampleInit (1,  //channels
@@ -528,42 +518,6 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
       if (kit->sample_counter != 0)
           if (kit->temp_sample->v_layers.size() != 0)
               kit->temp_sample->v_layers.back()->load (path.c_str());
-
-     
-      /*  
-      if (kit->temp_sample->mute_group != 7777)  
-      if (kit->mute_groups_auto)  
-         {
-          for (auto signature: kit->v_auto_mute_signatures)
-              {
-               if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
-                 {
-                  kit->temp_sample->mute_group = 7777;   
-                  break;  
-                 }   
-              }    
-         }
-*/
-      /*   
-      for (auto signature: kit->v_hat_open_signatures)
-          {
-           if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
-              {
-               kit->temp_sample->hihat_open = true;
-               break;
-              }
-          }
-
-      for (auto signature: kit->v_hat_close_signatures)
-          {
-           if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
-              {
-               kit->temp_sample->hihat_close = true;
-               break;
-              }
-          }
-          */
-          
      }
 
 
@@ -571,6 +525,7 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
 }
 
 
+//AI-generated
 std::string trim (const std::string& str) 
 {
   size_t first = 0;
@@ -617,7 +572,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
   
    pugi::xml_node samples = doc.child ("root");
 
-   std::string str_kit_type = samples.attribute("type").value(); 
+   std::string str_kit_type = samples.attribute ("type").value(); 
    if (str_kit_type == "alt")
       kit_type = KIT_TYPE_ALTDRUMLABOOH;  
      
@@ -769,41 +724,6 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                      } 
                  } 
              }
-
-/*                    
-      if (mute_groups_auto)  
-         {
-          for (auto signature: v_auto_mute_signatures)
-              {
-               if (findStringIC (temp_sample->name, signature) || findStringIC (fname, signature))
-                 {
-                  temp_sample->mute_group = 7777;   
-                  break;  
-                 }   
-              }    
-         }
-*/
-             
-/*
-         for (auto signature: v_hat_open_signatures)
-             {
-              if (findStringIC (temp_sample->name, signature) || findStringIC (fname, signature)) //заменить на другую функцию проверки?
-                 {
-                  temp_sample->hihat_open = true;
-                  break;
-                 }
-             }
-
-
-         for (auto signature: v_hat_close_signatures)
-             {
-              if (findStringIC (temp_sample->name, signature) || findStringIC (fname, signature))
-                 {
-                  temp_sample->hihat_close = true;
-                  break;
-                 }
-             }
-*/
         }
       
       
@@ -845,7 +765,7 @@ void CDrumKit::load_directory (const std::string &path)
       instrument_dirs.resize (36);
    
    
-  std::vector<std::string> extensions = {".wav", ".aiff", ".aif", ".flac", ".mp3", ".ogg"};
+  std::vector <std::string> extensions = {".wav", ".aiff", ".aif", ".flac", ".mp3", ".ogg"};
  
   
   for (size_t i = 0; i < instrument_dirs.size(); i++)
@@ -863,7 +783,6 @@ void CDrumKit::load_directory (const std::string &path)
        if (v_fnames.size() > 127)
            v_fnames.resize (127);
          
-         
         
        temp_sample = add_sample (sample_counter++);
        temp_sample->name = get_last_part (directory);
@@ -876,44 +795,10 @@ void CDrumKit::load_directory (const std::string &path)
                {
                 temp_sample->add_layer();
                 temp_sample->v_layers.back()->load (fname.c_str());
-                
-/*                                
-      if (mute_groups_auto)  
-         {
-          for (auto signature: v_auto_mute_signatures)
-              {
-               if (findStringIC (temp_sample->name, signature) || findStringIC (fname, signature))
-                 {
-                  temp_sample->mute_group = 7777;   
-                  break;  
-                 }   
-              }    
-         }
-         */
-/*
-                for (auto signature: v_hat_open_signatures)
-                    {
-                     if (findStringIC (temp_sample->name, signature) || findStringIC (fname, signature)) //заменить на другую функцию проверки?
-                        {
-                         temp_sample->hihat_open = true;
-                         break;
-                        }
-                   }
-
-
-             for (auto signature: v_hat_close_signatures)
-                 {
-                  if (findStringIC (temp_sample->name, signature) || findStringIC (fname, signature))
-                     {
-                      temp_sample->hihat_close = true;
-                      break;
-                     }
-                } */
-            }   
+               }   
                 
            } 
        }
-  
 
       
   std::string kitimg = kit_dir + "/image.jpg";
@@ -983,8 +868,6 @@ void CDrumKit::load_txt (const std::string &data)
   //       bool check_for_random_noice = false;
          bool check_for_txt = false;
                   
-         //if (fname.find ("samples.txt") != string::npos || fname.find (".part") != string::npos)
-           //  check_for_txt = true;
          if (fname.find (".txt") != string::npos)
              check_for_txt = true;
          
@@ -1044,10 +927,6 @@ void CDrumKit::load_txt (const std::string &data)
              if (check_for_novelocity)
                  temp_sample->layer_index_mode = LAYER_INDEX_MODE_NOVELOCITY; 
 
-//              if (check_for_random_noice)
-  //               v_samples.back()->use_random_noice = true;
-              
-             
              if (! check_for_txt) 
              for (auto f: v_fnames)
                  {
@@ -1103,7 +982,7 @@ void CDrumKit::load_txt (const std::string &data)
             }
          else //ONE LAYER PER SAMPLE
              {
-              string filename = kit_dir + "/" + fname;
+              std::string filename = kit_dir + "/" + fname;
 
               temp_sample = add_sample (sample_counter++);
               temp_sample->name = sample_name;
@@ -1121,42 +1000,6 @@ void CDrumKit::load_txt (const std::string &data)
                      } 
                  } 
              }
-
-    /*                         
-      if (mute_groups_auto)  
-         {
-          for (auto signature: v_auto_mute_signatures)
-              {
-               if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
-                 {
-                  temp_sample->mute_group = 7777;   
-                  break;  
-                 }   
-              }    
-         }
-*/
-             /*
-         for (auto signature: v_hat_open_signatures)
-             {
-              if (findStringIC (sample_name, signature) || findStringIC (fname, signature)) //заменить на другую функцию проверки?
-                 {
-                  temp_sample->hihat_open = true;
-                  break;
-                 }
-             }
-
-
-         for (auto signature: v_hat_close_signatures)
-             {
-              if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
-                 {
-                  temp_sample->hihat_close = true;
-                  break;
-                 }
-             }
-             
-          */
-
         }
 
   std::string kitimg = kit_dir + "/image.jpg";
@@ -1237,42 +1080,6 @@ void CDrumKit::load_qtxt (const std::string &data)
 
           if (file_exists (filename))
               temp_sample->v_layers.back()->load (filename.c_str());
-
-           /*
-        if (mute_groups_auto)  
-         {
-          for (auto signature: v_auto_mute_signatures)
-              {
-               if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
-                 {
-                  temp_sample->mute_group = 7777;   
-                  break;  
-                 }   
-              }    
-         } */
-
-
-           /*
-          for (auto signature: v_hat_open_signatures)
-              {
-               if (findStringIC (sample_name, signature) || findStringIC (fname, signature)) //заменить на другую функцию проверки?
-                  {
-                   temp_sample->hihat_open = true;
-                   break;
-                  }
-              }
-
-
-         for (auto signature: v_hat_close_signatures)
-             {
-              if (findStringIC (sample_name, signature) || findStringIC (fname, signature))
-                 {
-                  temp_sample->hihat_close = true;
-                  break;
-                 }
-             }
-             */
-
         }
 
   std::string kitimg = kit_dir + "/image.jpg";
@@ -1298,10 +1105,6 @@ std::string guess_sample_name (const std::string &raw)
 
   std::string t = file_without_extension;
   
-  //for (size_t i = 0; i < file_without_extension.size(); i++)
-    //  if (isalnum (file_without_extension[i]))
-      //   t += file_without_extension[i];
-
   return t;
 }
 
@@ -1621,7 +1424,7 @@ void CDrumKit::load_sfz (const std::string &data)
 }
 */
 
-
+//based of AI-generated code
 void CDrumKit::load_sfz (const std::string &data)
 {
 //  std::cout << "void CDrumKit::load_sfz (const std::string data)\n";
@@ -1645,11 +1448,6 @@ void CDrumKit::load_sfz (const std::string &data)
   std::string sfz_default_path;
   
   std::vector <std::string> t_str = split_string_to_vector (temp_data, "\n", false);
-  //std::cout << "t_str.size()" << t_str.size() << "\n";
-  
-    //std::vector <std::string> v_str;
-  
-  //std::cout << "v_str.size()" << v_str.size() << "\n";
   
   std::string line;
 
@@ -1786,14 +1584,9 @@ void CDrumKit::load_sfz (const std::string &data)
   loaded = true;    
 }
 
+
 void CDrumKit::load_hydrogen (const std::string &data)
 {
-//  if (! scan_mode)
-  //   cout << "@@@@@@@@@@@@ void CDrumKit::load: " << fname << "samplerate: " << sample_rate << endl;
-
-  
-  //else Hydrogen format
-  //FIXKIT перенести в отдельную функцию
   
   kit_type = KIT_TYPE_HYDROGEN;
 
@@ -1811,8 +1604,7 @@ void CDrumKit::load_hydrogen (const std::string &data)
   //delete empty instruments
   //because we don't want parse them
 
-   std::string source = data;
-   
+  std::string source = data;
   
   size_t idx_filename = source.rfind ("</filename>");
   size_t idx_instrument = source.find ("<instrument>", idx_filename);
@@ -1840,20 +1632,6 @@ void CDrumKit::load_hydrogen (const std::string &data)
   CHydrogenXMLWalker walker (this);
 
   doc.traverse (walker);
-  /*
-        if (temp_sample)
-         { 
-          if (temp_sample->v_layers.size() == 0)
-             {   
-              sample_counter--;
-              if (sample_counter >= 0) //NEW CHECK!
-                 {
-                  delete a_samples[sample_counter];
-                  temp_sample = 0;
-                 } 
-              }
-         }
-*/
   
   loaded = true;
 }
@@ -1876,8 +1654,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   //std::string filename = resolve_symlink (fname.c_str());
   std::string filename = resolve_symlink (initial_fname.c_str());
 
-   //if (! scan_mode)
-  cout << "@@@@@@@@@@@@ void CDrumKit::load: " << filename << endl;
+  //cout << "@@@@@@@@@@@@ void CDrumKit::load: " << filename << endl;
 
   
   kit_filename = filename;
@@ -1891,20 +1668,19 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
       setup_auto_mute();
         
       auto stop = chrono::high_resolution_clock::now();
-  //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
-
+      //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
+ 
       load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
       str_load_duration_msecs  = "Loaded, msecs: " + std::to_string (load_duration_msecs);
 
       return;
      }
- 
-  
+   
   
   std::string source = string_file_load (kit_filename);
   if (source.empty())
-      return;
 
+     return;
    
   if (ends_with (kit_filename, "drumkit.labooh"))
      {
@@ -1925,8 +1701,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
      {
       load_txt (source);
       setup_auto_mute();
-
-      
+     
       auto stop = chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
@@ -1935,6 +1710,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
       return;
      }
+     
      
   if (ends_with (kit_filename, "drumkitq.txt"))
      {
@@ -1949,6 +1725,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   
       return;
      }
+     
 
   if (ends_with (kit_filename, ".sfz"))
      {
@@ -1965,7 +1742,6 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
      }
 
   //else Hydrogen format
-  //FIXKIT перенести в отдельную функцию
   
   load_hydrogen (source);
   setup_auto_mute();
@@ -1978,7 +1754,6 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
       
  // std::cout << "loaded at: " << duration_msecs.count() << " msecs" << std::endl;
-
   //seconds_counter_ev = duration_s.count();
  
 }
@@ -1986,7 +1761,6 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
 CDrumKit::CDrumKit()
 {
-  //scan_mode = false;
   mute_groups_auto = true;
   layers_supported = false;
   has_mapping = false;
@@ -2004,17 +1778,7 @@ CDrumKit::CDrumKit()
   v_auto_mute_signatures.push_back ("close");
   v_auto_mute_signatures.push_back ("choke");
   v_auto_mute_signatures.push_back ("HHC");
- /* 
-  v_hat_open_signatures.push_back ("hat_o");
-  v_hat_open_signatures.push_back ("open");
-  v_hat_open_signatures.push_back ("swish");
-  v_hat_open_signatures.push_back ("HHO");
-
-  v_hat_close_signatures.push_back ("close");
-  v_hat_close_signatures.push_back ("choke");
-  v_hat_close_signatures.push_back ("hat_c");
-  v_hat_close_signatures.push_back ("HHC");
-  */
+  
   for (int i = 0; i < 36; i++)
       a_samples [i] = 0;
 }
@@ -2127,20 +1891,13 @@ void CDrumKit::adapt() //used at Adapt button handler
                 std::string ext = get_file_ext (layer->file_name);
                 ext = string_to_lower (ext);
 
-                if (ext == "wav")
+                if (ext == "wav" || ext == "aiff" || ext == "aif")
                     writer = WavAudioFormat().createWriterFor (fs, layer->samplerate, 
                                                                1, //channels
                                                                32,//int bitsPerSample, 
                                                                StringPairArray(), 
                                                                0);
-                  
-                if (ext == "aiff")
-                    writer = AiffAudioFormat().createWriterFor (fs, layer->samplerate, 
-                                                                1, //channels
-                                                                32,//int bitsPerSample, 
-                                                                StringPairArray(), 
-                                                                0);
-
+                
                 if (ext == "flac")
                     writer = FlacAudioFormat().createWriterFor (fs, layer->samplerate, 
                                                                 1, //channels
@@ -2160,105 +1917,6 @@ void CDrumKit::adapt() //used at Adapt button handler
            } 
       }
 }
-
-
-void CDrumKit::adapt_qkit (std::string new_dir_path) //used at Adapt button handler
-{
-  if (sample_counter == 0)
-      return;
-  
-  if (kit_type != KIT_TYPE_QDRUMLABOOH)
-      return;
-  
-//  std::cout << "CDrumKit::total_samples_size() - 1\n";
- 
-  std::string result;
-  
-  if (! std::filesystem::create_directories (new_dir_path))
-      return;
-  
-  for (size_t i = 0; i < 36; i++)
-      { 
-       CDrumSample *s = a_samples[i];
-       
-       if (! s)
-          {
-           result += "#EMPTY\n"; 
-           continue; 
-          } 
-   
-       if (s->v_layers.size() == 0)
-          continue;
-  
-        
-       CDrumLayer *layer = 0; 
-       layer = s->v_layers[0];  
-       
-          
-       if (layer->audio_buffer)
-          {
-           juce::File fl (layer->file_name);
-                                
-           std::string fname_ext = fl.getFileName().toStdString(); 
-           std::string pure_fname =  fl.getFileNameWithoutExtension().toStdString(); 
-             
-           //std::string fname_ext = fl.getFileName().toStdString(); 
-           //std::string pure_fname =  fl.getFileName.toStdString(); 
-           
-           
-           fl = new_dir_path + "/" + fname_ext;
-           
-           layer->file_name = fl.getFullPathName().toStdString();
-           
-           result += pure_fname;
-           result += "=";
-           result += fname_ext;
-           result += "\n";
-             
-           juce::OutputStream *fs = new juce::FileOutputStream (fl); //will be deleted by writer?
-                
-           juce::AudioFormatWriter *writer = 0;
-                
-           std::string ext = get_file_ext (s->v_layers[0]->file_name);
-           ext = string_to_lower (ext);
-
-           if (ext == "wav")
-              writer = WavAudioFormat().createWriterFor (fs, layer->samplerate, 
-                                                         1, //channels
-                                                         32,//int bitsPerSample, 
-                                                         StringPairArray(), 
-                                                         0);
-                  
-           if (ext == "aiff")
-               writer = AiffAudioFormat().createWriterFor (fs, layer->samplerate, 
-                                                           1, //channels
-                                                           32,//int bitsPerSample, 
-                                                           StringPairArray(), 
-                                                           0);
-
-           if (ext == "flac")
-               writer = FlacAudioFormat().createWriterFor (fs, layer->samplerate, 
-                                                           1, //channels
-                                                           24,//int bitsPerSample, 
-                                                           StringPairArray(), 
-                                                           0);
-
-
-           if (! writer)
-              return;
-                 
-           if (! writer->writeFromAudioSampleBuffer (*layer->audio_buffer, 0, layer->audio_buffer->getNumSamples()))
-                    std::cout << "NO write!\n";
-                 
-           delete writer;
- 	      }
-            
-      }     
-       
-      
-   string_save_to_file (new_dir_path + "/drumkitq.txt", result);
-}
-
 
 void CDrumKit::print()
 {
@@ -2329,7 +1987,6 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back (get_home_dir() + "/drumlabooh-kits");
   v_kits_locations.push_back (get_home_dir() + "/drum_sklad");
   v_kits_locations.push_back (get_home_dir() + "/drum_dirs");
-
   
   v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
 /*
@@ -2398,23 +2055,13 @@ void CDrumKitsScanner::scan()
        if (is_kit_dir (kd))
        if (is_directory_safe (kd))  
           {
-//           std::cout << "kd: " << kd << endl;
-         
-             
-//           kit_exists = true;
            std::string kit_name = get_last_part (kd);
-           
-  //         std::cout << "kit name: " << kit_name << std::endl;
-         
            
            map_kits.insert (pair<string,string> (kit_name, kd));
            v_kits_names.push_back (kit_name);
            
            continue;
           }
-       
-       
-       //
        
 
        std::string fname = kd + "/drumkit.xml";
@@ -2473,7 +2120,6 @@ void CDrumKitsScanner::scan()
             
            if (ext == "sfz")
                kit_name = get_last_part (kd);
-
               
            if (ext == "xml")
               {
@@ -2492,7 +2138,7 @@ void CDrumKitsScanner::scan()
       }
 
       
-    std::sort (v_kits_names.begin(), v_kits_names.end());  
+  std::sort (v_kits_names.begin(), v_kits_names.end());  
 }
 
 
@@ -2519,13 +2165,6 @@ void CDrumSample::untrigger_sample (bool alt)
 }
 
 
-int get_rnd (int ta, int tb)
-{
-  std::uniform_int_distribution <> distrib (ta, tb);
-  return distrib (rnd_mt19937);
-}
-
-
 void CDrumSample::trigger_sample (float vel)
 {
 //  std::cout << "CDrumSample::trigger_sample: " << name << std::endl;
@@ -2534,9 +2173,6 @@ void CDrumSample::trigger_sample (float vel)
 
   active = true;
   velocity = vel;
-
-  ///if (use_random_noice)
-  //    random_number = std::uniform_real_distribution<float> distrib(-noiseLevel, noiseLevel);
   
   if (v_layers.size() > 1)
      {
@@ -2547,10 +2183,6 @@ void CDrumSample::trigger_sample (float vel)
       if (layer_index_mode == LAYER_INDEX_MODE_RND)
           //current_layer = get_rnd (0, v_layers.size() - 1);//random layer
           current_layer = rnd_generator.next (0, v_layers.size() - 1);//random layer
-         
-                  
-     std::cout << "rnd current_layer : " << current_layer  << std::endl;
-         
           
       if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
          {
@@ -2560,9 +2192,6 @@ void CDrumSample::trigger_sample (float vel)
               robin_counter = 0;
             
           current_layer = robin_counter;
-          
-          std::cout << "robin current_layer : " << current_layer  << std::endl;
-
          } 
       }
    else 
@@ -2590,25 +2219,15 @@ void CDrumSample::trigger_sample_uint (int vel, float velo)
 
   active = true;
   velocity = velo;
-
-  ///if (use_random_noice)
-  //    random_number = std::uniform_real_distribution<float> distrib(-noiseLevel, noiseLevel);
   
   if (v_layers.size() > 1)
      {
-      std::cout << "layer_index_mode : " << layer_index_mode << std::endl;
-      
-        
-        
       if (layer_index_mode == LAYER_INDEX_MODE_VEL || layer_index_mode == LAYER_INDEX_MODE_NOVELOCITY)
           current_layer = map_uint_velo_to_layer_number (vel);
 
       if (layer_index_mode == LAYER_INDEX_MODE_RND)
          // current_layer = get_rnd (0, v_layers.size() - 1);//random layer
-         {
           current_layer = rnd_generator.next (0, v_layers.size() - 1);//random layer
-          std::cout << "rnd current_layer : " << current_layer  << std::endl;
-         }   
        
       if (layer_index_mode == LAYER_INDEX_MODE_ROBIN)
          {
@@ -2618,13 +2237,9 @@ void CDrumSample::trigger_sample_uint (int vel, float velo)
               robin_counter = 0;
          
           current_layer = robin_counter;
-          
-          
-         std::cout << "robin current_layer : " << current_layer  << std::endl;
-
          } 
       }
-   else 
+  else 
        current_layer = 0; //if layers count == 1
 
   //std::cout << "velo: " << velocity << " layer: " << current_layer << std::endl;
@@ -2660,41 +2275,18 @@ CDrumSample* CDrumKit::load_sample_to_index (size_t index, const std::string &fn
   
   s->name = file_without_extension;
   
-/////////  
-  /*
-  for (auto signature: v_hat_open_signatures)
-      {
-       if (findStringIC (fname, signature) || findStringIC (fname, signature))
+  if (mute_groups_auto)  
+     {
+      for (auto signature: v_auto_mute_signatures)
           {
-           s->hihat_open = true;
-           break;
-          }
-       }
-
-      for (auto signature: v_hat_close_signatures)
-          {
-           if (findStringIC (fname, signature) || findStringIC (fname, signature))
+           if (findStringIC (fname, signature))
               {
-               s->hihat_close = true;
-               break;
-              }
-          }
-*/
-      if (mute_groups_auto)  
-         {
-          for (auto signature: v_auto_mute_signatures)
-              {
-               if (findStringIC (fname, signature))
-                 {
-                  s->mute_group = 7777;   
-                  break;  
-                 }   
-              }    
-         }
-
-
-            
-            
+               s->mute_group = 7777;   
+               break;  
+              }   
+         }    
+    }
+        
   a_samples[index] = s;
 
   //  std::cout << "CDrumKit::load_sample_to_index - end" << std::endl;
@@ -2713,52 +2305,6 @@ void CDrumKit::remove_sample_at_index (size_t index)
      }
 }
   
-  
-void CDrumKit::save_qkit() 
-{
-  if (sample_counter == 0)
-      return;
-  
-  if (kit_type != KIT_TYPE_QDRUMLABOOH)
-      return;
-  
-  //std::cout << " CDrumKit::save_qkit() -1\n";
-  
-  std::string result;
-  
-//  std::cout << "CDrumKit::total_samples_size() - 1\n";
- 
-  for (size_t i = 0; i < 36; i++)
-      { 
-       CDrumSample *s = a_samples[i];
-
-//       std::cout << "i: " << i << std::endl;
-       
-       if (! s)
-          {
-           result += "#EMPTY\n"; 
-           continue; 
-          }  
-   
-       if (s->v_layers.size() == 0)
-          continue;
-        
-       std::string line;
-        
-       if (s->v_layers[0]->audio_buffer)
-          {
-           line = s->name;
-           line += "=";
-           line += s->v_layers[0]->file_name;
-           line += "\n";
-           result += line;
-          }
-       } 
-             
-    
-  string_save_to_file (kit_filename, result);
-}
-
 
 std::string CDrumKit::get_description()
 {
@@ -2811,7 +2357,6 @@ void CDrumKit::setup_auto_mute()
          
        for (auto signature: v_auto_mute_signatures)
            {
-              
             if (findStringIC (s->name, signature))
                {
                 s->mute_group = 7777;   
@@ -2823,9 +2368,6 @@ void CDrumKit::setup_auto_mute()
                 s->mute_group = 7777;   
                 break;  
                } 
-                 
-                 
-                 
           }    
       }   
 }

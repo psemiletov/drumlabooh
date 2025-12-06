@@ -444,7 +444,6 @@ public:
   void adapt();
   
   void adapt_drumlabooh();
-  void adapt_qdrumlabooh();
   
   
   

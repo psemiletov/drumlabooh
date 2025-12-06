@@ -1,19 +1,15 @@
 /*
-written at 2023-24 by Peter Semiletov
+written at 2023-25 by Peter Semiletov
 this code is the public domain
 */
 
 
 #include <iostream>
 #include <fstream>
-
 #include <filesystem>
-
-
 #include <algorithm>
 #include <string>
 #include <cctype>
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -31,17 +27,6 @@ this code is the public domain
 //#include <shlobj_core.h>
 //#include <KnownFolders.h>
 //#include <wchar.h>
-
-#endif
-
-
-#if !defined(_WIN32) || !defined(_WIN64)
-
-#define DIR_SEPARATOR "/"
-
-#else
-
-#define DIR_SEPARATOR "\\"
 
 #endif
 
@@ -77,179 +62,34 @@ std::string resolve_symlink (const std::string &path)
 
   bool is_symlink = false;
 
-    struct stat buf;
-    int r = stat (path.c_str(), &buf);
+  struct stat buf;
+  int r = stat (path.c_str(), &buf);
 
-    if (S_ISLNK(buf.st_mode))
-       is_symlink = true;
+  if (S_ISLNK(buf.st_mode))
+     is_symlink = true;
 
-    //if (S_ISREG(buf.st_mode)) printf (" stat says file\n");
-    if (is_symlink)
-       {
-        char resolved_fname[FILENAME_MAX];
-        int count = readlink (path.c_str(), resolved_fname, sizeof(resolved_fname));
-        if (count >= 0)
-          {
-           resolved_fname[count] = '\0';
-           return resolved_fname;
-          }
-     }
-
-   return path;
-
-#else
-
-   return path;
-
-#endif
-}
-
-/*
-#if !defined(_WIN32) || !defined(_WIN64)
-
-std::vector <std::string> files_get_list (const std::string &path)
-{
-  std::vector <std::string> result;
-
-  if (path.empty())
-     return result;
-
-  DIR *directory;
-  struct dirent *dir_entry = NULL;
-
-  directory = opendir (path.c_str());
-  if (! directory)
-     return result;
-
-  std::string t;
-
-  while ((dir_entry = readdir (directory)))
-        {
-         t = dir_entry->d_name;
-
-         if (t != "." && t != "..")
-             result.push_back (path + "/" DIR_SEPARATOR + t);
-        }
-
-  closedir (directory);
-
-  return result;
-}
-
-
-std::vector <std::string> files_get_list (const std::string &path, const std::string &ext) //ext with dot: ".txt"
-{
-  std::vector <std::string> result;
-
-  if (path.empty())
-     return result;
-
-  DIR *directory;
-
-
-  directory = opendir (path.c_str());
-  if (! directory)
-      return result;
-
-  std::string t;// = dir_entry->d_name;
-
-  struct dirent *dir_entry = NULL;
-
-   while (dir_entry = readdir (directory))
+  //if (S_ISREG(buf.st_mode)) printf (" stat says file\n");
+  if (is_symlink)
+     {
+      char resolved_fname[FILENAME_MAX];
+      int count = readlink (path.c_str(), resolved_fname, sizeof(resolved_fname));
+      if (count >= 0)
          {
-          // std::cout << dir_entry->d_name << std::endl;
-          t = dir_entry->d_name;
-          if (t.rfind (ext) != string::npos)
-            result.push_back (path + "/" + t);
+          resolved_fname[count] = '\0';
+          return resolved_fname;
          }
+     }
 
-   closedir (directory);
-   return result;
-}
-
+  return path;
 
 #else
 
-std::vector <std::string> files_get_list (const std::string &path)
-{
-
-  std::vector<std::string> result;
-
-  if (path.empty())
-     return result;
-
-
-    WIN32_FIND_DATAA findData;
-    HANDLE hFind = INVALID_HANDLE_VALUE;
-    std::string full_path = path + "\\*";
-
-    hFind = FindFirstFileA (full_path.c_str(), &findData);
-
-    std::string t;
-
-    if (hFind == INVALID_HANDLE_VALUE)
-        //throw std::runtime_error("Invalid handle value! Please check your path...");
-       return result;
-
-    while (FindNextFileA(hFind, &findData) != 0)
-      {
-       t = findData.cFileName;
-
-       if (t != "." && t != "..")
-           result.push_back (path + "/" + t);
-     }
-
-    FindClose(hFind);
-
-    return result;
-}
-
-
-
-std::vector <std::string> files_get_list (const std::string &path, const std::string &ext) //ext with dot: ".txt"
-{
-
-  std::vector<std::string> result;
-
-  if (path.empty())
-     return result;
-
-
-
-    WIN32_FIND_DATAA findData;
-    HANDLE hFind = INVALID_HANDLE_VALUE;
-    std::string full_path = path + "\\*";
-
-
-    hFind = FindFirstFileA (full_path.c_str(), &findData);
-
-    std::string t;
-
-    if (hFind == INVALID_HANDLE_VALUE)
-        //throw std::runtime_error("Invalid handle value! Please check your path...");
-       return result;
-
-    while (FindNextFileA(hFind, &findData) != 0)
-      {
-        t = findData.cFileName;
-
-      if (t.rfind (ext) != string::npos)
-            result.push_back (path + "/" + t);
-
-    }
-
-    FindClose(hFind);
-
-    return result;
-}
-
+   return path;
 
 #endif
+}
 
-
-*/
-
-
+//AI-generated
 
 std::vector<std::string> files_get_list(const std::string &path) {
     std::vector<std::string> result;
@@ -289,8 +129,6 @@ std::vector<std::string> files_get_list(const std::string &path, const std::stri
 }
 
 
-
-
 std::string get_home_dir()
 {
   std::string result;
@@ -309,16 +147,10 @@ std::string get_home_dir()
   if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, homeDirStr)))
     result = homeDirStr;
 
-/*
-     PWSTR path = NULL;
-    HRESULT hres = SHGetKnownFolderPath(FOLDERID_Documents, 0, NULL, &path);*/
-    //%USERPROFILE%\Documents
-
 #endif
 
   return result;
 }
-
 
 
 std::string get_file_ext (const std::string &fname)
@@ -344,12 +176,12 @@ std::string get_file_path (const std::string &path)
 
 std::string string_file_load (const string &fname)
 {
- if (fname.empty())
+  if (fname.empty())
     return string();
 
- std::ifstream t (fname.c_str());
- std::string s ((std::istreambuf_iterator<char>(t)),
-                 std::istreambuf_iterator<char>());
+  std::ifstream t (fname.c_str());
+  std::string s ((std::istreambuf_iterator<char>(t)),
+                  std::istreambuf_iterator<char>());
 
  return s;
 }
@@ -382,7 +214,7 @@ std::string string_to_lower (const std::string &s)
 }
 
 
-vector <string> split_string_to_vector (const string& s, const string& delimeter, const bool keep_empty)
+std::vector <std::string> split_string_to_vector (const std::string& s, const std::string& delimeter, const bool keep_empty)
 {
   vector <string> result;
 
@@ -532,37 +364,39 @@ void string_save_to_file (const std::string &fname, const std::string &s)
   
  */ 
 
+//AI-generated
 // Функция для получения списка файлов с указанными расширениями
 std::vector<std::string> get_files_with_extensions (const std::string& directory, const std::vector<std::string>& extensions) 
 {
-    std::vector<std::string> files;
+  std::vector<std::string> files;
 
-    // Проходим по всем элементам в директории
-    for (const auto& entry : std::filesystem::directory_iterator(directory)) 
-        {
-        // Проверяем, что это обычный файл
-         if (entry.is_regular_file()) 
-           {
-            // Получаем расширение файла в нижнем регистре
-            std::string ext = entry.path().extension().string();
-            // Приводим к нижнему регистру для нечувствительного сравнения
-            std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+  // Проходим по всем элементам в директории
+  for (const auto& entry : std::filesystem::directory_iterator(directory)) 
+      {
+       // Проверяем, что это обычный файл
+       if (entry.is_regular_file()) 
+          {
+           // Получаем расширение файла в нижнем регистре
+           std::string ext = entry.path().extension().string();
+           // Приводим к нижнему регистру для нечувствительного сравнения
+           std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
             
-            // Проверяем, есть ли расширение в списке допустимых
-            for (const auto& valid_ext : extensions) {
+           // Проверяем, есть ли расширение в списке допустимых
+           for (const auto& valid_ext : extensions) 
+               {
                 std::string temp_ext = valid_ext;
                 // Приводим искомое расширение к нижнему регистру
                 std::transform(temp_ext.begin(), temp_ext.end(), temp_ext.begin(), ::tolower);
                 
                 // Если расширение совпадает, добавляем путь к файлу в результат
-                if (ext == temp_ext || (ext.empty() && temp_ext == ".")) {
+                if (ext == temp_ext || (ext.empty() && temp_ext == ".")) 
                     files.push_back(entry.path().string());
-                }
-            }
-        }
+                
+              }
+        } 
     }
     
-    std::sort(files.begin(), files.end());
+    std::sort (files.begin(), files.end());
     
     return files;
 }
@@ -572,45 +406,22 @@ std::vector<std::string> get_files_with_extensions (const std::string& directory
 
 std::vector<std::string> get_directories (const std::string& directory) 
 {
-    std::vector<std::string> directories;
+  std::vector<std::string> directories;
     
-    // Проходим по всем элементам в директории
-    for (const auto& entry : filesystem::directory_iterator(directory)) 
-    {
+  // Проходим по всем элементам в директории
+  for (const auto& entry : filesystem::directory_iterator(directory)) 
+      {
         // Проверяем, что это директория
         if (entry.is_directory()) {
             directories.push_back(entry.path().string());
         }
-    }
+     }
     
     // Сортируем список каталогов по алфавиту
-    std::sort(directories.begin(), directories.end());
+  std::sort(directories.begin(), directories.end());
     
-    return directories;
+  return directories;
 }
-
-/*
-std::vector<std::string> get_directories(const std::string& directory) 
-{
-    std::vector<std::string> directories;
-    
-        for (const auto& entry : filesystem::directory_iterator(directory)) 
-        {
-            // Явная проверка через путь и статус
-            if (filesystem::is_directory(entry.path())) {
-                directories.push_back(entry.path().string());
-            }
-            
-            // Для отладки можно добавить вывод
-            // std::cout << "Found: " << entry.path() << " is_dir: " << fs::is_directory(entry.path()) << "\n";
-        }
-        
-      std::sort(directories.begin(), directories.end());
-    
-    
-    return directories;
-}
-*/
 
 
 bool is_directory_safe(const std::string& path) {

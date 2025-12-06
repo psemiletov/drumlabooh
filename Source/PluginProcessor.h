@@ -1,7 +1,7 @@
 /*
-written at 2023-24 by Peter Semiletov
+written at 2023-25 by Peter Semiletov
 this code is the public domain
- */
+*/
 
 
 #pragma once

@@ -31,8 +31,9 @@ this code is the public domain
 #define KIT_TYPE_HYDROGEN 1
 #define KIT_TYPE_SFZ 2
 #define KIT_TYPE_QDRUMLABOOH 3
-#define KIT_TYPE_ALTDRUMLABOOH 4 //каждый слой - отдельный one shot
-//#define KIT_TYPE_DIRECTORY 5 
+#define KIT_TYPE_ALTDRUMLABOOH 4 //каждый слой - отдельный one shot; может быть как кит, а так и директория, которая действует как драмкит
+
+
 
 #define MAX_SAMPLES 36
 
@@ -91,7 +92,7 @@ public:
   
   int mute_group; //-1 no; 7777 hihat auto
   
-  int current_layer; //оставить для влияния?
+  int current_layer; //текущий слой
 
   int session_samplerate; //session srate, taken from the upper level object
 
@@ -106,7 +107,6 @@ public:
 
   FastDeterministicRNG rnd_generator;
  
-    
   size_t robin_counter; 
   
   float velocity;
@@ -140,7 +140,6 @@ public:
 class CDrumKit
 {
 public:
-
    
   std::string kit_name; //parsed from XML or evaluated in other way
   std::string kit_filename; //full path to the kit xml, txt or sfz file
@@ -171,8 +170,6 @@ public:
   std::map <int, CDrumSample*> map_samples; //just a map, actual samples are at v_samples
   
   std::vector <std::string> v_auto_mute_signatures;
-//  std::vector <std::string> v_hat_open_signatures;
-//  std::vector <std::string> v_hat_close_signatures;
 
   CDrumSample* add_sample (size_t index);
   CDrumSample* temp_sample;
@@ -206,8 +203,6 @@ public:
   void print_stats();
   
   void adapt(); //for Adapt function
-  void adapt_qkit (std::string new_dir_path); //for Adapt function
-  void save_qkit();
   
 };
 
