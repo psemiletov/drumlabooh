@@ -686,10 +686,12 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
  
   for (size_t i = 0; i < 35; i++)
      {
-      a_mutes [i] = *(mutes[i]) > 0.5f;
+      //a_mutes [i] = *(mutes[i]) > 0.5f;
       a_lps [i] = *(lps[i]) > 0.5f;
       a_hps [i] = *(hps[i]) > 0.5f;
       
+      a_analog_amount [i] = *(analog_amount[i]);
+      a_analog_on [i] = *(analog[i]);
       
       a_lp_cutoff [i] = *(lp_cutoff[i]); 
       a_lp_reso [i] = *(lp_reso[i]);
@@ -697,12 +699,12 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       a_hp_cutoff [i] = *(hp_cutoff[i]); 
       a_hp_reso [i] = *(hp_reso[i]);
      } 
-   
-    
   
   
   int int_midimap_mode = (int) *midimap_mode;
- 
+
+  //END OF CACHING
+  
   
   for (const juce::MidiMessageMetadata metadata: midiMessages)
       {
@@ -796,7 +798,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
 
     //for each drum instrument
-    for (int drum_sample_index = 0; drum_sample_index < MAX_SAMPLES; drum_sample_index++)
+     for (int drum_sample_index = 0; drum_sample_index < MAX_SAMPLES; drum_sample_index++)
         {
          //for each sample out_buf_offs
          for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
@@ -837,30 +839,30 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                     float fl = l->channel_data[l->sample_offset++];
 
                  //DSP
-                    bool analog_on = *(analog[drum_sample_index]) > 0.5f;
+                    bool analog_on = a_analog_on [drum_sample_index];
  
                     if (analog_on)
-                       fl = warmify (fl,*(analog_amount[drum_sample_index]));
+                       fl = warmify (fl, a_analog_amount[drum_sample_index]);
 
 
-                    bool lp_on = *(lps[drum_sample_index]) > 0.5f;
+                    bool lp_on = a_lps [drum_sample_index];
 
                     if (lp_on)
                        {
-                        a_lps[drum_sample_index].set_cutoff (*(lp_cutoff[drum_sample_index]));
-                        a_lps[drum_sample_index].set_resonance (*(lp_reso[drum_sample_index]));
-                        fl = softLimit (a_lps[drum_sample_index].process (fl));
+                        lp[drum_sample_index].set_cutoff (a_lp_cutoff[drum_sample_index]);
+                        lp[drum_sample_index].set_resonance (a_lp_reso[drum_sample_index]);
+                        fl = softLimit (lp[drum_sample_index].process (fl));
                        }
 
 
                    //bool hp_on = *(hps[drum_sample_index]) > 0.5f;
+                    bool hp_on = a_hps [drum_sample_index];
 
-                   
-                   
+                                      
                    if (hp_on)
                       {
-                       hp[drum_sample_index].set_cutoff (*(hp_cutoff[drum_sample_index]));
-                       hp[drum_sample_index].set_resonance (*(hp_reso[drum_sample_index]));
+                       hp[drum_sample_index].set_cutoff (a_hp_cutoff[drum_sample_index]);
+                       hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
 
                        fl = softLimit (hp[drum_sample_index].process (fl));
                       }
@@ -956,17 +958,20 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   for (size_t i = 0; i < 35; i++)
      {
       a_vols [i] = db2lin(*(vols[i]));
-      a_analog_amount [i] = *(analog_amount[i]);
+
       a_mutes [i] = *(mutes[i]) > 0.5f;
+
       a_lps [i] = *(lps[i]) > 0.5f;
-      a_hps [i] = *(hps[i]) > 0.5f;
-      a_analog_on [i] = *(analog[i]);
-      
       a_lp_cutoff [i] = *(lp_cutoff[i]); 
       a_lp_reso [i] = *(lp_reso[i]);
-      
+
+      a_hps [i] = *(hps[i]) > 0.5f;
       a_hp_cutoff [i] = *(hp_cutoff[i]); 
       a_hp_reso [i] = *(hp_reso[i]);
+
+      a_analog_on [i] = *(analog[i]);
+      a_analog_amount [i] = *(analog_amount[i]);
+      
 
   
       float pan = *(pans[i]); //float pan = *(pans[drum_sample_index]);
@@ -1177,8 +1182,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                    
                  if (lp_on)
                     {
-                     lp[drum_sample_index].set_cutoff (*(lp_cutoff[drum_sample_index]));
-                     lp[drum_sample_index].set_resonance (*(lp_reso[drum_sample_index]));
+                     lp[drum_sample_index].set_cutoff (a_lp_cutoff[drum_sample_index]);
+                     lp[drum_sample_index].set_resonance (a_lp_reso[drum_sample_index]);
 
                      fl = softLimit (lp[drum_sample_index].process (fl));
                     }
@@ -1189,8 +1194,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
                  if (hp_on)
                     {
-                     hp[drum_sample_index].set_cutoff (*(hp_cutoff[drum_sample_index]));
-                     hp[drum_sample_index].set_resonance (*(hp_reso[drum_sample_index]));
+                     hp[drum_sample_index].set_cutoff (a_hp_cutoff[drum_sample_index]);
+                     hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
 
                      fl = softLimit (hp[drum_sample_index].process (fl));
                      //fr = fl;
