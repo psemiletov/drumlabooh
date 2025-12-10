@@ -1,7 +1,7 @@
 /*
-written at 2023-24 by Peter Semiletov
+written at 2023-25 by Peter Semiletov
 this code is the public domain
- */
+*/
 
 
 #pragma once
@@ -17,7 +17,7 @@ typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 class CAudioProcessorEditor;
 class CDrumCell;
 
-
+//AI-generated class
 class CompactIncDecControl : public juce::Component
 {
 public:
@@ -53,11 +53,6 @@ public:
         decButton.setBounds(area.removeFromLeft(buttonWidth));
         incButton.setBounds(area.removeFromRight(buttonWidth));
         valueLabel.setBounds(area);
-        
-        // Явно устанавливаем одинаковую высоту для всех элементов
-     /*   decButton.setSize(decButton.getWidth(), totalHeight);
-        incButton.setSize(incButton.getWidth(), totalHeight);
-        valueLabel.setSize(valueLabel.getWidth(), totalHeight);*/
     }
     
     void setRange(int minVal, int maxVal, int stepVal = 1) 
@@ -190,7 +185,7 @@ public:
   ~CFx() override;
 };
 
-
+/*
 class CCellLabel: public juce::Label,
                   public juce::FileDragAndDropTarget
 {
@@ -202,7 +197,7 @@ public:
   bool isInterestedInFileDrag (const StringArray &files) override;
   void filesDropped (const StringArray &files, int x, int y) override;
 };
-
+*/
 
 #ifndef MULTICHANNEL
 
@@ -230,9 +225,7 @@ public:
   CFx fx;
 
   juce::TextButton bt_fx;
-  //juce::TextButton bt_cell_plus;
-//  juce::TextButton bt_cell_minus;
-  
+
   juce::DrawableButton bt_cell_plus { 
         "bt_cell_plus", 
         juce::DrawableButton::ImageRaw
@@ -245,9 +238,9 @@ public:
 
   juce::Button *bt_fx_close;
 
-  CCellLabel cell_label;
+//  CCellLabel cell_label;
+  juce::Label cell_label;
 
-//  Label cell_label;
 
   
   std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_vol;
@@ -289,8 +282,11 @@ public:
   CFx fx;
 
 
-  CCellLabel cell_label;
-//   Label cell_label;
+  //CCellLabel cell_label;
+  
+  
+  
+  juce::Label cell_label;
 
   size_t cell_number;
 

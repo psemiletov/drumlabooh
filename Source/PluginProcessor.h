@@ -38,6 +38,14 @@ public:
   bool a_hps [36] = {false};
   bool a_analog_on [36] = {false};
   
+  
+  float a_hp_cutoff [36] = {0.000f};  
+  float a_hp_reso [36] = {0.000f};  
+
+  float a_lp_cutoff [36] = {0.000f};  
+  float a_lp_reso [36] = {0.000f};  
+  
+  
   float a_analog_amount [36] = {0.000f};  
 
   float a_pan_left [36] = {0.000f};  
@@ -136,7 +144,7 @@ public:
 //#endif
 
   void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
-  void processBlock_OLD (juce::AudioBuffer<float>&, juce::MidiBuffer&); 
+  //void processBlock_OLD (juce::AudioBuffer<float>&, juce::MidiBuffer&); 
 
 
   //==============================================================================
