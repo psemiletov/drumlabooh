@@ -42,7 +42,7 @@ IF (WIN32)
 set (JUCETAG 7.0.10)
   # set stuff for windows
 ELSE()
-set (JUCETAG 8.0.9)
+set (JUCETAG 8.0.11)
   # set stuff for other systems
 ENDIF()
 

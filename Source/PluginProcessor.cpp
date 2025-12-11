@@ -883,7 +883,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 //STEREO
 
 
-
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
   //this code allow Ardour load kit properly when session rate is ready
@@ -902,8 +901,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   int num_channels = buffer.getNumChannels();
   int out_buf_length = buffer.getNumSamples();
   
-  int int_midimap_mode = (int) *midimap_mode;
-
+  
   //clearing input buffer, good for Reaper
   for (int i = 0; i < num_channels; ++i)
       buffer.clear (i, 0, out_buf_length);
@@ -941,79 +939,68 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   if (currentSamplePosition == 0)
      currentSamplePosition = get_rnd (1, RND_MAX_TWEAK); 
   
-   drumkit->rnd_set_rnd_seed (currentSamplePosition + randomizer_seed);
+  drumkit->rnd_set_rnd_seed (currentSamplePosition + randomizer_seed);
 
    //////////////////////
   // CACHE ALL ATOMIC PARAMETERS
 
+  int int_midimap_mode = (int) *midimap_mode;
   
+  mix_analog_amount = *(global_analog_amount);
+  mix_analog_amount_on = *global_analog_on > 0.5f;
    
-   mix_analog_amount = *(global_analog_amount);
-   mix_analog_amount_on = *global_analog_on > 0.5f;
-   
-   float pan_sum = 0.0f;
-   float vol_sum = 0.0f;
+  float pan_sum = 0.0f;
+  float vol_sum = 0.0f;
    
  
   for (size_t i = 0; i < 35; i++)
-     {
-      a_vols [i] = db2lin(*(vols[i]));
+      {
+       a_vols [i] = db2lin(*(vols[i]));
+       a_mutes [i] = *(mutes[i]) > 0.5f;
 
-      a_mutes [i] = *(mutes[i]) > 0.5f;
+       a_lps [i] = *(lps[i]) > 0.5f;
+       a_lp_cutoff [i] = *(lp_cutoff[i]); 
+       a_lp_reso [i] = *(lp_reso[i]);
 
-      a_lps [i] = *(lps[i]) > 0.5f;
-      a_lp_cutoff [i] = *(lp_cutoff[i]); 
-      a_lp_reso [i] = *(lp_reso[i]);
+       a_hps [i] = *(hps[i]) > 0.5f;
+       a_hp_cutoff [i] = *(hp_cutoff[i]); 
+       a_hp_reso [i] = *(hp_reso[i]);
 
-      a_hps [i] = *(hps[i]) > 0.5f;
-      a_hp_cutoff [i] = *(hp_cutoff[i]); 
-      a_hp_reso [i] = *(hp_reso[i]);
-
-      a_analog_on [i] = *(analog[i]);
-      a_analog_amount [i] = *(analog_amount[i]);
+       a_analog_on [i] = *(analog[i]);
+       a_analog_amount [i] = *(analog_amount[i]);
       
-
-  
-      float pan = *(pans[i]); //float pan = *(pans[drum_sample_index]);
+ 
+       float pan = *(pans[i]); //float pan = *(pans[drum_sample_index]);
       
-      vol_sum += a_vols [i];
-      pan_sum += pan;
+       vol_sum += a_vols[i];
+       pan_sum += pan;
       
-      int int_panner_mode = *panner_mode;
+       int int_panner_mode = *panner_mode;
       
-      if (int_panner_mode == PANMODE01)
-         pan_sincos (a_pan_left[i], a_pan_right[i], pan);
-      else
-      if (int_panner_mode == PANMODE02)
-          pan_sqrt (a_pan_left[i], a_pan_right[i], pan);
-      else
-      if (int_panner_mode == PANMODE03)
-         pan_linear0 (a_pan_left[i], a_pan_right[i], pan);
-      else
-      if (int_panner_mode == PANMODE04)
-             pan_linear6 (a_pan_left[i], a_pan_right[i], pan);
-      else
-      if (int_panner_mode == PANMODE05)
+       if (int_panner_mode == PANMODE01)
+          pan_sincos (a_pan_left[i], a_pan_right[i], pan);
+       else
+       if (int_panner_mode == PANMODE02)
+           pan_sqrt (a_pan_left[i], a_pan_right[i], pan);
+       else
+       if (int_panner_mode == PANMODE03)
+          pan_linear0 (a_pan_left[i], a_pan_right[i], pan);
+       else
+       if (int_panner_mode == PANMODE04)
+          pan_linear6 (a_pan_left[i], a_pan_right[i], pan);
+       else
+       if (int_panner_mode == PANMODE05)
           pan_powsin_45 (a_pan_left[i], a_pan_right[i], pan); //ok
-      else
-      if (int_panner_mode == PANMODE06) // на деле - -4.5
+       else
+       if (int_panner_mode == PANMODE06) // на деле - -4.5
           pan_powsin_6 (a_pan_left[i], a_pan_right[i], pan);
-      else
-      if (int_panner_mode == PANMODE07) //на деле -4.3
-         pan_sin_1_3 (a_pan_left[i], a_pan_right[i], pan);
+       else
+       if (int_panner_mode == PANMODE07) //на деле -4.3
+          pan_sin_1_3 (a_pan_left[i], a_pan_right[i], pan);
              
      } 
    
-  
-          
-  
   ///////////////////
-  
-  //std::cout << "currentSamplePosition " << currentSamplePosition << "\n";
-  
-   
-  // std::cout << "currentSamplePosition: " << currentSamplePosition << "\n";
-   
       
       
   for (const juce::MidiMessageMetadata metadata: midiMessages)
@@ -1123,48 +1110,47 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
         //for each drum instrument
         {
          for (int drum_sample_index = 0; drum_sample_index < 36; drum_sample_index++)
-            {
-             CDrumSample *s = drumkit->a_samples[drum_sample_index];
+             {
+              CDrumSample *s = drumkit->a_samples[drum_sample_index];
 
-             if (! s)
-                // std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
+              if (! s)
+                 // std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
+                  continue;
+
+              if (! s->active)
                  continue;
-
-             if (! s->active)
-                continue;
 
                
 //             CDrumLayer *l = s->v_layers.at(s->current_layer);
-             CDrumLayer *l = s->v_layers[s->current_layer];
+              CDrumLayer *l = s->v_layers[s->current_layer];
   
-             if (! l)
-                {
-                 std::cout << "!l at s->current_layer:" << s->current_layer << std::endl;
-                 break;
-                }
+              if (! l)
+                 {
+                  std::cout << "!l at s->current_layer:" << s->current_layer << std::endl;
+                  break;
+                 }
 
 
-             if (l->sample_offset + 1 == l->length_in_samples)
-                {
-                 if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)  
-                    s->untrigger_sample(true);
-                 else
-                     s->untrigger_sample(false);
-                   
-                 
-                 continue;
-                }
+              if (l->sample_offset + 1 == l->length_in_samples)
+                 {
+                  if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)  
+                     s->untrigger_sample(true);
+                  else
+                      s->untrigger_sample(false);
+                  
+                  continue;
+                 }
 
              //bool mute = *(mutes[drum_sample_index]) > 0.5f;
 
-             if (a_mutes[drum_sample_index]) //просто не идем дальше, не играем
-                {
-                 l->sample_offset++;
-                 continue;
-                }
+              if (a_mutes[drum_sample_index]) //просто не идем дальше, не играем
+                 {
+                  l->sample_offset++;
+                  continue;
+                 }
 
-             if (l->channel_data)
-                {
+              if (l->channel_data)
+                 {
                  //take mono audio data from the current layer with incremented offset
               //   float fl = l->channel_data[0][l->sample_offset++];
                   float fl = l->channel_data[l->sample_offset++];
@@ -1172,74 +1158,68 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  //DSP
 
 
-                 if (a_analog_on [drum_sample_index]) 
-                    fl = warmify (fl, a_analog_amount[drum_sample_index]);
+                  if (a_analog_on [drum_sample_index]) 
+                     fl = warmify (fl, a_analog_amount[drum_sample_index]);
            
-
                 // bool lp_on = *(lps[drum_sample_index]) > 0.5f;
-                 bool lp_on = a_lps[drum_sample_index];
+                  bool lp_on = a_lps[drum_sample_index];
 
                    
-                 if (lp_on)
-                    {
-                     lp[drum_sample_index].set_cutoff (a_lp_cutoff[drum_sample_index]);
-                     lp[drum_sample_index].set_resonance (a_lp_reso[drum_sample_index]);
+                  if (lp_on)
+                     {
+                      lp[drum_sample_index].set_cutoff (a_lp_cutoff[drum_sample_index]);
+                      lp[drum_sample_index].set_resonance (a_lp_reso[drum_sample_index]);
 
-                     fl = softLimit (lp[drum_sample_index].process (fl));
-                    }
+                      fl = softLimit (lp[drum_sample_index].process (fl));
+                     }
 
 
 //                 bool hp_on = *(hps[drum_sample_index]) > 0.5f;
-                 bool hp_on = a_hps[drum_sample_index];
+                  bool hp_on = a_hps[drum_sample_index];
 
-                 if (hp_on)
-                    {
-                     hp[drum_sample_index].set_cutoff (a_hp_cutoff[drum_sample_index]);
-                     hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
-
-                     fl = softLimit (hp[drum_sample_index].process (fl));
+                  if (hp_on)
+                     {
+                      hp[drum_sample_index].set_cutoff (a_hp_cutoff[drum_sample_index]);
+                      hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
+ 
+                      fl = softLimit (hp[drum_sample_index].process (fl));
                      //fr = fl;
-                    }
+                     }
 
                  //AFTER DSP
 
 //                 float vol = juce::Decibels::decibelsToGain ((float)*(vols[drum_sample_index]));
-                 float vol = a_vols [drum_sample_index];
+                  float vol = a_vols [drum_sample_index];
 
-            
-                 float coef_right = 0.000f;                    
-                 float coef_left = 0.000f;  
+                  float coef_right = 0.000f;                    
+                  float coef_left = 0.000f;  
 
-
-                 if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
-                    {
-                     coef_right = a_pan_right[drum_sample_index] * vol * s->velocity;
-                     coef_left = a_pan_left[drum_sample_index] * vol * s->velocity;
-                    }
-                 else
+                  if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
                      {
-                      coef_right = a_pan_right[drum_sample_index] * vol;
-                      coef_left = a_pan_left[drum_sample_index] * vol;
+                      coef_right = a_pan_right[drum_sample_index] * vol * s->velocity;
+                      coef_left = a_pan_left[drum_sample_index] * vol * s->velocity;
                      }
+                  else
+                      {
+                       coef_right = a_pan_right[drum_sample_index] * vol;
+                       coef_left = a_pan_left[drum_sample_index] * vol;
+                      }
                  
-                 channel_data[0][out_buf_offs] += fl * coef_left;
+                  channel_data[0][out_buf_offs] += fl * coef_left;
                  //channel_data[1][out_buf_offs] += fr * coef_right;
-                 channel_data[1][out_buf_offs] += fl * coef_right;
-
-                }
-             }
-             
-             if (mix_analog_amount_on)
-                {
-                 channel_data[0][out_buf_offs] = warmify (channel_data[0][out_buf_offs], mix_analog_amount);
-                 channel_data[1][out_buf_offs] = warmify (channel_data[1][out_buf_offs], mix_analog_amount);
-                }
+                  channel_data[1][out_buf_offs] += fl * coef_right;
+                 }
+              }
+              
+              if (mix_analog_amount_on)
+                 {
+                  channel_data[0][out_buf_offs] = warmify (channel_data[0][out_buf_offs], mix_analog_amount);
+                  channel_data[1][out_buf_offs] = warmify (channel_data[1][out_buf_offs], mix_analog_amount);
+                 }
       
     }
  //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
 }
-
-
 
 
 #endif
