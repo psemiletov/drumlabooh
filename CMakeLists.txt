@@ -38,6 +38,8 @@ set(VST3_INSTALL_DIR lib/vst3 CACHE PATH "Specifies where the VST3 libraries sho
 endif()
 
 
+set (DRUMSKLADTAG 3.0.1)
+
 IF (WIN32)
 set (JUCETAG 7.0.10)
   # set stuff for windows
@@ -67,7 +69,12 @@ if (INSTALLKITS)
 FetchContent_Declare(
   drum_sklad
 #  URL https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
-  URL https://github.com/psemiletov/drum_sklad/archive/refs/tags/3.0.1.zip
+#  URL https://github.com/psemiletov/drum_sklad/archive/refs/tags/3.0.1.zip
+  URL https://github.com/psemiletov/drum_sklad/archive/refs/tags/${DRUMSKLADTAG}.zip
+
+
+
+
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
   EXCLUDE_FROM_ALL
 )
