@@ -66,7 +66,8 @@ if (INSTALLKITS)
 
 FetchContent_Declare(
   drum_sklad
-  URL https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
+#  URL https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
+  URL https://github.com/psemiletov/drum_sklad/archive/refs/tags/3.0.1.zip
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
   EXCLUDE_FROM_ALL
 )
