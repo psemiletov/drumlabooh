@@ -56,6 +56,7 @@ public:
   float a_mutes [36] = {0.000f};  
   
   float mix_analog_amount;   //of the mizx
+  bool mix_analog_amount_on;   //of the mizx
 
   
   //all mixer strip (drumcell) params

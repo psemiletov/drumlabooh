@@ -830,7 +830,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                   else 
                       s->untrigger_sample (false);
                   
-                  
                   continue;
                  }
 
@@ -950,6 +949,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   
    
    mix_analog_amount = *(global_analog_amount);
+   mix_analog_amount_on = *global_analog_on > 0.5f;
    
    float pan_sum = 0.0f;
    float vol_sum = 0.0f;
@@ -1229,10 +1229,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                 }
              }
              
-             if (*global_analog_on > 0.5f)
+             if (mix_analog_amount_on)
                 {
-                 channel_data[0][out_buf_offs] = warmify (channel_data[0][out_buf_offs],mix_analog_amount);
-                 channel_data[1][out_buf_offs] = warmify (channel_data[1][out_buf_offs],mix_analog_amount);
+                 channel_data[0][out_buf_offs] = warmify (channel_data[0][out_buf_offs], mix_analog_amount);
+                 channel_data[1][out_buf_offs] = warmify (channel_data[1][out_buf_offs], mix_analog_amount);
                 }
       
     }
