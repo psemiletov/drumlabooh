@@ -3,7 +3,6 @@ written at 2023-25 by Peter Semiletov
 this code is the public domain
 */
 
-
 #pragma once
 
 #include <JuceHeader.h>
