@@ -746,7 +746,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
                 s->trigger_sample (velocity);
             else //new
-                if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)
+                if (s->layer_index_mode == LAYER_INDEX_MODE_ALT)
                    s->trigger_sample_uint_by_index (uvelocity, velocity);  
                 else            
                    s->trigger_sample_uint (uvelocity, velocity);
@@ -770,7 +770,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                       
                     if (s2->mute_group == s->mute_group)
                        {
-                        if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH) 
+                       if (s2->layer_index_mode == LAYER_INDEX_MODE_ALT)
                            s2->untrigger_sample (true);
                         else
                            s2->untrigger_sample (false);
@@ -825,7 +825,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
               if (l->sample_offset + 1 == l->length_in_samples)
                  {
-                  if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)  
+                  if (s->layer_index_mode == LAYER_INDEX_MODE_ALT)  
                      s->untrigger_sample (true);
                   else 
                       s->untrigger_sample (false);
@@ -1058,7 +1058,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
            if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
                s->trigger_sample (velocity);
            else //new
-               if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)
+               if (s->layer_index_mode == LAYER_INDEX_MODE_ALT)
                   s->trigger_sample_uint_by_index (uvelocity, velocity); 
                else            
                    s->trigger_sample_uint (uvelocity, velocity);
@@ -1079,7 +1079,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                       
                     if (s2->mute_group == s->mute_group)
                        {
-                        if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH) 
+                        if (s2->layer_index_mode == LAYER_INDEX_MODE_ALT) 
                            s2->untrigger_sample (true);
                         else
                            s2->untrigger_sample (false);
@@ -1133,10 +1133,10 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
               if (l->sample_offset + 1 == l->length_in_samples)
                  {
-                  if (drumkit->kit_type == KIT_TYPE_ALTDRUMLABOOH)  
-                     s->untrigger_sample(true);
+                  if (s-> layer_index_mode == LAYER_INDEX_MODE_ALT)  
+                     s->untrigger_sample (true);
                   else
-                      s->untrigger_sample(false);
+                      s->untrigger_sample (false);
                   
                   continue;
                  }

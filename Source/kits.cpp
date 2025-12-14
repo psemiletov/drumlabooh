@@ -573,8 +573,8 @@ void CDrumKit::load_labooh_xml (const std::string &data)
    pugi::xml_node samples = doc.child ("root");
 
    std::string str_kit_type = samples.attribute ("type").value(); 
-   if (str_kit_type == "alt")
-      kit_type = KIT_TYPE_ALTDRUMLABOOH;  
+   //if (str_kit_type == "alt")
+     // kit_type = KIT_TYPE_ALTDRUMLABOOH;  
      
   
    for (pugi::xml_node item_sample = samples.first_child(); item_sample; item_sample = item_sample.next_sibling())
@@ -622,6 +622,9 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
        if (layer_index_mode == "no_velocity")
            temp_sample->layer_index_mode = LAYER_INDEX_MODE_NOVELOCITY; 
+
+       if (layer_index_mode == "alt")
+          temp_sample->layer_index_mode = LAYER_INDEX_MODE_ALT; 
        
        //load samples
 
@@ -753,7 +756,6 @@ void CDrumKit::load_directory (const std::string &path)
    
   kit_name = get_last_part (path);
  
-  kit_type = KIT_TYPE_ALTDRUMLABOOH;
   is_dir_kit = true;
  
   std::vector<std::string> instrument_dirs = get_directories (path); 
@@ -786,6 +788,7 @@ void CDrumKit::load_directory (const std::string &path)
         
        temp_sample = add_sample (sample_counter++);
        temp_sample->name = get_last_part (directory);
+       temp_sample->layer_index_mode = LAYER_INDEX_MODE_ALT;
               
        for (size_t j = 0; j < v_fnames.size(); j++)
            {
@@ -1846,7 +1849,7 @@ void CDrumKit::adapt() //used at Adapt button handler
   if (sample_counter == 0)
       return;
   
-  if (kit_type != KIT_TYPE_DRUMLABOOH || kit_type != KIT_TYPE_ALTDRUMLABOOH)
+  if (kit_type != KIT_TYPE_DRUMLABOOH)
       return;
   
   if (is_dir_kit) 
@@ -2192,7 +2195,7 @@ void CDrumSample::trigger_sample (float vel)
               robin_counter = 0;
             
           current_layer = robin_counter;
-         } 
+         }
       }
    else 
        current_layer = 0; //if layers count == 1
@@ -2317,10 +2320,7 @@ std::string CDrumKit::get_description()
   
   if (kit_type == KIT_TYPE_QDRUMLABOOH)
      result += "Type: Drumlabooh quick"; 
-   
-  if (kit_type == KIT_TYPE_ALTDRUMLABOOH)
-     result += "Type: Drumlabooh alternative"; 
-
+  
   if (kit_type == KIT_TYPE_HYDROGEN)
      result += "Type: Hydrogen"; 
 
