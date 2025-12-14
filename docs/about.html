@@ -4,6 +4,80 @@
 <meta charset="UTF-8">
 <link href="styles.css" rel="stylesheet" type="text/css">
 <title>Drumlabooh | Драмлабух: ABOUT</title>
+
+
+<style>
+  
+h1 {
+    text-align: center;
+    color: #6a5499; /* приглушённый тёмно-фиолетовый вместо яркого #7d5fff */
+    margin-bottom: 40px;
+}
+
+.drum-group {
+    background: #f5f3fa; /* очень мягкий бледно-сиреневый */
+    margin: 30px auto;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(106, 84, 153, 0.12); /* тень в тон приглушённого фиолетового */
+    transition: transform 0.2s ease;
+}
+
+.drum-group:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(106, 84, 153, 0.18); /* чуть усиленная, но мягкая тень */
+}
+.thumbnail {
+    width: 150px;                  /* Фиксированная ширина */
+    height: auto;                  /* Высота подстраивается под пропорции */
+    max-height: 200px;             /* Ограничение по максимальной высоте, чтобы слишком высокие картинки не растягивали блок */
+    object-fit: contain;           /* Сохраняет пропорции, добавляет прозрачные поля если нужно */
+    border-radius: 12px;
+    display: block;
+    margin: 0 auto 15px;
+    box-shadow: 0 4px 12px rgba(106, 84, 153, 0.15);
+    background: #ffffff;           /* Белый фон под прозрачными областями (на случай PNG с прозрачностью) */
+}
+
+.group-title {
+    text-align: center;
+    margin: 10px 0 15px;
+    color: #5d478b; /* глубокий, но не яркий фиолетовый */
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.sound-sample {
+    margin: 15px 0;
+    padding: 10px;
+    border-left: 4px solid #a89cc8; /* мягкий приглушённый сиреневый бордер */
+    background: #eeeaff; /* очень лёгкий бледно-сиреневый фон */
+    border-radius: 8px;
+}
+
+.sound-title {
+    margin: 0 0 8px 0;
+    font-size: 1em;
+    color: #5a4780; /* спокойный тёмно-сиреневый */
+}
+
+audio {
+    width: 100%;
+    outline: none;
+}
+
+audio::-webkit-media-controls-panel {
+    background: linear-gradient(to right, #a89cc8, #8b7ab8); /* мягкий градиент: приглушённый сиреневый → тёмно-сиреневый */
+    border-radius: 6px;
+}
+
+</style>
+
+
+
+
+
 </head>
 <body>
 
@@ -26,13 +100,65 @@
 </p>
 
 <p style="text-align:center;">
-<a href="./v11.png"><img src="./v11-small.png" alt="screen shot"></a>
-
+<a href="./v12.png"><img src="./v12-small.png" alt="screen shot"></a>
 <br>
 
 <a href="https://youtu.be/1mK78nIgvWc?si=fiDVY2ShwEs3FBi-">Video on Youtube</a>
 
 </p>
+
+
+<div style="text-align:center;">
+
+<h3>В комплекте с Drumlabooh идет несколько десятков драмкитов, подходящих под разные стили музыки. Вот как звучат некоторые из них.<br> Drumlabooh comes with several dozen drum kits suitable for various music styles. Here's how some of them sound.</h3>
+
+
+</div>
+
+
+    <div class="drum-group">
+        <img src="jazzkit.jpg" class="thumbnail">
+        <h3 class="group-title">Jazzkit</h3>
+        
+        <div class="sound-sample">
+            <h4 class="sound-title">Dry</h4>
+            <audio controls preload="metadata">
+                <source src="./snd/jazzkit-dry.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+        
+        <div class="sound-sample">
+            <h4 class="sound-title">With Dragonfly reverb</h4>
+            <audio controls preload="metadata">
+                <source src="./snd/jazzkit-reverb.mp3" type="audio/mpeg">
+                Ваш браузер не поддерживает аудио.
+            </audio>
+        </div>
+    </div>
+
+
+    <div class="drum-group">
+        <img src="sixtiesbasic.jpg" class="thumbnail">
+        <h3 class="group-title">Sixties Basic</h3>
+        
+        <div class="sound-sample">
+            <h4 class="sound-title">Dry</h4>
+            <audio controls preload="metadata">
+                <source src="./snd/sixties-basic-dry.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+        
+        <div class="sound-sample">
+            <h4 class="sound-title">With Dragonfly reverb</h4>
+            <audio controls preload="metadata">
+                <source src="./snd/sixties-basic-with-reverb.mp3" type="audio/mpeg">
+                Ваш браузер не поддерживает аудио.
+            </audio>
+        </div>
+    </div>
+
+
+
 
 <table class="center">
 

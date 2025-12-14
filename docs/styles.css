@@ -1,19 +1,286 @@
-table {
-table-layout: fixed;
-  border: 10px solid;
- border-style: outset;
+:root {
+  --main-color: #676171; /* основной серо-фиолетовый */
+  --main-dark: #4d4f5a; /* темнее для шапки и hover */
+  --main-light: #e2e0e6; /* светлый фон блоков */
+  --main-medium: #9b96a6; /* средний для бордеров */
+  --green-muted: #7c8a7f; /* темновато-блеклый зелёный */
+  --green-accent: #94a397; /* чуть ярче зелёный для акцентов */
+  --yellow-muted: #e8e4d3; /* приглушённый бледно-жёлтый */
+  --text-dark: #3a3a3f;
+  --text-medium: #55555a;
+  --bg-light: #f8f8f9;
+  --card-bg: #d8e4da; /* бледный тёмно-зелёный для всей карточки */
+  --player-bg: #e8e5f5; /* бледный фиолетовый фон плеера */
+  --play-button-bg: #a78bfa; /* "вкусный" фиолетовый для кнопки play */
 }
-
-td {
-    padding: 15px;
-   vertical-align:top;
-    width: 45%;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: linear-gradient(to bottom, #f8f8f9, #ffffff);
+  color: var(--text-dark);
+  line-height: 1.6;
+  padding-bottom: 60px;
 }
-
-
-.center {
+header {
+  background: var(--main-dark);
+  color: white;
+  padding: 28px 0;
+  box-shadow: 0 4px 16px rgba(77, 79, 90, 0.25);
+}
+h1 {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+nav {
+  max-width: 1200px;
+  margin: 28px auto;
+  text-align: center;
+  padding: 0 20px;
+}
+nav a {
+  color: var(--main-color);
+  text-decoration: none;
+  font-weight: 600;
+  margin: 0 10px;
+  padding: 10px 20px;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  background: white;
+  border: 1px solid var(--main-light);
+}
+nav a:hover {
+  background: var(--main-light);
+  color: var(--main-dark);
+  transform: translateY(-2px);
+}
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+.hero-image {
+  text-align: center;
+  margin-bottom: 50px;
+}
+.hero-image img {
+  max-width: 100%;
+  height: auto;
+  max-height: 600px;
+  object-fit: contain;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(77, 79, 90, 0.15);
+  transition: transform 0.3s ease;
+}
+.hero-image img:hover {
+  transform: scale(1.02);
+}
+.hero-image a.youtube {
+  display: inline-block;
+  margin-top: 15px;
+  color: var(--main-color);
+  font-weight: 600;
+  text-decoration: none;
+}
+.intro {
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--text-medium);
+  margin-bottom: 60px;
+  max-width: 800px;
   margin-left: auto;
   margin-right: auto;
 }
+.drumkits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  margin-bottom: 80px;
+}
+.drum-card {
+  background: var(--card-bg);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(77, 79, 90, 0.1);
+  transition: all 0.3s ease;
+}
+.drum-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(77, 79, 90, 0.18);
+}
+.drum-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+  background: var(--card-bg);
+  padding: 20px;
+}
+.card-body {
+  padding: 24px;
+}
+.card-title {
+  text-align: center;
+  font-size: 1.5rem;
+  color: var(--main-color);
+  margin: 2px 0 6px; /* минимально возможный зазор */
+}
+.sample {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  border-left: 5px solid var(--main-medium);
+}
+.sample-title {
+  font-weight: 600;
+  color: var(--main-color);
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+}
 
+/* Аудиоплеер — максимально компактный */
+.sample audio {
+  width: 95%;
+  max-width: 400px;
+  height: 38px;
+  display: block;
+  margin: 10px auto 0;
+  border: 2px solid var(--main-medium);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(77, 79, 90, 0.12);
+}
 
+/* Бледный фиолетовый фон плеера */
+.sample audio::-webkit-media-controls-panel {
+  background: var(--player-bg);
+  border-radius: 10px;
+  padding: 0 2px;
+  height: 38px;
+}
+
+/* Минимизируем пространство между элементами (WebKit) */
+.sample audio::-webkit-media-controls-timeline-container {
+  padding: 0 4px;
+}
+.sample audio::-webkit-media-controls-timeline {
+  margin: 0 4px;
+  height: 6px;
+}
+.sample audio::-webkit-media-controls-current-time-display,
+.sample audio::-webkit-media-controls-time-remaining-display {
+  margin: 0 4px;
+  padding: 0;
+  font-size: 11px;
+}
+
+/* Вкусная фиолетовая кнопка play/pause */
+.sample audio::-webkit-media-controls-play-button {
+  background-color: var(--play-button-bg); /* вкусный фиолетовый */
+  border: none;
+  border-radius: 50%;
+  margin: 0 2px;
+  width: 28px;
+  height: 28px;
+  filter: brightness(1.1); /* чуть светлее */
+  opacity: 0.95;
+}
+
+/* Белая иконка внутри кнопки (треугольник play / полоски pause) */
+.sample audio::-webkit-media-controls-play-button,
+.sample audio::-webkit-media-controls-pause-button {
+  filter: invert(1) brightness(2); /* чисто белая иконка */
+}
+
+/* Для Firefox */
+.sample audio::-moz-media-controls-panel {
+  background: var(--player-bg);
+  padding: 0 2px;
+  height: 38px;
+}
+
+/* Ярче остальные иконки */
+.sample audio::-webkit-media-controls-volume-slider,
+.sample audio::-webkit-media-controls-current-time-display,
+.sample audio::-webkit-media-controls-time-remaining-display {
+  filter: brightness(1.5);
+}
+
+/* Масштабирование плеера по высоте контейнера (35% от высоты .sample) */
+.sample {
+  position: relative;
+  height: 120px;
+}
+.sample audio {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 35%;
+  min-height: 36px;
+  max-height: 50px;
+}
+
+section {
+  margin-bottom: 80px;
+}
+h2 {
+  font-size: 2rem;
+  color: var(--main-color);
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+h2::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(to right, var(--green-accent), var(--yellow-muted));
+  margin: 15px auto 0;
+  border-radius: 2px;
+}
+ul.features {
+  list-style: none;
+  max-width: 900px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+}
+ul.features li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--main-light);
+  position: relative;
+  padding-left: 30px;
+}
+ul.features li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--green-muted);
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+.history {
+  background: var(--main-light);
+  padding: 40px;
+  border-radius: 20px;
+  line-height: 1.8;
+  font-size: 1.1rem;
+  color: var(--text-medium);
+}
+@media (max-width: 640px) {
+  h1 { font-size: 1.9rem; }
+  nav a { display: block; margin: 10px auto; width: fit-content; }
+  .drumkits-grid { grid-template-columns: 1fr; }
+  .card-body { padding: 20px; }
+  .sample audio {
+    width: 100%;
+    max-width: none;
+    height: 40px;
+    position: static;
+    transform: none;
+  }
+  .sample {
+    height: auto;
+  }
+}

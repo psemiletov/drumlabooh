@@ -34,7 +34,8 @@
 
 <td class="table_top_cell">
 
-<p>Drumlabooh is designed not to interfere with creativity. All you need to do is create a new MIDI track in your DAW, select a drumkit from the list, and play. Drumlabooh uses existing sampled drumkits or samples from sample packs.</p>
+
+<p>Drumlabooh is designed not to interfere with creativity.  All you need to write a drum part is to create a new MIDI track in your favorite DAW, load the Drumlabooh plugin onto it, then select one of the installed drum kits in it, or load samples from folders, and start playing from the keyboard, drum pads, or drawing notes in the sequencer. Drumlabooh uses existing sampled drumkits (Drumlabooh, Hydrogen, SFZ) or samples from sample packs.</p>
 
 
 <a href="#mni_modes">1. Stereo vs Multi-channel modes</a><br>
@@ -94,13 +95,24 @@
 
 <a name="mni_kits_labooh"></a>
 
-<h3>2.3 Drumlabooh Drum Kits</h3> <p>Drumlabooh uses its own kit formats (there are two formats, text-based and XML). One kit equals one directory, which should be placed in <i>$HOME/drumlabooh-kits</i>, <i>$HOME/drum_sklad</i>, or <i>/usr/share/drumlabooh-kits</i> on Linux, and in <i>C:\drumlabooh-kits</i>, <i>D:\drumlabooh-kits</i>, <i>C:\drum_sklad</i>, or <i>D:\drum_sklad</i> on Windows.</p> <p>Drumlabooh usually installs kits automatically from its official <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad repository on GitHub</a>. You can also <b>find detailed information about the formats</b> there - it is quite simple. The word "sklad" means "warehouse," "storage," or "repository."</p> <p>Additional kits that are not hosted on GitHub can be downloaded from the <a href="https://t.me/drum_sklad">Drum Sklad channel on Telegram</a>. The complete Drumlabooh kit collection therefore includes Drum Sklad on GitHub and Drum Sklad on Telegram.</p> <p>All native Drumlabooh kits include optional built-in General MIDI mapping settings, which can be used in <b>MIDI Map mode</b> by selecting the <b>Kit</b> option there.</p>
+<h3>2.3 Drumlabooh Drum Kits</h3> <p>Drumlabooh uses its own kit formats (there are two formats, text-based and XML). One kit equals one directory, which should be placed in <i>$HOME/drumlabooh-kits</i>, <i>$HOME/drum_sklad</i>, or <i>/usr/share/drumlabooh-kits</i> on Linux, and in <i>C:\drumlabooh-kits</i>, <i>D:\drumlabooh-kits</i>, <i>C:\drum_sklad</i>, or <i>D:\drum_sklad</i> on Windows.</p> <p>Drumlabooh usually installs kits automatically from its official <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad repository on GitHub</a>. You can also <b>find detailed information about the formats</b> there - it is quite simple. The word "sklad" means "warehouse," "storage," or "repository."</p>
+
+<p>Additional kits that are not hosted on GitHub can be downloaded from the <a href="https://t.me/drum_sklad">Drum Sklad channel on Telegram</a>. The complete Drumlabooh kit collection therefore includes Drum Sklad on GitHub and Drum Sklad on Telegram.</p> 
+
+<p>All native Drumlabooh kits include optional built-in General MIDI mapping settings, which can be used in <b>MIDI Map mode</b> by selecting the <b>Kit</b> option there.</p>
 
 
 <a name="mni_kits_alt"></a>
 
 <h3>2.4 Drumlabooh Alternate Sample Kits</h3>
- <p>Some Drumlabooh kits contain several alternative samples for each instrument slot. When you load such a kit, its name is shown in yellow and accompanied by a hint:</p> <p style="text-align:center;"> <img src="alt.png"> </p> <p>Additionally, drum cells will be highlighted with a special color. To switch samples, use the "+" and "-" buttons for each drum cell or slot.</p>
+
+ <p>Some Drumlabooh kits (such as ASR-X Pro) contain several alternative samples for each instrument slot. When you load such a kit, drum cells will be highlighted with a special color (pink). To switch samples, use the "+" and "-" buttons for each drum cell or slot.
+</p>
+
+<p align="center">
+<img src="alt.png"> 
+</p>
+
 
 <a name="mni_kits_dir"></a>
 
@@ -116,13 +128,14 @@
           snare03.wav 
 </pre>
 
+ <p>Here, <i>1. Kick</i> and <i>2. Snare</i> are subdirectories, and the others are files inside them. The numbers in directory or file names help Drumlabooh sort them alphabetically.</p>
 
- <p>Here, <i>1. Kick</i> and <i>2. Snare</i> are subdirectories, and the others are files inside them. The numbers in directory or file names help Drumlabooh sort them alphabetically.</p> <p>This is a simple way to use many sample packs by just unpacking them into the <i>drum_dirs</i> directory. Many such kits are available from <a href="https://www.reddit.com/r/Drumkits/">https://www.reddit.com/r/Drumkits/</a>.</p> <p>There are some limits for Folder Kits: a maximum of 36 instrument folders per kit and up to 128 samples in each directory/folder.</p>
+<p>This is a simple way to use many sample packs by just unpacking them into the <i>drum_dirs</i> directory. Many such kits are available from <a href="https://www.reddit.com/r/Drumkits/">https://www.reddit.com/r/Drumkits/</a>.</p> <p>There are some limits for Folder Kits: a maximum of 36 instrument folders per kit and up to 128 samples in each directory/folder.</p>
 
 
 <h3>Supported sample formats</h3>
 
-<p>Drumlabooh supports samples in the following formats: WAV, AIFF, FLAC, OGG, and MP3. OGG and MP3 samples cannot be <b>adapted</b>. Stereo samples are read as mono (using the left channel), because pre-panned drums (from the kit) can make internal mixing sound unnatural.</p>
+<p>Drumlabooh supports samples in the following formats: WAV, AIFF, FLAC, OGG, and MP3. OGG and MP3-based kits cannot be <b>adapted</b>. Stereo samples are read as mono (using the left channel), because pre-panned drums (from the kit) can make internal mixing sound unnatural.</p>
 
 <h3>Full list of directories where Drumlabooh searches for kits</h3>
 
@@ -171,10 +184,10 @@ D:\sfz-kits
 
 <p>There are <b>LP</b> (Low-pass filter, allows only frequencies below the <b>cutoff</b> value) and <b>HP</b> (High-pass filter, allows only frequencies above the <b>cutoff</b> value). To simplify the code and improve performance, the cutoff parameter is not in Hz but a floating-point number within the range 0..1.</p>
 
-Both filters are resonant and have the <b>resonance</b> parameter. Experiment with the sliders to create new and interesting sounds. The HP filter works best for hi-hats, the LP for kicks; either HP or LP can produce cool effects on the snare. If your sample sounds weak or thin, try the <b>Analog</b> slider to add some warmth.<br>
-
-<i>Note: In Ardour, when the FX window becomes active, the plugin window is hidden, and when you close the FX window, the plugin window reappears. In Reaper and Muse, both windows are visible as intended.</i>
+Both filters are resonant and have the <b>resonance</b> parameter. Experiment with the sliders to create new and interesting sounds. The HP filter works best for hi-hats, the LP for kicks; either HP or LP can produce cool effects on the snare. If your sample sounds weak or thin, try the <b>Analog</b> slider to add some warmth.
 </p>
+
+<p><i>The following interface elements are not available in the Multi-channel version of the plugin, as they would duplicate the DAW's elements for the tracks associated with the plugin.</i></p>
 
 <p>4 <b>Pan control</b> – values range from 0 (full left) to 1 (full right), with 0.5 being the center. See the <b>Pan mode</b> option to understand the panning algorithm. It is important to note that different DAWs have different pan modes for mixing; sometimes the DAW provides an option to select it. Drumlabooh internally behaves like the DAW mixer and offers the same flexibility.</p>
 
@@ -187,7 +200,7 @@ Both filters are resonant and have the <b>resonance</b> parameter. Experiment wi
 
 <a name="mni_options"></a>
 
-<h3>4. Options section</h3> <p>At the lower part of the plugin window, you can see <b>Options</b>.</p>
+<h3>4. Options section</h3> <p>At the lower right part of the plugin window, you can see <b>Options</b>.</p>
 
 
 <p><b>MIDI map mode</b> – there are two modes, <b>Auto</b> and <b>Kit</b>. With <b>Auto</b>, Drumlabooh assigns MIDI notes to samples starting from the numerical value of another option, <b>Base MIDI note</b> (default: 36), which specifies the MIDI note number to map the first instrument in the kit. MIDI note 36 = C in the 2nd octave. This mode is the default and works well for playing from a MIDI keyboard. When <b>Kit</b> is selected, Drumlabooh uses MIDI note assignments from the drumkit file; usually, this is <a href="https://computermusicresource.com/GM.Percussion.KeyMap.html">General MIDI mapping</a>, compatible with e-drums and drum pads. It is also the proper mode for Ardour's drum grooves.</p>
@@ -199,10 +212,21 @@ Both filters are resonant and have the <b>resonance</b> parameter. Experiment wi
 <pre>A3 -> E5
 C4 -> C5</pre>
 
-<p><b>Ignore MIDI velocity</b> – plays samples at full level. Plain and loud.</p>
 
+<p><b>Fixed MIDI velocity</b> - turn on to play samples at maximum velocity; useful for electronic music.</p>
+
+
+<p><b>Rnd seed tweak</b> - "seed" for the pseudorandom number generator, ranging from 1 to 16777216. Drumlabooh uses a deterministic pseudorandom number generator, ensuring that with the same Rnd seed tweak value and the current playback position, the sequence of numbers will always be identical each time.
+</p>
+
+<p>For some samples in the drum kits, there are variations that are selected based on the values from this generator, which adds a sense of live performance to the drum part. With a regular random generator, each new playback would produce different-sounding parts, and sample variations would be unpredictable, making mixing and mastering more difficult.
+</p>
+
+<p>In Drumlabooh, however, you will always get the same sequence of such numbers every time, but it depends on the Rnd seed tweak. Change its value - and you get a completely new sequence. You have 16777216 possible sequence variations.
+</p>
 
 <p><b>Pan mode</b> – allows you to select the pan mode for Drumlabooh's internal mixer. See the <a href="https://en.wikipedia.org/wiki/Panning_law">article</a>. The default panner is equal power panning, law: -3 dB (sin/cos taper).<br> 
+
 By the way, pan mode is a significant factor in how a DAW "sounds." The pan mode, or panning law, is the algorithm that controls the total acoustic power output of two channels, reducing their level when the pan position moves to the center. Otherwise, the sound at the center would be louder, because both channels play at full power, making it louder than the same mono sound. Therefore, any stereo output must be reduced to some degree when the pan position approaches the center to prevent a loudness increase.</p>
 
 <p>It may be better to set the pan mode in Drumlabooh to match your DAW's pan mode, so that all drum samples are panned consistently. Experiment to find what sounds best in your mix.</p>
@@ -225,7 +249,6 @@ By the way, pan mode is a significant factor in how a DAW "sounds." The pan mode
 <p>1. Create a MIDI track with Drumlabooh-multi as the instrument.</p> 
 
 <p>2. You'll see this window:</p>
-
 
 <p style="text-align:center;"><img src="ard-mult.png"></p>
 
@@ -288,15 +311,13 @@ By the way, pan mode is a significant factor in how a DAW "sounds." The pan mode
 
 <p style="text-align:center;">9<img src="cub-09.png"></p>
 
-
 </td>
-
 
 
 
 <td class="table_top_cell">
 
-<p>Драмлабух старается не мешать творчеству. Всё что вам нужно, дабы создать с его помощью партию ударных, это создать новую MIDI-дорожку в вашей любимой программе звукозаписи, затем выбрать в Драмлабухе один из установленных драмкитов, или накидать сэмплов из папок, и начать играть с клавиатуры, дрампадов или прописывать квадратики в секвенсере.</p>
+<p>Драмлабух старается не мешать творчеству. Всё что вам нужно для написания партии ударных, это создать новую MIDI-дорожку в вашей любимой программе звукозаписи, навесить на нее плагин Drumlabooh и затем выбрать в нем один из установленных драмкитов, или накидать сэмплов из папок, и начать играть с клавиатуры, дрампадов или прописывать квадратики в секвенсере.</p>
 
 
 <a href="#mni_modesru">1. Стерео и Многоканальный режимы</a><br>
@@ -331,7 +352,7 @@ By the way, pan mode is a significant factor in how a DAW "sounds." The pan mode
 
 <p>При запуске Драмлабух сканирует в нужных папках драмкиты всех известных ему форматов и предлагает вам список, откуда киты можно выбирать. Под списком и картинкой кита (если такая есть) находится кнопочка <b>Open</b>, через нее можно открыть драмкит, лежащий вне папок, где ищет Драмлабух. Через диалоговое окно надо выбрать файл xml (для формата Hydrogen ), sfz (для SFZ) или, в случае с форматом Drumlabooh, drumkit.txt.</p>
 
-<p>Важное замечание! Загружая драмкит, Драмлабух преобразует его сэмплы, в памяти, к частоте оцифровки текущей сессии DAW, что при большом драмките может затормозить загрузку и даже создать ощущение зависона. Например, сэмплы в драмките имеют частоту 44.1, а частота сессии 48 килогерц. Просто подождите. Но если не хотите ждать каждый раз, нажмите кнопку <b>Adapt</b> под списком драмкитов. Она сохранит копию текущего драмкита в папку <i>drum_sklad</i>, и у этой копии сэмплы будут с частотой текущей сессии, кроме того данные преобразуются в 32 bit float (24 integer для FLAC) моно. Копия автоматически установится как текущий драмкит. При этом поддерживаются, для такого клонирования, только киты в формате Драмлабух с сэмплами в форматах WAV, AIFF и FLAC.</p>
+<p>Важное замечание! Загружая драмкит, Драмлабух преобразует его сэмплы, в памяти, к частоте оцифровки текущей сессии DAW, что при большом драмките может затормозить загрузку и даже создать ощущение зависона. Например, сэмплы в драмките имеют частоту 44.1, а частота сессии 48 килогерц. Просто подождите. Но если не хотите ждать каждый раз, нажмите кнопку <b>Adapt</b> в нижней левой части окна плагига. Она сохранит копию текущего драмкита в папку <i>drum_sklad</i>, и у этой копии сэмплы будут с частотой текущей сессии, кроме того данные преобразуются в 32 bit float (24 integer для FLAC) моно. Копия автоматически установится как текущий драмкит. При этом поддерживаются, для такого клонирования, только киты в формате Драмлабух с сэмплами в форматах WAV, AIFF и FLAC.</p>
 
 <p>Давайте обсудим, какие вообще форматы китов поддерживаются.</p>
 
@@ -347,7 +368,7 @@ By the way, pan mode is a significant factor in how a DAW "sounds." The pan mode
 
 <p>Драмлабух сканирует установленные SFZ-киты в <i>$HOME/sfz-kits</i> (под Linux), а также в <i>c:\sfz-kits</i> и <i>d:\sfz-kits</i> (под Windows). Как обычно, папки с SFZ китами надо поместить туда, чтобы Драмлабух их увидел.</p>
 
-<p>Драмлабух в формате SFZ поддерживает MIDI mapping, заданный параметрами key. Для использования такого мэппинга, установите в Драмлабухе опцию MIDI map mode равной "Kit". Иначе же, в режиме "Auto", мэппинг будет в виде последовательной нумерации, начиная, по умолчанию, с миди-ноты 36 для бас-бочки, первого сэмпла по счету в ките. Однако первую ноту можно изменить в опции <b>Base MIDI Note</b>.</p>
+<p>Драмлабух в формате SFZ поддерживает MIDI mapping, заданный параметрами key. Для использования такого мэппинга, установите в Драмлабухе опцию <b>MIDI map mode</b> равной "Kit". Иначе же, в режиме "Auto", мэппинг будет в виде последовательной нумерации, начиная, по умолчанию, с миди-ноты 36 для бас-бочки, первого сэмпла по счету в ките. Однако первую ноту можно изменить в опции <b>Base MIDI Note</b>.</p>
 
 <p>Драмкиты превосходного качества - AVL Drumkits - вы можете скачать в формате SFZ по ссылке <a href="http://www.bandshed.net/sounds/AVLDrumkits_SFZ">http://www.bandshed.net/sounds/AVLDrumkits_SFZ</a>.  Также большие SFZ-киты можно скачать <a href="https://sfzinstruments.github.io/drums/">тут</a>.</p>
 
@@ -364,13 +385,13 @@ By the way, pan mode is a significant factor in how a DAW "sounds." The pan mode
 
 <p>Дополнительные киты, которых нет на Гитхабе, качайте с <a href="https://t.me/drum_sklad">Drum Sklad в Телеге</a>. Так что полная коллекция китов для Драмлабуха лежит на Гитхабе ПЛЮС в Телеге.</p>
 
-<p>Все киты формата Драмлабух имеют опциональный, заданный в ките, MIDI-mapping стандарта General MIDI, который можно выбрать в Драмлабухе в опции <b>MIDI map mode</b>, где в выпадающем списке надо выбрать "Kit". В противном случае ("Auto") Драмлабух будет осущесвлять mapping по принципу нумерации миди-нот начиная, по умолчанию, с 36 для бас бочки (меняется в опции <b>MIDI base note</b>).</p>
+<p>Все киты формата Драмлабух имеют опциональный, заданный в ките, MIDI-mapping стандарта General MIDI, который можно выбрать в Драмлабухе в опции <b>MIDI map mode</b>, где в выпадающем списке надо выбрать "Kit". В противном случае ("Auto") Драмлабух будет осуществлять mapping по принципу нумерации миди-нот начиная, по умолчанию, с 36 для бас бочки (меняется в опции <b>MIDI base note</b>).</p>
 
 
 <a name="mni_kits_alt"></a>
 <h3>2.4 Киты с альтернативными сэмплами</h3>
 
-<p>Некоторые киты Лабуха содержат варианты сэмплов для каждого слота/инструмента. Когда загружается такой кит, его название пишется желтым и дается подсказка, что для переключения вариантов сэмплов надо нажимать кнопки <b>плюс</b> и <b>минус</b> рядом со слотом. Вот на картинке я отметил:</p>
+<p>Некоторые киты Лабуха содержат варианты сэмплов для каждого слота/инструмента. Когда загружается такой кит, его слоты будут розовыми, а для переключения вариантов сэмплов надо нажимать кнопки <b>плюс</b> и <b>минус</b> рядом со слотом:</p>
 
 <p style="text-align:center;">
 <img src="alt.png">
@@ -431,6 +452,8 @@ D:\sfz-kits
 <br>
 <br>
 
+<p>Следующие элементы интерфейса недоступны в Multi-channel версии плагина, поскольку они бы дублировали элементы DAW для связанных с плагином дорожек</p>
+
 4 <b>Регулятор панорамы</b> - значения от 0 (крайнее левое) до 1 (крайнее правое), 0.5 середина. Помещает инструмент левее или правее, при по алгоритму, заданному опцией <b>Pan mode</b> (см. ниже). Разные DAW при микшировании применяют к дорожкам различные режимы панорамы, а некоторые DAW позволяют выбрать режим - собственно, во многом именно алгоритмы панорамы влияют на "фирменное" звучание DAW. Драмлабух, имея внутри себя полноценный микшер, как в DAW, тоже предоставляет выбор режима панорамы.
 <br><br>
 
@@ -454,6 +477,15 @@ D:\sfz-kits
 
 <pre>A3 -> E5
 C4 -> C5</pre>
+
+<p><b>Fixed MIDI velocity</b> - turn on to play samples at maximum velocity; useful for electronic music.</p>
+
+<p><b>Rnd seed tweak</b> - "зерно" для генератора псевдослучайных чисел, от 1 до 16777216. Drumlabooh использует детерминированный генератор псевдослучайных чисел, гарантирующий, что при одном и том же <b>Rnd seed tweak</b> и текущей позиции воспроизведения, последовательность чисел каждый раз будет одинаковая.</p> 
+
+<p>Для некоторых сэмплов в драмкитах есть варианты, которые выбираются на основе значений этого генератора, что придаёт барабанной партии подобие живой игры. При обычном генераторе вы бы с каждым новым воспроизведением получали бы разные по звучанию партии, варианты сэмплов не были бы предсказуемы, что затруднило бы микширование и мастеринг.</p>
+
+<p>В Drumlabooh же, каждый раз вы будете получать одну и ту же последовательность таких чисел, однако она зависит от <b>Rnd seed tweak</b>. Меняете ее значение - получаете совершенно новую последовательность. У вас есть 16777216 вариантов последовательности. 
+</p>
 
 <p><b>Pan mode</b> - выбор режима панорамы для микшера Драмлабуха. Подробнее <a href="https://en.wikipedia.org/wiki/Panning_law">в этой статье</a>. По умолчанию стоит паннер на основе синуса/косинуса, -3 dB. </p>
 
