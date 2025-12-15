@@ -18,6 +18,15 @@ this code is the public domain
 #define YFILLER 16
 #define YFL8 8
 
+#define CELLCOLOR_EMPTY 0xff8398a0 
+#define CELLCOLOR_ALT 0xffd8bfd8
+#define CELLCOLOR_SINGLE 0xffb4d1dc
+#define CELLCOLOR_MULTI 0xffb4d1dc
+
+
+//оранжевый ffc32c
+
+
 
 CDocumentWindow::CDocumentWindow (const String &name,
                                   Colour backgroundColour,
