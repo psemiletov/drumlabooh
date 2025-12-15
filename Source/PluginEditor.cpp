@@ -17,12 +17,25 @@ this code is the public domain
 #define XFILLER 4
 #define YFILLER 16
 #define YFL8 8
-
+/*
 #define CELLCOLOR_EMPTY 0xff8398a0 
 #define CELLCOLOR_ALT 0xffd8bfd8
 #define CELLCOLOR_SINGLE 0xffb4d1dc
 #define CELLCOLOR_MULTI 0xffb4d1dc
+*/
+/*
+#define CELLCOLOR_EMPTY 0xff8398a0 
+#define CELLCOLOR_ALT 0xffc59ab6
+#define CELLCOLOR_SINGLE 0xffb49bc5
+#define CELLCOLOR_MULTI 0xffdbbdf0
+*/
 
+#define CELLCOLOR_EMPTY 0xff8398a0 
+//#define CELLCOLOR_ALT 0xffc5c4b1
+#define CELLCOLOR_ALT 0xff87ca0c
+
+#define CELLCOLOR_SINGLE 0xff73da9e
+#define CELLCOLOR_MULTI 0xff85da78
 
 //оранжевый ffc32c
 
@@ -269,7 +282,7 @@ CDrumCell::CDrumCell()
                                          set_name (cell_caption);
                                         } 
                                                                                                                                    
-                                     cell_label.setColour (juce::Label::backgroundColourId, juce::Colours::thistle);
+                                     //cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (0xffd8bfd8));
                                      editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
                                      editor->audioProcessor.suspendProcessing (false);
                                      editor->tmr_leds.startTimer (1000 / 15); //15 FPS
@@ -330,7 +343,7 @@ CDrumCell::CDrumCell()
                                       set_name (cell_caption);
                                      } 
                                                                                                                                    
-                                 cell_label.setColour (juce::Label::backgroundColourId, juce::Colours::thistle);
+                                 //cell_label.setColour (juce::Label::backgroundColourId, juce::Colours::thistle);
                                  editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
                                  editor->audioProcessor.suspendProcessing (false);
                                  editor->tmr_leds.startTimer (1000 / 15); //15 FPS
@@ -345,7 +358,7 @@ CDrumCell::CDrumCell()
   cell_label.setTopLeftPosition (xoffs, YFILLER);
   cell_label.setSize (180, 32);
   cell_label.setColour (juce::Label::textColourId, juce::Colours::black);
-  cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+  cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (CELLCOLOR_EMPTY));
   cell_label.setFont (f_samplename_font);
   cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
 
@@ -487,7 +500,7 @@ CDrumCell::CDrumCell()
                                      editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
 
                                      
-                                     cell_label.setColour (juce::Label::backgroundColourId,/* juce::Colour (180, 209, 220)*/juce::Colours::thistle);
+                                     //cell_label.setColour (juce::Label::backgroundColourId,juce::Colours::thistle);
                                      editor->audioProcessor.suspendProcessing (false);
                                      editor->tmr_leds.startTimer (1000 / 15); //15 FPS
                                      return;
@@ -549,7 +562,7 @@ CDrumCell::CDrumCell()
                                                                                                                                    
                                       editor->audioProcessor.drumkit->loaded = true; //типа кит целиком загружен
                                      
-                                      cell_label.setColour (juce::Label::backgroundColourId, /*juce::Colour (180, 209, 220)*/juce::Colours::thistle);
+                                      //cell_label.setColour (juce::Label::backgroundColourId, juce::Colours::thistle);
                                       editor->audioProcessor.suspendProcessing (false);
                                       editor->tmr_leds.startTimer (1000 / 15); //15 FPS
                                       return;
@@ -563,7 +576,7 @@ CDrumCell::CDrumCell()
   cell_label.setSize (380, 32);
 
   cell_label.setColour (juce::Label::textColourId, juce::Colours::black);
-  cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+  cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (CELLCOLOR_EMPTY));
   cell_label.setFont (f_samplename_font);
   cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
   //cell_label.cell = this;
@@ -717,7 +730,7 @@ void CAudioProcessorEditor::load_kit()
   for (size_t i = 0; i < 36; i++)
       {
        drumcells[i].set_name ("EMPTY CELL");
-       drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
+       drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (CELLCOLOR_EMPTY));
       }
   
   if (! audioProcessor.drumkit)
@@ -736,12 +749,17 @@ void CAudioProcessorEditor::load_kit()
        if (s->layer_index_mode == LAYER_INDEX_MODE_ALT)
           {
            cell_name = s->get_name (true);
-           drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colours::thistle);
+           drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (CELLCOLOR_ALT));
           }
        else  
            {
             cell_name = s->get_name (false);
-            drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (180, 209, 220));
+            
+            if (s->v_layers.size() > 1)
+               drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (CELLCOLOR_MULTI));
+            else
+               drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (CELLCOLOR_SINGLE));
+               
            } 
       
        drumcells[i].set_name (cell_name);
@@ -1288,7 +1306,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   for (size_t i = 0; i < 36; i++)
       {
        drumcells[i].set_name ("EMPTY CELL");
-       drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (131, 152, 160));
+       drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (CELLCOLOR_EMPTY));
       }
 
  
