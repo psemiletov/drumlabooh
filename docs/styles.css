@@ -324,3 +324,201 @@ ul.features li::before {
   height: auto;
   object-fit: contain;
 }
+
+/* === СТИЛИ ДЛЯ СТРАНИЦЫ РУКОВОДСТВА === */
+
+.container {
+  max-width: 1000px; /* уже есть 1200px — переопределим для руководства, или оставь 1200px */
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.toc {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(77, 79, 90, 0.1);
+  margin-bottom: 50px;
+}
+
+.toc h2 {
+  font-size: 1.8rem;
+  color: var(--main-color);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.toc ul {
+  list-style: none;
+}
+
+.toc li {
+  margin: 12px 0;
+  font-size: 1.1rem;
+}
+
+.toc a {
+  color: var(--main-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.toc a:hover {
+  text-decoration: underline;
+}
+
+section {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(77, 79, 90, 0.1);
+  margin-bottom: 40px;
+}
+
+h3 {
+  font-size: 1.6rem;
+  color: var(--main-color);
+  margin: 40px 0 20px;
+  scroll-margin-top: 100px;
+}
+
+p {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+a {
+  color: var(--main-color);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+a:hover {
+  color: var(--main-dark);
+}
+
+pre {
+  background: var(--main-light);
+  padding: 20px;
+  border-radius: 12px;
+  overflow-x: auto;
+  font-size: 1rem;
+  margin: 25px 0;
+  border-left: 5px solid var(--main-medium);
+}
+
+code {
+  background: var(--main-light);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+/* Переопределяем .image-center для страниц без flex-потребности */
+.image-center.simple {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.image-center.simple img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(77, 79, 90, 0.15);
+}
+
+/* Медиа для мобильных — добавь к существующему */
+@media (max-width: 640px) {
+  section, .toc { 
+    padding: 30px; 
+  }
+  pre { 
+    font-size: 0.9rem; 
+  }
+  h3 { 
+    scroll-margin-top: 120px; 
+  }
+  .container {
+    margin: 40px auto;
+  }
+}
+
+
+/* === СТРАНИЦА ДОНатов === */
+.donate-section {
+  background: white;
+  padding: 60px 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(77, 79, 90, 0.1);
+  text-align: center; /* добавлено для центрирования текста и кнопки */
+}
+
+.donate-section p {
+  font-size: 1.3rem;
+  margin-bottom: 30px;
+  color: var(--text-medium);
+}
+
+.donate-section p:last-child {
+  margin-bottom: 0; /* убираем лишний отступ у последнего абзаца */
+}
+
+.paypal-button {
+  display: inline-block;
+  background: #003087;
+  color: white;
+  font-weight: 600;
+  font-size: 1.2rem;
+  padding: 16px 32px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 48, 135, 0.2);
+}
+
+.paypal-button:hover {
+  background: #002266;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 48, 135, 0.3);
+}
+
+.paypal-button:focus {
+  outline: 3px solid #ffc220; /* доступность: жёлтая обводка PayPal при фокусе */
+}
+
+.paypal-email {
+  font-size: 1.1rem;
+  color: var(--text-medium);
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 640px) {
+  .donate-section {
+    padding: 40px 20px;
+  }
+  
+  .paypal-button {
+    padding: 14px 28px;
+    font-size: 1.1rem;
+    width: 100%; /* опционально: кнопка на всю ширину на мобильных */
+    max-width: 300px;
+  }
+}
+
+
+
+/* Узкие контейнеры для страниц с центрированным контентом */
+.container-narrow {
+  max-width: 800px;
+  margin: 60px auto;
+  padding: 0 20px;
+  text-align: center; /* удобно для донатов и about-страниц */
+}
+
+.container-medium {
+  max-width: 1000px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
