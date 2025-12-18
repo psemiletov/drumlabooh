@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drumlabooh: Install</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+
+<header>
+  <h1>Drumlabooh: Install</h1>
+</header>
+
+<nav>
+  <a href="index-en.html">Home</a>
+  <a href="news-en.html">News</a>
+  <a href="install-en.html">Install</a>
+  <a href="manual-en.html">Manual</a>
+  <a href="donate-en.html">Donate</a>
+  <a href="https://github.com/psemiletov/drumlabooh">Github</a>
+</nav>
+
+<div class="container">
+
+  <section>
+    <h2>Get the plugin</h2>
+
+    <ul class="download-list">
+      <li><a href="https://github.com/psemiletov/drumlabooh/releases/tag/12.0.0">Latest release (12.0.0)</a> — sources, binaries</li>
+      <li><a href="https://github.com/psemiletov/drumlabooh/releases/download/12.0.0/drumlabooh-net-installer-script.sh">Net Install for Linux</a> <strong>The fastest and preferred way for Linux</strong>. This Bash script installs the latest release binaries and kits locally (in user directory subdirectories). Use it for a non-root install. <i>Note: if Drumlabooh and the kits were installed previously system-wide, remove them first</i>.</li>
+      <li><a href="https://github.com/psemiletov/drumlabooh/releases/download/12.0.0/drumlabooh-installer.exe">Windows VST3 installer</a> — installs to <i>C:\Program Files\Common Files\VST3</i></li>
+      <li><a href="https://aur.archlinux.org/packages/drumlabooh">AUR page</a> — <i>yay -S drumlabooh</i></li>
+      <li><a href="https://github.com/psemiletov/drumlabooh">Github page</a></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Windows: installation</h2>
+    <p>Download and run <a href="https://github.com/psemiletov/drumlabooh/releases/download/12.0.0/drumlabooh-installer.exe">this installer</a> — it installs the plugin to <i>C:\Program Files\Common Files\VST3</i> and places some drumkits in <i>C:\drumlabooh_kits</i>.</p>
+    <p>You can get more kits from <a href="http://hydrogen-music.org">Hydrogen</a> or additional Drumlabooh kits from Telegram channel <a href="https://t.me/drum_sklad">Drum Sklad</a>. Just copy/unpack Drumlabooh kit directories to <i>C:\drumlabooh_kits</i> or <i>D:\drumlabooh_kits</i>, or for SFZ format — to <i>C:\sfz_kits</i> or <i>D:\sfz_kits</i>.</p>
+    <p>Please read <a href="manual-en.html">the Manual</a> for details.</p>
+  </section>
+
+  <section>
+    <h2>Linux: Build from source</h2>
+    <p>To build Drumlabooh from source, install dependencies first. Drumlabooh is based on JUCE — the JUCE source will be fetched automatically during configuration.</p>
+
+    <h3>Dependencies (Ubuntu/Debian)</h3>
+    <pre>pkgconf
+libasound2-dev
+libfreetype6-dev
+libx11-dev
+libxcomposite-dev
+libxcursor-dev
+libxext-dev
+libxinerama-dev
+libxrandr-dev
+libxrender-dev
+libfontconfig1-dev  # for Ubuntu 24.x</pre>
+
+    <h3>Dependencies (Arch Linux)</h3>
+    <pre>alsa-lib
+freetype2
+libx11
+libxcomposite
+libxcursor
+libxext
+libxinerama
+libxrandr
+libxrender</pre>
+
+    <p>After installing dependencies, run in the source directory (as root or with sudo for the install step):</p>
+    <pre>mkdir b
+cd b
+cmake ..
+make
+make install</pre>
+
+    <p>This installs LV2 and VST3 versions to <i>/usr/local/lib/lv2</i> and <i>/usr/local/lib/vst3</i> by default. To change the prefix (e.g. to /usr):</p>
+    <pre>cmake -DCMAKE_INSTALL_PREFIX=/usr ..</pre>
+  </section>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Драмлабух: Установка</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+
+<header>
+  <h1>Драмлабух: Установка</h1>
+</header>
+
+<nav>
+  <a href="index-ru.html">Главная</a>
+  <a href="news-ru.html">Новости</a>
+  <a href="install-ru.html">Скачать</a>
+  <a href="manual-ru.html">Руководство</a>
+  <a href="donate-ru.html">Донат</a>
+  <a href="https://github.com/psemiletov/drumlabooh">Github</a>
+</nav>
+
+<div class="container">
+
+  <section>
+    <h2>Скачать плагин</h2>
+
+    <ul class="download-list">
+      <li><a href="https://github.com/psemiletov/drumlabooh/releases/tag/12.0.0">Свежий выпуск (12.0.0)</a> — исходники, бинарники</li>
+      <li><a href="https://github.com/psemiletov/drumlabooh/releases/download/12.0.0/drumlabooh-net-installer-script.sh">Установщик по сети для Linux</a> — устанавливает/обновляет бинарные плагины и киты к последнему релизу (установка в домашний каталог пользователя, без root). Если была общесистемная установка — сначала удалите её. Сетевой установщик это самый быстрый и простой способ установить Драмлабух в Linux.
+</li>
+
+<li><a href="https://github.com/psemiletov/drumlabooh/releases/download/12.0.0/drumlabooh-installer.exe">Установщик VST3 для Windows</a> — устанавливает в <i>C:\Program Files\Common Files\VST3</i></li>
+      <li><a href="https://aur.archlinux.org/packages/drumlabooh">Страница на AUR</a> — <i>yay -S drumlabooh</i></li>
+      <li><a href="https://github.com/psemiletov/drumlabooh">Полная страница на Github</a></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Windows: установка</h2>
+    <p>Скачайте и запустите <a href="https://github.com/psemiletov/drumlabooh/releases/download/12.0.0/drumlabooh-installer.exe">установщик VST3</a> — он поставит плагин и минимальный набор драм-китов.</p>
+    <p>Дополнительные драмкиты можно взять, например, из драм-машины <a href="http://hydrogen-music.org">Hydrogen</a>, а в формате Драмлабуха из Telegram-канала <a href="https://t.me/drum_sklad">Drum sklad</a>. Распакуйте папки китов в <i>C:\drumlabooh_kits</i> или <i>D:\drumlabooh_kits</i>, а киты формата SFZ — в <i>C:\sfz_kits</i> или <i>D:\sfz_kits</i>.</p>
+    <p>Подробности — в <a href="manual-ru.html">Руководстве пользователя</a>.</p>
+  </section>
+
+  <section>
+    <h2>Linux: сборка из исходников</h2>
+    <p>Для сборки Drumlabooh нужны зависимости JUCE (библиотека подгружается автоматически во время сборки).</p>
+
+    <h3>Зависимости (Ubuntu/Debian)</h3>
+    <pre>libasound2-dev
+libfreetype6-dev
+libx11-dev
+libxcomposite-dev
+libxcursor-dev
+libxext-dev
+libxinerama-dev
+libxrandr-dev
+libxrender-dev
+libfontconfig1-dev  # для Ubuntu 24.x</pre>
+
+    <h3>Зависимости (Arch Linux)</h3>
+    <pre>alsa-lib
+freetype2
+libx11
+libxcomposite
+libxcursor
+libxext
+libxinerama
+libxrandr
+libxrender</pre>
+
+    <p>После установки зависимостей выполните в каталоге с исходниками:</p>
+    <pre>mkdir b
+cd b
+cmake ..
+make
+make install</pre>
+
+    <p>Это установит LV2 и VST3 версии в <i>/usr/local/lib/lv2</i> и <i>/usr/local/lib/vst3</i>. Чтобы изменить префикс (например, на /usr), используйте:</p>
+    <pre>cmake -DCMAKE_INSTALL_PREFIX=/usr ..</pre>
+  </section>
+
+</div>
+
+</body>
+</html>

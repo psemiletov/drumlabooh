@@ -38,7 +38,7 @@ set(VST3_INSTALL_DIR lib/vst3 CACHE PATH "Specifies where the VST3 libraries sho
 endif()
 
 
-set (DRUMSKLADTAG 3.0.1)
+set (DRUMSKLADTAG 4.0.0)
 
 IF (WIN32)
 set (JUCETAG 7.0.10)

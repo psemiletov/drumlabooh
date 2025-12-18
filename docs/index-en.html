@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drumlabooh: About</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>Drumlabooh</h1>
+</header>
+
+<nav>
+  <a href="index-en.html">Home</a>
+  <a href="news-en.html">News</a>
+  <a href="install-en.html">Install</a>
+  <a href="manual-en.html">Manual</a>
+  <a href="donate-en.html">Donate</a>
+  <a href="https://github.com/psemiletov/drumlabooh">Github</a>
+</nav>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;">
+    <iframe style="position: absolute; 
+                    top: 50%; 
+                    left: 50%; 
+                    width: 80%; 
+                    height: 80%; 
+                    transform: translate(-50%, -50%);"
+            src="https://www.youtube.com/embed/9NEzDmQ7WkQ?si=RKAESXbbOSMK1tGz"
+            title="Название видео"
+            frameborder="0"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+    </iframe>
+</div>
+
+<div class="container">
+  <div class="hero-image">
+    <a href="./v12.png"><img src="./v12-small.png" alt="Screenshot of Drumlabooh"></a>
+  </div>
+  <p class="intro">
+    Drumlabooh comes with several dozen drum kits suitable for various music styles.<br>
+    Here's how some of them sound.
+  </p>
+  <div class="drumkits-grid">
+    <div class="drum-card">
+      <img src="jazzkit.jpg" alt="Jazzkit">
+      <div class="card-body">
+        <h3 class="card-title">Jazzkit</h3>
+        <div class="sample">
+          <div class="sample-title">Dry</div>
+          <audio controls preload="metadata">
+            <source src="./snd/jazzkit-dry.mp3" type="audio/mpeg">
+          </audio>
+        </div>
+        <div class="sample">
+          <div class="sample-title">With Dragonfly reverb</div>
+          <audio controls preload="metadata">
+            <source src="./snd/jazzkit-reverb.mp3" type="audio/mpeg">
+          </audio>
+        </div>
+      </div>
+    </div>
+    <div class="drum-card">
+      <img src="sixtiesbasic.jpg" alt="Sixties Basic">
+      <div class="card-body">
+        <h3 class="card-title">Sixties Basic</h3>
+        <div class="sample">
+          <div class="sample-title">Dry</div>
+          <audio controls preload="metadata">
+            <source src="./snd/sixties-basic-dry.mp3" type="audio/mpeg">
+          </audio>
+        </div>
+        <div class="sample">
+          <div class="sample-title">With Dragonfly reverb</div>
+          <audio controls preload="metadata">
+            <source src="./snd/sixties-basic-with-reverb.mp3" type="audio/mpeg">
+          </audio>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section>
+    <h2>Features</h2>
+    <ul class="features">
+      <li><a href="https://github.com/psemiletov/drumlabooh/wiki/DAW-Compatibility">DAW Compatibility</a></li>
+      <li>Linux LV2/VST3, Windows VST3 plugin format</li>
+      <li>Supported sample drumkit formats: Drumlabooh, Hydrogen, SFZ, and simple directories with samples</li>
+      <li>Bundled with high quality drumkits designed after legendary acoustic drums and drum machines</li>
+      <li>Stereo (with built-in mixer) or multi (36 channels) output</li>
+      <li>Built-in mixer with Pan, Volume, mute controls and Pan mode option</li>
+      <li>FX for each instrument slot: LP, HP resonance filters and Analog knob to make the sound warmer (per-instrument or/and for the whole mix)</li>
+      <li>Up to 36 instrument slots with layers (max 127 layers)</li>
+      <li>Layer change by MIDI velocity, Round Robin or Random order</li>
+      <li>Multi single-shot samples per slot</li>
+      <li>Automatic open hihat mute on hihat close</li>
+      <li>Kit-defined (user-defined) mute groups</li>
+      <li>Drumkit image (if provided) at plugin window</li>
+      <li>Flexible MIDI mapping modes</li>
+      <li>Written in C++, based on <a href="https://juce.com">JUCE toolkit</a></li>
+    </ul>
+  </section>
+
+
+</div>
+</body>
+</html>

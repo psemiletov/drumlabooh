@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drumlabooh: User's Manual</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+
+<header>
+  <h1>Drumlabooh: User's Manual</h1>
+</header>
+
+<nav>
+  <a href="index-en.html">Home</a>
+  <a href="news-en.html">News</a>
+  <a href="install-en.html">Install</a>
+  <a href="manual-en.html">Manual</a>
+  <a href="donate-en.html">Donate</a>
+  <a href="https://github.com/psemiletov/drumlabooh">Github</a>
+</nav>
+
+<div class="container">
+
+  <div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+      <li><a href="#mni_modes">1. Stereo vs Multi-channel modes</a></li>
+      <li><a href="#mni_kits">2.0 Kits</a></li>
+      <li><a href="#mni_kits_hydrogen">2.1 Hydrogen Kits</a></li>
+      <li><a href="#mni_kits_sfz">2.2 SFZ Kits</a></li>
+      <li><a href="#mni_kits_labooh">2.3 Drumlabooh kits</a></li>
+      <li><a href="#mni_kits_dir">2.4 Folder Kits</a></li>
+      <li><a href="#mni_mixer">3. Mixer</a></li>
+      <li><a href="#mni_options">4. Options</a></li>
+      <li><a href="#multi">5. Multi-channel explained</a></li>
+      <li><a href="#mltiard">5.1 Ardour</a></li>
+      <li><a href="#mltirea">5.2 Reaper</a></li>
+      <li><a href="#mlticub">5.3 Cubase</a></li>
+    </ul>
+  </div>
+
+  <section>
+    <p>Drumlabooh is designed not to interfere with creativity. All you need to write a drum part is to create a new MIDI track in your favorite DAW, load the Drumlabooh plugin onto it, then select one of the installed drum kits in it, or load samples from folders, and start playing from the keyboard, drum pads, or drawing notes in the sequencer. Drumlabooh uses existing sampled drumkits (Drumlabooh, Hydrogen, SFZ) or samples from sample packs.</p>
+</section>
+
+<section id="mni_modes">
+
+<h3>1. Stereo vs Multi-channel modes</h3>
+
+<p>The first thing you need to know is that there are two versions of Drumlabooh — <strong>Stereo</strong> and <strong>Multi</strong> (Multi-channel or Multi-output). The latter provides a separate mono output channel for each instrument in the drum kit — 36 channels in total. To use the Stereo version, add the <i>Drumlabooh</i> plugin to a track. To use the Multi-channel version, add <i>Drumlabooh-multi</i>.</p>
+
+<p>In the Multi-channel version, the plugin's pan, volume, and mute controls <strong>are disabled</strong> because you can control them via tracks or buses in your DAW. Read the <a href="#multi">DETAILS</a> section to learn how to use Multi mode in your DAW and how to route each drum to an individual track or bus.</p>
+
+</section>
+
+<section id="mni_kits">
+
+<h3>2.0 Kits</h3>
+
+<p>When Drumlabooh starts, it scans all available kits and <strong>displays a list of them</strong> for you to choose from. You can also click the <strong>Open</strong> button below the kit information section to manually select a drumkit file from any location. Choose an <code>.xml</code> (Hydrogen format), <code>.sfz</code> (SFZ), or <code>drumkit.txt</code> or <code>drumkit.labooh</code> (Drumlabooh format) file in the drumkit’s folder.</p>
+
+<p><strong>Important note:</strong> when loading a drumkit, Drumlabooh converts the samples (in RAM) to match the DAW session’s sample rate. Large kits may take longer to load if, for example, the samples are at 48 kHz but the session rate is 44.1 kHz. The same applies to FLAC-compressed samples. If you try to load a large drumkit, please wait — do not assume that the plugin or DAW has frozen.</p>
+
+<p>The best way to handle this is to use the <strong>Adapt</strong> button, which saves a copy of the current drumkit using the <strong>session’s</strong> sample rate and 32-bit float data format (24-bit for FLAC) in the <i>drum_sklad</i> directory. This copy will then be used as the active drumkit, and the next time it will load faster than the original kit.</p>
+
+<p>This function works only with the Drumlabooh kit format and with samples in WAV, AIFF, or FLAC formats.</p>
+
+<p>Now, let’s talk about how Drumlabooh supports different drum kit formats.</p>
+
+</section>
+
+<section id="mni_kits_hydrogen">
+
+<h3>2.1 Hydrogen Drum Kits</h3>
+
+<p>When Drumlabooh starts, it searches for all installed <a href="http://hydrogen-music.org">Hydrogen Drum Machine</a> kits in their default locations. Dozens of great kits have been created for <strong>Hydrogen</strong>. To install them you need to run <strong>Hydrogen</strong> and go to the <strong>Drumkits → Online Import</strong> menu, where you can select and download kits from the Hydrogen or Musical Artifacts repositories.</p>
+
+<p>Some Hydrogen kits may already be installed on your Linux system. Currently, for both Linux and Windows, the best way to get new Hydrogen kits is through the <strong>Online Import</strong> feature, since public download links are generally not available.</p>
+  </section>
+
+  <section id="mni_kits_sfz">
+    <h3>2.2 SFZ Drum Kits</h3>
+    <p>Drumlabooh scans for installed SFZ kits in the following predefined locations: <i>$HOME/sfz-kits</i> (Linux), <i>C:\sfz-kits</i> and <i>D:\sfz-kits</i> (Windows). SFZ kit directories must be placed in <b>any</b> of these locations to be recognized by Drumlabooh.</p>
+    <p>High-quality <strong>AVL Drumkits</strong> can be downloaded in SFZ format from <a href="http://www.bandshed.net/sounds/AVLDrumkits_SFZ/">AVLDrumkits_SFZ</a>. You can also find many large SFZ drum kits <a href="https://sfzinstruments.github.io/drums/">here</a>.</p>
+    <p>Drumlabooh supports a limited set of SFZ opcodes and parameters: <code>group</code>, <code>off_by</code>, <code>region</code>, <code>key</code>, <code>sample</code>, <code>default_path</code>, <code>offset</code>, <code>lovel</code>, and <code>hivel</code>. Drumlabooh does not support sample file names that contain spaces (because they are difficult to parse correctly from the SFZ file).</p>
+  </section>
+
+  <section id="mni_kits_labooh">
+    <h3>2.3 Drumlabooh Drum Kits</h3>
+    <p>Drumlabooh uses its own kit formats (there are two formats, text-based and XML). One kit equals one directory, which should be placed in <i>$HOME/drumlabooh-kits</i>, <i>$HOME/drum_sklad</i>, or <i>/usr/share/drumlabooh-kits</i> on Linux, and in <i>C:\drumlabooh-kits</i>, <i>D:\drumlabooh-kits</i>, <i>C:\drum_sklad</i>, or <i>D:\drum_sklad</i> on Windows.</p>
+
+    <p>Drumlabooh usually installs kits automatically from its official <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad repository on GitHub</a>. You can also <b>find detailed information about the formats</b> there — it is quite simple. The word "sklad" means "warehouse," "storage," or "repository."</p>
+
+    <p>Additional kits that are not hosted on GitHub can be downloaded from the <a href="https://t.me/drum_sklad">Drum Sklad channel on Telegram</a>. The complete Drumlabooh kit collection therefore includes Drum Sklad on GitHub and Drum Sklad on Telegram.
+</p>
+
+    <p>All native Drumlabooh kits include optional built-in General MIDI mapping settings, which can be used in <b>MIDI Map mode</b> by selecting the <b>Kit</b> option there.</p>
+  </section>
+
+
+  <section id="mni_kits_dir">
+    <h3>2.5 Folder Kits</h3>
+    <p>Drumlabooh can use directories placed at <i>$HOME/drum_dirs</i>, <i>C:\drum_dirs</i>, or <i>D:\drum_dirs</i> as ready-to-use Alternate Sample kits. Just create a <i>drum_dirs</i> directory and put, for example, a <i>My Drumkit</i> folder inside, where you place the samples in subdirectories as follows (names can vary):</p>
+    <pre>1. Kick
+           kick01.wav
+           kick02.wav
+           kick03.wav
+2. Snare
+          snare01.wav
+          snare02.wav
+          snare03.wav</pre>
+    <p>Here, <i>1. Kick</i> and <i>2. Snare</i> are subdirectories, and the others are files inside them. The numbers in directory or file names help Drumlabooh sort them alphabetically.</p>
+    <p>This is a simple way to use many sample packs by just unpacking them into the <i>drum_dirs</i> directory. Many such kits are available from <a href="https://www.reddit.com/r/Drumkits/">https://www.reddit.com/r/Drumkits/</a>.</p>
+    <p>There are some limits for Folder Kits: a maximum of 36 instrument folders per kit and up to 128 samples in each directory/folder.</p>
+
+<br>
+
+    <h3>Supported sample formats</h3>
+    <p>Drumlabooh supports samples in the following formats: WAV, AIFF, FLAC, OGG, and MP3. OGG and MP3-based kits cannot be <strong>adapted</strong>. Stereo samples are read as mono (using the left channel), because pre-panned drums (from the kit) can make internal mixing sound unnatural.</p>
+
+<br>
+
+    <h3>Full list of directories where Drumlabooh searches for kits</h3>
+
+<br>
+
+    <p><b>Drumlabooh/Drumrox format</b>:</p>
+    <pre>/usr/share/drumrox-kits
+/usr/share/drumlabooh-kits
+$HOME/drumrox-kits
+$HOME/drumlabooh-kits
+$HOME/drum_sklad //main directory for locally installed kits
+C:\drumlabooh-kits
+D:\drumlabooh-kits
+C:\drum_sklad</pre>
+
+<br>
+
+<p><b>Hydrogen format</b>:</p>
+
+<pre>/usr/share/hydrogen/data/drumkits
+/usr/local/share/hydrogen/data/drumkits
+/usr/share/drmr/drumkits
+$HOME/.hydrogen/data/drumkits
+$HOME/.drmr/drumkits</pre>
+
+<br>
+
+<p><b>SFZ format</b>:</p>
+
+<pre>$HOME/sfz-kits
+C:\sfz-kits
+D:\sfz-kits</pre>
+
+</section>
+
+  <section id="mni_mixer">
+    <h3>3. Built-in mixer</h3>
+    <p>To the right of the drumkit list, you see 36 cells (or slots) for loaded samples. Here is the layout of each cell:</p>
+    <div class="image-center">
+      <img src="cell.png" alt="Drum cell layout">
+    </div>
+    <p>1. <strong>LED</strong> – lights up when a note is played.</p>
+
+    <p>2. <strong>Instrument name</strong> – defined in the kit; otherwise, the file name is used.
+
+The background color changes depending on the sample type — <span style="background-color:#8398a0;">empty slot</span>, <span style="background-color:#73da9e;">sample with a single layer</span>, <span style="background-color:#85da78;">sample with multiple layers</span>, <span style="background-color:#87ca0c;">sample with variants</span>. The latter can be selected using the + and - buttons located to the left.</p>
+
+
+    <p>3. <strong>FX</strong> – button to open the FX window for this instrument. You can close the window using the "close" button or the Escape key. All effects in that window can be turned on or off, so they work only when enabled.</p>
+    <p>There are <strong>LP</strong> (Low-pass filter, allows only frequencies below the <strong>cutoff</strong> value) and <strong>HP</strong> (High-pass filter, allows only frequencies above the <strong>cutoff</strong> value). To simplify the code and improve performance, the cutoff parameter is not in Hz but a floating-point number within the range 0..1.</p>
+    <p>Both filters are resonant and have the <strong>resonance</strong> parameter. Experiment with the sliders to create new and interesting sounds. The HP filter works best for hi-hats, the LP for kicks; either HP or LP can produce cool effects on the snare. If your sample sounds weak or thin, try the <strong>Analog</strong> slider to add some warmth.</p>
+    <p><i>The following interface elements are not available in the Multi-channel version of the plugin, as they would duplicate the DAW's elements for the tracks associated with the plugin.</i></p>
+    <p>4. <strong>Pan control</strong> – values range from 0 (full left) to 1 (full right), with 0.5 being the center. See the <strong>Pan mode</strong> option to understand the panning algorithm. It is important to note that different DAWs have different pan modes for mixing; sometimes the DAW provides an option to select it. Drumlabooh internally behaves like the DAW mixer and offers the same flexibility.</p>
+    <p>5. <strong>Volume slider</strong> – non-linear, with values ranging from -96 to +6 dB.</p>
+    <p>6. <strong>Mute switch</strong> – mutes the instrument.</p>
+    <p>Under the <strong>Options</strong>, you will find the "global" Analog switch and slider, which affect the entire mix at the end of the signal chain. Useful for live but quiet drums.</p>
+  </section>
+
+  <section id="mni_options">
+    <h3>4. Options section</h3>
+    <p>At the lower right part of the plugin window, you can see <strong>Options</strong>.</p>
+    <p><strong>MIDI map mode</strong> – there are two modes, <strong>Auto</strong> and <strong>Kit</strong>. With <strong>Auto</strong>, Drumlabooh assigns MIDI notes to samples starting from the numerical value of another option, <strong>Base MIDI note</strong> (default: 36), which specifies the MIDI note number to map the first instrument in the kit. MIDI note 36 = C in the 2nd octave. This mode is the default and works well for playing from a MIDI keyboard. When <strong>Kit</strong> is selected, Drumlabooh uses MIDI note assignments from the drumkit file; usually, this is <a href="https://computermusicresource.com/GM.Percussion.KeyMap.html">General MIDI mapping</a>, compatible with e-drums and drum pads. It is also the proper mode for Ardour's drum grooves.</p>
+    <p>So, MIDI mapping is the assignment of MIDI note numbers to drum instruments (Drumlabooh cells) from the kit. The mapping data is included in many Drumlabooh and SFZ kits. However, some drums or percussion instruments are not covered by General MIDI, so in these cases, <strong>Auto</strong> mode is more useful and gives you access to all instruments in the kit.</p>
+    <p>For more complex MIDI mapping, use the power of your DAW, e-drum/pad options, or plugins such as, in Reaper, "JS MIDI map to key v2" – just place it before Drumlabooh and create or select a mapping file, for example:</p>
+    <pre>A3 -> E5
+C4 -> C5</pre>
+    <p><strong>Fixed MIDI velocity</strong> - turn on to play samples at maximum velocity; useful for electronic music.</p>
+    <p><strong>Rnd seed tweak</strong> - "seed" for the pseudorandom number generator, ranging from 1 to 16777216. Drumlabooh uses a deterministic pseudorandom number generator, ensuring that with the same Rnd seed tweak value and the current playback position, the sequence of numbers will always be identical each time.</p>
+    <p>For some samples in the drum kits, there are variations that are selected based on the values from this generator, which adds a sense of live performance to the drum part. With a regular random generator, each new playback would produce different-sounding parts, and sample variations would be unpredictable, making mixing and mastering more difficult.</p>
+    <p>In Drumlabooh, however, you will always get the same sequence of such numbers every time, but it depends on the Rnd seed tweak. Change its value - and you get a completely new sequence. You have 16777216 possible sequence variations.</p>
+    <p><strong>Pan mode</strong> – allows you to select the pan mode for Drumlabooh's internal mixer. See the <a href="https://en.wikipedia.org/wiki/Panning_law">article</a>. The default panner is equal power panning, law: -3 dB (sin/cos taper).<br>
+By the way, pan mode is a significant factor in how a DAW "sounds." The pan mode, or panning law, is the algorithm that controls the total acoustic power output of two channels, reducing their level when the pan position moves to the center. Otherwise, the sound at the center would be louder, because both channels play at full power, making it louder than the same mono sound. Therefore, any stereo output must be reduced to some degree when the pan position approaches the center to prevent a loudness increase.</p>
+    <p>It may be better to set the pan mode in Drumlabooh to match your DAW's pan mode, so that all drum samples are panned consistently. Experiment to find what sounds best in your mix.</p>
+    <p><strong>Analog</strong> – the global saturation on/off and its level. Useful for quiet drum kits.</p>
+  </section>
+
+  <section id="multi">
+    <h3>5. Multi-channel explained</h3>
+    <p>In the Multi-channel version (Drumlabooh-multi), the plugin's pan, volume, and mute controls <strong>are disabled</strong>, because you can control them via tracks or buses in your DAW.</p>
+    <p>Drumlabooh provides 36 mono output channels, one per sample of the drumkit.</p>
+  </section>
+
+  <section id="mltiard">
+    <h3>5.1 How to use Multi-out with Ardour?</h3>
+    <p>0. You can manually route the plugin's outputs to tracks or buses, but read further to learn how to do it automatically.</p>
+    <p>1. Create a MIDI track with Drumlabooh-multi as the instrument.</p>
+    <p>2. You'll see this window:</p>
+    <div class="image-center">
+      <img src="ard-mult.png" alt="Ardour multi-out setup">
+    </div>
+    <p>Select "36 channels" and "Fan out," then press Add. That's all! Now you have 36 tracks as outputs, already routed from Drumlabooh-multi's track.</p>
+    <p>3. Load the drumkit into Drumlabooh-multi. For example, Ludwig Sixties. It has 19 instruments. Thus, we need only 19 output channels from the 36 available. Remove the unused ones.</p>
+    <p><strong>The alternative way:</strong></p>
+    <p>If you put Drumlabooh-multi on an already created track (for example, previously used with Drumlabooh-stereo), you can route channels manually or semi-manually. In the latter case:</p>
+    <p>1. By default, Drumlabooh-multi will play to the stereo output. We don't need that. Let's create individual channels or buses for each drum/percussion sample.</p>
+    <p>2. Right-click <strong>on the top of the channel strip</strong> and select <strong>Fan out to tracks</strong> or <strong>Fan out to buses</strong>. Now you have one track or bus per channel to control each of the 36 drumkit channels. Please note that these tracks and buses are mono, so to use stereo FX on them, right-click on the effect, select <strong>Pin connection</strong>, and connect the pins to create stereo:</p>
+    <div class="image-center">
+      <a href="./mono2stereo.png"><img src="mono2stereo-small.jpg" alt="Mono to stereo pin connection"></a>
+    </div>
+    <p>3. All new tracks/channels are now in a group. To ensure they can be muted, soloed, etc., properly, right-click on the group header and select <strong>Remove group</strong>:</p>
+    <div class="image-center">
+      <a href="./remove-group.png"><img src="remove-group-small.jpg" alt="Remove group in Ardour"></a>
+    </div>
+    <p>4. Now, remove the unneeded tracks (for example, if the kit has only 8 instruments, but you have 36 tracks from Drumlabooh!)</p>
+  </section>
+
+  <section id="mltirea">
+    <h3>5.2 How to use Multi-out with Reaper?</h3>
+    <p>0. You can manually route the plugin's outputs to tracks or buses, but read further to see how to do that automatically.</p>
+    <p>1. <strong>Insert</strong> → <strong>Virtual Instrument on track</strong>, and add <strong>Drumlabooh-multi (LV2i or VST3i)</strong>.</p>
+    <p>2. Confirm in the <strong>Build routing confirmation window</strong>.</p>
+    <p>3. Voila!</p>
+  </section>
+
+
+<section id="mlticub">
+  <h3>5.3 How to use Multi-out with Cubase?</h3>
+  <div class="image-center steps">
+    <div class="step">
+      <p class="step-number">1</p>
+      <img src="cub-01.png" alt="Cubase step 1">
+    </div>
+    <div class="step">
+      <p class="step-number">2</p>
+      <img src="cub-02.png" alt="Cubase step 2">
+    </div>
+    <div class="step">
+      <p class="step-number">3 - LOAD KIT</p>
+      <img src="cub-03.png" alt="Cubase step 3" style="width:320px;">
+    </div>
+    <div class="step">
+      <p class="step-number">4</p>
+      <img src="cub-04.png" alt="Cubase step 4">
+    </div>
+    <div class="step">
+      <p class="step-number">5</p>
+      <img src="cub-05.png" alt="Cubase step 5">
+    </div>
+    <div class="step">
+      <p class="step-number">6</p>
+      <img src="cub-06.png" alt="Cubase step 6">
+    </div>
+    <div class="step">
+      <p class="step-number">7</p>
+      <img src="cub-07.png" alt="Cubase step 7">
+    </div>
+    <div class="step">
+      <p class="step-number">8</p>
+      <img src="cub-08.png" alt="Cubase step 8">
+    </div>
+    <div class="step">
+      <p class="step-number">9</p>
+      <img src="cub-09.png" alt="Cubase step 9">
+    </div>
+  </div>
+</section>
+</div>
+
+</body>
+</html>

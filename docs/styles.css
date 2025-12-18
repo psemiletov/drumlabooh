@@ -1,45 +1,55 @@
 :root {
-  --main-color: #676171; /* основной серо-фиолетовый */
-  --main-dark: #4d4f5a; /* темнее для шапки и hover */
-  --main-light: #e2e0e6; /* светлый фон блоков */
-  --main-medium: #9b96a6; /* средний для бордеров */
-  --green-muted: #7c8a7f; /* темновато-блеклый зелёный */
-  --green-accent: #94a397; /* чуть ярче зелёный для акцентов */
-  --yellow-muted: #e8e4d3; /* приглушённый бледно-жёлтый */
-  --text-dark: #3a3a3f;
-  --text-medium: #55555a;
-  --bg-light: #f8f8f9;
-  --card-bg: #d8e4da; /* бледный тёмно-зелёный для всей карточки */
-  --player-bg: #e8e5f5; /* бледный фиолетовый фон плеера */
-  --play-button-bg: #a78bfa; /* "вкусный" фиолетовый для кнопки play */
+  --main-color: #4488ff;         /* синий для второстепенных акцентов */
+  --main-dark: #2a2a3a;          /* очень тёмный фиолетово-серый для шапки и hover */
+  --main-light: #4a4a5a;         /* средне-тёмный для фонов блоков и бордеров */
+  --main-medium: #5a5a6a;        /* чуть светлее для второстепенных элементов */
+  --green-muted: #556655;        /* приглушённый зелёный для неактивных состояний */
+  --green-accent: #88ff88;       /* яркий салатовый зелёный — главный акцент плагина */
+  --green-bright: #aaffaa;       /* чуть мягче яркий зелёный для заголовков и ховеров */
+  --orange-accent: #ffaa00;      /* яркий оранжевый для ссылок и кнопок */
+  --orange-hover: #ff8800;       /* запасной, если понадобится */
+  --text-dark: #dddddd;          /* основной светлый текст */
+  --text-medium: #bbbbbb;        /* второстепенный текст */
+  --bg-dark: #3a3a4a;            /* основной тёмный фон страницы */
+  --card-bg: #4a4a5a;            /* фон карточек и блоков */
+  --player-bg: #3a3a4a;          /* фон аудиоплеера */
+  --play-button-bg: #88ff88;     /* яркий зелёный для кнопки play */
+  --hover-text-dark: #222222;    /* тёмный текст при ховере на зелёном фоне */
 }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background: linear-gradient(to bottom, #f8f8f9, #ffffff);
+  background: var(--bg-dark);
   color: var(--text-dark);
   line-height: 1.6;
   padding-bottom: 60px;
 }
+
 header {
   background: var(--main-dark);
   color: white;
   padding: 28px 0;
-  box-shadow: 0 4px 16px rgba(77, 79, 90, 0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
+
 h1 {
   text-align: center;
   font-size: 2.2rem;
   font-weight: 700;
+  color: var(--green-bright);
 }
+
 nav {
   max-width: 1200px;
   margin: 28px auto;
   text-align: center;
   padding: 0 20px;
 }
+
 nav a {
-  color: var(--main-color);
+  color: var(--orange-accent);   /* яркий оранжевый в обычном состоянии */
   text-decoration: none;
   font-weight: 600;
   margin: 0 10px;
@@ -47,42 +57,49 @@ nav a {
   border-radius: 30px;
   transition: all 0.3s ease;
   display: inline-block;
-  background: white;
-  border: 1px solid var(--main-light);
-}
-nav a:hover {
   background: var(--main-light);
-  color: var(--main-dark);
+  border: 1px solid var(--main-medium);
+}
+
+nav a:hover {
+  background: var(--green-accent);
+  color: var(--hover-text-dark); /* тёмный текст на зелёном фоне */
   transform: translateY(-2px);
 }
+
 .container {
   max-width: 1200px;
   margin: 40px auto;
   padding: 0 20px;
 }
+
 .hero-image {
   text-align: center;
   margin-bottom: 50px;
 }
+
 .hero-image img {
   max-width: 100%;
   height: auto;
   max-height: 600px;
   object-fit: contain;
   border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(77, 79, 90, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   transition: transform 0.3s ease;
 }
+
 .hero-image img:hover {
   transform: scale(1.02);
 }
+
 .hero-image a.youtube {
   display: inline-block;
   margin-top: 15px;
-  color: var(--main-color);
+  color: var(--orange-accent);
   font-weight: 600;
   text-decoration: none;
 }
+
 .intro {
   text-align: center;
   font-size: 1.2rem;
@@ -92,23 +109,28 @@ nav a:hover {
   margin-left: auto;
   margin-right: auto;
 }
+
 .drumkits-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 30px;
   margin-bottom: 80px;
 }
+
 .drum-card {
   background: var(--card-bg);
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 10px 25px rgba(77, 79, 90, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
 }
+
 .drum-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(77, 79, 90, 0.18);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  border-left: 5px solid var(--green-accent);
 }
+
 .drum-card img {
   width: 100%;
   height: 220px;
@@ -116,29 +138,34 @@ nav a:hover {
   background: var(--card-bg);
   padding: 20px;
 }
+
 .card-body {
   padding: 24px;
 }
+
 .card-title {
   text-align: center;
   font-size: 1.5rem;
-  color: var(--main-color);
-  margin: 2px 0 6px; /* минимально возможный зазор */
+  color: var(--green-bright);
+  margin: 2px 0 6px;
 }
+
 .sample {
   margin-bottom: 16px;
   padding: 16px;
-  background: var(--card-bg);
+  background: var(--main-light);
   border-radius: 12px;
-  border-left: 5px solid var(--main-medium);
+  border-left: 5px solid var(--green-accent);
 }
+
 .sample-title {
   font-weight: 600;
-  color: var(--main-color);
+  color: var(--orange-accent);
   margin-bottom: 8px;
   font-size: 1.05rem;
 }
-/* Аудиоплеер — максимально компактный */
+
+/* Аудиоплеер */
 .sample audio {
   width: 95%;
   max-width: 400px;
@@ -147,62 +174,65 @@ nav a:hover {
   margin: 10px auto 0;
   border: 2px solid var(--main-medium);
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(77, 79, 90, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
-/* Бледный фиолетовый фон плеера */
+
 .sample audio::-webkit-media-controls-panel {
   background: var(--player-bg);
   border-radius: 10px;
   padding: 0 2px;
   height: 38px;
 }
-/* Минимизируем пространство между элементами (WebKit) */
+
 .sample audio::-webkit-media-controls-timeline-container {
   padding: 0 4px;
 }
+
 .sample audio::-webkit-media-controls-timeline {
   margin: 0 4px;
   height: 6px;
 }
+
 .sample audio::-webkit-media-controls-current-time-display,
 .sample audio::-webkit-media-controls-time-remaining-display {
   margin: 0 4px;
   padding: 0;
   font-size: 11px;
 }
-/* Вкусная фиолетовая кнопка play/pause */
+
 .sample audio::-webkit-media-controls-play-button {
-  background-color: var(--play-button-bg); /* вкусный фиолетовый */
+  background-color: var(--play-button-bg);
   border: none;
   border-radius: 50%;
   margin: 0 2px;
   width: 28px;
   height: 28px;
-  filter: brightness(1.1); /* чуть светлее */
+  filter: brightness(1.1);
   opacity: 0.95;
 }
-/* Белая иконка внутри кнопки (треугольник play / полоски pause) */
+
 .sample audio::-webkit-media-controls-play-button,
 .sample audio::-webkit-media-controls-pause-button {
-  filter: invert(1) brightness(2); /* чисто белая иконка */
+  filter: invert(0.2) brightness(2);
 }
-/* Для Firefox */
+
 .sample audio::-moz-media-controls-panel {
   background: var(--player-bg);
   padding: 0 2px;
   height: 38px;
 }
-/* Ярче остальные иконки */
+
 .sample audio::-webkit-media-controls-volume-slider,
 .sample audio::-webkit-media-controls-current-time-display,
 .sample audio::-webkit-media-controls-time-remaining-display {
   filter: brightness(1.5);
 }
-/* Масштабирование плеера по высоте контейнера (35% от высоты .sample) */
+
 .sample {
   position: relative;
   height: 120px;
 }
+
 .sample audio {
   position: absolute;
   bottom: 16px;
@@ -212,45 +242,52 @@ nav a:hover {
   min-height: 36px;
   max-height: 50px;
 }
+
 section {
   margin-bottom: 16px;
 }
+
 h2 {
   font-size: 2rem;
-  color: var(--main-color);
+  color: var(--green-bright);
   text-align: center;
   margin-bottom: 30px;
   position: relative;
 }
+
 h2::after {
   content: '';
   display: block;
   width: 80px;
   height: 4px;
-  background: linear-gradient(to right, var(--green-accent), var(--yellow-muted));
+  background: linear-gradient(to right, var(--green-accent), var(--orange-accent));
   margin: 15px auto 0;
   border-radius: 2px;
 }
+
 ul.features {
   list-style: none;
   max-width: 900px;
   margin: 0 auto;
   font-size: 1.1rem;
 }
+
 ul.features li {
   padding: 12px 0;
-  border-bottom: 1px solid var(--main-light);
+  border-bottom: 1px solid var(--main-medium);
   position: relative;
   padding-left: 30px;
 }
+
 ul.features li::before {
   content: '✓';
   position: absolute;
   left: 0;
-  color: var(--green-muted);
+  color: var(--green-accent);
   font-weight: bold;
   font-size: 1.3rem;
 }
+
 .history {
   background: var(--main-light);
   padding: 40px;
@@ -260,13 +297,12 @@ ul.features li::before {
   color: var(--text-medium);
 }
 
-/* === НОВЫЙ КЛАСС ДЛЯ ЦЕНТРИРОВАНИЯ ИЗОБРАЖЕНИЙ === */
 .image-center {
   display: flex;
-  justify-content: center; /* горизонтальное центрирование */
-  align-items: center;     /* вертикальное центрирование (если есть высота) */
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  margin: 20px 0;          /* отступы сверху/снизу по вкусу */
+  margin: 20px 0;
 }
 
 .image-center img {
@@ -275,15 +311,14 @@ ul.features li::before {
   object-fit: contain;
 }
 
-/* Опционально: если нужен контейнер фиксированной высоты с полным вертикальным центрированием */
 .image-center-vertical {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 400px;           /* задайте нужную высоту */
+  height: 400px;
   margin: 20px 0;
-  background: var(--card-bg); /* фон по желанию */
+  background: var(--card-bg);
   border-radius: 16px;
 }
 
@@ -293,57 +328,32 @@ ul.features li::before {
   object-fit: contain;
 }
 
-@media (max-width: 640px) {
-  h1 { font-size: 1.9rem; }
-  nav a { display: block; margin: 10px auto; width: fit-content; }
-  .drumkits-grid { grid-template-columns: 1fr; }
-  .card-body { padding: 20px; }
-  .sample audio {
-    width: 100%;
-    max-width: none;
-    height: 40px;
-    position: static;
-    transform: none;
-  }
-  .sample {
-    height: auto;
-  }
-}
-
 .image-center.steps {
   display: flex;
-  flex-direction: column;   /* столбец: одно под другим */
-  align-items: center;      /* центрирование каждого элемента по горизонтали */
-  gap: 30px;                /* отступ между шагами, по вкусу */
-  margin: 40px 0;           /* внешние отступы */
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  margin: 40px 0;
 }
 
 .image-center.steps img {
-  max-width: 100%;          /* не шире контейнера, но не уменьшать искусственно */
-  width: auto;              /* сохраняем исходный размер, если помещается */
+  max-width: 100%;
+  width: auto;
   height: auto;
   object-fit: contain;
 }
 
-/* === СТИЛИ ДЛЯ СТРАНИЦЫ РУКОВОДСТВА === */
-
-.container {
-  max-width: 1000px; /* уже есть 1200px — переопределим для руководства, или оставь 1200px */
-  margin: 60px auto;
-  padding: 0 20px;
-}
-
 .toc {
-  background: white;
+  background: var(--main-light);
   padding: 30px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(77, 79, 90, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   margin-bottom: 50px;
 }
 
 .toc h2 {
   font-size: 1.8rem;
-  color: var(--main-color);
+  color: var(--green-bright);
   text-align: center;
   margin-bottom: 20px;
 }
@@ -358,26 +368,27 @@ ul.features li::before {
 }
 
 .toc a {
-  color: var(--main-color);
+  color: var(--orange-accent);
   text-decoration: none;
   font-weight: 600;
 }
 
 .toc a:hover {
   text-decoration: underline;
+  color: var(--orange-hover);
 }
 
 section {
-  background: white;
+  background: var(--main-light);
   padding: 40px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(77, 79, 90, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   margin-bottom: 40px;
 }
 
 h3 {
   font-size: 1.6rem;
-  color: var(--main-color);
+  color: var(--green-bright);
   margin: 40px 0 20px;
   scroll-margin-top: 100px;
 }
@@ -388,23 +399,23 @@ p {
 }
 
 a {
-  color: var(--main-color);
+  color: var(--orange-accent);
   text-decoration: underline;
   font-weight: 600;
 }
 
 a:hover {
-  color: var(--main-dark);
+  color: var(--orange-hover);
 }
 
 pre {
-  background: var(--main-light);
+  background: var(--main-dark);
   padding: 20px;
   border-radius: 12px;
   overflow-x: auto;
   font-size: 1rem;
   margin: 25px 0;
-  border-left: 5px solid var(--main-medium);
+  border-left: 5px solid var(--green-accent);
 }
 
 code {
@@ -414,7 +425,6 @@ code {
   font-family: monospace;
 }
 
-/* Переопределяем .image-center для страниц без flex-потребности */
 .image-center.simple {
   text-align: center;
   margin: 30px 0;
@@ -424,33 +434,15 @@ code {
   max-width: 100%;
   height: auto;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(77, 79, 90, 0.15);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* Медиа для мобильных — добавь к существующему */
-@media (max-width: 640px) {
-  section, .toc { 
-    padding: 30px; 
-  }
-  pre { 
-    font-size: 0.9rem; 
-  }
-  h3 { 
-    scroll-margin-top: 120px; 
-  }
-  .container {
-    margin: 40px auto;
-  }
-}
-
-
-/* === СТРАНИЦА ДОНатов === */
 .donate-section {
-  background: white;
+  background: var(--main-light);
   padding: 60px 40px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(77, 79, 90, 0.1);
-  text-align: center; /* добавлено для центрирования текста и кнопки */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  text-align: center;
 }
 
 .donate-section p {
@@ -460,7 +452,7 @@ code {
 }
 
 .donate-section p:last-child {
-  margin-bottom: 0; /* убираем лишний отступ у последнего абзаца */
+  margin-bottom: 0;
 }
 
 .paypal-button {
@@ -483,7 +475,7 @@ code {
 }
 
 .paypal-button:focus {
-  outline: 3px solid #ffc220; /* доступность: жёлтая обводка PayPal при фокусе */
+  outline: 3px solid #ffc220;
 }
 
 .paypal-email {
@@ -493,32 +485,53 @@ code {
   margin-bottom: 0;
 }
 
-/* Адаптив для мобильных */
-@media (max-width: 640px) {
-  .donate-section {
-    padding: 40px 20px;
-  }
-  
-  .paypal-button {
-    padding: 14px 28px;
-    font-size: 1.1rem;
-    width: 100%; /* опционально: кнопка на всю ширину на мобильных */
-    max-width: 300px;
-  }
-}
-
-
-
-/* Узкие контейнеры для страниц с центрированным контентом */
 .container-narrow {
   max-width: 800px;
   margin: 60px auto;
   padding: 0 20px;
-  text-align: center; /* удобно для донатов и about-страниц */
+  text-align: center;
 }
 
 .container-medium {
   max-width: 1000px;
   margin: 60px auto;
   padding: 0 20px;
+}
+
+@media (max-width: 640px) {
+  h1 { font-size: 1.9rem; }
+  nav a { display: block; margin: 10px auto; width: fit-content; }
+  .drumkits-grid { grid-template-columns: 1fr; }
+  .card-body { padding: 20px; }
+  .sample audio {
+    width: 100%;
+    max-width: none;
+    height: 40px;
+    position: static;
+    transform: none;
+  }
+  .sample {
+    height: auto;
+  }
+  section, .toc {
+    padding: 30px;
+  }
+  pre {
+    font-size: 0.9rem;
+  }
+  h3 {
+    scroll-margin-top: 120px;
+  }
+  .container {
+    margin: 40px auto;
+  }
+  .donate-section {
+    padding: 40px 20px;
+  }
+  .paypal-button {
+    padding: 14px 28px;
+    font-size: 1.1rem;
+    width: 100%;
+    max-width: 300px;
+  }
 }
