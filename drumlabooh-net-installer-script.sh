@@ -155,6 +155,8 @@ main() {
     
     drumkits_url="https://github.com/psemiletov/drum_sklad/archive/refs/tags/$kits_ver.zip"
 
+#drumkits_url="https://github.com/psemiletov/drum_sklad/archive/refs/tags/4.0.0.zip"
+
     source_path_to_lv2_zip="$tempdir/drumlabooh.lv2.zip"
     source_path_to_vst_zip="$tempdir/drumlabooh.vst3.zip"
     source_path_to_lv2m_zip="$tempdir/drumlabooh-multi.lv2.zip"
