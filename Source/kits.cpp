@@ -1969,6 +1969,8 @@ CDrumKitsScanner::~CDrumKitsScanner()
 
 void CDrumKitsScanner::scan()
 {
+  //CPairFile pf;
+   
   std::vector <std::string> v_kits_locations;
 
   v_kits_dirs.clear();
@@ -1992,6 +1994,18 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back (get_home_dir() + "/drum_dirs");
   
   v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
+ /*
+  pf.load (get_home_dir() + "/.config/drumlabooh.conf");
+  std::string user_dir = pf.get_string ("user_dir");
+  
+  std::cout << "user_dir: " << user_dir << std::endl;
+  
+  if (! user_dir.empty()) 
+     v_kits_locations.push_back (user_dir);
+   */  
+  
+  
+  
 /*
   juce::File home_location = File::getSpecialLocation	(juce::File::SpecialLocationType::userHomeDirectory);
   const String & fnm = home_location.getFullPathName();
@@ -2012,7 +2026,13 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back ("d:\\sfz-kits");
   v_kits_locations.push_back ("d:\\drum_dirs");
 
+  /*pf.load ("C:\\drumlabooh.conf");
+  std::string user_dir = pf.get_string ("user_dir");
   
+  
+  if (! user_dir.empty()) 
+     v_kits_locations.push_back (user_dir);
+*/
   
   //v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
 
