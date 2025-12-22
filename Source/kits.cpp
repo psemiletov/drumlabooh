@@ -24,6 +24,7 @@ this code is the public domain
 #include "utl.h"
 //#include "speex_resampler_cpp.hpp"
 #include "resampler.h"
+#include "pairfile.h"
 
 
 using namespace std;
@@ -1969,7 +1970,7 @@ CDrumKitsScanner::~CDrumKitsScanner()
 
 void CDrumKitsScanner::scan()
 {
-  //CPairFile pf;
+  CPairFile pf;
    
   std::vector <std::string> v_kits_locations;
 
@@ -1994,7 +1995,7 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back (get_home_dir() + "/drum_dirs");
   
   v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
- /*
+ 
   pf.load (get_home_dir() + "/.config/drumlabooh.conf");
   std::string user_dir = pf.get_string ("user_dir");
   
@@ -2002,7 +2003,7 @@ void CDrumKitsScanner::scan()
   
   if (! user_dir.empty()) 
      v_kits_locations.push_back (user_dir);
-   */  
+     
   
   
   
@@ -2026,13 +2027,13 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back ("d:\\sfz-kits");
   v_kits_locations.push_back ("d:\\drum_dirs");
 
-  /*pf.load ("C:\\drumlabooh.conf");
+  pf.load ("C:\\drumlabooh.conf");
   std::string user_dir = pf.get_string ("user_dir");
   
   
   if (! user_dir.empty()) 
      v_kits_locations.push_back (user_dir);
-*/
+
   
   //v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
 
@@ -2105,25 +2106,27 @@ void CDrumKitsScanner::scan()
                      {
                       fname = kd + "/drumkit.txt";
                       if (file_exists (fname))
-                        {
                          kit_exists = true;
-                        // std::cout << "fname:" << fname << std::endl; 
-                        }  
-                     }                   
+                      else
+                          {
+                           //ищем SFZ
+                           std::vector <std::string> v = files_get_list (kd, ".sfz");
+                           if (v.size() != 0)
+                              fname = v[0];
+
+                          if (file_exists (fname))
+                             kit_exists = true;
+                          }
+
+                         
+                          }
+                        
+                     }
+                      
+                      
+                      
                 }
-           }
-
-
-       if (kd.find ("sfz-kits") != string::npos)
-          {
-           //search sfz file
-           std::vector <std::string> v = files_get_list (kd, ".sfz");
-           if (v.size() != 0)
-              fname = v[0];
-
-           if (file_exists (fname))
-               kit_exists = true;
-          }
+           
 
 
        if (kit_exists)

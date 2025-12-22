@@ -154,6 +154,7 @@ target_sources(drumlabooh
         ./Source/utl.cpp
         ./Source/fx-resofilter.cpp
         ./Source/resampler.c
+        ./Source/pairfile.cpp
 
 )
 
@@ -230,6 +231,7 @@ target_sources(drumlabooh-multi
         ./Source/utl.cpp
         ./Source/fx-resofilter.cpp
         ./Source/resampler.c
+        ./Source/pairfile.cpp
 
 )
 
