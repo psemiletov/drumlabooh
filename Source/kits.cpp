@@ -504,7 +504,15 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
       kit->temp_sample->mute_group = txt.as_int();
       kit->mute_groups_auto = false;
      }
-     
+
+//NEW
+  if (node_name == "midiOutNote" && kit->temp_sample)
+     {
+      kit->temp_sample->mapped_note = txt.as_int();
+      kit->map_samples[kit->temp_sample->mapped_note] = kit->temp_sample;
+      kit->has_mapping = true;
+     }
+ 
      
   if (node_name == "filename" && kit->temp_sample)
      {
