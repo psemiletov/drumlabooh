@@ -141,11 +141,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
                                                                juce::NormalisableRange<float> (0.001f, 1.0f, 0.001f), // parameter range
                                                                0.001f));
       
-   /* layout.add (std::make_unique<juce::AudioParameterFloat> ("randomizer_seed",
-                                                              "randomizer_seed",
-                                                               juce::NormalisableRange<float> (1, 65536, 1), // parameter range
-                                                               1));
-     */ 
   return layout;
 }
 
@@ -733,11 +728,22 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
            CDrumSample *s = 0;
 
+           
+           if (int_midimap_mode == MIDIMAPMODE_FROMKIT && drumkit->has_mapping)
+               s = drumkit->map_samples[note_number];
+           else           
+               s = drumkit->a_samples[nn];
+
+           
+           /*
            if (int_midimap_mode == MIDIMAPMODE_LABOOH)
                s = drumkit->a_samples[nn];
             else
                 if (drumkit->map_samples.count (note_number) > 0) 
                     s = drumkit->map_samples[note_number];
+             
+            */ 
+             
 //                    std::cout << "play mapped note: " << note_number << std::endl;
   
             if (! s)
@@ -1044,13 +1050,21 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
             CDrumSample *s = 0;
 
-            if (int_midimap_mode == MIDIMAPMODE_LABOOH)
+         /*   if (int_midimap_mode == MIDIMAPMODE_LABOOH)
                 s = drumkit->a_samples[nn];
             else
                 if (drumkit->map_samples.count (note_number) > 0) 
                    s = drumkit->map_samples[note_number];
 //                   std::cout << "play mapped note: " << note_number << std::endl;
+             */
 
+         
+           if (int_midimap_mode == MIDIMAPMODE_FROMKIT && drumkit->has_mapping)
+               s = drumkit->map_samples[note_number];
+           else           
+               s = drumkit->a_samples[nn];
+
+         
             if (! s)
                continue;
   

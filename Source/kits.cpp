@@ -1447,6 +1447,7 @@ void CDrumKit::load_sfz (const std::string &data)
   map_samples.clear();
  
   kit_type = KIT_TYPE_SFZ;
+  has_mapping = true;  
  
   //change crlf in data to lf
   
