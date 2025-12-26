@@ -1,11 +1,9 @@
-# macOS AU build for plugins (CMake)
+# macOS AU build for plugins (CMake) — manual trigger only
 name: CMake macOS AU CI
 
+# Запуск только вручную
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 env:
   BUILD_TYPE: Release
@@ -20,8 +18,8 @@ jobs:
         arch: [universal]
         plugin: [drumlabooh, drumlabooh-multi]
 
-    # Вычисляем архитектуры (универсальная -> "x86_64;arm64")
     env:
+      # универсальная архитектура разворачивается в "x86_64;arm64"
       CMAKE_ARCHS: ${{ matrix.arch == 'universal' && 'x86_64;arm64' || matrix.arch }}
 
     steps:
@@ -46,14 +44,13 @@ jobs:
 
       - name: Prepare CMakeLists for macOS build
         run: |
-          # Если есть специальный CMakeLists-alloses.txt — используем его как основной CMakeLists.txt
           if [ -f "CMakeLists-alloses.txt" ]; then
             echo "✓ CMakeLists-alloses.txt found — using it as CMakeLists.txt"
             cp CMakeLists-alloses.txt CMakeLists.txt
           else
             echo "✗ CMakeLists-alloses.txt not found — using repository CMakeLists.txt"
           fi
-          echo "Resulting CMakeLists:"
+          echo "Resulting CMakeLists (first 20 lines):"
           head -n 20 CMakeLists.txt || true
 
       - name: Configure CMake for AU only
