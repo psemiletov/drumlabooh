@@ -94,9 +94,24 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
   if (ext == "ogg")
      reader = OggVorbisAudioFormat().createReaderFor (fs, true);
 
-  if (ext == "mp3")
+ /* if (ext == "mp3")
      reader = MP3AudioFormat().createReaderFor (fs, true);
-
+*/
+ /* MP3: only if MP3AudioFormat is available in this build.
+   Use JUCE_USE_MP3AUDIOFORMAT if the build system defines it,
+   otherwise try a header existence check via __has_include. */
+#if defined(JUCE_USE_MP3AUDIOFORMAT) \
+    || (defined(__has_include) && __has_include(<juce_audio_formats/juce_MP3AudioFormat.h>))
+    if (ext == "mp3")
+        reader = MP3AudioFormat().createReaderFor (fs, true);
+#else
+    if (ext == "mp3")
+    {
+        // MP3 support not compiled in — skip and log
+        std::cerr << "MP3 support not available in this build, skipping file: " << fname << std::endl;
+        // reader stays nullptr; function will return 0 below
+    }
+#endif
   if (ext == "aiff" || ext == "aif" )
      reader = AiffAudioFormat().createReaderFor (fs, true);
 
@@ -556,6 +571,14 @@ std::string trim (const std::string& str)
   return str.substr(first, last - first);
 }
 
+//NEW FOR MAC
+static inline std::string parent_path_of(const std::string &fullpath)
+{
+    size_t pos = fullpath.find_last_of("/\\");
+    if (pos == std::string::npos)
+        return std::string("");
+    return fullpath.substr(0, pos);
+}
 
 void CDrumKit::load_labooh_xml (const std::string &data)
 {
@@ -678,7 +701,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                        temp_sample->v_layers.back()->load (filename.c_str());
                   }
            else   
-               for (auto f: v_fnames)
+          /*     for (auto f: v_fnames)
                    {
                     filesystem::path pt (kit_dir + "/" + fname); //full path for samples.txt
   
@@ -689,7 +712,25 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                     if (file_exists (filename))
                         temp_sample->v_layers.back()->load (filename.c_str());
                    }
-                 
+            */     
+          for (auto f: v_fnames)
+{
+#if !defined(__APPLE__)
+    // non-macOS: use std::filesystem if available
+    std::filesystem::path pt (kit_dir + "/" + fname); // full path for samples.txt
+    std::string fpath = pt.parent_path().string();    // get path with dirs only
+    std::string filename = fpath + "/" + f;           // full path to each sample
+#else
+    // macOS (or when std::filesystem::path is unavailable): use string operations
+    std::string samples_txt_full = kit_dir + "/" + fname; // full path to samples.txt
+    std::string fpath = parent_path_of(samples_txt_full); // parent dir without std::filesystem
+    std::string filename = fpath.empty() ? (kit_dir + "/" + f) : (fpath + "/" + f);
+#endif
+
+    temp_sample->add_layer();
+    if (file_exists (filename))
+        temp_sample->v_layers.back()->load (filename.c_str());
+}
 
            float part_size = (float) 1 / temp_sample->v_layers.size();
              
