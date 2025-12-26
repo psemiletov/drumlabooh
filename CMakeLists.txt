@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 include(FetchContent)
 
 
-project(DRUMLABOOH LANGUAGES CXX C VERSION 12.0.0)
+project(DRUMLABOOH LANGUAGES CXX C VERSION 12.1.0)
 
 #add_definitions(-DVERSION_NUMBER="\\"${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}\\"")
 
@@ -154,7 +154,6 @@ target_sources(drumlabooh
         ./Source/utl.cpp
         ./Source/fx-resofilter.cpp
         ./Source/resampler.c
-        ./Source/pairfile.cpp
 
 )
 
@@ -231,8 +230,7 @@ target_sources(drumlabooh-multi
         ./Source/utl.cpp
         ./Source/fx-resofilter.cpp
         ./Source/resampler.c
-        ./Source/pairfile.cpp
-
+        
 )
 
   target_compile_definitions(drumlabooh-multi

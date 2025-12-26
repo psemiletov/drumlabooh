@@ -24,7 +24,7 @@ this code is the public domain
 #include "utl.h"
 //#include "speex_resampler_cpp.hpp"
 #include "resampler.h"
-#include "pairfile.h"
+//#include "pairfile.h"
 
 
 using namespace std;
@@ -1979,7 +1979,7 @@ CDrumKitsScanner::~CDrumKitsScanner()
 
 void CDrumKitsScanner::scan()
 {
-  CPairFile pf;
+//  CPairFile pf;
    
   std::vector <std::string> v_kits_locations;
 
@@ -2005,6 +2005,22 @@ void CDrumKitsScanner::scan()
   
   v_kits_locations.push_back (get_home_dir() + "/sfz-kits");
  
+  
+  std::string user_dirs_fname = get_home_dir() + "/.config/drumlabooh/user-dirs.txt";
+  std::vector <std::string> v_user_dirs;
+  
+  if (file_exists (user_dirs_fname))
+     {
+      std::string user_dirs = string_file_load (user_dirs_fname);
+      if (! user_dirs.empty())
+         {
+          v_user_dirs = split_string_to_vector (user_dirs, "\n", false);
+          v_kits_locations.insert(v_kits_locations.end(), v_user_dirs.begin(), v_user_dirs.end());
+         }
+     
+    }
+  
+  /*
   pf.load (get_home_dir() + "/.config/drumlabooh.conf");
   std::string user_dir = pf.get_string ("user_dir");
   
@@ -2013,7 +2029,7 @@ void CDrumKitsScanner::scan()
   if (! user_dir.empty()) 
      v_kits_locations.push_back (user_dir);
      
-  
+  */
   
   
 /*
@@ -2035,14 +2051,29 @@ void CDrumKitsScanner::scan()
   v_kits_locations.push_back ("d:\\drumlabooh-kits");
   v_kits_locations.push_back ("d:\\sfz-kits");
   v_kits_locations.push_back ("d:\\drum_dirs");
-
+/*
   pf.load ("C:\\drumlabooh.conf");
   std::string user_dir = pf.get_string ("user_dir");
   
   
   if (! user_dir.empty()) 
      v_kits_locations.push_back (user_dir);
+*/
 
+  std::string user_dirs_fname = get_home_dir() + "C:\\drumlabooh\\user-dirs.txt";
+  std::vector <std::string> v_user_dirs;
+  
+  if (file_exists (user_dirs_fname))
+     {
+      std::string user_dirs = string_file_load (user_dirs_fname);
+      if (! user_dirs.empty())
+         {
+          v_user_dirs = split_string_to_vector (user_dirs, "\r\n", false);
+          v_kits_locations.insert(v_kits_locations.end(), v_user_dirs.begin(), v_user_dirs.end());
+         }
+     
+    }
+  
   
   //v_kits_locations.push_back (get_home_dir() + "/.hydrogen/data/drumkits");
 

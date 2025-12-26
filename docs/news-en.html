@@ -33,54 +33,82 @@
     <h2>NEWS</h2>
 
     <div class="news-entry">
-      <div class="news-date">December 20 2025 — <a href="https://github.com/psemiletov/drumlabooh/releases/tag/12.0.0">Drumlabooh 12.0.0</a></div>
+      <div class="news-date">December 26 2025 — <a href="https://github.com/psemiletov/drumlabooh/releases/tag/12.1.0">Drumlabooh 12.1.0</a></div>
 
-  <p> In the new release, there are a lot of changes, so read carefully — I'll briefly highlight the most important things.  </p>
+<p>   The new release is a response to numerous user feedback on the previous version, as well as to various suggestions that have accumulated over time.
+</p>
+<p>   Added support for MIDI mapping in Hydrogen drum kits.</p>
 
-<p>   Everything is covered in detail in the documentation on the Drumlabooh website. I finally betrayed my signature style of crappy websites and, with the help of AI, made a new one — to tell you how great my drum machine is, rather than forcing you to scroll through boring text.  
-I also shot a new video for YouTube, showing the main features of Drumlabooh.  
+<p>   Fixed support for MIDI mapping in SFZ.
+</p>
+<p>   The MIDI note numbers associated with instrument slots for the current MIDI Mapping settings (in Auto and Kit modes) are now displayed as tooltips above the slot names.
+</p>
+<p>   If the option MIDI map mode = Kit, but no MIDI mapping settings are defined in the drum kit, Drumlabooh automatically switches to MIDI map mode = Auto, where notes are numbered sequentially starting from the MIDI base note value. Previously, Drumlabooh simply remained silent.
+</p>
+<p>   Installed drum kits are now also scanned in user-specified directories. The list of these directories should be placed, one full path per line, in the file $HOME/.config/drumlabooh/user-dirs.txt (for Linux) or in C:\drumlabooh\user-dirs.txt (for Windows). For example:
 </p>
 
-<p>What's new?  </p>
+<pre>/home/test/sfz-main
+/home/test/sfz-misc
+/home/test/hydrogen-kits
+/home/test/drumlabooh</pre>
 
-<p>The graphical interface has been overhauled — and this isn't just rearranging controls. By the colors of the instrument slots, you can now determine the type: multi-layer, single layer, or a slot with alternative samples.  
+<p>   Essentially, it no longer matters which format of drum kit is stored in which directory - Drumlabooh correctly recognises them. The exception is ordinary folders containing samples: Drumlabooh can also automatically convert these on the fly into drum kits, but for details please refer to the documentation.
 </p>
-<p>Everything related to loading drumkits has been moved to the left part of the window, and the options have been placed below the mixer. This allowed me to tidy up the code and unify the multi-channel and stereo interfaces of the plugin.  
-</p>
-
-<p>Added the <b>Rnd seed tweak</b> option for controlling the new pseudo-random number generator. Some drumkits in Drumlabooh have multi-layered instruments where a sample from the layer set is selected by a number obtained from the random number generator. This imitates the playing of a live drummer. In previous versions of Drumlabooh, this generator produced new sequences of numbers each time the drum part was played, resulting in slightly different drum sounds every time.  
-</p>
-
-<p>The new generator works smarter, like in top-tier drum machines. With it, each individual part will always have the same sequence of pseudo-random numbers, which depends on the Rnd seed tweak parameter. This is the "seed" for the pseudo-random number generator, ranging from 1 to 16777216.  
-</p>
-<p>Change the seed — get a new sequence. Set the seed back to the previous value — get the previous sequence back. The new generator significantly simplifies mixing, as the part's sound is now predictable.  
+<p>   Stay tuned, Peter Semiletov
 </p>
 
-<p>But that's not all the changes to the Drumlabooh engine. The so-called "alternative" drumkits in Drumlabooh XML format, which existed in previous versions and allowed setting multiple sample variants in each slot, are now merged with the regular Drumlabooh XML format, and "alternative" slots can be mixed with slots of other types, for example, multi-layered or Round Robin.  
-</p>
-
-<p>In connection with this, the main electronic music drumkit — ASR-X Pro — has been reworked; now it contains both samples with alternatives and single samples.  
-</p>
-
-<p>The changes also affected the main "live" drumkits created based on Ludwig and Gretsch samples — the drumkits have been remade taking into account the new randomization engine, equipped with new covers, and the names have lost the trademarks. One could say that the new drumkits Sixties Basic, Sixties Rock, and Jazzkit are retuned versions of the previous "live" drumkits in Drumlabooh.  </p>
-
-
-<p>If you have the old Ludwig Basic, Ludwig Sixties, and Gretsch Jazzkit installed and used in your songs, they remain on your hard drive and are still available under their original names. So, for new rock songs, use Sixties Basic, Sixties Rock, and Jazzkit — they are tuned precisely for the new capabilities of Drumlabooh.  
-</p>
-
-<p>In Drumlabooh 12, the main audio processing loop has been optimized — I won't go into details, I'll just say that a lot of unnecessary calculations have been removed, although the performance gain on modern processors doesn't seem as great as I had hoped.  
-</p>
-
-<p>In accordance with some changes on GitHub, the cmake build subsystem settings have been updated; the previous ones may now work with errors. So, if you tried to build the plugin from source before and it didn't work, now it should.  
-</p>
 
     </div>
 
-    <!-- Здесь можно добавить другие новости по аналогии -->
 
   </section>
 
 </div>
+
+
+
+<footer style="
+  margin-top: 60px;
+  padding: 40px 20px;
+  text-align: center;
+  background: var(--main-dark);
+  border-top: 4px solid var(--green-accent);
+  color: var(--text-medium);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+">
+  <p style="margin: 0 0 12px; font-weight: 500;">
+    Drumlabooh is created by
+    <a href="https://github.com/psemiletov" style="
+      color: var(--green-bright);
+      text-decoration: none;
+      font-weight: 600;
+    "> Peter Semiletov</a>
+  </p>
+
+  <p style="margin: 0 0 8px;">
+    Support the development:
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=peter.semiletov@gmail.com&item_name=Support%20Drumlabooh%20development"
+       target="_blank" rel="noopener"
+       style="color: var(--orange-accent); text-decoration: underline; font-weight: 600;">
+      Donate via PayPal
+    </a>
+    or send to <strong>peter.semiletov@gmail.com</strong>
+  </p>
+
+  <p style="margin: 12px 0 0;">
+    Listen to my music:
+    <a href="https://push.fm/fl/semiletov" style="
+      color: var(--orange-accent);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--orange-accent);
+      font-weight: 500;
+    ">push.fm/fl/semiletov</a>
+  </p>
+</footer>
+
 
 </body>
 </html>

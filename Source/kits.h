@@ -103,7 +103,7 @@ public:
 
   bool active; //is sample triggered to play? 
   
-  bool has_mapping; //is the MIDI note defined for that instrument at drumkit file?
+  //bool has_mapping; //is the MIDI note defined for that instrument at drumkit file?
 
   int mapped_note; //the assigned MIDI note, if defined
   

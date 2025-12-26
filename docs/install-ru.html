@@ -30,11 +30,11 @@
     <h2>Скачать плагин</h2>
 
     <ul class="download-list">
-      <li><a href="https://github.com/psemiletov/drumlabooh/releases/tag/12.0.0">Свежий выпуск (12.0.0)</a> — исходники, бинарники</li>
-      <li><a href="https://github.com/psemiletov/drumlabooh/releases/download/12.0.0/drumlabooh-net-installer-script.sh">Установщик по сети для Linux</a> — устанавливает/обновляет бинарные плагины и киты к последнему релизу (установка в домашний каталог пользователя, без root). Если была общесистемная установка — сначала удалите её. Сетевой установщик это самый быстрый и простой способ установить Драмлабух в Linux.
+      <li><a href="https://github.com/psemiletov/drumlabooh/releases/tag/12.1.0">Свежий выпуск (12.1.0)</a> — исходники, бинарники</li>
+      <li><a href="https://github.com/psemiletov/drumlabooh/releases/download/12.1.0/drumlabooh-net-installer-script.sh">Установщик по сети для Linux</a> — устанавливает/обновляет бинарные плагины и киты к последнему релизу (установка в домашний каталог пользователя, без root). Если была общесистемная установка — сначала удалите её. Сетевой установщик это самый быстрый и простой способ установить Драмлабух в Linux.
 </li>
 
-<li><a href="https://github.com/psemiletov/drumlabooh/releases/download/12.0.0/drumlabooh-installer.exe">Установщик VST3 для Windows</a> — устанавливает в <i>C:\Program Files\Common Files\VST3</i></li>
+<li><a href="https://github.com/psemiletov/drumlabooh/releases/download/12.1.0/drumlabooh-installer.exe">Установщик VST3 для Windows</a> — устанавливает в <i>C:\Program Files\Common Files\VST3</i></li>
       <li><a href="https://aur.archlinux.org/packages/drumlabooh">Страница на AUR</a> — <i>yay -S drumlabooh</i></li>
       <li><a href="https://github.com/psemiletov/drumlabooh">Полная страница на Github</a></li>
     </ul>
@@ -42,9 +42,8 @@
 
   <section>
     <h2>Windows: установка</h2>
-    <p>Скачайте и запустите <a href="https://github.com/psemiletov/drumlabooh/releases/download/12.0.0/drumlabooh-installer.exe">установщик VST3</a> — он поставит плагин и минимальный набор драм-китов.</p>
-    <p>Дополнительные драмкиты можно взять, например, из драм-машины <a href="http://hydrogen-music.org">Hydrogen</a>, а в формате Драмлабуха из Telegram-канала <a href="https://t.me/drum_sklad">Drum sklad</a>. Распакуйте папки китов в <i>C:\drumlabooh_kits</i> или <i>D:\drumlabooh_kits</i>, а киты формата SFZ — в <i>C:\sfz_kits</i> или <i>D:\sfz_kits</i>.</p>
-    <p>Подробности — в <a href="manual-ru.html">Руководстве пользователя</a>.</p>
+    <p>Скачайте и запустите <a href="https://github.com/psemiletov/drumlabooh/releases/download/12.1.0/drumlabooh-installer.exe">установщик VST3</a> — он поставит плагин и минимальный набор драм-китов.</p>
+    <p>Дополнительные драмкиты можно взять, например, из драм-машины <a href="http://hydrogen-music.org">Hydrogen</a> (Лабух сканирует установленные Hydrogen-киты в папках куда Hydrogen их устанавливает). Родные дополнительные киты в формате Драмлабуха лежат также в Telegram-канале <a href="https://t.me/drum_sklad">Drum sklad</a>. Распакуйте папки китов в <i>C:\drumlabooh_kits</i> или <i>D:\drumlabooh_kits</i>. Туда же можно распаковать киты в формате SFZ. Подробности — в <a href="manual-ru.html">Руководстве пользователя</a>.</p>
   </section>
 
   <section>
@@ -86,6 +85,51 @@ make install</pre>
   </section>
 
 </div>
+
+
+<footer style="
+  margin-top: 60px;
+  padding: 40px 20px;
+  text-align: center;
+  background: var(--main-dark);
+  border-top: 4px solid var(--green-accent);
+  color: var(--text-medium);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+">
+  <p style="margin: 0 0 12px; font-weight: 500;">
+    Создатель Драмлабуха, 
+    <a href="https://github.com/psemiletov" style="
+      color: var(--green-bright);
+      text-decoration: none;
+      font-weight: 600;
+    "> Петр Семилетов</a>
+  </p>
+
+  <p style="margin: 0 0 8px;">
+    Поддержите разработку:
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=peter.semiletov@gmail.com&item_name=Support%20Drumlabooh%20development"
+       target="_blank" rel="noopener"
+       style="color: var(--orange-accent); text-decoration: underline; font-weight: 600;">
+      донатом через PayPal
+    </a>
+    или в телегу на <strong>@petersemiletov</strong>
+  </p>
+
+  <p style="margin: 12px 0 0;">
+    Слушайте мою музыку:
+    <a href="https://push.fm/fl/semiletov" style="
+      color: var(--orange-accent);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--orange-accent);
+      font-weight: 500;
+    ">push.fm/fl/semiletov</a>
+  </p>
+</footer>
+
+
+
 
 </body>
 </html>

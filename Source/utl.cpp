@@ -216,7 +216,7 @@ std::string string_to_lower (const std::string &s)
 
 std::vector <std::string> split_string_to_vector (const std::string& s, const std::string& delimeter, const bool keep_empty)
 {
-  vector <string> result;
+  std::vector <std::string> result;
 
   if (delimeter.empty())
      {
@@ -224,7 +224,7 @@ std::vector <std::string> split_string_to_vector (const std::string& s, const st
       return result;
      }
 
-  string::const_iterator substart = s.begin(), subend;
+  std::string::const_iterator substart = s.begin(), subend;
 
   while (true)
         {

@@ -1,50 +1,33 @@
-   Drumlabooh 12.0.0
+   Drumlabooh 12.1.0
 
 
-   In the new release, there are a lot of changes, so read carefully — I'll briefly highlight the most important things.  
-   Everything is covered in detail in the documentation on the Drumlabooh website. I finally betrayed my signature style of crappy websites and, with the help of AI, made a new one — to tell you how great my drum machine is, rather than forcing you to scroll through boring text.  
-I also shot a new video for YouTube, showing the main features of Drumlabooh.  
+   The new release is a response to numerous user feedback on the previous version, as well as to various suggestions that have accumulated over time.
+   Added support for MIDI mapping in Hydrogen drum kits.
+   Fixed support for MIDI mapping in SFZ.
+   The MIDI note numbers associated with instrument slots for the current MIDI Mapping settings (in Auto and Kit modes) are now displayed as tooltips above the slot names.
+   If the option MIDI map mode = Kit, but no MIDI mapping settings are defined in the drum kit, Drumlabooh automatically switches to MIDI map mode = Auto, where notes are numbered sequentially starting from the MIDI base note value. Previously, Drumlabooh simply remained silent.
+   Installed drum kits are now also scanned in user-specified directories. The list of these directories should be placed, one full path per line, in the file $HOME/.config/drumlabooh/user-dirs.txt (for Linux) or in C:\drumlabooh\user-dirs.txt (for Windows). 
+   For example:
+/home/test/sfz-main
+/home/test/sfz-misc
+/home/test/hydrogen-kits
+/home/test/drumlabooh
 
-What's new?  
-
-The graphical interface has been overhauled — and this isn't just rearranging controls. By the colors of the instrument slots, you can now determine the type: multi-layer, single layer, or a slot with alternative samples.  
-Everything related to loading drumkits has been moved to the left part of the window, and the options have been placed below the mixer. This allowed me to tidy up the code and unify the multi-channel and stereo interfaces of the plugin.  
-
-Added the Rnd seed tweak option for controlling the new pseudo-random number generator. Some drumkits in Drumlabooh have multi-layered instruments where a sample from the layer set is selected by a number obtained from the random number generator. This imitates the playing of a live drummer. In previous versions of Drumlabooh, this generator produced new sequences of numbers each time the drum part was played, resulting in slightly different drum sounds every time.  
-
-The new generator works smarter, like in top-tier drum machines. With it, each individual part will always have the same sequence of pseudo-random numbers, which depends on the Rnd seed tweak parameter. This is the "seed" for the pseudo-random number generator, ranging from 1 to 16777216.  
-Change the seed — get a new sequence. Set the seed back to the previous value — get the previous sequence back. The new generator significantly simplifies mixing, as the part's sound is now predictable.  
-
-But that's not all the changes to the Drumlabooh engine. The so-called "alternative" drumkits in Drumlabooh XML format, which existed in previous versions and allowed setting multiple sample variants in each slot, are now merged with the regular Drumlabooh XML format, and "alternative" slots can be mixed with slots of other types, for example, multi-layered or Round Robin.  
-
-In connection with this, the main electronic music drumkit — ASR-X Pro — has been reworked; now it contains both samples with alternatives and single samples.  
-The changes also affected the main "live" drumkits created based on Ludwig and Gretsch samples — the drumkits have been remade taking into account the new randomization engine, equipped with new covers, and the names have lost the trademarks. One could say that the new drumkits Sixties Basic, Sixties Rock, and Jazzkit are retuned versions of the previous "live" drumkits in Drumlabooh.  
-
-If you have the old Ludwig Basic, Ludwig Sixties, and Gretsch Jazzkit installed and used in your songs, they remain on your hard drive and are still available under their original names. So, for new rock songs, use Sixties Basic, Sixties Rock, and Jazzkit — they are tuned precisely for the new capabilities of Drumlabooh.  
-
-In Drumlabooh 12, the main audio processing loop has been optimized — I won't go into details, I'll just say that a lot of unnecessary calculations have been removed, although the performance gain on modern processors doesn't seem as great as I had hoped.  
-
-In accordance with some changes on GitHub, the cmake build subsystem settings have been updated; the previous ones may now work with errors. So, if you tried to build the plugin from source before and it didn't work, now it should.  
+   Essentially, it no longer matters which format of drum kit is stored in which directory - Drumlabooh correctly recognises them. The exception is ordinary folders containing samples: Drumlabooh can also automatically convert these on the fly into drum kits, but for details please refer to the documentation.
 
    Stay tuned, Peter Semiletov
 
 
-
-   В новом выпуске много изменений, поэтому прочтите внимательно, я кратко освещу самые важные вещи.
-   Подробно же всё отражено в документации на сайте Drumlabooh. Я наконец изменил своему фирменному стилю убогих сайтов и с помощью ИИ сделал новый, чтобы рассказывать, какая моя драм-машина хорошая, а не чтобы заставлять вас прокручивать унылый текст. 
-   Также я снял для Ютуба новое видео, где показаны основные фишки Драмлабуха.
-   Что же нового?
-   Графический интерфейс переработан - и это не просто перестановка элементов управления. По цветам слотов инструментов теперь можно определить тип - много слоев, один слой, слот имеет альтернативные сэмплы.
-   Всё, что связано с загрузкой драмкитов перенесено в левую часть окна, а опции перемещены ниже микшера. Это позволило упорядочить код и унифицировать многоканальный и стерео интерфейсы плагина.
-   Добавлена опция Rnd seed tweak для управления новым генератором псевдослучайных чисел. Некоторые драмкиты в Драмлабухе имеют такие многослойные инструменты, где сэмпл из набора слоев выбирается по номеру, полученному от генератора случайных чисел. Так имитируется игра живого барабанщика. В предыдущих версиях Драмлабуха этот генератор каждый раз при воспроизведении партии ударных выдавал новые последовательности чисел и каждый раз у вас было несколько другое звучание ударных.
-   Новый генератор действует умнее, как в топовых драм-машинах. С ним для каждой отдельной партии всегда будет одна и та же последовательность псевдослучайных чисел, которая зависит от параметра Rnd seed tweak. Это "зерно" для генератора псевдослучайных чисел, лежит в диапазоне от 1 до 16777216.   
-   Меняете зерно - получаете новую последовательность. Делаете зерно прежним - будет прежняя последовательность. Новый генератор существенно упрощает микширование, теперь звучание партии предсказуемо.
-   Но это еще не все изменения движка Drumlabooh. Так называемые "alternative" драмкиты формата Drumlabooh XML, которые были в прошлых версиях и позволяли в каждом слоте задать по несколько вариантов сэмплов теперь объединены с обычным форматом Drumlabooh XML, а "альтернативные" слоты могут идти вперемежку со слотами другого типа, например многослойными или Round Robin.
-   В связи с этим был переделан основной драмкит электронной музыки - ASR-X Pro, теперь он содержит как сэмплы с альтернативами, так и единичные сэмплы.
-   Изменения коснулись и основных "живых" драмкитов, созданных на основе сэмплов Ludwig и Gretsch - драмкиты были переделаны с учетом нового движка рэндомизации, оснащены новыми обложками, а название лишились торговых марок. Можно сказать, что новые драмкиты Sixties Basic, Sixties Rock и Jazzkit это перенастроенные прежние "живые" драмкиты Драмлабуха.
-   Если у вас установлены и используются в песнях старые Ludwig Basic, Ludwig Sixties и Gretsch Jazzkit, они остаются у вас на жестком диске и по-прежнему доступны под своими названиями. Итак, в новых роковых песнях используйте Sixties Basic, Sixties Rock и Jazzkit - они заточены именно под новые возможности Драмлабуха.
-   В Драмлабух 12 оптимизирован основной цикл обработки звука - не буду вдаваться в подробности, скажу лишь, что убрано очень много лишних вычислений, хотя прирост производительности на современных процессорах кажется не так велик, как я рассчитывал.
-    Сообразно с некоторыми изменениями на Github изменены настройки подсистемы сборки cmake, предыдущие уже могут работать с ошибками. Поэтому если вы пробовали собрать плагин из исходника и не получалось, теперь получится. 
-  
+   Новый выпуск вызван многочисленными откликами на предыдущий, а также накопившимися предложениями.
+   Добавлена поддержка MIDI mapping в драмкитах Hydrogen. 
+   Исправлена поддержка MIDI mapping для SFZ. 
+   Связанные со слотами инструментов номера MIDI-нот текущих настроек MIDI Mapping (в режимах Auto и Kit) теперь отображаются как всплывающие подсказки над названиями слотов.
+  Если опция MIDI map mode = Kit, но в драмките не заданы настройки MIDI mapping, Drumlabooh автоматически использует MIDI map mode = Auto, когда ноты нумеруются последовательно начиная со значения MIDI base note. Было - Drumlabooh просто молчал.
+   Установленные драмкиты теперь сканируются также в заданных пользователем каталогах, список которых, строка за строкой, в виде полных путей, поместите в файл $HOME/.config/drumlabooh/user-dirs.txt (для Linux) либо в C:\drumlabooh\user-dirs.txt (для Windows). Например:
+/home/test/sfz-main
+/home/test/sfz-misc
+/home/test/hydrogen-kits
+/home/test/drumlabooh
+   По сути, теперь нет разницы драмкиты какого формата в каком каталоге лежат, Drumlabooh распознает их правильно. Исключение составляют обычные папки с сэмплами - их Drumlabooh тоже может автоматически превращать на лету в драмкиты, но подробности читайте в документации.
 
   На связи, Петр Семилетов

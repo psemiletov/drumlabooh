@@ -741,6 +741,9 @@ void CAudioProcessorEditor::load_kit()
       {
        CDrumSample *s = audioProcessor.drumkit->a_samples[i];
        
+       drumcells[i].cell_label.setTooltip ("");  
+         
+       
        if (! s)
           continue;
         
@@ -761,7 +764,24 @@ void CAudioProcessorEditor::load_kit()
                drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (CELLCOLOR_SINGLE));
                
            } 
-      
+       
+       std::string midi_note_auto = "if MIDI map mode = Auto, MIDI note #: " + std::to_string (i + audioProcessor.base_note_number); 
+       std::string midi_note_kit = "if MIDI map mode = Kit, MIDI note #: "; 
+        
+       int mapped_note = -1;
+       
+       if (s->mapped_note != -1)    
+           midi_note_kit += std::to_string (s->mapped_note); 
+       else    
+           midi_note_kit += "not defined"; 
+         
+         
+      std::string tooltip = midi_note_auto + "\n" + midi_note_kit;   
+         
+      drumcells[i].cell_label.setTooltip (tooltip);  
+          
+          
+          
        drumcells[i].set_name (cell_name);
       }
 
@@ -1188,11 +1208,37 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   sl_base_note.setRange(0, 127);
   sl_base_note.setValue (audioProcessor.base_note_number);
         
-  // ПРАВИЛЬНОЕ подключение callback
   sl_base_note.onValueChange = [this](int newValue)
                                {
                                 audioProcessor.base_note_number = newValue;
                                // DBG("Value changed to: " << newValue); // для отладки
+                                
+                                if (! audioProcessor.drumkit)
+                                   return;
+ 
+                                for (size_t i = 0; i < 36; i++)
+                                    {
+                                     CDrumSample *s = audioProcessor.drumkit->a_samples[i];
+                                     drumcells[i].cell_label.setTooltip ("");  
+       
+                                     if (! s)
+                                       continue;
+ 
+
+                                     std::string midi_note_auto = "if MIDI map mode = Auto, MIDI note #: " + std::to_string (i + audioProcessor.base_note_number); 
+                                     std::string midi_note_kit = "if MIDI map mode = Kit, MIDI note #: "; 
+              
+                                     int mapped_note = -1;
+       
+                                     if (s->mapped_note != -1)    
+                                        midi_note_kit += std::to_string (s->mapped_note); 
+                                     else    
+                                         midi_note_kit += "not defined"; 
+         
+                                     std::string tooltip = midi_note_auto + "\n" + midi_note_kit;   
+         
+                                     drumcells[i].cell_label.setTooltip (tooltip);  
+                                    } 
                                };
   
   addAndMakeVisible (bt_ignore_midi_velocity);

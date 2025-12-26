@@ -64,6 +64,33 @@
 
 <p>When Drumlabooh starts, it scans all available kits and <strong>displays a list of them</strong> for you to choose from. You can also click the <strong>Open</strong> button below the kit information section to manually select a drumkit file from any location. Choose an <code>.xml</code> (Hydrogen format), <code>.sfz</code> (SFZ), or <code>drumkit.txt</code> or <code>drumkit.labooh</code> (Drumlabooh format) file in the drumkit’s folder.</p>
 
+<h3>Full list of directories where Drumlabooh searches SFZ, Drumlabooh and Hydrogen kits</h3>
+
+<pre>/usr/share/drumrox-kits
+/usr/share/drumlabooh-kits
+$HOME/drumrox-kits
+$HOME/drumlabooh-kits
+$HOME/drum_sklad //main directory for locally installed kits
+C:\drumlabooh-kits
+D:\drumlabooh-kits
+C:\drum_sklad
+/usr/share/hydrogen/data/drumkits
+/usr/local/share/hydrogen/data/drumkits
+/usr/share/drmr/drumkits
+$HOME/.hydrogen/data/drumkits
+$HOME/.drmr/drumkits</pre>
+
+<p>
+You can add your own custom folders to this list. To do this, create a text file named <i>user-dirs.txt</i> in the folder <i>C:\drumlabooh</i> (for Windows) or <i>$HOME/.config/drumlabooh</i>, and in the file, write the full paths to your directories on each line, for example:
+</p>
+
+<pre>
+/home/test/sfz-main
+/home/test/sfz-misc
+/home/test/hydrogen-kits
+/home/test/drumlabooh
+</pre>
+
 <p><strong>Important note:</strong> when loading a drumkit, Drumlabooh converts the samples (in RAM) to match the DAW session’s sample rate. Large kits may take longer to load if, for example, the samples are at 48 kHz but the session rate is 44.1 kHz. The same applies to FLAC-compressed samples. If you try to load a large drumkit, please wait — do not assume that the plugin or DAW has frozen.</p>
 
 <p>The best way to handle this is to use the <strong>Adapt</strong> button, which saves a copy of the current drumkit using the <strong>session’s</strong> sample rate and 32-bit float data format (24-bit for FLAC) in the <i>drum_sklad</i> directory. This copy will then be used as the active drumkit, and the next time it will load faster than the original kit.</p>
@@ -85,22 +112,25 @@
 
   <section id="mni_kits_sfz">
     <h3>2.2 SFZ Drum Kits</h3>
-    <p>Drumlabooh scans for installed SFZ kits in the following predefined locations: <i>$HOME/sfz-kits</i> (Linux), <i>C:\sfz-kits</i> and <i>D:\sfz-kits</i> (Windows). SFZ kit directories must be placed in <b>any</b> of these locations to be recognized by Drumlabooh.</p>
-    <p>High-quality <strong>AVL Drumkits</strong> can be downloaded in SFZ format from <a href="http://www.bandshed.net/sounds/AVLDrumkits_SFZ/">AVLDrumkits_SFZ</a>. You can also find many large SFZ drum kits <a href="https://sfzinstruments.github.io/drums/">here</a>.</p>
-    <p>Drumlabooh supports a limited set of SFZ opcodes and parameters: <code>group</code>, <code>off_by</code>, <code>region</code>, <code>key</code>, <code>sample</code>, <code>default_path</code>, <code>offset</code>, <code>lovel</code>, and <code>hivel</code>. Drumlabooh does not support sample file names that contain spaces (because they are difficult to parse correctly from the SFZ file).</p>
+
+    <p>Drumlabooh scans for installed SFZ kits (as directories) in the pre-defined or user-defined locations.</p>
+
+    <p>High-quality <strong>AVL Drumkits</strong> can be downloaded in SFZ format from <a href="http://www.bandshed.net/sounds/AVLDrumkits_SFZ/">AVLDrumkits_SFZ</a>.</p>
+
+<p>Drumlabooh supports a limited set of SFZ opcodes and parameters: <code>group</code>, <code>off_by</code>, <code>region</code>, <code>key</code>, <code>sample</code>, <code>default_path</code>, <code>offset</code>, <code>lovel</code>, and <code>hivel</code>. Drumlabooh does not support sample file names that contain spaces (because they are difficult to parse correctly from the SFZ file).</p>
   </section>
 
   <section id="mni_kits_labooh">
     <h3>2.3 Drumlabooh Drum Kits</h3>
-    <p>Drumlabooh uses its own kit formats (there are two formats, text-based and XML). One kit equals one directory, which should be placed in <i>$HOME/drumlabooh-kits</i>, <i>$HOME/drum_sklad</i>, or <i>/usr/share/drumlabooh-kits</i> on Linux, and in <i>C:\drumlabooh-kits</i>, <i>D:\drumlabooh-kits</i>, <i>C:\drum_sklad</i>, or <i>D:\drum_sklad</i> on Windows.</p>
+    <p>Drumlabooh uses its own kit formats (there are two formats, text-based and XML). One kit equals one directory, which should be placed in user-defined or pre-defined locations such as <i>$HOME/drumlabooh-kits</i>, <i>$HOME/drum_sklad</i>, or <i>/usr/share/drumlabooh-kits</i> on Linux, and in <i>C:\drumlabooh-kits</i>, <i>D:\drumlabooh-kits</i>, <i>C:\drum_sklad</i>, or <i>D:\drum_sklad</i> on Windows.</p>
 
-    <p>Drumlabooh usually installs kits automatically from its official <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad repository on GitHub</a>. You can also <b>find detailed information about the formats</b> there — it is quite simple. The word "sklad" means "warehouse," "storage," or "repository."</p>
+<p>Drumlabooh usually installs kits automatically from its official <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad repository on GitHub</a>. You can also <b>find detailed information about the formats</b> there — it is quite simple. The word "sklad" means "warehouse," "storage," or "repository."</p>
 
     <p>Additional kits that are not hosted on GitHub can be downloaded from the <a href="https://t.me/drum_sklad">Drum Sklad channel on Telegram</a>. The complete Drumlabooh kit collection therefore includes Drum Sklad on GitHub and Drum Sklad on Telegram.
 </p>
 
-    <p>All native Drumlabooh kits include optional built-in General MIDI mapping settings, which can be used in <b>MIDI Map mode</b> by selecting the <b>Kit</b> option there.</p>
-  </section>
+<p>Many of native Drumlabooh kits include optional built-in General MIDI mapping settings, which can be used in <b>MIDI Map mode</b> by selecting the <b>Kit</b> option there.</p>
+</section>
 
 
   <section id="mni_kits_dir">
@@ -123,40 +153,6 @@
     <h3>Supported sample formats</h3>
     <p>Drumlabooh supports samples in the following formats: WAV, AIFF, FLAC, OGG, and MP3. OGG and MP3-based kits cannot be <strong>adapted</strong>. Stereo samples are read as mono (using the left channel), because pre-panned drums (from the kit) can make internal mixing sound unnatural.</p>
 
-<br>
-
-    <h3>Full list of directories where Drumlabooh searches for kits</h3>
-
-<br>
-
-    <p><b>Drumlabooh/Drumrox format</b>:</p>
-    <pre>/usr/share/drumrox-kits
-/usr/share/drumlabooh-kits
-$HOME/drumrox-kits
-$HOME/drumlabooh-kits
-$HOME/drum_sklad //main directory for locally installed kits
-C:\drumlabooh-kits
-D:\drumlabooh-kits
-C:\drum_sklad</pre>
-
-<br>
-
-<p><b>Hydrogen format</b>:</p>
-
-<pre>/usr/share/hydrogen/data/drumkits
-/usr/local/share/hydrogen/data/drumkits
-/usr/share/drmr/drumkits
-$HOME/.hydrogen/data/drumkits
-$HOME/.drmr/drumkits</pre>
-
-<br>
-
-<p><b>SFZ format</b>:</p>
-
-<pre>$HOME/sfz-kits
-C:\sfz-kits
-D:\sfz-kits</pre>
-
 </section>
 
   <section id="mni_mixer">
@@ -168,8 +164,11 @@ D:\sfz-kits</pre>
     <p>1. <strong>LED</strong> – lights up when a note is played.</p>
 
     <p>2. <strong>Instrument name</strong> – defined in the kit; otherwise, the file name is used.
-
-The background color changes depending on the sample type — <span style="background-color:#8398a0;">empty slot</span>, <span style="background-color:#73da9e;">sample with a single layer</span>, <span style="background-color:#85da78;">sample with multiple layers</span>, <span style="background-color:#87ca0c;">sample with variants</span>. The latter can be selected using the + and - buttons located to the left.</p>
+<br>
+The background color changes depending on the sample type — <span style="background-color:#8398a0; color:#000000;">empty slot</span>, <span style="background-color:#73da9e; color:#000000;">sample with a single layer</span>, <span style="background-color:#85da78; color:#000000;">sample with multiple layers</span>, <span style="background-color:#87ca0c; color:#000000;">sample with variants</span>. The latter can be selected using the + and - buttons located to the left.
+<br>
+The tooltip over the instrument name shows the current MIDI mapping settings for this slot.
+</p>
 
 
     <p>3. <strong>FX</strong> – button to open the FX window for this instrument. You can close the window using the "close" button or the Escape key. All effects in that window can be turned on or off, so they work only when enabled.</p>
@@ -186,7 +185,11 @@ The background color changes depending on the sample type — <span style="backg
     <h3>4. Options section</h3>
     <p>At the lower right part of the plugin window, you can see <strong>Options</strong>.</p>
     <p><strong>MIDI map mode</strong> – there are two modes, <strong>Auto</strong> and <strong>Kit</strong>. With <strong>Auto</strong>, Drumlabooh assigns MIDI notes to samples starting from the numerical value of another option, <strong>Base MIDI note</strong> (default: 36), which specifies the MIDI note number to map the first instrument in the kit. MIDI note 36 = C in the 2nd octave. This mode is the default and works well for playing from a MIDI keyboard. When <strong>Kit</strong> is selected, Drumlabooh uses MIDI note assignments from the drumkit file; usually, this is <a href="https://computermusicresource.com/GM.Percussion.KeyMap.html">General MIDI mapping</a>, compatible with e-drums and drum pads. It is also the proper mode for Ardour's drum grooves.</p>
-    <p>So, MIDI mapping is the assignment of MIDI note numbers to drum instruments (Drumlabooh cells) from the kit. The mapping data is included in many Drumlabooh and SFZ kits. However, some drums or percussion instruments are not covered by General MIDI, so in these cases, <strong>Auto</strong> mode is more useful and gives you access to all instruments in the kit.</p>
+
+    <p>So, MIDI mapping is the assignment of MIDI note numbers to drum instruments (Drumlabooh cells/slots) from the kit. The mapping data is included in many Drumlabooh and SFZ kits.  However, some drums or percussion instruments are not covered by General MIDI, so in these cases, <strong>Auto</strong> mode is more useful and gives you access to all instruments in the kit.</p>
+
+<p>If the drumkit has no MIDI mapping defined, and you've selected the "Kit" mode, Drumlabooh will use "Auto" mode instead.</p>
+
     <p>For more complex MIDI mapping, use the power of your DAW, e-drum/pad options, or plugins such as, in Reaper, "JS MIDI map to key v2" – just place it before Drumlabooh and create or select a mapping file, for example:</p>
     <pre>A3 -> E5
 C4 -> C5</pre>
@@ -281,6 +284,50 @@ By the way, pan mode is a significant factor in how a DAW "sounds." The pan mode
   </div>
 </section>
 </div>
+
+
+
+<footer style="
+  margin-top: 60px;
+  padding: 40px 20px;
+  text-align: center;
+  background: var(--main-dark);
+  border-top: 4px solid var(--green-accent);
+  color: var(--text-medium);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+">
+  <p style="margin: 0 0 12px; font-weight: 500;">
+    Drumlabooh is created by
+    <a href="https://github.com/psemiletov" style="
+      color: var(--green-bright);
+      text-decoration: none;
+      font-weight: 600;
+    "> Peter Semiletov</a>
+  </p>
+
+  <p style="margin: 0 0 8px;">
+    Support the development:
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=peter.semiletov@gmail.com&item_name=Support%20Drumlabooh%20development"
+       target="_blank" rel="noopener"
+       style="color: var(--orange-accent); text-decoration: underline; font-weight: 600;">
+      Donate via PayPal
+    </a>
+    or send to <strong>peter.semiletov@gmail.com</strong>
+  </p>
+
+  <p style="margin: 12px 0 0;">
+    Listen to my music:
+    <a href="https://push.fm/fl/semiletov" style="
+      color: var(--orange-accent);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--orange-accent);
+      font-weight: 500;
+    ">push.fm/fl/semiletov</a>
+  </p>
+</footer>
+
 
 </body>
 </html>

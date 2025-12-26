@@ -5,13 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Drumlabooh: About</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header>
   <h1>Drumlabooh</h1>
 </header>
-
 <nav>
   <a href="index-en.html">Home</a>
   <a href="news-en.html">News</a>
@@ -20,15 +19,13 @@
   <a href="donate-en.html">Donate</a>
   <a href="https://github.com/psemiletov/drumlabooh">Github</a>
 </nav>
-
-
-<div class="video-container" 
-     style="position: relative; 
-            padding-bottom: 56.25%; 
-            height: 0; 
-            overflow: hidden; 
-            width: min(70vw, 100%); 
-            max-width: 100%; 
+<div class="video-container"
+     style="position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            width: min(70vw, 100%);
+            max-width: 100%;
             margin: 0 auto;">
     <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
             src="https://www.youtube.com/embed/9NEzDmQ7WkQ?si=RKAESXbbOSMK1tGz"
@@ -38,8 +35,6 @@
             allowfullscreen>
     </iframe>
 </div>
-
-
 <div class="container">
   <div class="hero-image">
     <a href="./v12.png"><img src="./v12-small.png" alt="Screenshot of Drumlabooh"></a>
@@ -106,8 +101,48 @@
       <li>Written in C++, based on <a href="https://juce.com">JUCE toolkit</a></li>
     </ul>
   </section>
-
-
 </div>
+
+<footer style="
+  margin-top: 60px;
+  padding: 40px 20px;
+  text-align: center;
+  background: var(--main-dark);
+  border-top: 4px solid var(--green-accent);
+  color: var(--text-medium);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+">
+  <p style="margin: 0 0 12px; font-weight: 500;">
+    Drumlabooh is created by
+    <a href="https://github.com/psemiletov" style="
+      color: var(--green-bright);
+      text-decoration: none;
+      font-weight: 600;
+    "> Peter Semiletov</a>
+  </p>
+
+  <p style="margin: 0 0 8px;">
+    Support the development:
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=peter.semiletov@gmail.com&item_name=Support%20Drumlabooh%20development"
+       target="_blank" rel="noopener"
+       style="color: var(--orange-accent); text-decoration: underline; font-weight: 600;">
+      Donate via PayPal
+    </a>
+    or send to <strong>peter.semiletov@gmail.com</strong>
+  </p>
+
+  <p style="margin: 12px 0 0;">
+    Listen to my music:
+    <a href="https://push.fm/fl/semiletov" style="
+      color: var(--orange-accent);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--orange-accent);
+      font-weight: 500;
+    ">push.fm/fl/semiletov</a>
+  </p>
+</footer>
+
 </body>
 </html>
