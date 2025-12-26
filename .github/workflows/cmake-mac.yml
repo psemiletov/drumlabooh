@@ -112,34 +112,33 @@ jobs:
       - name: Create AU package
         run: |
           echo "=== Creating AU Package ==="
-          PKG_DIR="pkg-au-${{ matrix.plugin }}-${{ matrix.arch }}"
+          # Сохранить значения матрицы в переменные shell (избегаем ${ { ... }} в теле скрипта)
+          PLUGIN="${{ matrix.plugin }}"
+          ARCH="${{ matrix.arch }}"
+          PKG_DIR="pkg-au-${PLUGIN}-${ARCH}"
           rm -rf "$PKG_DIR"
           mkdir -p "$PKG_DIR"
 
-          for component in build-au-"${{ matrix.arch }}"/*"${{ matrix.plugin }}"*"_artefacts"/AU/*.component 2>/dev/null; do
+          for component in build-au-"${ARCH}"/*"${PLUGIN}"*"_artefacts"/AU/*.component 2>/dev/null; do
             if [ -d "$component" ]; then
               echo "Packaging: $(basename "$component")"
               cp -R "$component" "$PKG_DIR/"
             fi
           done
 
-          # Variant A: записываем значение matrix.plugin в shell-переменную и используем её в heredoc
-          PLUGIN="${{ matrix.plugin }}"
-          cat > "$PKG_DIR/README.txt" << EOF
-========================================
-$PLUGIN - AU Audio Unit
-Build Date: $(date)
+          # Записать README через printf (надёжнее, чем heredoc в YAML)
+          printf "========================================\n" > "$PKG_DIR/README.txt"
+          printf "%s - AU Audio Unit\n" "$PLUGIN" >> "$PKG_DIR/README.txt"
+          printf "Build Date: %s\n\n" "$(date)" >> "$PKG_DIR/README.txt"
+          printf "Installation:\n" >> "$PKG_DIR/README.txt"
+          printf "1. Copy the .component file to:\n" >> "$PKG_DIR/README.txt"
+          printf "   /Library/Audio/Plug-Ins/Components/\n" >> "$PKG_DIR/README.txt"
+          printf "2. Rescan plugins in your DAW\n" >> "$PKG_DIR/README.txt"
+          printf "========================================\n" >> "$PKG_DIR/README.txt"
 
-Installation:
-1. Copy the .component file to:
-   /Library/Audio/Plug-Ins/Components/
-2. Rescan plugins in your DAW
-========================================
-EOF
-
-          tar czf "${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}.tar.gz" -C "$PKG_DIR" .
-          echo "Package created: ${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}.tar.gz"
-          ls -lh "${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}.tar.gz" || true
+          tar czf "${PLUGIN}-macOS-AU-${ARCH}.tar.gz" -C "$PKG_DIR" .
+          echo "Package created: ${PLUGIN}-macOS-AU-${ARCH}.tar.gz"
+          ls -lh "${PLUGIN}-macOS-AU-${ARCH}.tar.gz" || true
 
       - name: Upload AU artifacts
         uses: actions/upload-artifact@v4
