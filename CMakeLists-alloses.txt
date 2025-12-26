@@ -1,0 +1,246 @@
+cmake_minimum_required(VERSION 3.15)
+include(FetchContent)
+
+project(DRUMLABOOH LANGUAGES CXX C VERSION 12.1.0)
+
+# ========== ОПЦИИ КОНФИГУРАЦИИ ==========
+option(MULTI "Build with multi-channel support" ON)
+option(INSTALLKITS "Bundle and install kits" ON)
+option(LOCALINSTALL "Install to the $HOME subdirs" OFF)
+
+# Вывод информации о платформе
+message("Building for: ${CMAKE_SYSTEM_NAME}")
+message("Using all-OS CMakeLists.txt")
+
+# Версия определения
+add_definitions(-DVERSION_NUMBER="${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+
+# ========== ПЛАТФОРМЕННО-СПЕЦИФИЧНЫЕ НАСТРОЙКИ ==========
+if(APPLE)
+    message(STATUS "=== CONFIGURING FOR macOS (AU ONLY) ===")
+    
+    # Минимальная версия macOS
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13" CACHE STRING "Minimum macOS version")
+    
+    # Универсальные бинарники для Apple Silicon и Intel
+    set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Target architectures")
+    
+    # Версии зависимостей для macOS
+    set(DRUMSKLADTAG "4.0.0")
+    set(JUCETAG "8.0.11")
+    
+    # ТОЛЬКО AU для macOS
+    set(PLUGIN_FORMATS AU)
+    
+    # Пути установки для macOS
+    set(AU_INSTALL_DIR "/Library/Audio/Plug-Ins/Components")
+    set(KITS_INSTALL_DIR "/Library/Application Support/drumlabooh/kits")
+    
+elseif(WIN32)
+    message(STATUS "=== CONFIGURING FOR WINDOWS ===")
+    
+    set(DRUMSKLADTAG "4.0.0")
+    set(JUCETAG "7.0.10")
+    
+    # Windows: только VST3
+    set(PLUGIN_FORMATS VST3)
+    
+    # Пути установки для Windows
+    if(LOCALINSTALL)
+        set(VST3_INSTALL_DIR "$ENV{USERPROFILE}/VST3")
+        set(KITS_INSTALL_DIR "$ENV{USERPROFILE}/drum_sklad")
+    else()
+        set(VST3_INSTALL_DIR "C:/Program Files/Common Files/VST3")
+        set(KITS_INSTALL_DIR "C:/Program Files/drumlabooh/kits")
+    endif()
+    
+    # Настройки MSVC
+    if(MSVC)
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    endif()
+    
+else()  # Linux
+    message(STATUS "=== CONFIGURING FOR LINUX ===")
+    
+    set(DRUMSKLADTAG "4.0.0")
+    set(JUCETAG "8.0.11")
+    
+    # Linux: VST3 + LV2
+    set(PLUGIN_FORMATS VST3 LV2)
+    
+    # Пути установки для Linux
+    if(LOCALINSTALL)
+        set(LV2_INSTALL_DIR "$ENV{HOME}/.lv2")
+        set(VST3_INSTALL_DIR "$ENV{HOME}/.vst3")
+        set(KITS_INSTALL_DIR "$ENV{HOME}/drum_sklad")
+    else()
+        set(LV2_INSTALL_DIR lib/lv2)
+        set(VST3_INSTALL_DIR lib/vst3)
+        set(KITS_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/drumlabooh-kits")
+    endif()
+    
+endif()
+
+# ========== ЗАВИСИМОСТИ ==========
+set(FETCHCONTENT_QUIET FALSE)
+
+# JUCE
+cmake_policy(SET CMP0135 NEW)
+FetchContent_Declare(
+    juce
+    URL https://github.com/juce-framework/JUCE/archive/refs/tags/${JUCETAG}.tar.gz
+    EXCLUDE_FROM_ALL
+)
+
+# Барабанные наборы
+if(INSTALLKITS)
+    FetchContent_Declare(
+        drum_sklad
+        URL https://github.com/psemiletov/drum_sklad/archive/refs/tags/${DRUMSKLADTAG}.zip
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        EXCLUDE_FROM_ALL
+    )
+endif()
+
+FetchContent_MakeAvailable(juce)
+
+if(INSTALLKITS)
+    FetchContent_MakeAvailable(drum_sklad)
+endif()
+
+# ========== ФУНКЦИЯ ДЛЯ СОЗДАНИЯ ПЛАГИНА ==========
+function(create_drumlabooh_plugin target_name is_multi)
+    message(STATUS "Creating plugin: ${target_name} (multi: ${is_multi})")
+    
+    # Определение URI для LV2 (только Linux)
+    if(UNIX AND NOT APPLE)
+        set(lv2_uri "https://github.com/psemiletov/${target_name}")
+    else()
+        set(lv2_uri "")
+    endif()
+    
+    # Создание плагина
+    juce_add_plugin(${target_name}
+        COMPANY_NAME "Semiletov"
+        IS_SYNTH TRUE
+        NEEDS_MIDI_INPUT TRUE
+        EDITOR_WANTS_KEYBOARD_FOCUS TRUE
+        VST3_CATEGORIES "Instrument|Sampler|Synth|Drum|Generator"
+        PLUGIN_MANUFACTURER_CODE "PetR"
+        PLUGIN_CODE "Petr"
+        FORMATS ${PLUGIN_FORMATS}
+        PRODUCT_NAME "${target_name}"
+        NEEDS_WEB_BROWSER 0
+        JUCE_DISPLAY_SPLASH_SCREEN 0
+    )
+    
+    # LV2 специфичные настройки (только если включено)
+    if(UNIX AND NOT APPLE)
+        set_target_properties(${target_name} PROPERTIES
+            LV2URI ${lv2_uri}
+            LV2_SHARED_LIBRARY_NAME ${target_name}
+        )
+    endif()
+    
+    # Генерация JUCE заголовка
+    juce_generate_juce_header(${target_name})
+    
+    # Источники
+    target_sources(${target_name}
+        PRIVATE
+            ./Source/PluginEditor.cpp
+            ./Source/PluginProcessor.cpp
+            ./Source/pugixml.cpp
+            ./Source/dsp.cpp
+            ./Source/kits.cpp
+            ./Source/utl.cpp
+            ./Source/fx-resofilter.cpp
+            ./Source/resampler.c
+    )
+    
+    # Компиляционные определения
+    target_compile_definitions(${target_name}
+        PUBLIC
+            JUCE_JACK=0
+            NEEDS_WEBVIEW2=0 
+            JUCE_PLUGINHOST_LADSPA=0
+            JUCE_WEB_BROWSER=0
+            JUCE_USE_CURL=0
+            JUCE_VST3_CAN_REPLACE_VST2=0
+            VERSION_NUMBER="${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
+    )
+    
+    # Для multi-канальной версии
+    if(${is_multi})
+        target_compile_definitions(${target_name}
+            PUBLIC
+                MULTICHANNEL=1
+        )
+    endif()
+    
+    # macOS специфичные определения
+    if(APPLE)
+        target_compile_definitions(${target_name}
+            PUBLIC
+                JUCE_PUSH_NOTIFICATIONS=0
+                JUCE_MODAL_LOOPS_PERMITTED=1
+                JUCE_STRICT_REFCOUNTEDPOINTER=1
+        )
+    endif()
+    
+    # Линковка библиотек
+    target_link_libraries(${target_name}
+        PRIVATE
+            juce::juce_audio_utils
+        PUBLIC
+            juce::juce_recommended_config_flags
+            juce::juce_recommended_lto_flags
+            juce::juce_recommended_warning_flags
+    )
+    
+    # macOS фреймворки
+    if(APPLE)
+        target_link_libraries(${target_name}
+            PRIVATE
+                "-framework AudioToolbox"
+                "-framework CoreAudio"
+                "-framework CoreFoundation"
+                "-framework CoreGraphics"
+                "-framework CoreServices"
+                "-framework Cocoa"
+                "-framework Accelerate"
+                "-framework IOKit"
+                "-framework Carbon"
+        )
+    endif()
+    
+endfunction()
+
+# ========== СОЗДАНИЕ ПЛАГИНОВ ==========
+create_drumlabooh_plugin(drumlabooh FALSE)
+
+if(MULTI)
+    create_drumlabooh_plugin(drumlabooh-multi TRUE)
+endif()
+
+# ========== УСТАНОВКА ==========
+if(INSTALLKITS)
+    install(DIRECTORY ${drum_sklad_SOURCE_DIR}/
+        DESTINATION ${KITS_INSTALL_DIR}
+        PATTERN ".git" EXCLUDE
+    )
+endif()
+
+# ========== ИНФОРМАЦИЯ О КОНФИГУРАЦИИ ==========
+message(STATUS "")
+message(STATUS "==========================================")
+message(STATUS "Configuration Summary")
+message(STATUS "Platform: ${CMAKE_SYSTEM_NAME}")
+message(STATUS "Plugin formats: ${PLUGIN_FORMATS}")
+message(STATUS "Multi-channel: ${MULTI}")
+message(STATUS "Install kits: ${INSTALLKITS}")
+if(APPLE)
+    message(STATUS "macOS deployment target: ${CMAKE_OSX_DEPLOYMENT_TARGET}")
+    message(STATUS "Architectures: ${CMAKE_OSX_ARCHITECTURES}")
+endif()
+message(STATUS "==========================================")
