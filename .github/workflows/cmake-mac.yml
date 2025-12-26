@@ -1,163 +1,138 @@
-name: Build macOS AU only
+strategy:
+  matrix:
+    arch: [universal]
+    plugin: [drumlabooh, drumlabooh-multi]
 
-on:
-  push:
-    branches: [ main, master ]
-    paths:
-      - '**.cpp'
-      - '**.h'
-      - '**.cmake'
-      - 'CMakeLists.txt'
-      - 'CMakeLists-alloses.txt'
-      - '.github/workflows/build-macos.yml'
-  pull_request:
-    branches: [ main, master ]
-  release:
-    types: [created]
-  workflow_dispatch:  # Ручной запуск
+steps:
+- name: Checkout repository
+  uses: actions/checkout@v4
+  with:
+    submodules: recursive
 
-env:
-  BUILD_TYPE: Release
-
-jobs:
-  build-au:
-    runs-on: macos-14
+- name: Setup macOS
+  run: |
+    echo "=== System Information ==="
+    echo "Architecture: $(uname -m)"
+    echo "macOS: $(sw_vers -productVersion)"
+    echo "Available CMake files:"
+    ls -la CMakeLists*.txt || true
+    sysctl -n hw.ncpu
     
-    strategy:
-      matrix:
-        arch: [universal]
-        plugin: [drumlabooh, drumlabooh-multi]
+- name: Install minimal dependencies
+  run: |
+    brew install cmake
     
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
-
-    - name: Setup macOS
-      run: |
-        echo "=== System Information ==="
-        echo "Architecture: $(uname -m)"
-        echo "macOS: $(sw_vers -productVersion)"
-        echo "Available CMake files:"
-        ls -la CMakeLists*.txt || true
-        sysctl -n hw.ncpu
+- name: Check if CMakeLists-alloses.txt exists
+  run: |
+    if [ -f "CMakeLists-alloses.txt" ]; then
+      echo "✓ CMakeLists-alloses.txt found"
+      # Копируем его как основной CMakeLists.txt
+      cp CMakeLists-alloses.txt CMakeLists-macos.txt
+      echo "Created CMakeLists-macos.txt from CMakeLists-alloses.txt"
+    else
+      echo "✗ CMakeLists-alloses.txt not found, using default CMakeLists.txt"
+      cp CMakeLists.txt CMakeLists-macos.txt
+    fi
+    
+- name: Configure CMake for AU only
+  run: |
+    echo "Configuring for AU format only using custom CMakeLists"
+    
+    # Обернули аргумент в кавычки, чтобы ";" внутри не разделял команды shell
+    cmake -B "build-au-${{ matrix.arch }}" \
+      -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}" \
+      -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 \
+      -DCMAKE_OSX_ARCHITECTURES="${{ matrix.arch == 'universal' && 'x86_64;arm64' || matrix.arch }}" \
+      -DINSTALLKITS=OFF \
+      -DLOCALINSTALL=OFF \
+      -DMULTI=ON
+    
+    echo "=== CMake Configuration Summary ==="
+    cmake -B "build-au-${{ matrix.arch }}" -L | grep -E "(JUCE|FORMATS|PLUGIN|APPLE|AU|VST3)"
+    
+- name: Build AU components
+  run: |
+    echo "Building AU components for ${{ matrix.plugin }}"
+    
+    cmake --build "build-au-${{ matrix.arch }}" \
+      --config "${{ env.BUILD_TYPE }}" \
+      --target "${{ matrix.plugin }}" \
+      --parallel "$(sysctl -n hw.ncpu)"
+    
+    echo "=== Built AU Components ==="
+    find "build-au-${{ matrix.arch }}" -name "*.component" -type d | while read f; do
+      echo "  - $(basename "$f")"
+    done
+    
+- name: Verify AU bundles
+  run: |
+    echo "=== Verifying AU Bundle Structure ==="
+    
+    for component in "build-au-${{ matrix.arch }}/${{ matrix.plugin }}_artefacts/AU/"*.component; do
+      if [ -d "$component" ]; then
+        echo "Component: $(basename "$component")"
         
-    - name: Install minimal dependencies
-      run: |
-        brew install cmake
-        
-    - name: Check if CMakeLists-alloses.txt exists
-      run: |
-        if [ -f "CMakeLists-alloses.txt" ]; then
-          echo "✓ CMakeLists-alloses.txt found"
-          # Копируем его как основной CMakeLists.txt
-          cp CMakeLists-alloses.txt CMakeLists-macos.txt
-          echo "Created CMakeLists-macos.txt from CMakeLists-alloses.txt"
-        else
-          echo "✗ CMakeLists-alloses.txt not found, using default CMakeLists.txt"
-          cp CMakeLists.txt CMakeLists-macos.txt
+        if [ -f "$component/Contents/Info.plist" ]; then
+          echo "  ✓ Info.plist exists"
         fi
         
-    - name: Configure CMake for AU only
-      run: |
-        echo "Configuring for AU format only using custom CMakeLists"
-        
-        # Используем наш модифицированный CMakeLists файл
-        cmake -B build-au-${{ matrix.arch }} \
-          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
-          -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 \
-          -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch == 'universal' && 'x86_64;arm64' || matrix.arch }} \
-          -DINSTALLKITS=OFF \
-          -DLOCALINSTALL=OFF \
-          -DMULTI=ON
-        
-        echo "=== CMake Configuration Summary ==="
-        cmake -B build-au-${{ matrix.arch }} -L | grep -E "(JUCE|FORMATS|PLUGIN|APPLE|AU|VST3)"
-        
-    - name: Build AU components
-      run: |
-        echo "Building AU components for ${{ matrix.plugin }}"
-        
-        cmake --build build-au-${{ matrix.arch }} \
-          --config ${{ env.BUILD_TYPE }} \
-          --target ${{ matrix.plugin }} \
-          --parallel $(sysctl -n hw.ncpu)
-        
-        echo "=== Built AU Components ==="
-        find build-au-${{ matrix.arch }} -name "*.component" -type d | while read f; do
-          echo "  - $(basename "$f")"
-        done
-        
-    - name: Verify AU bundles
-      run: |
-        echo "=== Verifying AU Bundle Structure ==="
-        
-        for component in build-au-${{ matrix.arch }}/${{ matrix.plugin }}_artefacts/AU/*.component; do
-          if [ -d "$component" ]; then
-            echo "Component: $(basename "$component")"
-            
-            if [ -f "$component/Contents/Info.plist" ]; then
-              echo "  ✓ Info.plist exists"
-            fi
-            
-            binary="$component/Contents/MacOS/$(basename "${component%.component}")"
-            if [ -f "$binary" ]; then
-              echo "  ✓ Binary exists ($(lipo -info "$binary" 2>/dev/null || echo "Unknown arch"))"
-            fi
-            echo ""
-          fi
-        done
-        
-    - name: Self-sign AU components
-      run: |
-        echo "=== Self-signing AU Components ==="
-        
-        for component in build-au-${{ matrix.arch }}/${{ matrix.plugin }}_artefacts/AU/*.component; do
-          if [ -d "$component" ]; then
-            echo "Signing: $(basename "$component")"
-            codesign --force --sign - --timestamp --options runtime "$component"
-          fi
-        done
-        
-    - name: Create AU package
-      run: |
-        echo "=== Creating AU Package ==="
-        
-        PKG_DIR="pkg-au-${{ matrix.plugin }}-${{ matrix.arch }}"
-        mkdir -p "$PKG_DIR"
-        
-        # Копируем AU компоненты
-        for component in build-au-${{ matrix.arch }}/${{ matrix.plugin }}_artefacts/AU/*.component; do
-          if [ -d "$component" ]; then
-            echo "Packaging: $(basename "$component")"
-            cp -R "$component" "$PKG_DIR/"
-          fi
-        done
-        
-        # Добавляем README
-        cat > "$PKG_DIR/README.txt" << EOF
-        ========================================
-        ${{ matrix.plugin }} - AU Audio Unit
-        Build Date: $(date)
-        
-        Installation:
-        1. Copy the .component file to:
-           /Library/Audio/Plug-Ins/Components/
-        2. Rescan plugins in your DAW
-        ========================================
-        EOF
-        
-        # Создаем архив
-        tar czf "${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}.tar.gz" -C "$PKG_DIR" .
-        
-        echo "Package created: ${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}.tar.gz"
-        ls -lh "${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}.tar.gz"
-        
-    - name: Upload AU artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}
-        path: |
-          ${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}.tar.gz
-        retention-days: 7
+        binary="$component/Contents/MacOS/$(basename "${component%.component}")"
+        if [ -f "$binary" ]; then
+          echo "  ✓ Binary exists ($(lipo -info "$binary" 2>/dev/null || echo "Unknown arch"))"
+        fi
+        echo ""
+      fi
+    done
+    
+- name: Self-sign AU components
+  run: |
+    echo "=== Self-signing AU Components ==="
+    
+    for component in "build-au-${{ matrix.arch }}/${{ matrix.plugin }}_artefacts/AU/"*.component; do
+      if [ -d "$component" ]; then
+        echo "Signing: $(basename "$component")"
+        codesign --force --sign - --timestamp --options runtime "$component"
+      fi
+    done
+    
+- name: Create AU package
+  run: |
+    echo "=== Creating AU Package ==="
+    
+    PKG_DIR="pkg-au-${{ matrix.plugin }}-${{ matrix.arch }}"
+    mkdir -p "$PKG_DIR"
+    
+    # Копируем AU компоненты
+    for component in "build-au-${{ matrix.arch }}/${{ matrix.plugin }}_artefacts/AU/"*.component; do
+      if [ -d "$component" ]; then
+        echo "Packaging: $(basename "$component")"
+        cp -R "$component" "$PKG_DIR/"
+      fi
+    done
+    
+    # Добавляем README
+    cat > "$PKG_DIR/README.txt" << EOF
+    ========================================
+    ${{ matrix.plugin }} - AU Audio Unit
+    Build Date: $(date)
+    
+    Installation:
+    1. Copy the .component file to:
+       /Library/Audio/Plug-Ins/Components/
+    2. Rescan plugins in your DAW
+    ========================================
+    EOF
+    
+    # Создаем архив
+    tar czf "${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}.tar.gz" -C "$PKG_DIR" .
+    
+    echo "Package created: ${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}.tar.gz"
+    ls -lh "${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}.tar.gz"
+    
+- name: Upload AU artifacts
+  uses: actions/upload-artifact@v4
+  with:
+    name: ${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}
+    path: |
+      ${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}.tar.gz
+    retention-days: 7
