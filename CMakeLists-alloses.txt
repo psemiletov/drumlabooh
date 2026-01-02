@@ -1,7 +1,12 @@
 cmake_minimum_required(VERSION 3.15)
 include(FetchContent)
 
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum macOS deployment version")
+
 project(DRUMLABOOH LANGUAGES CXX C VERSION 12.1.0)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # ========== ОПЦИИ КОНФИГУРАЦИИ ==========
 option(MULTI "Build with multi-channel support" ON)
