@@ -14,160 +14,178 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest-stable
 
       - name: Install Build Dependencies
         run: |
-          echo "=== Installing dependencies ==="
-          
-          # Обновляем Homebrew
           brew update
-          
-          # Устанавливаем CMake (последнюю версию)
           brew install cmake
+          brew install pkg-config
           
-          # Проверяем установленные версии
-          echo "=== Installed versions ==="
+          echo "=== Versions ==="
           cmake --version
-          xcodebuild -version
-          sw_vers -productVersion
-          
-          # Устанавливаем pkg-config если нужно
-          brew install pkg-config || true
 
-      - name: Configure CMake with Debug Info
+      - name: Setup CMakeLists-alloses.txt
         run: |
-          echo "=== Starting CMake Configuration ==="
-          echo "Build type: ${{ env.BUILD_TYPE }}"
-          echo "Current directory: $(pwd)"
+          echo "=== SETUP: Using CMakeLists-alloses.txt ==="
           
-          if [ ! -f "CMakeLists.txt" ]; then
-            echo "ERROR: CMakeLists.txt not found!"
-            ls -la
+          # Проверяем что файл существует
+          if [ ! -f "CMakeLists-alloses.txt" ]; then
+            echo "❌ ERROR: CMakeLists-alloses.txt not found!"
+            ls -la CMakeLists*.txt
             exit 1
           fi
           
-          echo "=== CMakeLists.txt content (first 10 lines) ==="
-          head -10 CMakeLists.txt
+          # Сохраняем оригинальный CMakeLists.txt если есть
+          if [ -f "CMakeLists.txt" ]; then
+            cp CMakeLists.txt CMakeLists.txt.original
+            echo "✓ Original CMakeLists.txt backed up"
+          fi
           
-          # Конфигурируем CMake
+          # Копируем CMakeLists-alloses.txt как основной
+          cp CMakeLists-alloses.txt CMakeLists.txt
+          
+          echo "✓ CMakeLists-alloses.txt copied to CMakeLists.txt"
+          echo ""
+          echo "=== First 20 lines of new CMakeLists.txt ==="
+          head -20 CMakeLists.txt
+          
+          echo ""
+          echo "=== Checking for AU configuration ==="
+          grep -i "apple\|macos\|au\|format" CMakeLists.txt | head -10 || echo "  No AU config found"
+
+      - name: Configure CMake
+        run: |
+          echo "=== CONFIGURE CMAKE ==="
+          
+          # Запускаем конфигурацию
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
             -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
             -DMULTI=ON \
             -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON \
             2>&1 | tee cmake_configure.log
           
-          echo "=== CMake configuration complete ==="
+          echo "=== Checking CMakeCache ==="
+          grep -i "juce\|plugin\|au\|format\|apple" build/CMakeCache.txt 2>/dev/null | head -20 || true
 
-      - name: Build AU Plugins
+      - name: Build Plugins
         run: |
-          echo "=== Starting Build Process ==="
-          echo "CPU cores: $(sysctl -n hw.ncpu)"
+          echo "=== BUILD PLUGINS ==="
           
-          # Собираем проект
           cmake --build build \
             --config ${{ env.BUILD_TYPE }} \
             --parallel $(sysctl -n hw.ncpu) \
-            2>&1 | tee cmake_build.log
+            --verbose 2>&1 | tee cmake_build.log
           
-          # Проверяем код возврата
-          BUILD_EXIT_CODE=$?
-          echo "=== Build exit code: $BUILD_EXIT_CODE ==="
-          
-          # Даже если ошибка, продолжаем для диагностики
-          if [ $BUILD_EXIT_CODE -ne 0 ]; then
-            echo "⚠️ Build had errors, but continuing for diagnostics..."
-          fi
+          echo "=== Build completed ==="
 
-      - name: Diagnostic - Check Build Output
+      - name: Find AU Components (Optimized Search)
         run: |
-          echo "=== Build Diagnostics ==="
+          echo "=== FINDING AU COMPONENTS ==="
           
-          echo "1. Listing build directory:"
-          ls -la build/ 2>/dev/null || echo "  build/ not found"
+          # Создаем временный скрипт для поиска
+          cat > find_components.sh << 'EOF'
+          #!/bin/bash
+          
+          echo "Search strategy:"
+          echo "1. Standard JUCE 8 paths"
+          echo "2. Any .component directories"
+          echo "3. Bundle-like structures"
+          
+          # Стандартные пути JUCE 8
+          STANDARD_PATHS=(
+            "build/${PROJECT_NAME}_artefacts"
+            "build/${BUILD_TYPE}/${PROJECT_NAME}_artefacts"
+            "build/JUCE/temp/${BUILD_TYPE}"
+            "build/_deps/juce-build/temp/${BUILD_TYPE}"
+          )
+          
+          # Пытаемся определить имя проекта
+          PROJECT_NAME=$(grep -m1 "project(" CMakeLists.txt | sed 's/.*(\([^ ]*\).*/\1/' 2>/dev/null || echo "DRUMLABOOH")
+          echo "Project name from CMakeLists: $PROJECT_NAME"
           
           echo ""
-          echo "2. Looking for JUCE directories:"
-          find build -type d -name "*juce*" -o -name "*JUCE*" 2>/dev/null | head -10 || true
+          echo "=== Checking standard paths ==="
+          for path in "${STANDARD_PATHS[@]}"; do
+            if [ -d "$path" ]; then
+              echo "✓ Path exists: $path"
+              find "$path" -type d -name "*.component" 2>/dev/null | while read comp; do
+                echo "  Found: $comp"
+              done
+            fi
+          done
           
           echo ""
-          echo "3. Checking for built libraries/executables:"
-          find build -type f \( -name "*.dylib" -o -name "*.so" -o -perm +111 \) 2>/dev/null | head -10 || true
-          
-          echo ""
-          echo "4. CMake targets:"
-          if [ -d "build" ]; then
-            cmake --build build --target help 2>&1 | grep -E "(drumlabooh|ALL_BUILD|help)" || true
+          echo "=== Deep search in build directory ==="
+          COMPONENTS=$(find build -type d -name "*.component" 2>/dev/null)
+          if [ -n "$COMPONENTS" ]; then
+            echo "✓ Found .component directories:"
+            echo "$COMPONENTS"
+          else
+            echo "✗ No .component directories found"
           fi
-
-      - name: Find AU Bundles
-        run: |
-          echo "=== Searching for AU Bundles ==="
           
-          # Создаем файл со всеми найденными компонентами
-          find build -type d -name "*.component" > components_found.txt 2>/dev/null || true
+          echo ""
+          echo "=== Looking for any plugin output ==="
+          find build -type f \( -name "*.dylib" -o -name "*.vst3" -o -name "*.component" \) 2>/dev/null | head -10 || echo "  None found"
+          
+          echo ""
+          echo "=== Checking what WAS built ==="
+          echo "Object files count: $(find build -name "*.o" -type f 2>/dev/null | wc -l)"
+          echo "Executable files: $(find build -type f -perm +111 2>/dev/null | wc -l)"
+          EOF
+          
+          chmod +x find_components.sh
+          ./find_components.sh 2>&1 | tee find_output.log
+          
+          # Сохраняем список найденных компонентов
+          find build -type d -name "*.component" 2>/dev/null > components_found.txt || true
           
           if [ -s components_found.txt ]; then
-            echo "✅ FOUND AU COMPONENTS:"
+            echo "✅ SUCCESS: Found AU components!"
+            echo "Components:"
             cat components_found.txt
-            echo ""
-            
-            # Проверяем каждый компонент
-            while IFS= read -r component; do
-              echo "🔍 Examining: $component"
-              if [ -d "$component/Contents" ]; then
-                echo "  ✓ Has Contents directory"
-                if [ -f "$component/Contents/Info.plist" ]; then
-                  echo "  ✓ Has Info.plist"
-                  # Пытаемся прочитать CFBundleIdentifier
-                  BUNDLE_ID=$(defaults read "$component/Contents/Info" CFBundleIdentifier 2>/dev/null || true)
-                  if [ -n "$BUNDLE_ID" ]; then
-                    echo "  ✓ Bundle ID: $BUNDLE_ID"
-                  fi
-                fi
-                if [ -d "$component/Contents/MacOS" ]; then
-                  echo "  ✓ Has MacOS directory"
-                  for binary in "$component/Contents/MacOS/"*; do
-                    if [ -f "$binary" ]; then
-                      echo "  ✓ Binary: $(basename "$binary")"
-                      # Проверяем архитектуры
-                      if command -v lipo &> /dev/null; then
-                        lipo -info "$binary" 2>/dev/null || echo "    Could not check architectures"
-                      fi
-                    fi
-                  done
-                fi
-              fi
-              echo ""
-            done < components_found.txt
           else
-            echo "❌ NO .component files found!"
-            echo ""
-            echo "Deep search in build directory:"
-            find build -type d 2>/dev/null | grep -i "arte\|output\|plugin" || echo "  No relevant directories found"
+            echo "❌ No components found"
+          fi
+
+      - name: Diagnostic - Check JUCE Configuration
+        run: |
+          echo "=== DIAGNOSTIC: JUCE Configuration ==="
+          
+          echo "1. Checking CMakeLists.txt for JUCE settings:"
+          grep -n -B2 -A2 "juce_add_plugin\|FORMATS\|JUCE\|FetchContent" CMakeLists.txt | head -30 || echo "  Not found"
+          
+          echo ""
+          echo "2. Checking if JUCE was downloaded:"
+          if [ -d "build/_deps" ]; then
+            echo "✓ _deps directory exists"
+            find build/_deps -type d -name "*juce*" 2>/dev/null || echo "  No juce directory"
+          else
+            echo "✗ _deps directory NOT found - JUCE not fetched!"
+          fi
+          
+          echo ""
+          echo "3. Checking CMake targets:"
+          if [ -d "build" ]; then
+            cmake --build build --target help 2>&1 | grep -i "drumlabooh\|plugin\|au\|juce" || echo "  No relevant targets"
           fi
 
       - name: Create Package
         run: |
-          echo "=== Creating Package ==="
-          mkdir -p package/plugins
+          echo "=== CREATING PACKAGE ==="
+          mkdir -p package
           
-          # Копируем найденные компоненты
+          # Проверяем есть ли компоненты
           if [ -f components_found.txt ] && [ -s components_found.txt ]; then
-            echo "Copying found components..."
+            echo "Packaging found components..."
+            
+            mkdir -p package/plugins
             while IFS= read -r component; do
               if [ -d "$component" ]; then
-                COMP_NAME=$(basename "$component")
-                echo "  Adding: $COMP_NAME"
+                name=$(basename "$component")
+                echo "  Adding: $name"
                 cp -R "$component" "package/plugins/"
               fi
             done < components_found.txt
@@ -176,69 +194,93 @@ jobs:
             echo "✅ Packaged $COUNT plugin(s)"
           else
             echo "⚠️ No components to package"
-            echo "This could mean:" > package/README.txt
-            echo "1. Build failed" >> package/README.txt
-            echo "2. Plugin format not set correctly" >> package/README.txt
-            echo "3. JUCE output path different than expected" >> package/README.txt
+            echo "Build completed but no .component files were produced" > package/README.txt
+            echo "" >> package/README.txt
+            echo "Possible issues:" >> package/README.txt
+            echo "1. Wrong plugin format in CMakeLists-alloses.txt" >> package/README.txt
+            echo "2. JUCE not configured for AU" >> package/README.txt
+            echo "3. Build target not created" >> package/README.txt
           fi
           
-          # Всегда создаем README
-          cat > package/README.md << 'EOF'
-          # Drumlabooh AU Plugins
+          # Создаем информационный файл
+          cat > package/BUILD_INFO.md << 'EOF'
+          # Drumlabooh Build Information
           
-          ## Installation
-          Copy the .component files to:
-          - ~/Library/Audio/Plug-Ins/Components/ (for current user)
-          - /Library/Audio/Plug-Ins/Components/ (for all users)
-          
-          ## Build Info
+          ## Source
+          - CMake file: CMakeLists-alloses.txt
           - Build date: $(date)
+          
+          ## Configuration
           - Build type: ${{ env.BUILD_TYPE }}
           - macOS target: 10.15+
-          - Architectures: Universal (x86_64 + arm64)
+          - Architectures: x86_64, arm64
+          - Multi-channel: ON
+          
+          ## Contents
           EOF
+          
+          # Добавляем список компонентов если есть
+          if [ -d "package/plugins" ]; then
+            echo "## Plugins included:" >> package/BUILD_INFO.md
+            for plugin in package/plugins/*.component; do
+              if [ -d "$plugin" ]; then
+                basename "$plugin" | sed 's/\.component$//' | sed 's/^/- /' >> package/BUILD_INFO.md
+              fi
+            done
+          else
+            echo "## No plugins were built" >> package/BUILD_INFO.md
+          fi
           
           # Создаем архив
           cd package
-          tar czf ../drumlabooh-macos-au.tar.gz .
+          tar czf ../drumlabooh-macos-alloses-au.tar.gz .
           cd ..
           
-          echo "📦 Package created: drumlabooh-macos-au.tar.gz"
-          ls -lh drumlabooh-macos-au.tar.gz
+          echo "📦 Package created: drumlabooh-macos-alloses-au.tar.gz"
+          ls -lh drumlabooh-macos-alloses-au.tar.gz
 
       - name: Upload Build Logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-debug-logs
+          name: alloses-build-logs
           path: |
             cmake_configure.log
             cmake_build.log
+            find_output.log
             components_found.txt
+            CMakeLists.txt.original
           retention-days: 7
 
-      - name: Upload AU Plugins Package
+      - name: Upload Plugin Package
         uses: actions/upload-artifact@v4
         with:
-          name: drumlabooh-au-plugins
-          path: drumlabooh-macos-au.tar.gz
+          name: drumlabooh-alloses-au-plugins
+          path: drumlabooh-macos-alloses-au.tar.gz
           retention-days: 30
-          
-      - name: Final Status Report
+
+      - name: Show Final Status
         if: always()
         run: |
-          echo "=== BUILD STATUS REPORT ==="
+          echo "=== FINAL STATUS ==="
+          echo ""
+          
           if [ -f components_found.txt ] && [ -s components_found.txt ]; then
-            COMP_COUNT=$(wc -l < components_found.txt)
-            echo "✅ SUCCESS: Found $COMP_COUNT AU plugin component(s)"
-            echo "Components:"
+            echo "✅ SUCCESS: AU plugins built using CMakeLists-alloses.txt"
+            echo ""
+            echo "Components found:"
             cat components_found.txt
           else
-            echo "❌ FAILURE: No AU plugins were built"
+            echo "❌ FAILURE: No AU plugins built"
             echo ""
-            echo "Next steps for debugging:"
-            echo "1. Check cmake_configure.log for configuration errors"
-            echo "2. Check cmake_build.log for compilation errors"
-            echo "3. Verify CMakeLists.txt sets FORMATS to AU for macOS"
-            echo "4. Check if JUCE is being fetched correctly"
+            echo "Debug information has been saved to artifacts."
+            echo "Download 'alloses-build-logs' to see:"
+            echo "1. cmake_configure.log - CMake configuration"
+            echo "2. cmake_build.log - Build process"
+            echo "3. find_output.log - Search results"
+            echo ""
+            echo "Common issues with CMakeLists-alloses.txt:"
+            echo "1. Missing 'FORMATS AU' for macOS"
+            echo "2. JUCE not properly included"
+            echo "3. Plugin targets not defined"
           fi
