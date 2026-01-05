@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 include(FetchContent)
 
-set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum macOS deployment version")
+
 
 project(DRUMLABOOH LANGUAGES CXX C VERSION 12.1.0)
 
@@ -23,9 +23,13 @@ add_definitions(-DVERSION_NUMBER="${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MIN
 # ========== ПЛАТФОРМЕННО-СПЕЦИФИЧНЫЕ НАСТРОЙКИ ==========
 if(APPLE)
     message(STATUS "=== CONFIGURING FOR macOS (AU ONLY) ===")
+
+    add_compile_options(-mmacosx-version-min=10.15)
+    add_link_options(-mmacosx-version-min=10.15)
+
     
     # Минимальная версия macOS
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13" CACHE STRING "Minimum macOS version")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum macOS version")
     
     # Универсальные бинарники для Apple Silicon и Intel
     set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Target architectures")
