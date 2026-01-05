@@ -89,6 +89,7 @@ function(create_drumlabooh_plugin target_name is_multi)
         PRODUCT_NAME "${target_name}"
         NEEDS_WEB_BROWSER FALSE
         JUCE_DISPLAY_SPLASH_SCREEN FALSE
+        AU_MAIN_TYPE kAudioUnitType_MusicDevice   # ← КЛЮЧЕВОЙ ФИКС ДЛЯ AU ИНСТРУМЕНТА!
     )
 
     if(UNIX AND NOT APPLE)
@@ -136,7 +137,7 @@ function(create_drumlabooh_plugin target_name is_multi)
         )
     endif()
 
-    # ========== СТАНДАРТНАЯ ЛИНКОВКА ПО ОФИЦИАЛЬНЫМ ПРИМЕРАМ JUCE 8 ==========
+    # Стандартная линковка для плагина-инструмента с GUI
     target_link_libraries(${target_name}
         PRIVATE
             juce::juce_audio_basics
@@ -144,7 +145,10 @@ function(create_drumlabooh_plugin target_name is_multi)
             juce::juce_audio_formats
             juce::juce_audio_processors
             juce::juce_audio_utils
+            juce::juce_audio_plugin_client   # Для AU wrapper
             juce::juce_core
+            juce::juce_data_structures
+            juce::juce_events
             juce::juce_graphics
             juce::juce_gui_basics
             juce::juce_gui_extra
@@ -167,7 +171,6 @@ if(INSTALLKITS)
     install(DIRECTORY ${drum_sklad_SOURCE_DIR}/ DESTINATION ${KITS_INSTALL_DIR} PATTERN ".git" EXCLUDE)
 endif()
 
-# ========== СУММАРНЫЙ ВЫВОД ==========
 message(STATUS "==========================================")
 message(STATUS "Configuration Summary")
 message(STATUS "Platform: ${CMAKE_SYSTEM_NAME}")
