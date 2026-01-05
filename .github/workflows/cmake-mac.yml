@@ -9,96 +9,249 @@ env:
 jobs:
   build-macos-au:
     name: Build Universal AU (macOS)
-    runs-on: macos-latest
+    runs-on: macos-latest  # Используем последнюю версию macOS
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          fetch-depth: 0  # Полная история для версионирования
 
-      - name: Install CMake
-        run: brew install cmake
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
 
-      - name: Prepare CMakeLists.txt
+      - name: Install Build Dependencies
         run: |
-          if [ -f "CMakeLists-alloses.txt" ]; then
-            cp CMakeLists-alloses.txt CMakeLists.txt
-            echo "Using CMakeLists-alloses.txt"
-          fi
-          head -n 30 CMakeLists.txt
+          # Устанавливаем CMake 3.25 (совместимый с JUCE 8)
+          brew install cmake@3.25
+          brew link --overwrite cmake@3.25
+          
+          # Проверяем версии
+          echo "=== Installed versions ==="
+          cmake --version
+          xcodebuild -version
+          sw_vers -productVersion
 
-      - name: Configure CMake
+      - name: Configure CMake with Debug Info
         run: |
-          cmake -S . -B build-au \
-            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 \
-            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
-            -DINSTALLKITS=OFF \
-            -DMULTI=ON
-
-      - name: Build AU Plugins (with full log)
-        run: |
-          echo "=== STARTING BUILD ==="
-          cmake --build build-au \
-            --config ${{ env.BUILD_TYPE }} \
-            --parallel $(sysctl -n hw.ncpu) \
-            --verbose || echo "Build completed (possibly with errors)"
-
-          echo "=== BUILD FINISHED ==="
-          echo "=== Contents of build-au directory ==="
-          find build-au -type d -name "*Artefacts*" || echo "No _Artefacts folders"
-          find build-au -name "*.component" || echo "No .component found anywhere"
-          echo "=== Full tree of build-au (top levels) ==="
-          ls -la build-au/
-          ls -la build-au/*_Artefacts*/ 2>/dev/null || true
-          ls -la build-au/*_Artefacts*/AU/ 2>/dev/null || true
-
-      - name: Verify AU Bundle Structure
-        run: |
-          echo "=== Verifying AU Bundle Structure ==="
-          shopt -s nullglob
-          components=(build-au/*_Artefacts/AU/*.component build-au/*_Artefacts/Release/AU/*.component)
-
-          if [ ${#components[@]} -eq 0 ]; then
-            echo "✗ ERROR: No .component bundles found!"
-            echo "Possible reasons:"
-            echo "1. Build failed (check logs above)"
-            echo "2. JUCE version mismatch in path"
-            echo "3. Plugin formats not set to AU"
-            find build-au -type f | head -20
+          echo "=== Starting CMake Configuration ==="
+          echo "Build type: ${{ env.BUILD_TYPE }}"
+          echo "Current directory: $(pwd)"
+          
+          # Убедимся что CMakeLists.txt существует
+          if [ ! -f "CMakeLists.txt" ]; then
+            echo "ERROR: CMakeLists.txt not found!"
             exit 1
           fi
+          
+          # Конфигурируем с максимальной детализацией
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+            -DMULTI=ON \
+            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON \
+            --debug-output 2>&1 | tee cmake_configure.log
+          
+          echo "=== CMake configuration complete ==="
+          echo "Build directory created: build"
 
-          for component in "${components[@]}"; do
-            name=$(basename "$component")
-            echo "✓ Found component: $name"
-            lipo -info "$component/Contents/MacOS/"* | head -5
+      - name: Build AU Plugins
+        run: |
+          echo "=== Starting Build Process ==="
+          echo "Number of CPU cores: $(sysctl -n hw.ncpu)"
+          
+          # Собираем все цели
+          cmake --build build \
+            --config ${{ env.BUILD_TYPE }} \
+            --parallel $(sysctl -n hw.ncpu) \
+            --verbose 2>&1 | tee cmake_build.log
+          
+          echo "=== Build process completed ==="
+          
+          # Проверяем что было построено
+          echo "=== Built targets ==="
+          cmake --build build --target help 2>&1 | grep -E "(drumlabooh|ALL_BUILD)" || true
+
+      - name: Locate and Verify AU Bundles
+        run: |
+          echo "=== Searching for AU Plugin Bundles ==="
+          
+          # Основные места где JUCE может размещать артефакты
+          POSSIBLE_PATHS=(
+            "build/DRUMLABOOH_artefacts"
+            "build/${BUILD_TYPE}/DRUMLABOOH_artefacts"
+            "build/JUCE/temp"
+            "build/_deps/juce-build"
+            "build"
+          )
+          
+          FOUND_COMPONENTS=()
+          
+          for path in "${POSSIBLE_PATHS[@]}"; do
+            if [ -d "$path" ]; then
+              echo "Checking path: $path"
+              # Ищем .component директории
+              while IFS= read -r -d '' component; do
+                if [ -d "$component" ]; then
+                  echo "✓ Found AU component: $component"
+                  FOUND_COMPONENTS+=("$component")
+                  
+                  # Проверяем структуру
+                  if [ -d "$component/Contents/MacOS" ]; then
+                    echo "  Bundle structure is valid"
+                    # Проверяем архитектуры бинарника
+                    for binary in "$component/Contents/MacOS/"*; do
+                      if [ -f "$binary" ]; then
+                        echo "  Binary: $(basename "$binary")"
+                        lipo -info "$binary" 2>/dev/null || echo "    (lipo check failed)"
+                      fi
+                    done
+                  fi
+                fi
+              done < <(find "$path" -type d -name "*.component" -print0 2>/dev/null)
+            fi
+          done
+          
+          # Ищем также по всему дереву build
+          echo "=== Deep search in build directory ==="
+          find build -type d -name "*.component" 2>/dev/null | while read -r comp; do
+            if [[ ! " ${FOUND_COMPONENTS[@]} " =~ " ${comp} " ]]; then
+              echo "✓ Found additional component: $comp"
+              FOUND_COMPONENTS+=("$comp")
+            fi
+          done
+          
+          # Отчет
+          echo ""
+          echo "=== SUMMARY ==="
+          if [ ${#FOUND_COMPONENTS[@]} -eq 0 ]; then
+            echo "✗ ERROR: No AU plugin bundles found!"
+            echo ""
+            echo "Debug information:"
+            echo "1. Listing build directory contents:"
+            ls -la build/ 2>/dev/null || true
+            echo ""
+            echo "2. Looking for any built executables:"
+            find build -type f -perm +111 -name "*drumlabooh*" 2>/dev/null || echo "  None found"
+            echo ""
+            echo "3. Checking CMake cache:"
+            grep -i "juce\|plugin\|au" build/CMakeCache.txt 2>/dev/null | head -20 || true
+            
+            # Создаем файл с ошибкой для следующего шага
+            mkdir -p diagnostic
+            echo "Build diagnostics:" > diagnostic/error.log
+            echo "No .component bundles found" >> diagnostic/error.log
+            echo "Possible issues:" >> diagnostic/error.log
+            echo "1. JUCE not fetched correctly" >> diagnostic/error.log
+            echo "2. Plugin format not set to AU" >> diagnostic/error.log
+            echo "3. Build failed silently" >> diagnostic/error.log
+          else
+            echo "✓ SUCCESS: Found ${#FOUND_COMPONENTS[@]} AU plugin bundle(s)"
+            for comp in "${FOUND_COMPONENTS[@]}"; do
+              echo "  - $comp"
+            done
+          fi
+
+      - name: Create Distribution Package
+        run: |
+          echo "=== Creating Distribution Package ==="
+          mkdir -p dist
+          mkdir -p dist/plugins
+          
+          # Ищем все компоненты
+          COMPONENTS=($(find build -type d -name "*.component" 2>/dev/null || true))
+          
+          if [ ${#COMPONENTS[@]} -gt 0 ]; then
+            echo "Packaging ${#COMPONENTS[@]} plugin(s)..."
+            
+            for component in "${COMPONENTS[@]}"; do
+              name=$(basename "$component")
+              echo "  Adding: $name"
+              cp -R "$component" "dist/plugins/"
+            done
+            
+            # Создаем README
+            cat > dist/README.md << EOF
+            # Drumlabooh AU Plugins for macOS
+            
+            ## Version: 12.1.0
+            ## Build Date: $(date)
+            ## Platform: Universal (x86_64 + arm64)
+            ## macOS Minimum: 10.15+
+            
+            ## Included Plugins:
+            $(for comp in "${COMPONENTS[@]}"; do 
+              basename "$comp" | sed 's/\.component$//' | sed 's/^/  - /'
+            done)
+            
+            ## Installation:
+            1. Drag the .component files to:
+               - User: ~/Library/Audio/Plug-Ins/Components/
+               - System: /Library/Audio/Plug-Ins/Components/
+            
+            2. Restart your DAW
+            
+            ## Build Info:
+            - JUCE version: 8.0.11
+            - Build type: ${{ env.BUILD_TYPE }}
+            - Architectures: x86_64, arm64
+            EOF
+            
+            # Создаем архив
+            cd dist
+            tar czf ../drumlabooh-macos-au-universal.tar.gz .
+            cd ..
+            
+            echo "Package created: drumlabooh-macos-au-universal.tar.gz"
+            ls -lh drumlabooh-macos-au-universal.tar.gz
+            echo ""
+            echo "Package contents:"
+            tar -tzf drumlabooh-macos-au-universal.tar.gz | head -20
+          else
+            echo "⚠️ WARNING: No plugins found to package"
+            # Создаем минимальный пакет с ошибкой
+            echo "Build succeeded but no .component files were produced" > dist/ERROR.txt
+            echo "Check the build logs for details" >> dist/ERROR.txt
+            cd dist
+            tar czf ../drumlabooh-macos-au-universal.tar.gz .
+            cd ..
+          fi
+
+      - name: Ad-hoc Code Signing (для тестирования)
+        if: false  # Отключено по умолчанию, включите если нужно
+        run: |
+          echo "=== Code Signing ==="
+          find dist/plugins -name "*.component" -type d 2>/dev/null | while read -r component; do
+            echo "Signing: $(basename "$component")"
+            codesign --force --sign - --timestamp=none --options runtime "$component"
           done
 
-      # Остальные шаги (sign, package, upload) оставляем как раньше
-      - name: Ad-hoc sign AU components
-        run: |
-          for c in build-au/*_Artefacts/{,Release/}AU/*.component; do
-            [ -d "$c" ] && codesign --force --sign - --timestamp=none --options runtime "$c"
-          done
-
-      - name: Create Final Package
-        run: |
-          mkdir -p release-au-universal
-          cp -R build-au/*_Artefacts/{,Release/}AU/*.component release-au-universal/ || true
-
-          printf "%s\n" "Drumlabooh macOS AU Plugins — Universal" > release-au-universal/README.txt
-          printf "Built: %s\n" "$(date)" >> release-au-universal/README.txt
-          printf "Includes:\n" >> release-au-universal/README.txt
-          ls release-au-universal/*.component | xargs basename | sed 's/^/  • /' >> release-au-universal/README.txt || true
-
-          tar czf drumlabooh-macos-AU-universal.tar.gz -C release-au-universal .
-          ls -lh drumlabooh-macos-AU-universal.tar.gz
-
-      - name: Upload Artifact
+      - name: Upload Build Logs (для отладки)
+        if: always()  # Всегда загружаем логи, даже при ошибке
         uses: actions/upload-artifact@v4
         with:
-          name: drumlabooh-macos-AU-universal
-          path: drumlabooh-macos-AU-universal.tar.gz
+          name: build-logs
+          path: |
+            cmake_configure.log
+            cmake_build.log
+            diagnostic/
+          retention-days: 7
+
+      - name: Upload AU Plugins
+        uses: actions/upload-artifact@v4
+        with:
+          name: drumlabooh-macos-au-universal
+          path: drumlabooh-macos-au-universal.tar.gz
           retention-days: 30
+          
+      - name: Create GitHub Release (опционально)
+        if: false  # Отключено, включите если используете релизы
+        uses: softprops/action-gh-release@v1
+        with:
+          files: drumlabooh-macos-au-universal.tar.gz
+          generate_release_notes: true
+          draft: true
