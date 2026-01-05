@@ -100,6 +100,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
  /* MP3: only if MP3AudioFormat is available in this build.
    Use JUCE_USE_MP3AUDIOFORMAT if the build system defines it,
    otherwise try a header existence check via __has_include. */
+#ifndef __APPLE__
 #if defined(JUCE_USE_MP3AUDIOFORMAT) \
     || (defined(__has_include) && __has_include(<juce_audio_formats/juce_MP3AudioFormat.h>))
     if (ext == "mp3")
@@ -112,6 +113,8 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
         // reader stays nullptr; function will return 0 below
     }
 #endif
+#endif
+
   if (ext == "aiff" || ext == "aif" )
      reader = AiffAudioFormat().createReaderFor (fs, true);
 
