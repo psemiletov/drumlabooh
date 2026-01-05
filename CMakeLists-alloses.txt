@@ -48,7 +48,7 @@ function(create_drumlabooh_plugin target_name is_multi)
         NEEDS_WEB_BROWSER FALSE
         JUCE_DISPLAY_SPLASH_SCREEN FALSE
         AU_MAIN_TYPE kAudioUnitType_MusicDevice
-        COPY_PLUGIN_AFTER_BUILD TRUE  # Важно: копировать плагин после сборки
+        COPY_PLUGIN_AFTER_BUILD TRUE
     )
 
     # Указываем явно путь для артефактов
@@ -91,7 +91,7 @@ function(create_drumlabooh_plugin target_name is_multi)
         target_compile_definitions(${target_name} PUBLIC MULTICHANNEL=1)
     endif()
 
-    # Стандартная линковка для AU плагина
+    # ИСПРАВЛЕННАЯ ЛИНКОВКА - используем juce_audio_plugin_client для AU
     target_link_libraries(${target_name}
         PRIVATE
             juce::juce_audio_basics
@@ -99,7 +99,7 @@ function(create_drumlabooh_plugin target_name is_multi)
             juce::juce_audio_formats
             juce::juce_audio_processors
             juce::juce_audio_utils
-            juce::juce_audio_plugin_client_AAX  # Для AU нужен этот
+            juce::juce_audio_plugin_client  # ← ИСПРАВЛЕНО: убрали _AAX
             juce::juce_core
             juce::juce_data_structures
             juce::juce_events
@@ -122,7 +122,6 @@ if(MULTI)
 endif()
 
 # ========== НАСТРОЙКА ПУТЕЙ АРТЕФАКТОВ ==========
-# В JUCE 8 артефакты помещаются в подпапку проекта
 set(JUCE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}_artefacts" CACHE PATH "Directory for JUCE plugin artefacts")
 
 message(STATUS "==========================================")
@@ -133,123 +132,3 @@ message(STATUS "JUCE version: ${JUCETAG}")
 message(STATUS "Multi-channel: ${MULTI}")
 message(STATUS "Artefacts directory: ${JUCE_OUTPUT_DIRECTORY}")
 message(STATUS "==========================================")
-```
-
-## Ключевые изменения:
-
-1. **Удалено всё ненужное для macOS:**
-   - Linux и Windows специфичные настройки
-   - Drum_sklad зависимость (т.к. `INSTALLKITS=OFF`)
-   - LV2 и VST3 форматы
-   - Лишние условия `if(APPLE)`
-
-2. **Добавлены важные настройки для AU:**
-   - `COPY_PLUGIN_AFTER_BUILD TRUE` - копирует плагин после сборки
-   - `juce_audio_plugin_client_AAX` вместо `juce_audio_plugin_client`
-   - Явные настройки `MACOSX_BUNDLE_*`
-
-3. **Указан путь для артефактов:**
-   - `JUCE_OUTPUT_DIRECTORY` - где искать собранные плагины
-
-4. **Оптимизированы compile definitions** для macOS
-
-## Соответствующий исправленный workflow:
-
-```yaml
-name: Build macOS AU Plugins
-
-on:
-  workflow_dispatch:
-
-env:
-  BUILD_TYPE: Release
-
-jobs:
-  build-macos-au:
-    name: Build Universal AU (macOS)
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install CMake
-        run: |
-          brew install cmake@3.25
-          brew link --overwrite cmake@3.25
-
-      - name: Configure CMake
-        run: |
-          cmake -S . -B build-au \
-            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
-            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
-            -DMULTI=ON \
-            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
-
-      - name: Build AU Plugins
-        run: |
-          echo "=== Building with CMake ==="
-          cmake --build build-au \
-            --config ${{ env.BUILD_TYPE }} \
-            --parallel $(sysctl -n hw.ncpu) \
-            --verbose 2>&1 | tee build.log
-          
-          echo "=== Build completed ==="
-
-      - name: Find and Verify AU Bundles
-        run: |
-          echo "=== Looking for AU bundles ==="
-          
-          # Основное место в JUCE 8
-          JUCE_ARTEFACTS_DIR="build-au/DRUMLABOOH_artefacts"
-          
-          if [ -d "$JUCE_ARTEFACTS_DIR" ]; then
-            echo "Found JUCE artefacts directory: $JUCE_ARTEFACTS_DIR"
-            find "$JUCE_ARTEFACTS_DIR" -type d -name "*.component" 2>/dev/null || true
-          else
-            echo "JUCE artefacts directory not found at: $JUCE_ARTEFACTS_DIR"
-          fi
-          
-          # Ищем во всех возможных местах
-          echo "=== Searching all possible locations ==="
-          find build-au -type d -name "*.component" 2>/dev/null | while read -r comp; do
-            echo "Found component: $comp"
-            if [ -d "$comp/Contents/MacOS" ]; then
-              echo "  Binary info:"
-              for bin in "$comp/Contents/MacOS/"*; do
-                lipo -info "$bin" 2>/dev/null || true
-              done
-            fi
-          done
-          
-          # Проверяем что собралось
-          echo "=== Checking built targets ==="
-          find build-au -name "*drumlabooh*" -type f -perm +111 2>/dev/null || echo "No executables found"
-
-      - name: Create Package
-        run: |
-          mkdir -p release-au
-          
-          # Копируем все найденные .component файлы
-          find build-au -type d -name "*.component" -exec cp -R {} release-au/ \; 2>/dev/null || true
-          
-          # Если ничего не найдено, создаем пустой релиз с ошибкой
-          if [ -z "$(ls -A release-au 2>/dev/null)" ]; then
-            echo "ERROR: No components found for packaging" > release-au/ERROR.txt
-            echo "Check build logs for details" >> release-au/ERROR.txt
-          else
-            echo "Successfully packaged:" > release-au/README.txt
-            ls release-au/ >> release-au/README.txt
-          fi
-          
-          # Создаем архив
-          tar czf drumlabooh-macos-au.tar.gz -C release-au .
-          ls -lh *.tar.gz
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: drumlabooh-macos-au
-          path: drumlabooh-macos-au.tar.gz
-

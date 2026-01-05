@@ -20,267 +20,290 @@ jobs:
           brew update
           brew install cmake
           brew install pkg-config
-          
-          echo "=== Versions ==="
           cmake --version
 
-      - name: Setup CMakeLists-alloses.txt
+      - name: Analyze CMakeLists-alloses.txt
         run: |
-          echo "=== SETUP: Using CMakeLists-alloses.txt ==="
+          echo "=== FULL ANALYSIS OF CMakeLists-alloses.txt ==="
+          echo ""
           
-          # Проверяем что файл существует
           if [ ! -f "CMakeLists-alloses.txt" ]; then
-            echo "❌ ERROR: CMakeLists-alloses.txt not found!"
-            ls -la CMakeLists*.txt
+            echo "❌ ERROR: CMakeLists-alloses.txt does not exist!"
             exit 1
           fi
           
-          # Сохраняем оригинальный CMakeLists.txt если есть
-          if [ -f "CMakeLists.txt" ]; then
-            cp CMakeLists.txt CMakeLists.txt.original
-            echo "✓ Original CMakeLists.txt backed up"
-          fi
+          # Показываем полный файл
+          echo "=== COMPLETE CMakeLists-alloses.txt ==="
+          cat CMakeLists-alloses.txt
+          echo ""
           
-          # Копируем CMakeLists-alloses.txt как основной
+          echo "=== CRITICAL CHECKS ==="
+          echo ""
+          
+          # 1. Проверяем project()
+          echo "1. Project definition:"
+          grep -n "project(" CMakeLists-alloses.txt || echo "  ❌ NOT FOUND!"
+          
+          # 2. Проверяем FORMATS
+          echo ""
+          echo "2. Plugin formats (CRITICAL FOR AU):"
+          grep -n -i "FORMATS\|juce_add_plugin" CMakeLists-alloses.txt || echo "  ❌ NOT FOUND!"
+          
+          # 3. Проверяем APPLE-specific настройки
+          echo ""
+          echo "3. macOS/Apple specific settings:"
+          grep -n -i "apple\|macos\|osx\|au_main_type" CMakeLists-alloses.txt || echo "  ⚠️ Not found"
+          
+          # 4. Проверяем JUCE
+          echo ""
+          echo "4. JUCE configuration:"
+          grep -n -i "juce\|fetchcontent" CMakeLists-alloses.txt || echo "  ❌ NOT FOUND!"
+          
+          # 5. Проверяем создание плагинов
+          echo ""
+          echo "5. Plugin creation:"
+          grep -n -B5 -A5 "create_drumlabooh\|add_plugin" CMakeLists-alloses.txt || echo "  ❌ NOT FOUND!"
+          
+          # 6. Копируем файл для использования
+          echo ""
+          echo "6. Copying CMakeLists-alloses.txt as main CMakeLists.txt"
           cp CMakeLists-alloses.txt CMakeLists.txt
-          
-          echo "✓ CMakeLists-alloses.txt copied to CMakeLists.txt"
-          echo ""
-          echo "=== First 20 lines of new CMakeLists.txt ==="
-          head -20 CMakeLists.txt
-          
-          echo ""
-          echo "=== Checking for AU configuration ==="
-          grep -i "apple\|macos\|au\|format" CMakeLists.txt | head -10 || echo "  No AU config found"
+          ls -la CMakeLists*.txt
 
-      - name: Configure CMake
+      - name: Configure CMake with MAXIMUM Debug
         run: |
-          echo "=== CONFIGURE CMAKE ==="
+          echo "=== CMAKE CONFIGURATION (MAX DEBUG) ==="
           
-          # Запускаем конфигурацию
+          # Сначала пробуем с минимальными флагами
+          echo "1. Basic configuration test:"
+          cmake -S . -B build-test \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+            2>&1 | head -100
+          
+          echo ""
+          echo "2. Full configuration:"
+          # Теперь полная конфигурация
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
             -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
             -DMULTI=ON \
-            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-            2>&1 | tee cmake_configure.log
+            --trace-expand 2>&1 | grep -A5 -B5 "juce\|plugin\|FORMATS\|error\|warning" | head -200 > cmake_trace_filtered.log
           
-          echo "=== Checking CMakeCache ==="
-          grep -i "juce\|plugin\|au\|format\|apple" build/CMakeCache.txt 2>/dev/null | head -20 || true
+          echo "=== Filtered trace output (key parts) ==="
+          cat cmake_trace_filtered.log
+          
+          echo ""
+          echo "3. Standard configuration:"
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+            -DMULTI=ON \
+            2>&1 | tee cmake_configure_full.log | tail -100
 
-      - name: Build Plugins
+      - name: Check CMake Configuration Results
         run: |
-          echo "=== BUILD PLUGINS ==="
+          echo "=== CONFIGURATION RESULTS ==="
           
+          if [ ! -d "build" ]; then
+            echo "❌ ERROR: build directory was not created!"
+            exit 1
+          fi
+          
+          echo "1. CMakeCache.txt analysis:"
+          echo "   File exists: $( [ -f build/CMakeCache.txt ] && echo 'Yes' || echo 'No' )"
+          
+          echo ""
+          echo "2. Key variables from CMakeCache:"
+          grep -i "juce\|plugin\|au\|format\|apple" build/CMakeCache.txt 2>/dev/null | head -30 || echo "   None found"
+          
+          echo ""
+          echo "3. Generated files:"
+          find build -name "*.cmake" -type f 2>/dev/null | head -10 || echo "   None found"
+          
+          echo ""
+          echo "4. Checking for JUCE:"
+          find build -type d -name "*juce*" 2>/dev/null || echo "   JUCE not found in build directory"
+
+      - name: Build and Capture Everything
+        run: |
+          echo "=== BUILD PROCESS ==="
+          
+          echo "1. Available targets:"
+          cmake --build build --target help 2>&1 | tee targets.log
+          
+          echo ""
+          echo "2. Building ALL targets:"
+          # Пытаемся собрать всё
           cmake --build build \
             --config ${{ env.BUILD_TYPE }} \
-            --parallel $(sysctl -n hw.ncpu) \
-            --verbose 2>&1 | tee cmake_build.log
+            --parallel 2 \
+            2>&1 | tee cmake_build_full.log | tail -100
           
-          echo "=== Build completed ==="
+          echo ""
+          echo "3. Build exit code: $?"
+          
+          echo ""
+          echo "4. What was actually created:"
+          find build -type f \( -name "*.o" -o -name "*.a" -o -name "*.dylib" -o -perm +111 \) 2>/dev/null | wc -l | xargs echo "   Total build artifacts: "
+          find build -type f -name "*.o" 2>/dev/null | head -5 | xargs -I{} echo "   - {}"
 
-      - name: Find AU Components (Optimized Search)
+      - name: Direct Diagnostic - Force Find Output
         run: |
-          echo "=== FINDING AU COMPONENTS ==="
-          
-          # Создаем временный скрипт для поиска
-          cat > find_components.sh << 'EOF'
-          #!/bin/bash
-          
-          echo "Search strategy:"
-          echo "1. Standard JUCE 8 paths"
-          echo "2. Any .component directories"
-          echo "3. Bundle-like structures"
-          
-          # Стандартные пути JUCE 8
-          STANDARD_PATHS=(
-            "build/${PROJECT_NAME}_artefacts"
-            "build/${BUILD_TYPE}/${PROJECT_NAME}_artefacts"
-            "build/JUCE/temp/${BUILD_TYPE}"
-            "build/_deps/juce-build/temp/${BUILD_TYPE}"
-          )
-          
-          # Пытаемся определить имя проекта
-          PROJECT_NAME=$(grep -m1 "project(" CMakeLists.txt | sed 's/.*(\([^ ]*\).*/\1/' 2>/dev/null || echo "DRUMLABOOH")
-          echo "Project name from CMakeLists: $PROJECT_NAME"
-          
+          echo "=== DIRECT DIAGNOSTIC OUTPUT ==="
           echo ""
-          echo "=== Checking standard paths ==="
-          for path in "${STANDARD_PATHS[@]}"; do
-            if [ -d "$path" ]; then
-              echo "✓ Path exists: $path"
-              find "$path" -type d -name "*.component" 2>/dev/null | while read comp; do
-                echo "  Found: $comp"
-              done
-            fi
-          done
           
-          echo ""
-          echo "=== Deep search in build directory ==="
-          COMPONENTS=$(find build -type d -name "*.component" 2>/dev/null)
-          if [ -n "$COMPONENTS" ]; then
-            echo "✓ Found .component directories:"
-            echo "$COMPONENTS"
-          else
-            echo "✗ No .component directories found"
-          fi
+          # Создаем простой CMake скрипт для диагностики
+          cat > diagnostic.cmake << 'EOF'
+          message(STATUS "=== DIAGNOSTIC SCRIPT ===")
           
-          echo ""
-          echo "=== Looking for any plugin output ==="
-          find build -type f \( -name "*.dylib" -o -name "*.vst3" -o -name "*.component" \) 2>/dev/null | head -10 || echo "  None found"
+          # Получаем все цели
+          get_cmake_property(all_targets BUILDSYSTEM_TARGETS)
+          message(STATUS "Total targets found: ${all_targets}")
           
-          echo ""
-          echo "=== Checking what WAS built ==="
-          echo "Object files count: $(find build -name "*.o" -type f 2>/dev/null | wc -l)"
-          echo "Executable files: $(find build -type f -perm +111 2>/dev/null | wc -l)"
+          if(NOT all_targets)
+            message(FATAL_ERROR "NO TARGETS FOUND! CMake configuration failed.")
+          endif()
+          
+          foreach(target IN LISTS all_targets)
+            message(STATUS "--- Target: ${target} ---")
+            get_target_property(target_type ${target} TYPE)
+            message(STATUS "    Type: ${target_type}")
+            
+            get_target_property(target_source_dir ${target} SOURCE_DIR)
+            if(target_source_dir)
+              message(STATUS "    Source dir: ${target_source_dir}")
+            endif()
+            
+            get_target_property(target_sources ${target} SOURCES)
+            if(target_sources)
+              list(LENGTH target_sources num_sources)
+              message(STATUS "    Sources: ${num_sources} files")
+            endif()
+            
+            get_target_property(target_output ${target} OUTPUT_NAME)
+            if(target_output)
+              message(STATUS "    Output: ${target_output}")
+            endif()
+          endforeach()
+          
+          # Проверяем переменные
+          if(DEFINED PLUGIN_FORMATS)
+            message(STATUS "PLUGIN_FORMATS: ${PLUGIN_FORMATS}")
+          else()
+            message(STATUS "PLUGIN_FORMATS: NOT DEFINED!")
+          endif()
+          
+          if(DEFINED JUCE_FETCHED)
+            message(STATUS "JUCE fetched: ${JUCE_FETCHED}")
+          endif()
           EOF
           
-          chmod +x find_components.sh
-          ./find_components.sh 2>&1 | tee find_output.log
-          
-          # Сохраняем список найденных компонентов
-          find build -type d -name "*.component" 2>/dev/null > components_found.txt || true
-          
-          if [ -s components_found.txt ]; then
-            echo "✅ SUCCESS: Found AU components!"
-            echo "Components:"
-            cat components_found.txt
-          else
-            echo "❌ No components found"
-          fi
+          echo "Running diagnostic script..."
+          cmake -P diagnostic.cmake 2>&1
 
-      - name: Diagnostic - Check JUCE Configuration
+      - name: Last Resort - Manual Search
         run: |
-          echo "=== DIAGNOSTIC: JUCE Configuration ==="
+          echo "=== MANUAL SEARCH IN BUILD DIRECTORY ==="
+          echo ""
           
-          echo "1. Checking CMakeLists.txt for JUCE settings:"
-          grep -n -B2 -A2 "juce_add_plugin\|FORMATS\|JUCE\|FetchContent" CMakeLists.txt | head -30 || echo "  Not found"
+          echo "Full tree structure (depth 4):"
+          find build -maxdepth 4 -type d 2>/dev/null | sort | head -50
           
           echo ""
-          echo "2. Checking if JUCE was downloaded:"
-          if [ -d "build/_deps" ]; then
-            echo "✓ _deps directory exists"
-            find build/_deps -type d -name "*juce*" 2>/dev/null || echo "  No juce directory"
-          else
-            echo "✗ _deps directory NOT found - JUCE not fetched!"
-          fi
+          echo "Looking for ANY output files:"
+          find build -type f -newer cmake_configure_full.log 2>/dev/null | head -20 || echo "   No new files created"
           
           echo ""
-          echo "3. Checking CMake targets:"
-          if [ -d "build" ]; then
-            cmake --build build --target help 2>&1 | grep -i "drumlabooh\|plugin\|au\|juce" || echo "  No relevant targets"
-          fi
+          echo "Checking for JUCE artefacts pattern:"
+          find build -type d -name "*arte*" 2>/dev/null || echo "   No artefact directories"
+          
+          echo ""
+          echo "All files with 'drumlabooh' in name:"
+          find build -type f -name "*drumlabooh*" 2>/dev/null || echo "   None"
 
-      - name: Create Package
+      - name: Create Detailed Report
+        if: always()
         run: |
-          echo "=== CREATING PACKAGE ==="
-          mkdir -p package
+          echo "=== DETAILED REPORT ===" > report.txt
+          echo "Build date: $(date)" >> report.txt
+          echo "" >> report.txt
           
-          # Проверяем есть ли компоненты
-          if [ -f components_found.txt ] && [ -s components_found.txt ]; then
-            echo "Packaging found components..."
-            
-            mkdir -p package/plugins
-            while IFS= read -r component; do
-              if [ -d "$component" ]; then
-                name=$(basename "$component")
-                echo "  Adding: $name"
-                cp -R "$component" "package/plugins/"
-              fi
-            done < components_found.txt
-            
-            COUNT=$(ls -1 package/plugins/*.component 2>/dev/null | wc -l | tr -d ' ')
-            echo "✅ Packaged $COUNT plugin(s)"
+          echo "=== CMakeLists-alloses.txt SUMMARY ===" >> report.txt
+          grep -c "project\|juce\|FORMATS\|create_drumlabooh" CMakeLists-alloses.txt 2>/dev/null | xargs echo "Key elements count: " >> report.txt
+          
+          echo "" >> report.txt
+          echo "=== BUILD STATUS ===" >> report.txt
+          if find build -name "*.o" -type f 2>/dev/null | grep -q "."; then
+            echo "✓ Object files were created" >> report.txt
           else
-            echo "⚠️ No components to package"
-            echo "Build completed but no .component files were produced" > package/README.txt
-            echo "" >> package/README.txt
-            echo "Possible issues:" >> package/README.txt
-            echo "1. Wrong plugin format in CMakeLists-alloses.txt" >> package/README.txt
-            echo "2. JUCE not configured for AU" >> package/README.txt
-            echo "3. Build target not created" >> package/README.txt
+            echo "✗ NO object files created" >> report.txt
           fi
           
-          # Создаем информационный файл
-          cat > package/BUILD_INFO.md << 'EOF'
-          # Drumlabooh Build Information
+          echo "" >> report.txt
+          echo "=== NEXT STEPS ===" >> report.txt
+          echo "1. Check CMakeLists-alloses.txt has:" >> report.txt
+          echo "   - project() definition" >> report.txt
+          echo "   - juce_add_plugin() call" >> report.txt
+          echo "   - FORMATS AU for macOS" >> report.txt
+          echo "2. Verify JUCE is fetched with FetchContent" >> report.txt
+          echo "3. Check for CMake errors in logs" >> report.txt
           
-          ## Source
-          - CMake file: CMakeLists-alloses.txt
-          - Build date: $(date)
-          
-          ## Configuration
-          - Build type: ${{ env.BUILD_TYPE }}
-          - macOS target: 10.15+
-          - Architectures: x86_64, arm64
-          - Multi-channel: ON
-          
-          ## Contents
-          EOF
-          
-          # Добавляем список компонентов если есть
-          if [ -d "package/plugins" ]; then
-            echo "## Plugins included:" >> package/BUILD_INFO.md
-            for plugin in package/plugins/*.component; do
-              if [ -d "$plugin" ]; then
-                basename "$plugin" | sed 's/\.component$//' | sed 's/^/- /' >> package/BUILD_INFO.md
-              fi
-            done
-          else
-            echo "## No plugins were built" >> package/BUILD_INFO.md
-          fi
-          
-          # Создаем архив
-          cd package
-          tar czf ../drumlabooh-macos-alloses-au.tar.gz .
-          cd ..
-          
-          echo "📦 Package created: drumlabooh-macos-alloses-au.tar.gz"
-          ls -lh drumlabooh-macos-alloses-au.tar.gz
+          cat report.txt
 
-      - name: Upload Build Logs
+      - name: Upload Critical Logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: alloses-build-logs
+          name: critical-debug-info
           path: |
-            cmake_configure.log
-            cmake_build.log
-            find_output.log
-            components_found.txt
-            CMakeLists.txt.original
-          retention-days: 7
-
-      - name: Upload Plugin Package
-        uses: actions/upload-artifact@v4
-        with:
-          name: drumlabooh-alloses-au-plugins
-          path: drumlabooh-macos-alloses-au.tar.gz
+            report.txt
+            cmake_configure_full.log
+            cmake_build_full.log
+            cmake_trace_filtered.log
+            targets.log
           retention-days: 30
 
-      - name: Show Final Status
+      - name: Immediate Feedback
         if: always()
         run: |
-          echo "=== FINAL STATUS ==="
+          echo "=== IMMEDIATE FEEDBACK ==="
           echo ""
           
-          if [ -f components_found.txt ] && [ -s components_found.txt ]; then
-            echo "✅ SUCCESS: AU plugins built using CMakeLists-alloses.txt"
-            echo ""
-            echo "Components found:"
-            cat components_found.txt
+          # Проверяем ключевые вещи прямо здесь
+          echo "1. Was CMakeLists-alloses.txt valid?"
+          if grep -q "project(" CMakeLists-alloses.txt 2>/dev/null; then
+            echo "   ✓ Contains project()"
           else
-            echo "❌ FAILURE: No AU plugins built"
-            echo ""
-            echo "Debug information has been saved to artifacts."
-            echo "Download 'alloses-build-logs' to see:"
-            echo "1. cmake_configure.log - CMake configuration"
-            echo "2. cmake_build.log - Build process"
-            echo "3. find_output.log - Search results"
-            echo ""
-            echo "Common issues with CMakeLists-alloses.txt:"
-            echo "1. Missing 'FORMATS AU' for macOS"
-            echo "2. JUCE not properly included"
-            echo "3. Plugin targets not defined"
+            echo "   ✗ MISSING project() definition"
+          fi
+          
+          if grep -q "juce_add_plugin\|juce_add_app" CMakeLists-alloses.txt 2>/dev/null; then
+            echo "   ✓ Contains JUCE plugin/app target"
+          else
+            echo "   ✗ MISSING juce_add_plugin/juce_add_app"
+          fi
+          
+          if grep -q "FORMATS" CMakeLists-alloses.txt 2>/dev/null; then
+            echo "   ✓ Contains FORMATS setting"
+            grep -i "FORMATS" CMakeLists-alloses.txt | head -2
+          else
+            echo "   ✗ MISSING FORMATS setting"
+          fi
+          
+          echo ""
+          echo "2. Did CMake configure successfully?"
+          if [ -f "build/CMakeCache.txt" ]; then
+            echo "   ✓ CMakeCache.txt created"
+          else
+            echo "   ✗ NO CMakeCache.txt - configuration failed"
+          fi
+          
+          echo ""
+          echo "3. Were any targets built?"
+          if find build -name "*.o" -type f 2>/dev/null | grep -q "."; then
+            echo "   ✓ Object files found - compilation occurred"
+          else
+            echo "   ✗ NO compilation occurred"
           fi
