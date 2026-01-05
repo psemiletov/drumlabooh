@@ -1,6 +1,3 @@
-Вот исправленный `CMakeLists.txt`, оптимизированный только для сборки AU плагинов на macOS:
-
-```cmake
 cmake_minimum_required(VERSION 3.15)
 
 project(DRUMLABOOH LANGUAGES CXX C VERSION 12.1.0)
@@ -255,6 +252,4 @@ jobs:
         with:
           name: drumlabooh-macos-au
           path: drumlabooh-macos-au.tar.gz
-```
 
-Этот исправленный CMakeLists.txt соберет только AU плагины для macOS, и workflow будет правильно их находить.
