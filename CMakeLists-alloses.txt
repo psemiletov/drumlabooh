@@ -22,20 +22,14 @@ add_definitions(-DVERSION_NUMBER="${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MIN
 if(APPLE)
     message(STATUS "=== CONFIGURING FOR macOS (AU ONLY) ===")
 
-    # Минимальная версия macOS
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum macOS version")
-
-    # Универсальные бинарники для Apple Silicon и Intel
     set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Target architectures")
 
-    # Версии зависимостей для macOS
     set(DRUMSKLADTAG "4.0.0")
     set(JUCETAG "8.0.11")
 
-    # ТОЛЬКО AU для macOS
     set(PLUGIN_FORMATS AU)
 
-    # Пути установки для macOS
     set(AU_INSTALL_DIR "/Library/Audio/Plug-Ins/Components")
     set(KITS_INSTALL_DIR "/Library/Application Support/drumlabooh/kits")
 
@@ -45,10 +39,8 @@ elseif(WIN32)
     set(DRUMSKLADTAG "4.0.0")
     set(JUCETAG "7.0.10")
 
-    # Windows: только VST3
     set(PLUGIN_FORMATS VST3)
 
-    # Пути установки для Windows
     if(LOCALINSTALL)
         set(VST3_INSTALL_DIR "$ENV{USERPROFILE}/VST3")
         set(KITS_INSTALL_DIR "$ENV{USERPROFILE}/drum_sklad")
@@ -57,7 +49,6 @@ elseif(WIN32)
         set(KITS_INSTALL_DIR "C:/Program Files/drumlabooh/kits")
     endif()
 
-    # Настройки MSVC
     if(MSVC)
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     endif()
@@ -68,10 +59,8 @@ else()  # Linux
     set(DRUMSKLADTAG "4.0.0")
     set(JUCETAG "8.0.11")
 
-    # Linux: VST3 + LV2
     set(PLUGIN_FORMATS VST3 LV2)
 
-    # Пути установки для Linux
     if(LOCALINSTALL)
         set(LV2_INSTALL_DIR "$ENV{HOME}/.lv2")
         set(VST3_INSTALL_DIR "$ENV{HOME}/.vst3")
@@ -87,7 +76,6 @@ endif()
 # ========== ЗАВИСИМОСТИ ==========
 set(FETCHCONTENT_QUIET FALSE)
 
-# JUCE
 cmake_policy(SET CMP0135 NEW)
 FetchContent_Declare(
     juce
@@ -95,7 +83,6 @@ FetchContent_Declare(
     EXCLUDE_FROM_ALL
 )
 
-# Барабанные наборы
 if(INSTALLKITS)
     FetchContent_Declare(
         drum_sklad
@@ -115,14 +102,12 @@ endif()
 function(create_drumlabooh_plugin target_name is_multi)
     message(STATUS "Creating plugin: ${target_name} (multi: ${is_multi})")
 
-    # Определение URI для LV2 (только Linux)
     if(UNIX AND NOT APPLE)
         set(lv2_uri "https://github.com/psemiletov/${target_name}")
     else()
         set(lv2_uri "")
     endif()
 
-    # Создание плагина
     juce_add_plugin(${target_name}
         COMPANY_NAME "Semiletov"
         IS_SYNTH TRUE
@@ -137,7 +122,6 @@ function(create_drumlabooh_plugin target_name is_multi)
         JUCE_DISPLAY_SPLASH_SCREEN FALSE
     )
 
-    # LV2 специфичные настройки (только если включено)
     if(UNIX AND NOT APPLE)
         set_target_properties(${target_name} PROPERTIES
             LV2URI ${lv2_uri}
@@ -145,10 +129,8 @@ function(create_drumlabooh_plugin target_name is_multi)
         )
     endif()
 
-    # Генерация JUCE заголовка
     juce_generate_juce_header(${target_name})
 
-    # Источники
     target_sources(${target_name}
         PRIVATE
             ./Source/PluginEditor.cpp
@@ -161,7 +143,6 @@ function(create_drumlabooh_plugin target_name is_multi)
             ./Source/resampler.c
     )
 
-    # Компиляционные определения
     target_compile_definitions(${target_name}
         PUBLIC
             JUCE_JACK=0
@@ -173,7 +154,6 @@ function(create_drumlabooh_plugin target_name is_multi)
             VERSION_NUMBER="${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
     )
 
-    # Для multi-канальной версии
     if(${is_multi})
         target_compile_definitions(${target_name}
             PUBLIC
@@ -181,7 +161,6 @@ function(create_drumlabooh_plugin target_name is_multi)
         )
     endif()
 
-    # macOS специфичные определения
     if(APPLE)
         target_compile_definitions(${target_name}
             PUBLIC
@@ -191,13 +170,13 @@ function(create_drumlabooh_plugin target_name is_multi)
         )
     endif()
 
-    # ========== КРИТИЧЕСКИ ВАЖНАЯ ЛИНКОВКА ==========
-    # Эти модули ОБЯЗАТЕЛЬНЫ для генерации AU/VST3 бандлов в JUCE 8
+    # ========== ОБЯЗАТЕЛЬНЫЕ МОДУЛИ ДЛЯ СБОРКИ AU ==========
     target_link_libraries(${target_name}
         PRIVATE
             juce::juce_audio_utils
-            juce::juce_audio_processors     # ← Обязательно! Без него нет .component
-            juce::juce_gui_basics            # ← Для GUI (PluginEditor)
+            juce::juce_audio_processors          # Для формата плагина
+            juce::juce_audio_plugin_client       # ← Ключевой для AU wrapper!
+            juce::juce_gui_basics                # Для GUI
         PUBLIC
             juce::juce_recommended_config_flags
             juce::juce_recommended_lto_flags
