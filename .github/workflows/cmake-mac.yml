@@ -1,7 +1,6 @@
 # macOS AU build for plugins (CMake) — manual trigger only
 name: CMake macOS AU CI
 
-# Запуск только вручную
 on:
   workflow_dispatch:
 
@@ -10,17 +9,8 @@ env:
 
 jobs:
   build-macos-au:
-    name: Build AU on macOS (matrix)
+    name: Build AU on macOS (universal)
     runs-on: macos-latest
-
-    strategy:
-      matrix:
-        arch: [universal]
-        plugin: [drumlabooh, drumlabooh-multi]
-
-    env:
-      # универсальная архитектура разворачивается в "x86_64;arm64"
-      CMAKE_ARCHS: ${{ matrix.arch == 'universal' && 'x86_64;arm64' || matrix.arch }}
 
     steps:
       - name: Checkout repository
@@ -28,121 +18,142 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Setup macOS
+      - name: System Information
         run: |
           echo "=== System Information ==="
-          echo "Architecture: $(uname -m)"
-          echo "macOS: $(sw_vers -productVersion)"
-          echo "Available CMake files:"
-          ls -la CMakeLists*.txt || true
-          sysctl -n hw.ncpu
+          uname -a
+          sw_vers
+          echo "CPU cores: $(sysctl -n hw.ncpu)"
+          echo "Xcode version:"
+          xcodebuild -version || true
 
-      - name: Install minimal dependencies
+      - name: Install dependencies
         run: |
           brew update
           brew install cmake
 
-      - name: Prepare CMakeLists for macOS build
+      - name: Prepare CMakeLists.txt
         run: |
           if [ -f "CMakeLists-alloses.txt" ]; then
-            echo "✓ CMakeLists-alloses.txt found — using it as CMakeLists.txt"
+            echo "Using CMakeLists-alloses.txt as CMakeLists.txt"
             cp CMakeLists-alloses.txt CMakeLists.txt
           else
-            echo "✗ CMakeLists-alloses.txt not found — using repository CMakeLists.txt"
+            echo "Using default CMakeLists.txt from repository"
           fi
-          echo "Resulting CMakeLists (first 20 lines):"
-          head -n 20 CMakeLists.txt || true
+          head -n 20 CMakeLists.txt
 
-      - name: Configure CMake for AU only
+      - name: Configure CMake (Universal AU)
         run: |
-          echo "Configuring for AU format only using CMakeLists.txt"
-          cmake -S . -B "build-au-${{ matrix.arch }}" \
-            -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}" \
+          cmake -S . -B build-au \
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 \
-            -DCMAKE_OSX_ARCHITECTURES="${{ env.CMAKE_ARCHS }}" \
+            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
             -DINSTALLKITS=OFF \
-            -DLOCALINSTALL=OFF \
             -DMULTI=ON
 
-          echo "=== CMake Configuration Summary ==="
-          cmake -S . -B "build-au-${{ matrix.arch }}" -L | grep -E "(JUCE|FORMATS|PLUGIN|APPLE|AU|VST3)" || true
+          echo "=== Relevant CMake Cache Variables ==="
+          cmake -B build-au -L | grep -E "(FORMATS|AU|APPLE|ARCHITECTURES|MULTI)" || true
 
-      - name: Build AU components
+      - name: Build both AU plugins
         run: |
-          echo "Building AU components for ${{ matrix.plugin }}"
-          cmake --build "build-au-${{ matrix.arch }}" \
-            --config "${{ env.BUILD_TYPE }}" \
-            --target "${{ matrix.plugin }}" \
-            --parallel "$(sysctl -n hw.ncpu)"
+          cmake --build build-au \
+            --config ${{ env.BUILD_TYPE }} \
+            --parallel $(sysctl -n hw.ncpu)
 
           echo "=== Built AU Components ==="
-          find "build-au-${{ matrix.arch }}" -name "*.component" -type d -print || true
+          find build-au -type d -name "*.component" | sort
 
-      - name: Verify AU bundles
+      - name: Verify AU Bundle Structure
         run: |
           echo "=== Verifying AU Bundle Structure ==="
-          for component in build-au-"${{ matrix.arch }}"/*"${{ matrix.plugin }}"*"_artefacts"/AU/*.component 2>/dev/null; do
-            if [ -d "$component" ]; then
-              echo "Component: $(basename "$component")"
-              if [ -f "$component/Contents/Info.plist" ]; then
-                echo "  ✓ Info.plist exists"
-              else
-                echo "  ✗ Info.plist missing"
-              fi
-              binary="$component/Contents/MacOS/$(basename "${component%.component}")"
-              if [ -f "$binary" ]; then
-                echo "  ✓ Binary exists ($(lipo -info "$binary" 2>/dev/null || echo "Unknown arch"))"
-              else
-                echo "  ✗ Binary missing: $binary"
-              fi
-              echo ""
+          shopt -s nullglob
+          components=(build-au/*_Artefacts/AU/*.component)
+          
+          if [ ${#components[@]} -eq 0 ]; then
+            echo "✗ No .component bundles found!"
+            exit 1
+          fi
+          
+          for component in "${components[@]}"; do
+            name=$(basename "$component")
+            echo "Component: $name"
+            
+            if [ -f "$component/Contents/Info.plist" ]; then
+              echo "  ✓ Info.plist present"
+              plutil -lint "$component/Contents/Info.plist" | head -5 || echo "  (plist warnings above)"
+            else
+              echo "  ✗ Info.plist missing!"
             fi
+            
+            binary="$component/Contents/MacOS/${name%.component}"
+            if [ -f "$binary" ]; then
+              echo "  ✓ Binary exists"
+              lipo -info "$binary"
+            else
+              echo "  ✗ Binary missing: $binary"
+            fi
+            echo ""
           done
+
+      - name: Run auval validation (non-fatal)
+        run: |
+          echo "=== Running auval validation ==="
+          shopt -s nullglob
+          for component in build-au/*_Artefacts/AU/*.component; do
+            name=$(basename "$component" .component)
+            echo "Validating: $name"
+            # Для инструмента (IS_SYNTH=TRUE) тип — aumu, не aufx!
+            auval -v aumu Petr PetR -t "$name" || echo "auval failed (code $?) — common during CI, check locally if needed"
+            echo ""
+          done
+        continue-on-error: true  # Не падает весь job, если auval ругается
 
       - name: Self-sign AU components
         run: |
-          echo "=== Self-signing AU Components ==="
-          for component in build-au-"${{ matrix.arch }}"/*"${{ matrix.plugin }}"*"_artefacts"/AU/*.component 2>/dev/null; do
-            if [ -d "$component" ]; then
-              echo "Signing: $(basename "$component")"
-              codesign --force --sign - --timestamp --options runtime "$component" || echo "codesign failed for $component"
-            fi
+          echo "=== Self-signing with ad-hoc signature ==="
+          for component in build-au/*_Artefacts/AU/*.component; do
+            echo "Signing: $(basename "$component")"
+            codesign --force --sign - --timestamp=none --options runtime "$component" \
+              || echo "Warning: codesign failed (may be harmless in CI)"
           done
 
       - name: Create AU package
         run: |
-          echo "=== Creating AU Package ==="
-          # Сохранить значения матрицы в переменные shell (избегаем ${ { ... }} в теле скрипта)
-          PLUGIN="${{ matrix.plugin }}"
-          ARCH="${{ matrix.arch }}"
-          PKG_DIR="pkg-au-${PLUGIN}-${ARCH}"
-          rm -rf "$PKG_DIR"
-          mkdir -p "$PKG_DIR"
+          echo "=== Packaging AU plugins ==="
+          mkdir -p release-au-universal
+          
+          cp -R build-au/*_Artefacts/AU/*.component release-au-universal/ || true
+          
+          # README
+          cat > release-au-universal/README.txt << 'EOF'
+========================================
+Drumlabooh - macOS Audio Unit Plugins
+========================================
 
-          for component in build-au-"${ARCH}"/*"${PLUGIN}"*"_artefacts"/AU/*.component 2>/dev/null; do
-            if [ -d "$component" ]; then
-              echo "Packaging: $(basename "$component")"
-              cp -R "$component" "$PKG_DIR/"
-            fi
-          done
+Built: $(date)
+Architecture: Universal (Intel + Apple Silicon)
+Deployment target: macOS 10.13+
 
-          # Записать README через printf (надёжнее, чем heredoc в YAML)
-          printf "========================================\n" > "$PKG_DIR/README.txt"
-          printf "%s - AU Audio Unit\n" "$PLUGIN" >> "$PKG_DIR/README.txt"
-          printf "Build Date: %s\n\n" "$(date)" >> "$PKG_DIR/README.txt"
-          printf "Installation:\n" >> "$PKG_DIR/README.txt"
-          printf "1. Copy the .component file to:\n" >> "$PKG_DIR/README.txt"
-          printf "   /Library/Audio/Plug-Ins/Components/\n" >> "$PKG_DIR/README.txt"
-          printf "2. Rescan plugins in your DAW\n" >> "$PKG_DIR/README.txt"
-          printf "========================================\n" >> "$PKG_DIR/README.txt"
+Plugins included:
+$(ls *.component 2>/dev/null || echo "None found")
 
-          tar czf "${PLUGIN}-macOS-AU-${ARCH}.tar.gz" -C "$PKG_DIR" .
-          echo "Package created: ${PLUGIN}-macOS-AU-${ARCH}.tar.gz"
-          ls -lh "${PLUGIN}-macOS-AU-${ARCH}.tar.gz" || true
+Installation:
+1. Copy .component files to:
+   /Library/Audio/Plug-Ins/Components/
+   (or ~/Library/Audio/Plug-Ins/Components/ for current user)
 
-      - name: Upload AU artifacts
+2. Restart your DAW or rescan plugins.
+
+Note: Plugins are ad-hoc signed (valid for local use).
+EOF
+
+          tar czf drumlabooh-macos-AU-universal.tar.gz -C release-au-universal .
+          echo "Package created:"
+          ls -lh drumlabooh-macos-AU-universal.tar.gz
+
+      - name: Upload AU artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}
-          path: ${{ matrix.plugin }}-macOS-AU-${{ matrix.arch }}.tar.gz
-          retention-days: 7
+          name: drumlabooh-macos-AU-universal
+          path: drumlabooh-macos-AU-universal.tar.gz
+          retention-days: 14
