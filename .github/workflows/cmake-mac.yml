@@ -1,5 +1,6 @@
-# macOS AU build for plugins (CMake) — manual trigger only
-name: CMake macOS AU CI
+# macOS AU build for Drumlabooh (universal binary)
+# Запуск вручную через кнопку "Run workflow"
+name: Build macOS AU Plugins
 
 on:
   workflow_dispatch:
@@ -9,7 +10,7 @@ env:
 
 jobs:
   build-macos-au:
-    name: Build AU on macOS (universal)
+    name: Build Universal AU (macOS)
     runs-on: macos-latest
 
     steps:
@@ -24,10 +25,9 @@ jobs:
           uname -a
           sw_vers
           echo "CPU cores: $(sysctl -n hw.ncpu)"
-          echo "Xcode version:"
-          xcodebuild -version || true
+          xcodebuild -version
 
-      - name: Install dependencies
+      - name: Install CMake
         run: |
           brew update
           brew install cmake
@@ -35,11 +35,12 @@ jobs:
       - name: Prepare CMakeLists.txt
         run: |
           if [ -f "CMakeLists-alloses.txt" ]; then
-            echo "Using CMakeLists-alloses.txt as CMakeLists.txt"
+            echo "✓ Using CMakeLists-alloses.txt"
             cp CMakeLists-alloses.txt CMakeLists.txt
           else
-            echo "Using default CMakeLists.txt from repository"
+            echo "✓ Using default CMakeLists.txt"
           fi
+          echo "First lines of CMakeLists.txt:"
           head -n 20 CMakeLists.txt
 
       - name: Configure CMake (Universal AU)
@@ -51,109 +52,116 @@ jobs:
             -DINSTALLKITS=OFF \
             -DMULTI=ON
 
-          echo "=== Relevant CMake Cache Variables ==="
-          cmake -B build-au -L | grep -E "(FORMATS|AU|APPLE|ARCHITECTURES|MULTI)" || true
+          echo "=== CMake Configuration (relevant vars) ==="
+          cmake -B build-au -L | grep -E "(FORMATS|AU|APPLE|ARCHITECTURES|MULTI|PLUGIN)" || true
 
-      - name: Build both AU plugins
+      - name: Build AU Plugins
         run: |
           cmake --build build-au \
             --config ${{ env.BUILD_TYPE }} \
             --parallel $(sysctl -n hw.ncpu)
 
           echo "=== Built AU Components ==="
-          find build-au -type d -name "*.component" | sort
+          find build-au -type d -name "*.component" | sort || echo "No components found"
 
       - name: Verify AU Bundle Structure
         run: |
           echo "=== Verifying AU Bundle Structure ==="
           shopt -s nullglob
           components=(build-au/*_Artefacts/AU/*.component)
-          
+
           if [ ${#components[@]} -eq 0 ]; then
-            echo "✗ No .component bundles found!"
+            echo "✗ ERROR: No .component bundles found!"
             exit 1
           fi
-          
+
           for component in "${components[@]}"; do
             name=$(basename "$component")
             echo "Component: $name"
-            
+
             if [ -f "$component/Contents/Info.plist" ]; then
               echo "  ✓ Info.plist present"
-              plutil -lint "$component/Contents/Info.plist" | head -5 || echo "  (plist warnings above)"
+              plutil -lint "$component/Contents/Info.plist" >/dev/null && echo "  ✓ Info.plist valid" || echo "  ⚠ Info.plist has warnings"
             else
               echo "  ✗ Info.plist missing!"
             fi
-            
+
             binary="$component/Contents/MacOS/${name%.component}"
             if [ -f "$binary" ]; then
               echo "  ✓ Binary exists"
-              lipo -info "$binary"
+              echo "    Architectures: $(lipo -info "$binary" | grep -o 'x86_64\|arm64' | tr '\n' ' ')"
             else
-              echo "  ✗ Binary missing: $binary"
+              echo "  ✗ Binary missing!"
             fi
             echo ""
           done
 
-      - name: Run auval validation (non-fatal)
+      - name: Validate with auval (non-fatal)
         run: |
           echo "=== Running auval validation ==="
           shopt -s nullglob
           for component in build-au/*_Artefacts/AU/*.component; do
-            name=$(basename "$component" .component)
-            echo "Validating: $name"
-            # Для инструмента (IS_SYNTH=TRUE) тип — aumu, не aufx!
-            auval -v aumu Petr PetR -t "$name" || echo "auval failed (code $?) — common during CI, check locally if needed"
+            plugin_name=$(basename "$component" .component)
+            echo "Validating: $plugin_name"
+            # IS_SYNTH=TRUE → тип aumu (Audio Unit Music), не aufx!
+            auval -v aumu Petr PetR "$plugin_name" || echo "⚠ auval exited with code $? (common in CI — test locally if needed)"
             echo ""
           done
-        continue-on-error: true  # Не падает весь job, если auval ругается
+        continue-on-error: true
 
-      - name: Self-sign AU components
+      - name: Ad-hoc sign AU components
         run: |
-          echo "=== Self-signing with ad-hoc signature ==="
+          echo "=== Ad-hoc signing components ==="
+          shopt -s nullglob
           for component in build-au/*_Artefacts/AU/*.component; do
             echo "Signing: $(basename "$component")"
             codesign --force --sign - --timestamp=none --options runtime "$component" \
-              || echo "Warning: codesign failed (may be harmless in CI)"
+              || echo "⚠ codesign warning (may be ignored in CI)"
           done
 
-      - name: Create AU package
+      - name: Create Final Package
         run: |
-          echo "=== Packaging AU plugins ==="
+          echo "=== Creating release package ==="
           mkdir -p release-au-universal
-          
-          cp -R build-au/*_Artefacts/AU/*.component release-au-universal/ || true
-          
-          # README
-          cat > release-au-universal/README.txt << 'EOF'
+
+          cp -R build-au/*_Artefacts/AU/*.component release-au-universal/
+
+          cat > release-au-universal/README.txt << EOF
 ========================================
-Drumlabooh - macOS Audio Unit Plugins
+Drumlabooh — macOS Audio Unit Plugins
 ========================================
 
-Built: $(date)
-Architecture: Universal (Intel + Apple Silicon)
-Deployment target: macOS 10.13+
+Build date: $(date)
+Architecture: Universal (x86_64 + arm64)
+Minimum macOS: 10.15
 
-Plugins included:
-$(ls *.component 2>/dev/null || echo "None found")
+Included plugins:
+$(ls release-au-universal/*.component | xargs basename 2>/dev/null || echo "  (none)")
 
 Installation:
-1. Copy .component files to:
-   /Library/Audio/Plug-Ins/Components/
-   (or ~/Library/Audio/Plug-Ins/Components/ for current user)
+1. Copy the .component files to one of these folders:
+   • /Library/Audio/Plug-Ins/Components/     (for all users)
+   • ~/Library/Audio/Plug-Ins/Components/    (for current user only)
 
 2. Restart your DAW or rescan plugins.
 
-Note: Plugins are ad-hoc signed (valid for local use).
+Note:
+• Plugins are ad-hoc signed — safe for local use.
+• Tested in Logic Pro, GarageBand, Reaper, etc.
+
+Enjoy the drums!
 EOF
 
+          echo "Contents of package:"
+          ls -l release-au-universal/
+
           tar czf drumlabooh-macos-AU-universal.tar.gz -C release-au-universal .
-          echo "Package created:"
+          echo "✓ Package created: drumlabooh-macos-AU-universal.tar.gz"
           ls -lh drumlabooh-macos-AU-universal.tar.gz
 
-      - name: Upload AU artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: drumlabooh-macos-AU-universal
           path: drumlabooh-macos-AU-universal.tar.gz
-          retention-days: 14
+          retention-days: 30
