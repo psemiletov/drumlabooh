@@ -9,13 +9,13 @@ env:
 jobs:
   build-macos-au:
     name: Build Universal AU (macOS)
-    runs-on: macos-latest  # Используем последнюю версию macOS
+    runs-on: macos-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Полная история для версионирования
+          fetch-depth: 0
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -24,15 +24,22 @@ jobs:
 
       - name: Install Build Dependencies
         run: |
-          # Устанавливаем CMake 3.25 (совместимый с JUCE 8)
-          brew install cmake@3.25
-          brew link --overwrite cmake@3.25
+          echo "=== Installing dependencies ==="
           
-          # Проверяем версии
+          # Обновляем Homebrew
+          brew update
+          
+          # Устанавливаем CMake (последнюю версию)
+          brew install cmake
+          
+          # Проверяем установленные версии
           echo "=== Installed versions ==="
           cmake --version
           xcodebuild -version
           sw_vers -productVersion
+          
+          # Устанавливаем pkg-config если нужно
+          brew install pkg-config || true
 
       - name: Configure CMake with Debug Info
         run: |
@@ -40,13 +47,16 @@ jobs:
           echo "Build type: ${{ env.BUILD_TYPE }}"
           echo "Current directory: $(pwd)"
           
-          # Убедимся что CMakeLists.txt существует
           if [ ! -f "CMakeLists.txt" ]; then
             echo "ERROR: CMakeLists.txt not found!"
+            ls -la
             exit 1
           fi
           
-          # Конфигурируем с максимальной детализацией
+          echo "=== CMakeLists.txt content (first 10 lines) ==="
+          head -10 CMakeLists.txt
+          
+          # Конфигурируем CMake
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
@@ -54,204 +64,181 @@ jobs:
             -DMULTI=ON \
             -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
             -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON \
-            --debug-output 2>&1 | tee cmake_configure.log
+            2>&1 | tee cmake_configure.log
           
           echo "=== CMake configuration complete ==="
-          echo "Build directory created: build"
 
       - name: Build AU Plugins
         run: |
           echo "=== Starting Build Process ==="
-          echo "Number of CPU cores: $(sysctl -n hw.ncpu)"
+          echo "CPU cores: $(sysctl -n hw.ncpu)"
           
-          # Собираем все цели
+          # Собираем проект
           cmake --build build \
             --config ${{ env.BUILD_TYPE }} \
             --parallel $(sysctl -n hw.ncpu) \
-            --verbose 2>&1 | tee cmake_build.log
+            2>&1 | tee cmake_build.log
           
-          echo "=== Build process completed ==="
+          # Проверяем код возврата
+          BUILD_EXIT_CODE=$?
+          echo "=== Build exit code: $BUILD_EXIT_CODE ==="
           
-          # Проверяем что было построено
-          echo "=== Built targets ==="
-          cmake --build build --target help 2>&1 | grep -E "(drumlabooh|ALL_BUILD)" || true
+          # Даже если ошибка, продолжаем для диагностики
+          if [ $BUILD_EXIT_CODE -ne 0 ]; then
+            echo "⚠️ Build had errors, but continuing for diagnostics..."
+          fi
 
-      - name: Locate and Verify AU Bundles
+      - name: Diagnostic - Check Build Output
         run: |
-          echo "=== Searching for AU Plugin Bundles ==="
+          echo "=== Build Diagnostics ==="
           
-          # Основные места где JUCE может размещать артефакты
-          POSSIBLE_PATHS=(
-            "build/DRUMLABOOH_artefacts"
-            "build/${BUILD_TYPE}/DRUMLABOOH_artefacts"
-            "build/JUCE/temp"
-            "build/_deps/juce-build"
-            "build"
-          )
+          echo "1. Listing build directory:"
+          ls -la build/ 2>/dev/null || echo "  build/ not found"
           
-          FOUND_COMPONENTS=()
+          echo ""
+          echo "2. Looking for JUCE directories:"
+          find build -type d -name "*juce*" -o -name "*JUCE*" 2>/dev/null | head -10 || true
           
-          for path in "${POSSIBLE_PATHS[@]}"; do
-            if [ -d "$path" ]; then
-              echo "Checking path: $path"
-              # Ищем .component директории
-              while IFS= read -r -d '' component; do
-                if [ -d "$component" ]; then
-                  echo "✓ Found AU component: $component"
-                  FOUND_COMPONENTS+=("$component")
-                  
-                  # Проверяем структуру
-                  if [ -d "$component/Contents/MacOS" ]; then
-                    echo "  Bundle structure is valid"
-                    # Проверяем архитектуры бинарника
-                    for binary in "$component/Contents/MacOS/"*; do
-                      if [ -f "$binary" ]; then
-                        echo "  Binary: $(basename "$binary")"
-                        lipo -info "$binary" 2>/dev/null || echo "    (lipo check failed)"
-                      fi
-                    done
+          echo ""
+          echo "3. Checking for built libraries/executables:"
+          find build -type f \( -name "*.dylib" -o -name "*.so" -o -perm +111 \) 2>/dev/null | head -10 || true
+          
+          echo ""
+          echo "4. CMake targets:"
+          if [ -d "build" ]; then
+            cmake --build build --target help 2>&1 | grep -E "(drumlabooh|ALL_BUILD|help)" || true
+          fi
+
+      - name: Find AU Bundles
+        run: |
+          echo "=== Searching for AU Bundles ==="
+          
+          # Создаем файл со всеми найденными компонентами
+          find build -type d -name "*.component" > components_found.txt 2>/dev/null || true
+          
+          if [ -s components_found.txt ]; then
+            echo "✅ FOUND AU COMPONENTS:"
+            cat components_found.txt
+            echo ""
+            
+            # Проверяем каждый компонент
+            while IFS= read -r component; do
+              echo "🔍 Examining: $component"
+              if [ -d "$component/Contents" ]; then
+                echo "  ✓ Has Contents directory"
+                if [ -f "$component/Contents/Info.plist" ]; then
+                  echo "  ✓ Has Info.plist"
+                  # Пытаемся прочитать CFBundleIdentifier
+                  BUNDLE_ID=$(defaults read "$component/Contents/Info" CFBundleIdentifier 2>/dev/null || true)
+                  if [ -n "$BUNDLE_ID" ]; then
+                    echo "  ✓ Bundle ID: $BUNDLE_ID"
                   fi
                 fi
-              done < <(find "$path" -type d -name "*.component" -print0 2>/dev/null)
-            fi
-          done
-          
-          # Ищем также по всему дереву build
-          echo "=== Deep search in build directory ==="
-          find build -type d -name "*.component" 2>/dev/null | while read -r comp; do
-            if [[ ! " ${FOUND_COMPONENTS[@]} " =~ " ${comp} " ]]; then
-              echo "✓ Found additional component: $comp"
-              FOUND_COMPONENTS+=("$comp")
-            fi
-          done
-          
-          # Отчет
-          echo ""
-          echo "=== SUMMARY ==="
-          if [ ${#FOUND_COMPONENTS[@]} -eq 0 ]; then
-            echo "✗ ERROR: No AU plugin bundles found!"
-            echo ""
-            echo "Debug information:"
-            echo "1. Listing build directory contents:"
-            ls -la build/ 2>/dev/null || true
-            echo ""
-            echo "2. Looking for any built executables:"
-            find build -type f -perm +111 -name "*drumlabooh*" 2>/dev/null || echo "  None found"
-            echo ""
-            echo "3. Checking CMake cache:"
-            grep -i "juce\|plugin\|au" build/CMakeCache.txt 2>/dev/null | head -20 || true
-            
-            # Создаем файл с ошибкой для следующего шага
-            mkdir -p diagnostic
-            echo "Build diagnostics:" > diagnostic/error.log
-            echo "No .component bundles found" >> diagnostic/error.log
-            echo "Possible issues:" >> diagnostic/error.log
-            echo "1. JUCE not fetched correctly" >> diagnostic/error.log
-            echo "2. Plugin format not set to AU" >> diagnostic/error.log
-            echo "3. Build failed silently" >> diagnostic/error.log
+                if [ -d "$component/Contents/MacOS" ]; then
+                  echo "  ✓ Has MacOS directory"
+                  for binary in "$component/Contents/MacOS/"*; do
+                    if [ -f "$binary" ]; then
+                      echo "  ✓ Binary: $(basename "$binary")"
+                      # Проверяем архитектуры
+                      if command -v lipo &> /dev/null; then
+                        lipo -info "$binary" 2>/dev/null || echo "    Could not check architectures"
+                      fi
+                    fi
+                  done
+                fi
+              fi
+              echo ""
+            done < components_found.txt
           else
-            echo "✓ SUCCESS: Found ${#FOUND_COMPONENTS[@]} AU plugin bundle(s)"
-            for comp in "${FOUND_COMPONENTS[@]}"; do
-              echo "  - $comp"
-            done
+            echo "❌ NO .component files found!"
+            echo ""
+            echo "Deep search in build directory:"
+            find build -type d 2>/dev/null | grep -i "arte\|output\|plugin" || echo "  No relevant directories found"
           fi
 
-      - name: Create Distribution Package
+      - name: Create Package
         run: |
-          echo "=== Creating Distribution Package ==="
-          mkdir -p dist
-          mkdir -p dist/plugins
+          echo "=== Creating Package ==="
+          mkdir -p package/plugins
           
-          # Ищем все компоненты
-          COMPONENTS=($(find build -type d -name "*.component" 2>/dev/null || true))
-          
-          if [ ${#COMPONENTS[@]} -gt 0 ]; then
-            echo "Packaging ${#COMPONENTS[@]} plugin(s)..."
+          # Копируем найденные компоненты
+          if [ -f components_found.txt ] && [ -s components_found.txt ]; then
+            echo "Copying found components..."
+            while IFS= read -r component; do
+              if [ -d "$component" ]; then
+                COMP_NAME=$(basename "$component")
+                echo "  Adding: $COMP_NAME"
+                cp -R "$component" "package/plugins/"
+              fi
+            done < components_found.txt
             
-            for component in "${COMPONENTS[@]}"; do
-              name=$(basename "$component")
-              echo "  Adding: $name"
-              cp -R "$component" "dist/plugins/"
-            done
-            
-            # Создаем README
-            cat > dist/README.md << EOF
-            # Drumlabooh AU Plugins for macOS
-            
-            ## Version: 12.1.0
-            ## Build Date: $(date)
-            ## Platform: Universal (x86_64 + arm64)
-            ## macOS Minimum: 10.15+
-            
-            ## Included Plugins:
-            $(for comp in "${COMPONENTS[@]}"; do 
-              basename "$comp" | sed 's/\.component$//' | sed 's/^/  - /'
-            done)
-            
-            ## Installation:
-            1. Drag the .component files to:
-               - User: ~/Library/Audio/Plug-Ins/Components/
-               - System: /Library/Audio/Plug-Ins/Components/
-            
-            2. Restart your DAW
-            
-            ## Build Info:
-            - JUCE version: 8.0.11
-            - Build type: ${{ env.BUILD_TYPE }}
-            - Architectures: x86_64, arm64
-            EOF
-            
-            # Создаем архив
-            cd dist
-            tar czf ../drumlabooh-macos-au-universal.tar.gz .
-            cd ..
-            
-            echo "Package created: drumlabooh-macos-au-universal.tar.gz"
-            ls -lh drumlabooh-macos-au-universal.tar.gz
-            echo ""
-            echo "Package contents:"
-            tar -tzf drumlabooh-macos-au-universal.tar.gz | head -20
+            COUNT=$(ls -1 package/plugins/*.component 2>/dev/null | wc -l | tr -d ' ')
+            echo "✅ Packaged $COUNT plugin(s)"
           else
-            echo "⚠️ WARNING: No plugins found to package"
-            # Создаем минимальный пакет с ошибкой
-            echo "Build succeeded but no .component files were produced" > dist/ERROR.txt
-            echo "Check the build logs for details" >> dist/ERROR.txt
-            cd dist
-            tar czf ../drumlabooh-macos-au-universal.tar.gz .
-            cd ..
+            echo "⚠️ No components to package"
+            echo "This could mean:" > package/README.txt
+            echo "1. Build failed" >> package/README.txt
+            echo "2. Plugin format not set correctly" >> package/README.txt
+            echo "3. JUCE output path different than expected" >> package/README.txt
           fi
+          
+          # Всегда создаем README
+          cat > package/README.md << 'EOF'
+          # Drumlabooh AU Plugins
+          
+          ## Installation
+          Copy the .component files to:
+          - ~/Library/Audio/Plug-Ins/Components/ (for current user)
+          - /Library/Audio/Plug-Ins/Components/ (for all users)
+          
+          ## Build Info
+          - Build date: $(date)
+          - Build type: ${{ env.BUILD_TYPE }}
+          - macOS target: 10.15+
+          - Architectures: Universal (x86_64 + arm64)
+          EOF
+          
+          # Создаем архив
+          cd package
+          tar czf ../drumlabooh-macos-au.tar.gz .
+          cd ..
+          
+          echo "📦 Package created: drumlabooh-macos-au.tar.gz"
+          ls -lh drumlabooh-macos-au.tar.gz
 
-      - name: Ad-hoc Code Signing (для тестирования)
-        if: false  # Отключено по умолчанию, включите если нужно
-        run: |
-          echo "=== Code Signing ==="
-          find dist/plugins -name "*.component" -type d 2>/dev/null | while read -r component; do
-            echo "Signing: $(basename "$component")"
-            codesign --force --sign - --timestamp=none --options runtime "$component"
-          done
-
-      - name: Upload Build Logs (для отладки)
-        if: always()  # Всегда загружаем логи, даже при ошибке
+      - name: Upload Build Logs
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-logs
+          name: build-debug-logs
           path: |
             cmake_configure.log
             cmake_build.log
-            diagnostic/
+            components_found.txt
           retention-days: 7
 
-      - name: Upload AU Plugins
+      - name: Upload AU Plugins Package
         uses: actions/upload-artifact@v4
         with:
-          name: drumlabooh-macos-au-universal
-          path: drumlabooh-macos-au-universal.tar.gz
+          name: drumlabooh-au-plugins
+          path: drumlabooh-macos-au.tar.gz
           retention-days: 30
           
-      - name: Create GitHub Release (опционально)
-        if: false  # Отключено, включите если используете релизы
-        uses: softprops/action-gh-release@v1
-        with:
-          files: drumlabooh-macos-au-universal.tar.gz
-          generate_release_notes: true
-          draft: true
+      - name: Final Status Report
+        if: always()
+        run: |
+          echo "=== BUILD STATUS REPORT ==="
+          if [ -f components_found.txt ] && [ -s components_found.txt ]; then
+            COMP_COUNT=$(wc -l < components_found.txt)
+            echo "✅ SUCCESS: Found $COMP_COUNT AU plugin component(s)"
+            echo "Components:"
+            cat components_found.txt
+          else
+            echo "❌ FAILURE: No AU plugins were built"
+            echo ""
+            echo "Next steps for debugging:"
+            echo "1. Check cmake_configure.log for configuration errors"
+            echo "2. Check cmake_build.log for compilation errors"
+            echo "3. Verify CMakeLists.txt sets FORMATS to AU for macOS"
+            echo "4. Check if JUCE is being fetched correctly"
+          fi
