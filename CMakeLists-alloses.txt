@@ -11,43 +11,25 @@ option(MULTI "Build with multi-channel support" ON)
 option(INSTALLKITS "Bundle and install kits" ON)
 option(LOCALINSTALL "Install to the $HOME subdirs" OFF)
 
-# Вывод информации о платформе
 message(STATUS "Building for: ${CMAKE_SYSTEM_NAME}")
-message(STATUS "Using all-OS CMakeLists.txt")
 
-# Версия определения
 add_definitions(-DVERSION_NUMBER="${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
 # ========== ПЛАТФОРМЕННО-СПЕЦИФИЧНЫЕ НАСТРОЙКИ ==========
 if(APPLE)
     message(STATUS "=== CONFIGURING FOR macOS (AU ONLY) ===")
-
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum macOS version")
-    set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Target architectures")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15")
+    set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
 
     set(DRUMSKLADTAG "4.0.0")
     set(JUCETAG "8.0.11")
-
     set(PLUGIN_FORMATS AU)
-
-    set(AU_INSTALL_DIR "/Library/Audio/Plug-Ins/Components")
-    set(KITS_INSTALL_DIR "/Library/Application Support/drumlabooh/kits")
 
 elseif(WIN32)
     message(STATUS "=== CONFIGURING FOR WINDOWS ===")
-
     set(DRUMSKLADTAG "4.0.0")
     set(JUCETAG "7.0.10")
-
     set(PLUGIN_FORMATS VST3)
-
-    if(LOCALINSTALL)
-        set(VST3_INSTALL_DIR "$ENV{USERPROFILE}/VST3")
-        set(KITS_INSTALL_DIR "$ENV{USERPROFILE}/drum_sklad")
-    else()
-        set(VST3_INSTALL_DIR "C:/Program Files/Common Files/VST3")
-        set(KITS_INSTALL_DIR "C:/Program Files/drumlabooh/kits")
-    endif()
 
     if(MSVC)
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -55,28 +37,16 @@ elseif(WIN32)
 
 else()  # Linux
     message(STATUS "=== CONFIGURING FOR LINUX ===")
-
     set(DRUMSKLADTAG "4.0.0")
     set(JUCETAG "8.0.11")
-
     set(PLUGIN_FORMATS VST3 LV2)
-
-    if(LOCALINSTALL)
-        set(LV2_INSTALL_DIR "$ENV{HOME}/.lv2")
-        set(VST3_INSTALL_DIR "$ENV{HOME}/.vst3")
-        set(KITS_INSTALL_DIR "$ENV{HOME}/drum_sklad")
-    else()
-        set(LV2_INSTALL_DIR lib/lv2)
-        set(VST3_INSTALL_DIR lib/vst3)
-        set(KITS_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/drumlabooh-kits")
-    endif()
 
 endif()
 
 # ========== ЗАВИСИМОСТИ ==========
 set(FETCHCONTENT_QUIET FALSE)
-
 cmake_policy(SET CMP0135 NEW)
+
 FetchContent_Declare(
     juce
     URL https://github.com/juce-framework/JUCE/archive/refs/tags/${JUCETAG}.tar.gz
@@ -93,7 +63,6 @@ if(INSTALLKITS)
 endif()
 
 FetchContent_MakeAvailable(juce)
-
 if(INSTALLKITS)
     FetchContent_MakeAvailable(drum_sklad)
 endif()
@@ -155,10 +124,7 @@ function(create_drumlabooh_plugin target_name is_multi)
     )
 
     if(${is_multi})
-        target_compile_definitions(${target_name}
-            PUBLIC
-                MULTICHANNEL=1
-        )
+        target_compile_definitions(${target_name} PUBLIC MULTICHANNEL=1)
     endif()
 
     if(APPLE)
@@ -170,13 +136,18 @@ function(create_drumlabooh_plugin target_name is_multi)
         )
     endif()
 
-    # ========== ОБЯЗАТЕЛЬНЫЕ МОДУЛИ ДЛЯ СБОРКИ AU ==========
+    # ========== СТАНДАРТНАЯ ЛИНКОВКА ПО ОФИЦИАЛЬНЫМ ПРИМЕРАМ JUCE 8 ==========
     target_link_libraries(${target_name}
         PRIVATE
+            juce::juce_audio_basics
+            juce::juce_audio_devices
+            juce::juce_audio_formats
+            juce::juce_audio_processors
             juce::juce_audio_utils
-            juce::juce_audio_processors          # Для формата плагина
-            juce::juce_audio_plugin_client       # ← Ключевой для AU wrapper!
-            juce::juce_gui_basics                # Для GUI
+            juce::juce_core
+            juce::juce_graphics
+            juce::juce_gui_basics
+            juce::juce_gui_extra
         PUBLIC
             juce::juce_recommended_config_flags
             juce::juce_recommended_lto_flags
@@ -187,27 +158,21 @@ endfunction()
 
 # ========== СОЗДАНИЕ ПЛАГИНОВ ==========
 create_drumlabooh_plugin(drumlabooh FALSE)
-
 if(MULTI)
     create_drumlabooh_plugin(drumlabooh-multi TRUE)
 endif()
 
 # ========== УСТАНОВКА ==========
 if(INSTALLKITS)
-    install(DIRECTORY ${drum_sklad_SOURCE_DIR}/
-        DESTINATION ${KITS_INSTALL_DIR}
-        PATTERN ".git" EXCLUDE
-    )
+    install(DIRECTORY ${drum_sklad_SOURCE_DIR}/ DESTINATION ${KITS_INSTALL_DIR} PATTERN ".git" EXCLUDE)
 endif()
 
-# ========== ИНФОРМАЦИЯ О КОНФИГУРАЦИИ ==========
-message(STATUS "")
+# ========== СУММАРНЫЙ ВЫВОД ==========
 message(STATUS "==========================================")
 message(STATUS "Configuration Summary")
 message(STATUS "Platform: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "Plugin formats: ${PLUGIN_FORMATS}")
 message(STATUS "Multi-channel: ${MULTI}")
-message(STATUS "Install kits: ${INSTALLKITS}")
 if(APPLE)
     message(STATUS "macOS deployment target: ${CMAKE_OSX_DEPLOYMENT_TARGET}")
     message(STATUS "Architectures: ${CMAKE_OSX_ARCHITECTURES}")
