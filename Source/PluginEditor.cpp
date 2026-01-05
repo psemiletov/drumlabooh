@@ -768,7 +768,7 @@ void CAudioProcessorEditor::load_kit()
        std::string midi_note_auto = "if MIDI map mode = Auto, MIDI note #: " + std::to_string (i + audioProcessor.base_note_number); 
        std::string midi_note_kit = "if MIDI map mode = Kit, MIDI note #: "; 
         
-       int mapped_note = -1;
+      // int mapped_note = -1;
        
        if (s->mapped_note != -1)    
            midi_note_kit += std::to_string (s->mapped_note); 
