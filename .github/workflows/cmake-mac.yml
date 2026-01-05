@@ -103,7 +103,6 @@ jobs:
           for component in build-au/*_Artefacts/AU/*.component; do
             plugin_name=$(basename "$component" .component)
             echo "Validating: $plugin_name"
-            # IS_SYNTH=TRUE → тип aumu (Audio Unit Music), не aufx!
             auval -v aumu Petr PetR "$plugin_name" || echo "⚠ auval exited with code $? (common in CI — test locally if needed)"
             echo ""
           done
@@ -126,31 +125,25 @@ jobs:
 
           cp -R build-au/*_Artefacts/AU/*.component release-au-universal/
 
-          cat > release-au-universal/README.txt << EOF
-========================================
-Drumlabooh — macOS Audio Unit Plugins
-========================================
-
-Build date: $(date)
-Architecture: Universal (x86_64 + arm64)
-Minimum macOS: 10.15
-
-Included plugins:
-$(ls release-au-universal/*.component | xargs basename 2>/dev/null || echo "  (none)")
-
-Installation:
-1. Copy the .component files to one of these folders:
-   • /Library/Audio/Plug-Ins/Components/     (for all users)
-   • ~/Library/Audio/Plug-Ins/Components/    (for current user only)
-
-2. Restart your DAW or rescan plugins.
-
-Note:
-• Plugins are ad-hoc signed — safe for local use.
-• Tested in Logic Pro, GarageBand, Reaper, etc.
-
-Enjoy the drums!
-EOF
+          # Создаём README с помощью printf — полностью безопасно для YAML
+          printf "%s\n" "=========================================" > release-au-universal/README.txt
+          printf "%s\n" "Drumlabooh — macOS Audio Unit Plugins" >> release-au-universal/README.txt
+          printf "%s\n" "=========================================" >> release-au-universal/README.txt
+          printf "\nBuild date: %s\n" "$(date)" >> release-au-universal/README.txt
+          printf "Architecture: Universal (x86_64 + arm64)\n" >> release-au-universal/README.txt
+          printf "Minimum macOS: 10.13\n\n" >> release-au-universal/README.txt
+          printf "Included plugins:\n" >> release-au-universal/README.txt
+          ls release-au-universal/*.component | xargs basename | sed 's/^/  • /' >> release-au-universal/README.txt || echo "  (none)" >> release-au-universal/README.txt
+          printf "\nInstallation:\n" >> release-au-universal/README.txt
+          printf "1. Copy the .component files to one of these folders:\n" >> release-au-universal/README.txt
+          printf "   • /Library/Audio/Plug-Ins/Components/     (for all users)\n" >> release-au-universal/README.txt
+          printf "   • ~/Library/Audio/Plug-Ins/Components/    (for current user only)\n\n" >> release-au-universal/README.txt
+          printf "2. Restart your DAW or rescan plugins.\n\n" >> release-au-universal/README.txt
+          printf "Note:\n" >> release-au-universal/README.txt
+          printf "• Plugins are ad-hoc signed — safe for local use.\n" >> release-au-universal/README.txt
+          printf "• Tested in Logic Pro, GarageBand, Reaper, etc.\n\n" >> release-au-universal/README.txt
+          printf "Enjoy the drums!\n" >> release-au-universal/README.txt
+          printf "%s\n" "=========================================" >> release-au-universal/README.txt
 
           echo "Contents of package:"
           ls -l release-au-universal/
