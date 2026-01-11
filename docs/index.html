@@ -3,25 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <title>Drumlabooh. Redirecting...</title>
+  
+  <!-- Самое важное для Google — не индексировать эту страницу -->
+  <meta name="robots" content="noindex, follow">
+  
   <script>
     (function() {
       const userLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
       const isRussian = userLang.startsWith('ru');
-
-      // Определяем, какой файл загружать
       const target = isRussian ? 'index-ru.html' : 'index-en.html';
-
-      // Если мы уже на нужной странице — ничего не делаем
+      
       if (window.location.pathname.endsWith(target)) {
         return;
       }
-
-      // Делаем редирект
-      window.location.href = target + window.location.search + window.location.hash;
+      
+      // Лучше использовать replace, чтобы не засорять историю браузера
+      window.location.replace(target + window.location.search + window.location.hash);
     })();
   </script>
 </head>
 <body>
   <p>Перенаправление... Redirecting...</p>
+  <p>
+    <a href="index-en.html">English version</a> • 
+    <a href="index-ru.html">Русская версия / Российская версия</a>
+  </p>
 </body>
 </html>
