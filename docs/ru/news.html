@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Драмлабух: LV2/VSTi драм-машина</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+
+<header>
+  <h1>Драмлабух</h1>
+  <div class="subtitle">Бесплатная LV2/VSTi драм-машина для Linux и Windows</div>
+</header>
+
+<nav>
+  <a href="index.html">Главная</a>
+  <a href="news.html">Новости</a>
+  <a href="install.html">Скачать</a>
+  <a href="manual.html">Руководство</a>
+  <a href="donate.html">Донат</a>
+  <a href="https://github.com/psemiletov/drumlabooh">Github</a>
+</nav>
+<div class="container">
+
+  <section class="news-section">
+    <h2>НОВОСТИ</h2>
+
+    <div class="news-entry">
+      <div class="news-date">26 декабря 2025 — <a href="https://github.com/psemiletov/drumlabooh/releases/tag/12.1.0">Drumlabooh 12.1.0</a></div>
+
+<p>   Новый выпуск вызван многочисленными откликами на предыдущий, а также накопившимися предложениями.
+</p>
+<p>   Добавлена поддержка MIDI mapping в драмкитах Hydrogen. 
+</p>
+<p>   Исправлена поддержка MIDI mapping для SFZ. 
+</p>
+<p>   Связанные со слотами инструментов номера MIDI-нот текущих настроек MIDI Mapping (в режимах Auto и Kit) теперь отображаются как всплывающие подсказки над названиями слотов.
+</p>
+<p>  Если опция MIDI map mode = Kit, но в драмките не заданы настройки MIDI mapping, Drumlabooh автоматически использует MIDI map mode = Auto, когда ноты нумеруются последовательно начиная со значения MIDI base note. Было - Drumlabooh просто молчал.
+</p>
+<p>   Установленные драмкиты теперь сканируются также в заданных пользователем каталогах, список которых, строка за строкой, в виде полных путей, поместите в файл $HOME/.config/drumlabooh/user-dirs.txt (для Linux) либо в C:\drumlabooh\user-dirs.txt (для Windows). Например:
+</p>
+
+<pre>/home/test/sfz-main
+/home/test/sfz-misc
+/home/test/hydrogen-kits
+/home/test/drumlabooh</pre>
+
+<p>   По сути, теперь нет разницы драмкиты какого формата в каком каталоге лежат, Drumlabooh распознает их правильно. Исключение составляют обычные папки с сэмплами - их Drumlabooh тоже может автоматически превращать на лету в драмкиты, но подробности читайте в документации.
+</p>
+<p>  На связи, Петр Семилетов
+</p>
+
+    </div>
+
+
+  </section>
+
+</div>
+
+
+<footer style="
+  margin-top: 60px;
+  padding: 40px 20px;
+  text-align: center;
+  background: var(--main-dark);
+  border-top: 4px solid var(--green-accent);
+  color: var(--text-medium);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+">
+  <p style="margin: 0 0 12px; font-weight: 500;">
+    Создатель Драмлабуха, 
+    <a href="https://github.com/psemiletov" style="
+      color: var(--green-bright);
+      text-decoration: none;
+      font-weight: 600;
+    "> Петр Семилетов</a>
+  </p>
+
+  <p style="margin: 0 0 8px;">
+    Поддержите разработку:
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=peter.semiletov@gmail.com&item_name=Support%20Drumlabooh%20development"
+       target="_blank" rel="noopener"
+       style="color: var(--orange-accent); text-decoration: underline; font-weight: 600;">
+      донатом через PayPal
+    </a>
+    или в телегу на <strong>@petersemiletov</strong>
+  </p>
+
+  <p style="margin: 12px 0 0;">
+    Слушайте мою музыку:
+    <a href="https://push.fm/fl/semiletov" style="
+      color: var(--orange-accent);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--orange-accent);
+      font-weight: 500;
+    ">push.fm/fl/semiletov</a>
+  </p>
+</footer>
+
+
+
+</body>
+</html>
