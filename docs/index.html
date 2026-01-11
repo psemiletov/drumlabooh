@@ -1,32 +1,148 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Drumlabooh. Redirecting...</title>
-  
-  <!-- Самое важное для Google — не индексировать эту страницу -->
-  <meta name="robots" content="noindex, follow">
-  
-  <script>
-    (function() {
-      const userLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
-      const isRussian = userLang.startsWith('ru');
-      const target = isRussian ? 'index-ru.html' : 'index-en.html';
-      
-      if (window.location.pathname.endsWith(target)) {
-        return;
-      }
-      
-      // Лучше использовать replace, чтобы не засорять историю браузера
-      window.location.replace(target + window.location.search + window.location.hash);
-    })();
-  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drumlabooh: Free VST3i/LV2 drum machine for Linux and Windows</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <p>Перенаправление... Redirecting...</p>
-  <p>
-    <a href="index-en.html">English version</a> • 
-    <a href="index-ru.html">Русская версия / Российская версия</a>
+<header>
+  <h1>Drumlabooh</h1>
+</header>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="news.html">News</a>
+  <a href="install.html">Install</a>
+  <a href="manual.html">Manual</a>
+  <a href="donate.html">Donate</a>
+  <a href="https://github.com/psemiletov/drumlabooh">Github</a>
+</nav>
+<div class="video-container"
+     style="position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            width: min(70vw, 100%);
+            max-width: 100%;
+            margin: 0 auto;">
+    <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+            src="https://www.youtube.com/embed/9NEzDmQ7WkQ?si=RKAESXbbOSMK1tGz"
+            title="Название видео"
+            frameborder="0"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen>
+    </iframe>
+</div>
+<div class="container">
+  <div class="hero-image">
+    <a href="./v12.png"><img src="./v12-small.png" alt="Screenshot of Drumlabooh"></a>
+  </div>
+  <p class="intro">
+    Drumlabooh comes with several dozen drum kits suitable for various music styles.<br>
+    Here's how some of them sound.
   </p>
+  <div class="drumkits-grid">
+    <div class="drum-card">
+      <img src="jazzkit.jpg" alt="Jazzkit">
+      <div class="card-body">
+        <h3 class="card-title">Jazzkit</h3>
+        <div class="sample">
+          <div class="sample-title">Dry</div>
+          <audio controls preload="metadata">
+            <source src="./snd/jazzkit-dry.mp3" type="audio/mpeg">
+          </audio>
+        </div>
+        <div class="sample">
+          <div class="sample-title">With Dragonfly reverb</div>
+          <audio controls preload="metadata">
+            <source src="./snd/jazzkit-reverb.mp3" type="audio/mpeg">
+          </audio>
+        </div>
+      </div>
+    </div>
+    <div class="drum-card">
+      <img src="sixtiesbasic.jpg" alt="Sixties Basic">
+      <div class="card-body">
+        <h3 class="card-title">Sixties Basic</h3>
+        <div class="sample">
+          <div class="sample-title">Dry</div>
+          <audio controls preload="metadata">
+            <source src="./snd/sixties-basic-dry.mp3" type="audio/mpeg">
+          </audio>
+        </div>
+        <div class="sample">
+          <div class="sample-title">With Dragonfly reverb</div>
+          <audio controls preload="metadata">
+            <source src="./snd/sixties-basic-with-reverb.mp3" type="audio/mpeg">
+          </audio>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section>
+    <h2>Features</h2>
+    <ul class="features">
+      <li><a href="https://github.com/psemiletov/drumlabooh/wiki/DAW-Compatibility">DAW Compatibility</a></li>
+      <li>Linux LV2/VST3, Windows VST3 plugin format</li>
+      <li>Supported sample drumkit formats: Drumlabooh, Hydrogen, SFZ, and simple directories with samples</li>
+      <li>Bundled with high quality drumkits designed after legendary acoustic drums and drum machines</li>
+      <li>Stereo (with built-in mixer) or multi (36 channels) output</li>
+      <li>Built-in mixer with Pan, Volume, mute controls and Pan mode option</li>
+      <li>FX for each instrument slot: LP, HP resonance filters and Analog knob to make the sound warmer (per-instrument or/and for the whole mix)</li>
+      <li>Up to 36 instrument slots with layers (max 127 layers)</li>
+      <li>Layer change by MIDI velocity, Round Robin or Random order</li>
+      <li>Multi single-shot samples per slot</li>
+      <li>Automatic open hihat mute on hihat close</li>
+      <li>Kit-defined (user-defined) mute groups</li>
+      <li>Drumkit image (if provided) at plugin window</li>
+      <li>Flexible MIDI mapping modes</li>
+      <li>Written in C++, based on <a href="https://juce.com">JUCE toolkit</a></li>
+    </ul>
+  </section>
+</div>
+
+<footer style="
+  margin-top: 60px;
+  padding: 40px 20px;
+  text-align: center;
+  background: var(--main-dark);
+  border-top: 4px solid var(--green-accent);
+  color: var(--text-medium);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+">
+  <p style="margin: 0 0 12px; font-weight: 500;">
+    Drumlabooh is created by
+    <a href="https://github.com/psemiletov" style="
+      color: var(--green-bright);
+      text-decoration: none;
+      font-weight: 600;
+    "> Peter Semiletov</a>
+  </p>
+
+  <p style="margin: 0 0 8px;">
+    Support the development:
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=peter.semiletov@gmail.com&item_name=Support%20Drumlabooh%20development"
+       target="_blank" rel="noopener"
+       style="color: var(--orange-accent); text-decoration: underline; font-weight: 600;">
+      Donate via PayPal
+    </a>
+    or send to <strong>peter.semiletov@gmail.com</strong>
+  </p>
+
+  <p style="margin: 12px 0 0;">
+    Listen to my music:
+    <a href="https://push.fm/fl/semiletov" style="
+      color: var(--orange-accent);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--orange-accent);
+      font-weight: 500;
+    ">push.fm/fl/semiletov</a>
+  </p>
+</footer>
+
 </body>
 </html>
