@@ -1489,6 +1489,11 @@ void CDrumKit::load_sfz (const std::string &data)
   if (data.empty())
       return;
 
+  if (data.find ("lorand") != string::npos)
+     return; //we do not support such kit :(
+    
+   
+   
   map_samples.clear();
  
   kit_type = KIT_TYPE_SFZ;
