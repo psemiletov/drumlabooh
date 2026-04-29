@@ -1481,7 +1481,7 @@ void CDrumKit::load_sfz (const std::string &data)
 */
 
 //based of AI-generated code
-/*
+
 void CDrumKit::load_sfz (const std::string &data)
 {
 //  std::cout << "void CDrumKit::load_sfz (const std::string data)\n";
@@ -1641,9 +1641,9 @@ void CDrumKit::load_sfz (const std::string &data)
   
   loaded = true;    
 }
-*/
 
 
+/*
 void CDrumKit::load_sfz (const std::string &data)
 {
   if (data.empty())
@@ -1923,6 +1923,7 @@ void CDrumKit::load_sfz (const std::string &data)
   
   loaded = true;    
 }
+*/
 
 void CDrumKit::load_hydrogen (const std::string &data)
 {
