@@ -720,6 +720,26 @@ void CDrumCell::set_name (const std::string &n)
 }
 
 
+bool is_image(const std::string& filepath) {
+    // Находим последнюю точку в пути
+    size_t dotPos = filepath.find_last_of('.');
+    if (dotPos == std::string::npos) {
+        return false; // Нет расширения
+    }
+    
+    // Извлекаем расширение (всё после последней точки)
+    std::string extension = filepath.substr(dotPos);
+    
+    // Преобразуем расширение в нижний регистр для сравнения
+    std::transform(extension.begin(), extension.end(), extension.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    
+    // Проверяем расширения
+    return extension == ".jpg" || 
+           extension == ".jpeg" || 
+           extension == ".png";
+}
+
 //load_kit just updates GUI, actual kit load is at CAudioProcessor::load_kit 
 void CAudioProcessorEditor::load_kit()
 {
@@ -787,23 +807,33 @@ void CAudioProcessorEditor::load_kit()
 
 
     l_kit_name.setText (audioProcessor.drumkit->kit_name, juce::dontSendNotification);
-   
-   std::cout << "audioProcessor.drumkit->kit_name: " << audioProcessor.drumkit->kit_name << std::endl;   
+    kit_image.setVisible (false);
 
-   if (! audioProcessor.drumkit->image_fname.empty() && file_exists (audioProcessor.drumkit->image_fname))
-      {
-       l_kit_name.setText (" ", juce::dontSendNotification);
-       kit_image.setVisible (true);
-       juce::File fl (audioProcessor.drumkit->image_fname);
-       juce::Image im = juce::ImageFileFormat::loadFrom (fl);
-       kit_image.setImage (im);
-      }
-   else
+   
+    std::cout << "audioProcessor.drumkit->kit_name: " << audioProcessor.drumkit->kit_name << std::endl;   
+
+    //ниже какая-то хрень, ибо audioProcessor.drumkit->image_fname кажется всегда не пустой и всегда там что-то есть
+    
+    if (is_image (audioProcessor.drumkit->image_fname))
+    if (file_exists (audioProcessor.drumkit->image_fname))
        {
-        juce::String kitname = audioProcessor.drumkit->kit_name;//*kit_caption.c_str()*/;
-        l_kit_name.setText (kitname, juce::dontSendNotification);
+        l_kit_name.setText (" ", juce::dontSendNotification);
+        kit_image.setVisible (true);
+        juce::File fl (audioProcessor.drumkit->image_fname);
+        juce::Image im = juce::ImageFileFormat::loadFrom (fl);
+        kit_image.setImage (im);
+      }
+//   else
+   //if (audioProcessor.drumkit->kit_type != KIT_TYPE_HYDROGEN)   
+  /*     {
         kit_image.setImage (juce::Image());
+        kit_image.setVisible (false);
+        l_kit_name.setText (audioProcessor.drumkit->kit_name, juce::dontSendNotification);
        }
+    */   
+//  if (audioProcessor.drumkit->kit_type == KIT_TYPE_HYDROGEN)     
+  //   l_kit_name.setText (audioProcessor.drumkit->kit_name, juce::dontSendNotification);
+     
          
 //      {
   //     kit_image.setImage (kit_image_default);
