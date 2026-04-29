@@ -441,3 +441,21 @@ bool is_kit_dir (const std::string& path)
        
   return (path.find (dir_pattern) != std::string::npos);  
 }
+
+
+
+bool is_image(const std::string& filepath) 
+{
+  size_t dotPos = filepath.find_last_of('.');
+  if (dotPos == std::string::npos) 
+        return false; 
+    
+  std::string ext = filepath.substr (dotPos);
+    
+  std::transform (ext.begin(), ext.end(), ext.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    
+  return ext == ".jpg" || 
+         ext == ".jpeg" || 
+         ext == ".png";
+}

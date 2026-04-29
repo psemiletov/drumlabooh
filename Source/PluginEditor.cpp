@@ -720,26 +720,6 @@ void CDrumCell::set_name (const std::string &n)
 }
 
 
-bool is_image(const std::string& filepath) {
-    // Находим последнюю точку в пути
-    size_t dotPos = filepath.find_last_of('.');
-    if (dotPos == std::string::npos) {
-        return false; // Нет расширения
-    }
-    
-    // Извлекаем расширение (всё после последней точки)
-    std::string extension = filepath.substr(dotPos);
-    
-    // Преобразуем расширение в нижний регистр для сравнения
-    std::transform(extension.begin(), extension.end(), extension.begin(),
-                   [](unsigned char c) { return std::tolower(c); });
-    
-    // Проверяем расширения
-    return extension == ".jpg" || 
-           extension == ".jpeg" || 
-           extension == ".png";
-}
-
 //load_kit just updates GUI, actual kit load is at CAudioProcessor::load_kit 
 void CAudioProcessorEditor::load_kit()
 {
