@@ -1050,13 +1050,13 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
             CDrumSample *s = 0;
 
-         /*   if (int_midimap_mode == MIDIMAPMODE_LABOOH)
-                s = drumkit->a_samples[nn];
-            else
-                if (drumkit->map_samples.count (note_number) > 0) 
-                   s = drumkit->map_samples[note_number];
+         //   if (int_midimap_mode == MIDIMAPMODE_LABOOH)
+           //     s = drumkit->a_samples[nn];
+//            else
+  //              if (drumkit->map_samples.count (note_number) > 0) 
+    //               s = drumkit->map_samples[note_number];
 //                   std::cout << "play mapped note: " << note_number << std::endl;
-             */
+             
 
          
            if (int_midimap_mode == MIDIMAPMODE_FROMKIT && drumkit->has_mapping)
@@ -1168,7 +1168,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  //take mono audio data from the current layer with incremented offset
               //   float fl = l->channel_data[0][l->sample_offset++];
                   float fl = l->channel_data[l->sample_offset++];
-              
+                  
                  //DSP
 
 
@@ -1234,6 +1234,5 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     }
  //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
 }
-
 
 #endif

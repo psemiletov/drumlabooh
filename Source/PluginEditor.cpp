@@ -775,8 +775,9 @@ void CAudioProcessorEditor::load_kit()
        else    
            midi_note_kit += "not defined"; 
          
+      std::string layers_count = "layers|samples at slot: " + std::to_string (s->v_layers.size());    
          
-      std::string tooltip = midi_note_auto + "\n" + midi_note_kit;   
+      std::string tooltip = midi_note_auto + "\n" + midi_note_kit + "\n" + layers_count;   
          
       drumcells[i].cell_label.setTooltip (tooltip);  
           
