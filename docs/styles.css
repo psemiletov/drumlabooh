@@ -39,6 +39,17 @@ h1 {
   font-size: 2.2rem;
   font-weight: 700;
   color: var(--green-bright);
+  margin-bottom: 12px;
+}
+
+.tagline {
+  text-align: center;
+  color: var(--green-accent);
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin-top: 0;
+  margin-bottom: 0;
+  letter-spacing: 0.5px;
 }
 
 nav {
@@ -500,6 +511,7 @@ code {
 
 @media (max-width: 640px) {
   h1 { font-size: 1.9rem; }
+  .tagline { font-size: 0.95rem; padding: 0 16px; }
   nav a { display: block; margin: 10px auto; width: fit-content; }
   .drumkits-grid { grid-template-columns: 1fr; }
   .card-body { padding: 20px; }
