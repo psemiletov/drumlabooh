@@ -33,29 +33,26 @@
     <h2>NEWS</h2>
 
     <div class="news-entry">
-      <div class="news-date">December 26 2025 — <a href="https://github.com/psemiletov/drumlabooh/releases/tag/12.1.0">Drumlabooh 12.1.0</a></div>
+      <div class="news-date">May 05 2026 — <a href="https://github.com/psemiletov/drumlabooh/releases/tag/12.2.0">Drumlabooh 12.2.0</a></div>
 
-<p>   The new release is a response to numerous user feedback on the previous version, as well as to various suggestions that have accumulated over time.
+<p>   In the new version, the HP/LP filters available from the effects section have been tidied up. Also fixed a crash that occurred when trying to load SFZ kits whose parameters Drumlabooh doesn’t fully support (horizontal rather than vertical round-robin layers).</p>
+<p>
+   Fixed the display of the drum kit name on the panel below the drum kit list.
 </p>
-<p>   Added support for MIDI mapping in Hydrogen drum kits.</p>
-
-<p>   Fixed support for MIDI mapping in SFZ.
-</p>
-<p>   The MIDI note numbers associated with instrument slots for the current MIDI Mapping settings (in Auto and Kit modes) are now displayed as tooltips above the slot names.
-</p>
-<p>   If the option MIDI map mode = Kit, but no MIDI mapping settings are defined in the drum kit, Drumlabooh automatically switches to MIDI map mode = Auto, where notes are numbered sequentially starting from the MIDI base note value. Previously, Drumlabooh simply remained silent.
-</p>
-<p>   Installed drum kits are now also scanned in user-specified directories. The list of these directories should be placed, one full path per line, in the file $HOME/.config/drumlabooh/user-dirs.txt (for Linux) or in C:\drumlabooh\user-dirs.txt (for Windows). For example:
+<p>   When hovering over an instrument slot, it now shows not only its MIDI mapping but also the number of layers or samples loaded into the slot.
 </p>
 
-<pre>/home/test/sfz-main
-/home/test/sfz-misc
-/home/test/hydrogen-kits
-/home/test/drumlabooh</pre>
-
-<p>   Essentially, it no longer matters which format of drum kit is stored in which directory - Drumlabooh correctly recognises them. The exception is ordinary folders containing samples: Drumlabooh can also automatically convert these on the fly into drum kits, but for details please refer to the documentation.
+<p>  Two new drum kits - "Sopromat" and "Avangard" - should fully cover the need for punchy "analog" and electronic drums in the spirit of sampler and synthesizer sounds from the 90s. Breakbeat, big beat, trip-hop, all kinds of techno, goa/psychedelic trance - any combination of such genres, though nothing prevents you from using the new kits in rock as well.
 </p>
-<p>   Stay tuned, Peter Semiletov
+<p>   "Sopromat" contains over 600 high-quality samples within a standard drum kit arrangement - kick, snare, hi-hats, and so on. Around 90 sound variations for each instrument.
+</p>
+<p>   "Avangard" is a non-standard drum kit leaning towards a synthetic and industrial sound. Over 700 samples.
+</p>
+<p>   Drum kits give any drum machine a sense of self-sufficiency. Drumlabooh was originally developed for conveniently creating drum parts directly in a DAW by quickly selecting drum kits of different formats installed on the system - Drumlabooh, Hydrogen, and to some extent SFZ. The collection of Drumlabooh-format kits consisted of about 30 kits featuring public domain samples from old and rare drum machines, as well as "live" drum kits like JazzKit, Sixties Basic, and the lighter Sixties Rock.
+"Sopromat" and "Avangard" are a vast expansion of the palette for electronic music producers, and beyond.
+</p>
+
+<p>Stay tuned, Peter Semiletov
 </p>
 
 
