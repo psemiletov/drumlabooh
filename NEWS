@@ -1,33 +1,27 @@
-   Drumlabooh 12.1.0
+**Drumlabooh 12.2.0**
+
+   In the new version, the HP/LP filters available from the effects section have been tidied up. Also fixed a crash that occurred when trying to load SFZ kits whose parameters Drumlabooh doesn’t fully support (horizontal rather than vertical round-robin layers).
+   Fixed the display of the drum kit name on the panel below the drum kit list.
+   When hovering over an instrument slot, it now shows not only its MIDI mapping but also the number of layers or samples loaded into the slot.
+
+  Two new drum kits - "Sopromat" and "Avangard" - should fully cover the need for punchy "analog" and electronic drums in the spirit of sampler and synthesizer sounds from the 90s. Breakbeat, big beat, trip-hop, all kinds of techno, goa/psychedelic trance - any combination of such genres, though nothing prevents you from using the new kits in rock as well.
+   "Sopromat" contains over 600 high-quality samples within a standard drum kit arrangement - kick, snare, hi-hats, and so on. Around 90 sound variations for each instrument.
+   "Avangard" is a non-standard drum kit leaning towards a synthetic and industrial sound. Over 700 samples.
+   Drum kits give any drum machine a sense of self-sufficiency. Drumlabooh was originally developed for conveniently creating drum parts directly in a DAW by quickly selecting drum kits of different formats installed on the system - Drumlabooh, Hydrogen, and to some extent SFZ. The collection of Drumlabooh-format kits consisted of about 30 kits featuring public domain samples from old and rare drum machines, as well as "live" drum kits like JazzKit, Sixties Basic, and the lighter Sixties Rock.
+"Sopromat" and "Avangard" are a vast expansion of the palette for electronic music producers, and beyond.
+
+Stay tuned, Peter Semiletov
 
 
-   The new release is a response to numerous user feedback on the previous version, as well as to various suggestions that have accumulated over time.
-   Added support for MIDI mapping in Hydrogen drum kits.
-   Fixed support for MIDI mapping in SFZ.
-   The MIDI note numbers associated with instrument slots for the current MIDI Mapping settings (in Auto and Kit modes) are now displayed as tooltips above the slot names.
-   If the option MIDI map mode = Kit, but no MIDI mapping settings are defined in the drum kit, Drumlabooh automatically switches to MIDI map mode = Auto, where notes are numbered sequentially starting from the MIDI base note value. Previously, Drumlabooh simply remained silent.
-   Installed drum kits are now also scanned in user-specified directories. The list of these directories should be placed, one full path per line, in the file $HOME/.config/drumlabooh/user-dirs.txt (for Linux) or in C:\drumlabooh\user-dirs.txt (for Windows). 
-   For example:
-/home/test/sfz-main
-/home/test/sfz-misc
-/home/test/hydrogen-kits
-/home/test/drumlabooh
+   Drumlabooh 12.2.0
 
-   Essentially, it no longer matters which format of drum kit is stored in which directory - Drumlabooh correctly recognises them. The exception is ordinary folders containing samples: Drumlabooh can also automatically convert these on the fly into drum kits, but for details please refer to the documentation.
-
-   Stay tuned, Peter Semiletov
-
-
-   Новый выпуск вызван многочисленными откликами на предыдущий, а также накопившимися предложениями.
-   Добавлена поддержка MIDI mapping в драмкитах Hydrogen. 
-   Исправлена поддержка MIDI mapping для SFZ. 
-   Связанные со слотами инструментов номера MIDI-нот текущих настроек MIDI Mapping (в режимах Auto и Kit) теперь отображаются как всплывающие подсказки над названиями слотов.
-  Если опция MIDI map mode = Kit, но в драмките не заданы настройки MIDI mapping, Drumlabooh автоматически использует MIDI map mode = Auto, когда ноты нумеруются последовательно начиная со значения MIDI base note. Было - Drumlabooh просто молчал.
-   Установленные драмкиты теперь сканируются также в заданных пользователем каталогах, список которых, строка за строкой, в виде полных путей, поместите в файл $HOME/.config/drumlabooh/user-dirs.txt (для Linux) либо в C:\drumlabooh\user-dirs.txt (для Windows). Например:
-/home/test/sfz-main
-/home/test/sfz-misc
-/home/test/hydrogen-kits
-/home/test/drumlabooh
-   По сути, теперь нет разницы драмкиты какого формата в каком каталоге лежат, Drumlabooh распознает их правильно. Исключение составляют обычные папки с сэмплами - их Drumlabooh тоже может автоматически превращать на лету в драмкиты, но подробности читайте в документации.
+   В новой версии приведены в порядок HP/LP-фильтры, доступные из секции эффектов, а также исправлен вылет при попытке загрузить те SFZ-киты, чьи параметры Drumabooh не поддерживает в полной мере ("горизонтальые", а не "вертикальные" слои с round-robin). 
+   Исправлено отображение названия драмкита на панели под списком драмкитов.
+   При наведении на слот инструмента, теперь показывается не только его MIDI-mapping, но и количество слоев или сэмплов, загруженных в слот.
+   Два новых драмкита - "Сопромат" и "Авангард", пожалуй, полностью покроют нужды в четких "аналоговых" и электронных барабанах в духе сэмплерного и синтезаторного звука 90х годов. Breakbit, big beat, trip-hop, все виды techno, goa/psychedelic trance - любые сочетания подобных жанров, хотя никто не мешает использовать новые киты и в роке.
+   "Сопромат" содержит более 600 качественных сэмплов в рамках стандартной ударной установки - бас-бочка, снэр, хайхеты и так далее. Около 90 вариантов звучания каждого инструмента.
+  "Авангард" - нестандартный драмкит с уклоном в синтетический и индустриальный звук. Более 700 сэмплов.
+   Свои драмкиты придают любой драм-машине самодостаточность. Изначально Drumlabooh разрабатывался для удобного создания партий ударных прямо в DAW, путем быстрого выбора установленных в системе драмкитов разных форматов - Drumlabooh, Hydrogen и в какой-то мере SFZ. Набор драмиктов формата Drumlabooh состоял примерно из 30 китов с перешедшими в общественное достояние сэмплами старых и редких драм-машин, а также "живыми" драмкитами JazzKit, Sixties Basic и более легким Sixties Rock. 
+   "Сопромат" и "Авангард" это огромное расширение палитры для музыкантов электронных жанров, и не только их.
 
   На связи, Петр Семилетов
