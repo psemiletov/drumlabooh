@@ -69,9 +69,6 @@ void rnd_init()
 juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fname, int offset)
 {
  // std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
-  
-  if (fname.empty())
-     return 0;
  
   if (! file_exists (fname))
      return 0;
@@ -575,13 +572,14 @@ std::string trim (const std::string& str)
 }
 
 //NEW FOR MAC
-static inline std::string parent_path_of(const std::string &fullpath)
+static inline std::string parent_path_of (const std::string &fullpath)
 {
     size_t pos = fullpath.find_last_of("/\\");
     if (pos == std::string::npos)
         return std::string("");
     return fullpath.substr(0, pos);
 }
+
 
 void CDrumKit::load_labooh_xml (const std::string &data)
 {
@@ -672,68 +670,85 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        
       // std::cout << "fname" << fname << std::endl;
 
-       
        size_t check_for_list = fname.find (",");
        bool check_for_txt = false;
-                  
+
+
+       bool check_for_dir = false; //is dir insead of file, file list or txt-file?
+
+       if (fname.find (".") == string::npos)
+           if (is_directory_safe (kit_dir + "/" + fname))
+             {
+              check_for_dir = true;
+              std::cout << fname << " IS DIR\n";
+             }
+
        if (fname.find (".txt") != string::npos)
-           check_for_txt = true;
-       
-       if ((check_for_list != string::npos) || check_for_txt)
+          {
+            check_for_txt = true;
+            check_for_dir = false;
+          }
+
+       if ((check_for_list != string::npos) || check_for_txt || check_for_dir) //больше чем один сэмпл на слой
           {
            std::vector <std::string> v_fnames;
-             
-           if (check_for_txt)
+
+           if (check_for_dir) //читаем список файлов из директории
+              {
+                v_fnames = files_names_get_list (kit_dir + "/" + fname);
+                std::sort (v_fnames.begin(), v_fnames.end());
+
+                v_fnames.resize (128); //во избежание глюков
+
+                std::cout << "FILE LIST FILLED\n";
+                std::cout << "v_fnames.size(): " << v_fnames.size() << "\n";
+              }
+           else
+           if (check_for_txt) //читаем список файлов из текстового файла
               {
                std::string file_data = string_file_load (kit_dir + "/" + fname);
                v_fnames = split_string_to_vector (file_data, "\n", false);
               }
-           else
+           else //читаем список файлов прямо из элемента
                v_fnames = split_string_to_vector (fname, ",", false);
              
            if (v_fnames.size() == 0)
               continue;
              
-           if (! check_for_txt) 
-              for (auto f: v_fnames)
-                  {
-                   std::string filename = kit_dir + "/" + f;
-                   temp_sample->add_layer();
-
-                   if (file_exists (filename))
-                       temp_sample->v_layers.back()->load (filename.c_str());
-                  }
-           else   
-          /*     for (auto f: v_fnames)
+           if (! check_for_txt && ! check_for_dir) //а если добавить ! check_for_dir то рушится и загрузка с check_for_txt
+               for (auto f: v_fnames)
                    {
-                    filesystem::path pt (kit_dir + "/" + fname); //full path for samples.txt
-  
-                    std::string fpath = pt.parent_path().string();  //get path with dirs only
-                    std::string filename = fpath + "/" + f; // get full path to filename of the each sample
+                    std::string filename = kit_dir + "/" + f;
                     temp_sample->add_layer();
 
                     if (file_exists (filename))
                         temp_sample->v_layers.back()->load (filename.c_str());
                    }
-            */     
-          for (auto f: v_fnames)
-{
-#if !defined(__APPLE__)
-    // non-macOS: use std::filesystem if available
-    std::filesystem::path pt (kit_dir + "/" + fname); // full path for samples.txt
-    std::string fpath = pt.parent_path().string();    // get path with dirs only
-    std::string filename = fpath + "/" + f;           // full path to each sample
-#else
-    // macOS (or when std::filesystem::path is unavailable): use string operations
-    std::string samples_txt_full = kit_dir + "/" + fname; // full path to samples.txt
-    std::string fpath = parent_path_of(samples_txt_full); // parent dir without std::filesystem
-    std::string filename = fpath.empty() ? (kit_dir + "/" + f) : (fpath + "/" + f);
-#endif
+           else //v_fnames взяты из текстового файла или из каталога
+               for (auto f: v_fnames)
+                   {
+                    #if !defined(__APPLE__)
+                    // non-macOS: use std::filesystem if available
+                    std::filesystem::path pt (kit_dir + "/" + fname); // full path for samples.txt
+                    std::string fpath = pt.parent_path().string();    // get path with dirs only
+                    std::string filename = fpath + "/" + f;           // full path to each sample
 
-    temp_sample->add_layer();
-    if (file_exists (filename))
-        temp_sample->v_layers.back()->load (filename.c_str());
-}
+                    if (check_for_dir)
+                        filename = kit_dir + "/" + fname + "/" + f;
+
+                     std::cout << "filename: " << filename << "\n";
+
+                    #else
+                   // macOS (or when std::filesystem::path is unavailable): use string operations
+                    std::string samples_txt_full = kit_dir + "/" + fname; // full path to samples.txt
+                    std::string fpath = parent_path_of (samples_txt_full); // parent dir without std::filesystem
+                    std::string filename = fpath.empty() ? (kit_dir + "/" + f) : (fpath + "/" + f);
+                   #endif
+
+                   temp_sample->add_layer();
+                   if (file_exists (filename))
+                      temp_sample->v_layers.back()->load (filename.c_str());
+                  }
 
            float part_size = (float) 1 / temp_sample->v_layers.size();
              

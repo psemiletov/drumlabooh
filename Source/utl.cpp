@@ -91,7 +91,8 @@ std::string resolve_symlink (const std::string &path)
 
 //AI-generated
 
-std::vector<std::string> files_get_list(const std::string &path) {
+std::vector<std::string> files_get_list(const std::string &path)
+{
     std::vector<std::string> result;
     if (path.empty()) return result;
 
@@ -402,6 +403,29 @@ std::vector<std::string> get_files_with_extensions (const std::string& directory
 }
 
 
+std::vector<std::string> files_names_get_list(const std::string &path)
+{
+  std::vector<std::string> result;
+  if (path.empty()) return result;
+
+  namespace fs = std::filesystem;
+  try {
+    for (const auto& entry : fs::directory_iterator(path)) {
+      std::string name = entry.path().filename().string();
+      if (name != "." && name != "..") {
+        result.push_back(name);
+      }
+    }
+  } catch (...) {
+    // Игнорируем ошибки
+  }
+  return result;
+}
+
+
+
+
+
 // Функция для получения списка каталогов в указанной директории с сортировкой по алфавиту
 
 std::vector<std::string> get_directories (const std::string& directory) 
@@ -424,7 +448,8 @@ std::vector<std::string> get_directories (const std::string& directory)
 }
 
 
-bool is_directory_safe(const std::string& path) {
+bool is_directory_safe (const std::string& path)
+{
     std::error_code ec;
     bool result = filesystem::is_directory(path, ec);
     if (ec) {
