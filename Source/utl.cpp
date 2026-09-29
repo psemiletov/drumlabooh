@@ -424,6 +424,39 @@ std::vector<std::string> files_names_get_list(const std::string &path)
 
 
 
+bool is_audio_ext(const std::string& ext)
+{
+  return ext == ".wav"  || ext == ".aiff" || ext == ".aif"
+  || ext == ".flac" || ext == ".ogg"  || ext == ".mp3";
+}
+
+
+std::vector<std::string> get_audio_files_list(const std::string& directory_path)
+{
+  std::vector<std::string> audio_files;
+  if (directory_path.empty()) return audio_files;
+
+  //namespace fs = std::filesystem;
+  try {
+    for (const auto& entry : std::filesystem::directory_iterator(directory_path)) {
+      if (!entry.is_regular_file()) continue;
+
+      std::string name = entry.path().filename().string();
+      if (name == "." || name == "..") continue;
+
+      std::string ext = string_to_lower(entry.path().extension().string());
+      if (is_audio_ext(ext)) {
+        audio_files.push_back(name);   // только имя файла
+      }
+    }
+  } catch (...) {
+    // Игнорируем ошибки
+  }
+
+  return audio_files;
+}
+
+
 
 
 // Функция для получения списка каталогов в указанной директории с сортировкой по алфавиту

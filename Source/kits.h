@@ -101,6 +101,8 @@ public:
 
   int session_samplerate; //session srate, taken from the upper level object
 
+
+  bool reverse_order_mode;
   bool active; //is sample triggered to play? 
   
   //bool has_mapping; //is the MIDI note defined for that instrument at drumkit file?

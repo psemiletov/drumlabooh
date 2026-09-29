@@ -292,6 +292,7 @@ CDrumSample::CDrumSample (int sample_rate)
   layer_index_mode = LAYER_INDEX_MODE_VEL;
   mapped_note = -1;
   mute_group = -1;
+  reverse_order_mode = false;
 }
 
 
@@ -659,6 +660,11 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        if (layer_index_mode == "alt")
           temp_sample->layer_index_mode = LAYER_INDEX_MODE_ALT; 
        
+       std::string reverse_order_mode = item_sample.attribute ("reverse_order_mode").value();
+         if (reverse_order_mode == "1" || reverse_order_mode == "on")
+             temp_sample->reverse_order_mode = true;
+
+
        //load samples
 
        std::string fname = item_sample.text().as_string(); //file name[s]
@@ -695,10 +701,15 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
            if (check_for_dir) //читаем список файлов из директории
               {
-                v_fnames = files_names_get_list (kit_dir + "/" + fname);
+                v_fnames = /*files_names_get_list*/ get_audio_files_list (kit_dir + "/" + fname);
                 std::sort (v_fnames.begin(), v_fnames.end());
 
-                v_fnames.resize (128); //во избежание глюков
+
+                if (temp_sample->reverse_order_mode)
+                  std::reverse (v_fnames.begin(), v_fnames.end());
+
+
+            //   v_fnames.resize (128); //во избежание глюков
 
                 std::cout << "FILE LIST FILLED\n";
                 std::cout << "v_fnames.size(): " << v_fnames.size() << "\n";
@@ -715,6 +726,9 @@ void CDrumKit::load_labooh_xml (const std::string &data)
            if (v_fnames.size() == 0)
               continue;
              
+            if (v_fnames.size() > 128)
+              v_fnames.resize (128);
+
            if (! check_for_txt && ! check_for_dir) //а если добавить ! check_for_dir то рушится и загрузка с check_for_txt
                for (auto f: v_fnames)
                    {
