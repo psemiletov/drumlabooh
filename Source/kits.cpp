@@ -116,12 +116,20 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
      reader = AiffAudioFormat().createReaderFor (fs, true);
 
   if (! reader)
+     {
+      delete fs; //fixed
       return 0;
+     }
+
 
    // std::cout << "getFormatName: " << reader->getFormatName()  << std::endl;
    //juce::AudioBuffer <float> *buffer = new juce::AudioBuffer<float>;
 
    int bufsize = (int) reader->lengthInSamples - offset; //offset is for SFZ
+
+   if (bufsize <= 0)
+       bufsize = (int) reader->lengthInSamples; //fixed
+
    juce::AudioBuffer <float> *buffer = new juce::AudioBuffer<float> (reader->numChannels, bufsize);
 
       // if (! reader->read (buffer,  0, bufsize, 0,  true, true))
@@ -711,8 +719,8 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
             //   v_fnames.resize (128); //во избежание глюков
 
-                std::cout << "FILE LIST FILLED\n";
-                std::cout << "v_fnames.size(): " << v_fnames.size() << "\n";
+              //  std::cout << "FILE LIST FILLED\n";
+                //std::cout << "v_fnames.size(): " << v_fnames.size() << "\n";
               }
            else
            if (check_for_txt) //читаем список файлов из текстового файла
@@ -750,7 +758,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                     if (check_for_dir)
                         filename = kit_dir + "/" + fname + "/" + f;
 
-                     std::cout << "filename: " << filename << "\n";
+                  //   std::cout << "filename: " << filename << "\n";
 
                     #else
                    // macOS (or when std::filesystem::path is unavailable): use string operations
@@ -1202,6 +1210,7 @@ inline std::string& rtrim (std::string &s, const char *t = " \t\n\r\f\v")
 }
 
 //ПЕРЕПРОВЕРИТЬ КАК РАБОТАЕТ!!!
+/*
 std::string get_parameter_from_line (const std::string &line, const std::string &key)
 {
   std::string result;
@@ -1234,7 +1243,28 @@ std::string get_parameter_from_line (const std::string &line, const std::string 
      
   return result;   
 }
+*/
 
+std::string get_parameter_from_line (const std::string &line, const std::string &key)
+{
+  std::string result;
+  std::string str_to_find = key + "=";
+  size_t pos = line.find (str_to_find);
+  if (pos == string::npos)
+    return result;
+
+  pos += str_to_find.length();
+
+  // ищем первый разделитель: пробел, таб, \r, \n
+  size_t end = line.find_first_of(" \t\r\n", pos);
+
+  if (end == string::npos)
+    result = line.substr (pos);        // до конца строки
+    else
+      result = line.substr (pos, end - pos);
+
+  return result;
+}
 
 std::string sfz_extract_sample_filename (const std::string &line)
 {
@@ -1999,7 +2029,10 @@ void CDrumKit::adapt() //used at Adapt button handler
 
 
                 if (! writer)
+                  {
+                   delete fs;  //new
                    return;
+                  }
                  
                 if (! writer->writeFromAudioSampleBuffer (*layer->audio_buffer, 0, layer->audio_buffer->getNumSamples()))
                     std::cout << "NO write!\n";
@@ -2229,6 +2262,9 @@ void CDrumKitsScanner::scan()
                       else
                           {
                            //ищем SFZ
+
+                           fname = "";
+
                            std::vector <std::string> v = files_get_list (kd, ".sfz");
                            if (v.size() != 0)
                               fname = v[0];
