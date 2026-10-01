@@ -66,6 +66,220 @@ void rnd_init()
 }
 
 
+
+juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fname, int offset)
+{
+  // std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
+
+  if (! file_exists (fname))
+    return 0;
+
+
+  juce::File fl (fname);
+  juce::InputStream *fs = new juce::FileInputStream (fl); //will be deleted by reader
+
+  juce::AudioFormatReader *reader = 0;
+
+  std::string ext = get_file_ext (fname);
+  ext = string_to_lower (ext);
+
+  if (ext == "wav")
+    reader = WavAudioFormat().createReaderFor (fs, true);
+
+  if (ext == "flac")
+    reader = FlacAudioFormat().createReaderFor (fs, true);
+
+  if (ext == "ogg")
+    reader = OggVorbisAudioFormat().createReaderFor (fs, true);
+
+  /* if (ext == "mp3")
+   *     reader = MP3AudioFormat().createReaderFor (fs, true);
+   */
+  /* MP3: only if MP3AudioFormat is available in this build.
+   *   Use JUCE_USE_MP3AUDIOFORMAT if the build system defines it,
+   *   otherwise try a header existence check via __has_include. */
+  #ifndef __APPLE__
+  #if defined(JUCE_USE_MP3AUDIOFORMAT) \
+  || (defined(__has_include) && __has_include(<juce_audio_formats/juce_MP3AudioFormat.h>))
+  if (ext == "mp3")
+    reader = MP3AudioFormat().createReaderFor (fs, true);
+  #else
+  if (ext == "mp3")
+  {
+    // MP3 support not compiled in — skip and log
+    std::cerr << "MP3 support not available in this build, skipping file: " << fname << std::endl;
+    // reader stays nullptr; function will return 0 below
+  }
+  #endif
+  #endif
+
+  if (ext == "aiff" || ext == "aif" )
+    reader = AiffAudioFormat().createReaderFor (fs, true);
+
+  if (! reader)
+  {
+    delete fs; //fixed
+    return 0;
+  }
+
+
+  // std::cout << "getFormatName: " << reader->getFormatName()  << std::endl;
+  //juce::AudioBuffer <float> *buffer = new juce::AudioBuffer<float>;
+
+  int bufsize = (int) reader->lengthInSamples - offset; //offset is for SFZ
+
+
+  if (bufsize <= 0) //оффсет в итоге неправильный, уводит размер буфера в минус
+  {
+    bufsize = (int) reader->lengthInSamples;
+    offset = 0;   //в топку неправильный оффсет, иначе read ничего не прочитает
+  }
+
+  juce::AudioBuffer <float> *buffer = new juce::AudioBuffer<float> (/*reader->numChannels*/1, bufsize);
+
+  // if (! reader->read (buffer,  0, bufsize, 0,  true, true))
+  //   if (! reader->read (buffer,  0, bufsize, offset,  true, true))
+  if (! reader->read (buffer,  0, bufsize, offset,  true, false)) //read just left channel
+
+  {
+    std::cout << "! reader->read from: " << fname << std::endl;
+
+    delete reader;
+    delete buffer;
+    return 0;
+  }
+
+  samplerate = reader->sampleRate;
+  //   length_in_samples = reader->lengthInSamples;
+
+  length_in_samples = bufsize;
+
+  /*
+   *   if (reader->numChannels > 2) //mix to left channel
+   *      {
+   *       float *left_channel = buffer->getWritePointer (0);
+   *       const float *right_channel = buffer->getReadPointer (1);
+   *
+   *       for (size_t pos = 0; pos < length_in_samples; pos++)
+   *           {
+   *            left_channel[pos] = (left_channel[pos] + right_channel[pos]) * 0.5f;
+}
+
+}
+*/
+  delete reader;
+  return buffer;
+}
+
+juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::string &fname,
+                                                                    int sess_samplerate,
+                                                                    int offset)
+{
+  juce::AudioBuffer <float>* buffer = load_whole_sample (fname, offset);
+
+  if (! buffer)
+  {
+    std::cout << "load error: " << fname << std::endl;
+    return 0;
+  }
+
+  if ((int) samplerate == sess_samplerate)
+    return buffer;
+
+  //else we need to resample
+
+  double ratio = (double) sess_samplerate / (double) samplerate;
+
+  const int num_taps  = 4;
+  const int half_taps = num_taps / 2;
+
+  size_t input_frames = (size_t) buffer->getNumSamples();
+
+  // tail-padding: half_taps нулей в конец входа,
+  // иначе sinc-фильтр обрывается на последнем реальном сэмпле
+  size_t extended_frames = input_frames + half_taps;
+
+  juce::AudioBuffer <float> extended_input (1, (int) extended_frames);
+  extended_input.clear();
+  extended_input.copyFrom (0, 0, *buffer, 0, 0, (int) input_frames);
+
+  Resample *resampler = resampleInit (1,        //channels
+                                      num_taps, //int numTaps
+                                      4,        //int numFilters
+                                      0.5,      //double lowpassRatio
+                                      SUBSAMPLE_INTERPOLATE | BLACKMAN_HARRIS | INCLUDE_LOWPASS);
+
+  if (! resampler)
+  {
+    delete buffer;
+    return 0;
+  }
+
+  // выходной буфер с запасом — ресемплер сам остановится,
+  // когда кончится вход; финальный размер возьмём из result.output_generated
+  size_t out_capacity = (size_t) std::ceil (ratio * (double) extended_frames) + 16;
+
+  juce::AudioBuffer <float> *out_buf = new juce::AudioBuffer <float> (1, (int) out_capacity);
+  out_buf->clear();
+
+  ResampleResult result = resampleProcess (resampler,
+                                           extended_input.getArrayOfReadPointers(),
+                                           (int) extended_frames,
+                                           out_buf->getArrayOfWritePointers(),
+                                           (int) out_capacity,
+                                           ratio);
+
+  resampleFree (resampler);
+
+  if (result.output_generated == 0)
+  {
+    std::cout << "resampleProcess generated nothing: " << fname << std::endl;
+    delete buffer;
+    delete out_buf;
+    return 0;
+  }
+
+  // обрезать до фактического размера
+  out_buf->setSize (1, (int) result.output_generated, true, true, false);
+
+  // фейд-аут: страховка от обрезанных в конце исходников
+  int fade_out_len = std::min<int> (out_buf->getNumSamples(),
+                                    (int) (0.005 * sess_samplerate)); // 5 ms
+  if (fade_out_len > 1)
+  {
+    float *d = out_buf->getWritePointer (0);
+    int n = out_buf->getNumSamples();
+    const float inv = 1.0f / (float) (fade_out_len - 1);
+
+    for (int i = 0; i < fade_out_len; ++i)
+      d[n - fade_out_len + i] *= (float) i * inv;
+  }
+
+  // фейд-ин: только для SFZ с offset > 0
+  // (мы начинаем читать с середины волны — первый сэмпл может быть не нулём)
+  if (offset > 0)
+  {
+    int fade_in_len = std::min<int> (out_buf->getNumSamples(),
+                                     (int) (0.002 * sess_samplerate)); // 2 ms
+    if (fade_in_len > 1)
+    {
+      float *d = out_buf->getWritePointer (0);
+      const float inv = 1.0f / (float) (fade_in_len - 1);
+
+      for (int i = 0; i < fade_in_len; ++i)
+        d[i] *= (float) i * inv;
+    }
+  }
+
+  samplerate        = sess_samplerate;
+  length_in_samples = (size_t) result.output_generated;
+
+  delete buffer;
+  return out_buf;
+}
+
+
+/*
 juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fname, int offset)
 {
  // std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
@@ -91,12 +305,12 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
   if (ext == "ogg")
      reader = OggVorbisAudioFormat().createReaderFor (fs, true);
 
- /* if (ext == "mp3")
-     reader = MP3AudioFormat().createReaderFor (fs, true);
-*/
- /* MP3: only if MP3AudioFormat is available in this build.
-   Use JUCE_USE_MP3AUDIOFORMAT if the build system defines it,
-   otherwise try a header existence check via __has_include. */
+ // if (ext == "mp3")
+   //  reader = MP3AudioFormat().createReaderFor (fs, true);
+
+ // MP3: only if MP3AudioFormat is available in this build.
+   //Use JUCE_USE_MP3AUDIOFORMAT if the build system defines it,
+   //otherwise try a header existence check via __has_include.
 #ifndef __APPLE__
 #if defined(JUCE_USE_MP3AUDIOFORMAT) \
     || (defined(__has_include) && __has_include(<juce_audio_formats/juce_MP3AudioFormat.h>))
@@ -207,14 +421,6 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
                                       0.5,//double lowpassRatio, 
                                       SUBSAMPLE_INTERPOLATE | BLACKMAN_HARRIS | INCLUDE_LOWPASS);//int flags);
   
-/*
-Resample *resampler = resampleInit (1,  //channels
-                                       256,//int numTaps
-                                       256,// int numFilters, 
-                                       0.5d,//double lowpassRatio, 
-                                       SUBSAMPLE_INTERPOLATE | BLACKMAN_HARRIS | INCLUDE_LOWPASS);//int flags);
- */
-  
   ResampleResult result = resampleProcess (resampler,
                                            buffer->getArrayOfReadPointers(), 
                                            length_in_samples, 
@@ -238,7 +444,7 @@ Resample *resampler = resampleInit (1,  //channels
 
   return out_buf;
 }
-
+*/
 
 void CDrumLayer::load (const std::string &fname, int offset)
 {
