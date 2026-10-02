@@ -91,12 +91,6 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
   if (ext == "ogg")
       reader = OggVorbisAudioFormat().createReaderFor (fs, true);
 
-  /* if (ext == "mp3")
-   *     reader = MP3AudioFormat().createReaderFor (fs, true);
-   */
-  /* MP3: only if MP3AudioFormat is available in this build.
-   *   Use JUCE_USE_MP3AUDIOFORMAT if the build system defines it,
-   *   otherwise try a header existence check via __has_include. */
   #ifndef __APPLE__
   #if defined(JUCE_USE_MP3AUDIOFORMAT) \
   || (defined(__has_include) && __has_include(<juce_audio_formats/juce_MP3AudioFormat.h>))
@@ -134,7 +128,8 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
       offset = 0;   //в топку неправильный оффсет, иначе read ничего не прочитает
      }
 
-  juce::AudioBuffer <float> *buffer = new juce::AudioBuffer<float> (/*reader->numChannels*/1, bufsize);
+  juce::AudioBuffer <float> *buffer = new juce::AudioBuffer<float> (1, bufsize);
+
 
   // if (! reader->read (buffer,  0, bufsize, 0,  true, true))
   //   if (! reader->read (buffer,  0, bufsize, offset,  true, true))
@@ -152,23 +147,9 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
 
   length_in_samples = bufsize;
 
-  /*
-   *   if (reader->numChannels > 2) //mix to left channel
-   *      {
-   *       float *left_channel = buffer->getWritePointer (0);
-   *       const float *right_channel = buffer->getReadPointer (1);
-   *
-   *       for (size_t pos = 0; pos < length_in_samples; pos++)
-   *           {
-   *            left_channel[pos] = (left_channel[pos] + right_channel[pos]) * 0.5f;
-}
-
-}
-*/
   delete reader;
   return buffer;
 }
-
 
 
 
@@ -1859,11 +1840,30 @@ void CDrumKit::load_sfz (const std::string &data)
   if (data.empty())
       return;
 
-  if (data.find ("lorand") != string::npos)
-     return; //we do not support such kit :(
+  //if (data.find ("lorand") != string::npos)
+     //return; //we do not support such kit :(
     
    
-   
+       // В начале load_sfz, после проверки data.empty() и data.find("lorand")
+       // (lorand уже проверяется, добавим остальные)
+  if (data.find ("seq_position")     != string::npos ||
+    data.find ("seq_length")       != string::npos ||
+    data.find ("hirand")           != string::npos ||
+    data.find ("lorand")           != string::npos ||
+    data.find ("sw_last")          != string::npos ||
+    data.find ("sw_lokey")         != string::npos ||
+    data.find ("sw_hikey")         != string::npos ||
+    data.find ("sw_previous")      != string::npos ||
+    data.find ("sw_default")       != string::npos ||
+    data.find ("pitch_keycenter")  != string::npos ||
+    data.find ("lokey=")           != string::npos ||
+    data.find ("hikey=")           != string::npos)
+  {
+    std::cout << "Unsupported SFZ: advanced features detected" << std::endl;
+    return;
+  }
+
+
   map_samples.clear();
  
   kit_type = KIT_TYPE_SFZ;
@@ -2034,11 +2034,27 @@ void CDrumKit::load_hydrogen (const std::string &data)
    else
        layers_supported = false;
 
+
+  std::string source = data;
+
+  // ===== NEW: strip <info> =====
+  size_t info_start = source.find ("<info>");
+  if (info_start != std::string::npos)
+  {
+    size_t info_end = source.find ("</info>", info_start);
+    if (info_end != std::string::npos)
+    {
+      source.erase (info_start, info_end - info_start + 7);
+      std::cout << "[load_hydrogen] stripped <info>" << std::endl;
+    }
+  }
+  // ===== END NEW =====
+
+
+
   //delete empty instruments
   //because we don't want parse them
 
-  std::string source = data;
-  
   size_t idx_filename = source.rfind ("</filename>");
   size_t idx_instrument = source.find ("<instrument>", idx_filename);
 
@@ -2112,8 +2128,11 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   
   std::string source = string_file_load (kit_filename);
   if (source.empty())
-
      return;
+
+  if (ends_with (kit_filename, "Audiophob/drumkit.xml")) //sorry! Drumlabooh crashes on Audiophob! Because of 25671__walter-odington__garage-city-snare-snappy.wav is aiff
+     return;
+
    
   if (ends_with (kit_filename, "drumkit.labooh"))
      {
@@ -2851,6 +2870,14 @@ void CDrumKit::setup_auto_mute()
                 s->mute_group = 7777;   
                 break;  
                } 
+
+           if (s->v_layers.empty())
+               {
+                 std::cout << "[setup_auto_mute] sample " << i
+                 << " ('" << s->name << "') has EMPTY v_layers" << std::endl;
+                 continue;
+               }
+
 
             if (findStringIC (s->v_layers[0]->file_name, signature))
                {
