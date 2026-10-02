@@ -491,7 +491,21 @@ bool is_directory_safe (const std::string& path)
     }
     return result;
 }
+/*
 
+bool is_directory_safe (const std::string& path)
+{
+  std::cout << "=== is_directory_safe CALLED === path: '" << path << "'" << std::endl;
+  std::error_code ec;
+  bool result = filesystem::is_directory(path, ec);
+  if (ec) {
+    std::cout << "[is_directory_safe] ERROR: " << ec.message() << std::endl;
+    return false;
+  }
+  std::cout << "[is_directory_safe] result: " << result << std::endl;
+  return result;
+}
+*/
 
 bool is_kit_dir (const std::string& path)
 {

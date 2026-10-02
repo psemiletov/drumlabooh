@@ -951,8 +951,8 @@ void CDrumKit::load_labooh_xml (const std::string &data)
           temp_sample->layer_index_mode = LAYER_INDEX_MODE_ALT; 
        
        std::string reverse_order_mode = item_sample.attribute ("reverse_order_mode").value();
-         if (reverse_order_mode == "1" || reverse_order_mode == "on")
-             temp_sample->reverse_order_mode = true;
+        if (reverse_order_mode == "1" || reverse_order_mode == "on")
+            temp_sample->reverse_order_mode = true;
 
 
        //load samples
@@ -973,11 +973,16 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        bool check_for_dir = false; //is dir insead of file, file list or txt-file?
 
        if (fname.find (".") == string::npos)
+        {
+
+          std::cout << "YES IT IS DIR!!!\n";
            if (is_directory_safe (kit_dir + "/" + fname))
              {
               check_for_dir = true;
               std::cout << fname << " IS DIR\n";
              }
+
+       }
 
        if (fname.find (".txt") != string::npos)
           {
@@ -991,7 +996,9 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
            if (check_for_dir) //читаем список файлов из директории
               {
-                v_fnames = /*files_names_get_list*/ get_audio_files_list (kit_dir + "/" + fname);
+                v_fnames = get_audio_files_list (kit_dir + "/" + fname);
+                //v_fnames = files_names_get_list (kit_dir + "/" + fname);
+
                 std::sort (v_fnames.begin(), v_fnames.end());
 
 
@@ -1001,8 +1008,8 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
             //   v_fnames.resize (128); //во избежание глюков
 
-              //  std::cout << "FILE LIST FILLED\n";
-                //std::cout << "v_fnames.size(): " << v_fnames.size() << "\n";
+                std::cout << "FILE LIST FILLED\n";
+                std::cout << "v_fnames.size(): " << v_fnames.size() << "\n";
               }
            else
            if (check_for_txt) //читаем список файлов из текстового файла
@@ -1017,7 +1024,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
               continue;
              
             if (v_fnames.size() > 128)
-              v_fnames.resize (128);
+               v_fnames.resize (128);
 
            if (! check_for_txt && ! check_for_dir) //а если добавить ! check_for_dir то рушится и загрузка с check_for_txt
                for (auto f: v_fnames)
@@ -1048,6 +1055,8 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                     std::string fpath = parent_path_of (samples_txt_full); // parent dir without std::filesystem
                     std::string filename = fpath.empty() ? (kit_dir + "/" + f) : (fpath + "/" + f);
                    #endif
+
+                   std::cout << "TRY TO LOAD, filename: " << filename << "\n";
 
                    temp_sample->add_layer();
                    if (file_exists (filename))
@@ -1531,22 +1540,42 @@ std::string get_parameter_from_line (const std::string &line, const std::string 
 {
   std::string result;
   std::string str_to_find = key + "=";
-  size_t pos = line.find (str_to_find);
-  if (pos == string::npos)
+  size_t pos = 0;
+
+  // Ищем "key=", но только на границе слова:
+  // либо в начале строки, либо после пробела/таба/CR/LF.
+  while (pos < line.size())
+  {
+    pos = line.find (str_to_find, pos);
+    if (pos == std::string::npos)
+      return result;  // не нашли — возвращаем пустую строку
+
+      // Проверка границы: перед "key=" должен быть пробел или начало строки.
+      if (pos == 0 || std::isspace (static_cast<unsigned char>(line[pos - 1])))
+        break;
+
+    // Иначе это "key=" внутри другого слова (например, "lokey="),
+    // продолжаем поиск со следующей позиции.
+    pos += str_to_find.size();
+  }
+
+  // Если дошли до конца строки, ничего не нашли
+  if (pos >= line.size())
     return result;
 
   pos += str_to_find.length();
 
-  // ищем первый разделитель: пробел, таб, \r, \n
-  size_t end = line.find_first_of(" \t\r\n", pos);
+  // Ищем первый разделитель: пробел, таб, \r, \n
+  size_t end = line.find_first_of (" \t\r\n", pos);
 
-  if (end == string::npos)
+  if (end == std::string::npos)
     result = line.substr (pos);        // до конца строки
     else
       result = line.substr (pos, end - pos);
 
   return result;
 }
+
 
 std::string sfz_extract_sample_filename (const std::string &line)
 {
