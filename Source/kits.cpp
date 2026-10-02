@@ -66,13 +66,12 @@ void rnd_init()
 }
 
 
-
 juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fname, int offset)
 {
   // std::cout << "@@@@@ CDrumLayer::load_whole_sample: " << fname << std::endl;
 
   if (! file_exists (fname))
-    return 0;
+      return 0;
 
 
   juce::File fl (fname);
@@ -84,13 +83,13 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
   ext = string_to_lower (ext);
 
   if (ext == "wav")
-    reader = WavAudioFormat().createReaderFor (fs, true);
+      reader = WavAudioFormat().createReaderFor (fs, true);
 
   if (ext == "flac")
-    reader = FlacAudioFormat().createReaderFor (fs, true);
+      reader = FlacAudioFormat().createReaderFor (fs, true);
 
   if (ext == "ogg")
-    reader = OggVorbisAudioFormat().createReaderFor (fs, true);
+      reader = OggVorbisAudioFormat().createReaderFor (fs, true);
 
   /* if (ext == "mp3")
    *     reader = MP3AudioFormat().createReaderFor (fs, true);
@@ -114,13 +113,13 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
   #endif
 
   if (ext == "aiff" || ext == "aif" )
-    reader = AiffAudioFormat().createReaderFor (fs, true);
+      reader = AiffAudioFormat().createReaderFor (fs, true);
 
   if (! reader)
-  {
-    delete fs; //fixed
-    return 0;
-  }
+     {
+      delete fs; //fixed
+      return 0;
+     }
 
 
   // std::cout << "getFormatName: " << reader->getFormatName()  << std::endl;
@@ -130,24 +129,23 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
 
 
   if (bufsize <= 0) //оффсет в итоге неправильный, уводит размер буфера в минус
-  {
-    bufsize = (int) reader->lengthInSamples;
-    offset = 0;   //в топку неправильный оффсет, иначе read ничего не прочитает
-  }
+     {
+      bufsize = (int) reader->lengthInSamples;
+      offset = 0;   //в топку неправильный оффсет, иначе read ничего не прочитает
+     }
 
   juce::AudioBuffer <float> *buffer = new juce::AudioBuffer<float> (/*reader->numChannels*/1, bufsize);
 
   // if (! reader->read (buffer,  0, bufsize, 0,  true, true))
   //   if (! reader->read (buffer,  0, bufsize, offset,  true, true))
   if (! reader->read (buffer,  0, bufsize, offset,  true, false)) //read just left channel
+     {
+      std::cout << "! reader->read from: " << fname << std::endl;
 
-  {
-    std::cout << "! reader->read from: " << fname << std::endl;
-
-    delete reader;
-    delete buffer;
-    return 0;
-  }
+      delete reader;
+      delete buffer;
+      return 0;
+     }
 
   samplerate = reader->sampleRate;
   //   length_in_samples = reader->lengthInSamples;
@@ -171,10 +169,13 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
   return buffer;
 }
 
-juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::string &fname,
-                                                                    int sess_samplerate,
-                                                                    int offset)
+
+
+
+
+juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::string &fname, int sess_samplerate, int offset)
 {
+
   juce::AudioBuffer <float>* buffer = load_whole_sample (fname, offset);
 
   if (! buffer)
@@ -183,8 +184,83 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
     return 0;
   }
 
-  if ((int) samplerate == sess_samplerate)
+  if (samplerate == sess_samplerate)
     return buffer;
+
+  const float *input_buffer = buffer->getReadPointer(0); //ЗАМЕНИТЬ НА getReadPointer(0)?
+
+  if (! input_buffer)
+  {
+    delete buffer;
+    return 0;
+  }
+
+  //else we need to resample
+
+  float ratio = (float) sess_samplerate / samplerate;
+
+  // std::cout << "ratio: " << ratio << std::endl;
+
+  //double dratio = (double) sess_samplerate / samplerate;
+
+  size_t output_frames_count = ratio * length_in_samples;
+
+  //size_t output_frames_count = static_cast<size_t>(std::ceil(ratio * length_in_samples));
+
+  //make mono (1-channel) buffer out_buf
+  juce::AudioBuffer<float> *out_buf = new juce::AudioBuffer <float> (1, output_frames_count);
+
+  //out_buf->clear(); //НЕ БЫЛО И НЕ МЕШАЛО
+
+  Resample *resampler = resampleInit (1,  //channels
+                                      4,//int numTaps
+                                      4,// int numFilters,
+                                      0.5,//double lowpassRatio,
+                                      SUBSAMPLE_INTERPOLATE | BLACKMAN_HARRIS | INCLUDE_LOWPASS);//int flags);
+
+                                      ResampleResult result = resampleProcess (resampler,
+                                                                               buffer->getArrayOfReadPointers(),
+                                                                               length_in_samples,
+                                                                               out_buf->getArrayOfWritePointers(),
+                                                                               output_frames_count,
+                                                                               (double)ratio);
+
+
+                                      resampleFree (resampler);
+
+                                      //std::shared_ptr <speex_resampler_cpp::Resampler> rs = speex_resampler_cpp::createResampler (length_in_samples, 1, samplerate, sess_samplerate);
+                                      //rs->read (input_buffer);
+                                      //int frames_written = rs->write (out_buf->getWritePointer(0), output_frames_count);
+
+                                      samplerate = sess_samplerate;
+                                      length_in_samples = output_frames_count;
+
+                                      //  std::cout << "length_in_samples: " << length_in_samples << std::endl;
+
+                                      delete buffer;
+
+                                      return out_buf;
+}
+
+
+
+
+
+/*
+juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::string &fname,
+                                                                    int sess_samplerate,
+                                                                    int offset)
+{
+  juce::AudioBuffer <float>* buffer = load_whole_sample (fname, offset);
+
+  if (! buffer)
+     {
+      std::cout << "load error: " << fname << std::endl;
+      return 0;
+    }
+
+  if ((int) samplerate == sess_samplerate)
+     return buffer;
 
   //else we need to resample
 
@@ -210,10 +286,10 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
                                       SUBSAMPLE_INTERPOLATE | BLACKMAN_HARRIS | INCLUDE_LOWPASS);
 
   if (! resampler)
-  {
-    delete buffer;
-    return 0;
-  }
+     {
+      delete buffer;
+      return 0;
+     }
 
   // выходной буфер с запасом — ресемплер сам остановится,
   // когда кончится вход; финальный размер возьмём из result.output_generated
@@ -277,7 +353,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
   delete buffer;
   return out_buf;
 }
-
+*/
 
 /*
 juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fname, int offset)
