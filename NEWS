@@ -1,27 +1,42 @@
-**Drumlabooh 12.2.0**
+Drumlabooh 13.0.0
 
-   In the new version, the HP/LP filters available from the effects section have been tidied up. Also fixed a crash that occurred when trying to load SFZ kits whose parameters Drumlabooh doesn’t fully support (horizontal rather than vertical round-robin layers).
-   Fixed the display of the drum kit name on the panel below the drum kit list.
-   When hovering over an instrument slot, it now shows not only its MIDI mapping but also the number of layers or samples loaded into the slot.
+Every release of Drumlabooh aims to be interesting and useful. The new version includes a big drumkit called Diskach (a word used in the USSR and post-Soviet countries in the 1990s to refer to a disco), with samples evoking nostalgia for the nineties. 7 instruments with 128 sample variations each!
 
-  Two new drum kits - "Sopromat" and "Avangard" - should fully cover the need for punchy "analog" and electronic drums in the spirit of sampler and synthesizer sounds from the 90s. Breakbeat, big beat, trip-hop, all kinds of techno, goa/psychedelic trance - any combination of such genres, though nothing prevents you from using the new kits in rock as well.
-   "Sopromat" contains over 600 high-quality samples within a standard drum kit arrangement - kick, snare, hi-hats, and so on. Around 90 sound variations for each instrument.
-   "Avangard" is a non-standard drum kit leaning towards a synthetic and industrial sound. Over 700 samples.
-   Drum kits give any drum machine a sense of self-sufficiency. Drumlabooh was originally developed for conveniently creating drum parts directly in a DAW by quickly selecting drum kits of different formats installed on the system - Drumlabooh, Hydrogen, and to some extent SFZ. The collection of Drumlabooh-format kits consisted of about 30 kits featuring public domain samples from old and rare drum machines, as well as "live" drum kits like JazzKit, Sixties Basic, and the lighter Sixties Rock.
-"Sopromat" and "Avangard" are a vast expansion of the palette for electronic music producers, and beyond.
+This drumkit uses features of the new version of the Drumlabooh drumkit format - 1.1 (see the specification here: https://github.com/psemiletov/drum_sklad), where a directory can be specified as a file list, and the sample order can be reversed with a separate parameter.
 
-Stay tuned, Peter Semiletov
+This is the main engine innovation. The following changes have also taken place in the engine.
+
+It's no secret that Drumlabooh does not support SFZ drumkits where a "horizontal" layer architecture is implied. On the other hand, Drumlabooh supports "vertical" velocity layers, so Drumlabooh is perfectly compatible, for example, with AVL drumkits. Previously, if Drumlabooh tried to load drumkits with a different architecture, the plugin crashed and brought down the DAW. Now Drumlabooh simply does not load such a drumkit, scanning it for unsupported opcodes.
+
+As for Hydrogen drumkit support, as far as I know, Drumlabooh loads all of them except Audiophob, in which one WAV file is a renamed AIFF, and this causes a crash at the JUCE level that cannot be bypassed, so I simply blocked Audiophob from loading.
+
+About reading samples. Inside Drumlabooh, sounds are stored in mono. It is simpler to mix this way. Stereo samples are converted to mono at input. And then, at the level of the built-in Drumlabooh mixer or DAW, you pan them. So, the Drumlabooh engine has returned to reading only the left channel from a stereo file. Previously, both channels were read and mixed into mono, with 50% volume for each channel. To simplify the code, I returned to how it was originally.
+
+By version 13, many native Drumlabooh drumkits have been thoroughly edited - unnecessary silence or overly quiet tails were trimmed, manual fades were applied to sharp signal cutoffs, and some kit cover artwork was remade. The sound of all drumkits remains the same, do not worry about existing mixes! The changes affected only the length of some samples and non-zero fades that caused a click at the end.
+
+In total, since 2023, Drumlabooh has accumulated a decent set of drumkits for all occasions and all times — I say "times" for a reason, because Drumlabooh comes bundled with samples of many legendary or rare hardware drum machines of past decades. And so we have:
+
+Diskach, Avangard, Sopromat - universal large (but fast) drumkits with hundreds of samples on board; perhaps this is currently the core of Drumlabooh drumkits.
+
+Sixties Basic, Sixties Rock, JazzKit - "live" multi-layered drumkits tailored for jazz and rock music in the genres stated in the drumkit names.
+
+The remaining drumkits are sample sets either from old legendary drum machines - LEL, Cheetah SpecDrum, Klone Dual, or small experimental kits - Tamil, wooden, etc.
+
+Stay tuned, Petr Semiletov
 
 
-   Drumlabooh 12.2.0
+**Drumlabooh 13.0.0**
 
-   В новой версии приведены в порядок HP/LP-фильтры, доступные из секции эффектов, а также исправлен вылет при попытке загрузить те SFZ-киты, чьи параметры Drumabooh не поддерживает в полной мере ("горизонтальые", а не "вертикальные" слои с round-robin). 
-   Исправлено отображение названия драмкита на панели под списком драмкитов.
-   При наведении на слот инструмента, теперь показывается не только его MIDI-mapping, но и количество слоев или сэмплов, загруженных в слот.
-   Два новых драмкита - "Сопромат" и "Авангард", пожалуй, полностью покроют нужды в четких "аналоговых" и электронных барабанах в духе сэмплерного и синтезаторного звука 90х годов. Breakbit, big beat, trip-hop, все виды techno, goa/psychedelic trance - любые сочетания подобных жанров, хотя никто не мешает использовать новые киты и в роке.
-   "Сопромат" содержит более 600 качественных сэмплов в рамках стандартной ударной установки - бас-бочка, снэр, хайхеты и так далее. Около 90 вариантов звучания каждого инструмента.
-  "Авангард" - нестандартный драмкит с уклоном в синтетический и индустриальный звук. Более 700 сэмплов.
-   Свои драмкиты придают любой драм-машине самодостаточность. Изначально Drumlabooh разрабатывался для удобного создания партий ударных прямо в DAW, путем быстрого выбора установленных в системе драмкитов разных форматов - Drumlabooh, Hydrogen и в какой-то мере SFZ. Набор драмиктов формата Drumlabooh состоял примерно из 30 китов с перешедшими в общественное достояние сэмплами старых и редких драм-машин, а также "живыми" драмкитами JazzKit, Sixties Basic и более легким Sixties Rock. 
-   "Сопромат" и "Авангард" это огромное расширение палитры для музыкантов электронных жанров, и не только их.
+   Каждая версия Drumlabooh должна быть интересной и полезной. В новый релиз включен огромный драмкит Diskach (слово, которым в 1990-е в СССР и после его распада называли дискотеку) с сэмплами, навевающими ностальгию по девяностым годам. 7 инструментов по 128 вариантов сэмплов в каждом! 
+   Этот драмкит использует особенности новой версии формата драмкитов Drumlabooh - 1.1 (спецификацию смотрите здесь - https://github.com/psemiletov/drum_sklad), где в качестве списка файлов можно указать директорию, а также отдельным параметром перевернуть порядок следования сэмплов.
+   Это основное новшество движка. В движке произошли также следующие изменения.
+   Не секрет, что Drumlabooh не поддерживает те драмиты SFZ, где подразумевается "горизонтальная" архитектура слоёв. Зато Drumlabooh поддерживает "вертикальные" velocity-слои, таким образом Drumlabooh отлично совместим например с драмкитами AVL. Раньше, если Drumlabooh пытался загружать драмкиты, чья архитектура отличалась, то плагин вылетал и крашил DAW. Теперь же Drumlabooh просто не загружает такой драмкит, сканируя его на предмет неподдерживаемых опокодов.
+   Что до поддержки драмкитов Hydrogen, насколько я знаю, Drumlabooh загружает их все, кроме Audiophob, в котором один WAV-файл это переименованный AIFF, и это вызывает краш на уровне JUCE, что не удается никак обойти, поэтому я просто заблокировал загрузку Audiophob.
+   Про чтение сэмплов. Внутри Drumlabooh звуки хранятся в моно. Так проще и честнее микшировать. Стерео-сэмплы на входе преобразуются в моно. И уже на уровне встроенного микшера Drumlabooh или DAW вы разводите их по панораме. Так вот, движок Drumlabooh снова вернулся к чтению только левого канала из стерео-файла. Было - читались оба канала и микшировались в моно, с 50-процентной громкостью каждого канала. Для упрощения кода я вернулся к тому, как было изначально.
+   К 13 версии Drumlabooh основательно отредактированы многие "родные" драмкиты Drumlabooh - вырезана лишняя тишина или слишком тихие хвосты, вручную сделаны фэйды резким обрывам сигнала, переделаны некоторые обложки китов. Звучание всех драмкитов осталось прежним, не волнуйтесь за существующие миксы! Изменения коснулись только длины некоторых сэмплов и ненулевых фэйдов, которые вызывали в конце щелчок. 
+   Итого, с 2023 года, Drumlabooh накопил уже приличный набор драмкитов на все случаи жизни и на все времена - про времена я говорю не случайно, потому что Drumlabooh идет в комплекте с сэмплами многих легендарных или редких хардварных драм-машин прошлых десятилетий. И вот у нас есть:
+   Diskach, Avangard, Sopromat - универсальные большие (но быстрые) драмкиты с сотнями сэмплов на борту, пожалуй это сейчас основа драмкитов Drumlabooh. 
+   Sixties Basic, Sixties Rock, JazzKit - "живые" многослойные драмкиты, заточенные под джаз и роковую музыку в жанрах, заявленных в названиях драмкитов. 
+   Остальные драмкиты это наборы сэмплов либо от старых легендарных драм-машин - LEL, Cheetah SpecDrum, Klone Dual, либо небольшие экспериментальные киты - тамильский, деревянный и т.д. 
 
   На связи, Петр Семилетов
