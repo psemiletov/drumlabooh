@@ -33,26 +33,35 @@
     <h2>NEWS</h2>
 
     <div class="news-entry">
-      <div class="news-date">May 05 2026 — <a href="https://github.com/psemiletov/drumlabooh/releases/tag/12.2.0">Drumlabooh 12.2.0</a></div>
+      <div class="news-date">October 08 2026 — <a href="https://github.com/psemiletov/drumlabooh/releases/tag/13.0.0">Drumlabooh 13.0.0</a></div>
 
-<p>   In the new version, the HP/LP filters available from the effects section have been tidied up. Also fixed a crash that occurred when trying to load SFZ kits whose parameters Drumlabooh doesn’t fully support (horizontal rather than vertical round-robin layers).</p>
-<p>
-   Fixed the display of the drum kit name on the panel below the drum kit list.
-</p>
-<p>   When hovering over an instrument slot, it now shows not only its MIDI mapping but also the number of layers or samples loaded into the slot.
-</p>
 
-<p>  Two new drum kits - "Sopromat" and "Avangard" - should fully cover the need for punchy "analog" and electronic drums in the spirit of sampler and synthesizer sounds from the 90s. Breakbeat, big beat, trip-hop, all kinds of techno, goa/psychedelic trance - any combination of such genres, though nothing prevents you from using the new kits in rock as well.
-</p>
-<p>   "Sopromat" contains over 600 high-quality samples within a standard drum kit arrangement - kick, snare, hi-hats, and so on. Around 90 sound variations for each instrument.
-</p>
-<p>   "Avangard" is a non-standard drum kit leaning towards a synthetic and industrial sound. Over 700 samples.
-</p>
-<p>   Drum kits give any drum machine a sense of self-sufficiency. Drumlabooh was originally developed for conveniently creating drum parts directly in a DAW by quickly selecting drum kits of different formats installed on the system - Drumlabooh, Hydrogen, and to some extent SFZ. The collection of Drumlabooh-format kits consisted of about 30 kits featuring public domain samples from old and rare drum machines, as well as "live" drum kits like JazzKit, Sixties Basic, and the lighter Sixties Rock.
-"Sopromat" and "Avangard" are a vast expansion of the palette for electronic music producers, and beyond.
+<p>Every release of Drumlabooh aims to be interesting and useful. The new version includes a big drumkit called Diskach (a word used in the USSR and post-Soviet countries in the 1990s to refer to a disco), with samples evoking nostalgia for the nineties. 7 instruments with 128 sample variations each!</p>
+
+<p>This drumkit uses features of the new version of the Drumlabooh drumkit format - 1.1 (see the specification here: https://github.com/psemiletov/drum_sklad), where a directory can be specified as a file list, and the sample order can be reversed with a separate parameter.
 </p>
 
-<p>Stay tuned, Peter Semiletov
+<p>This is the main engine innovation. The following changes have also taken place in the engine.</p>
+
+
+<p>It's no secret that Drumlabooh does not support SFZ drumkits where a "horizontal" layer architecture is implied. On the other hand, Drumlabooh supports "vertical" velocity layers, so Drumlabooh is perfectly compatible, for example, with AVL drumkits. Previously, if Drumlabooh tried to load drumkits with a different architecture, the plugin crashed and brought down the DAW. Now Drumlabooh simply does not load such a drumkit, scanning it for unsupported opcodes.</p>
+
+<p>As for Hydrogen drumkit support, as far as I know, Drumlabooh loads all of them except Audiophob, in which one WAV file is a renamed AIFF, and this causes a crash at the JUCE level that cannot be bypassed, so I simply blocked Audiophob from loading.</p>
+
+<p>About reading samples. Inside Drumlabooh, sounds are stored in mono. It is simpler to mix this way. Stereo samples are converted to mono at input. And then, at the level of the built-in Drumlabooh mixer or DAW, you pan them. So, the Drumlabooh engine has returned to reading only the left channel from a stereo file. Previously, both channels were read and mixed into mono, with 50% volume for each channel. To simplify the code, I returned to how it was originally.</p>
+
+<p>By version 13, many native Drumlabooh drumkits have been thoroughly edited - unnecessary silence or overly quiet tails were trimmed, manual fades were applied to sharp signal cutoffs, and some kit cover artwork was remade. The sound of all drumkits remains the same, do not worry about existing mixes! The changes affected only the length of some samples and non-zero fades that caused a click at the end.
+</p>
+
+<p>In total, since 2023, Drumlabooh has accumulated a decent set of drumkits for all occasions and all times — I say "times" for a reason, because Drumlabooh comes bundled with samples of many legendary or rare hardware drum machines of past decades. And so we have:</p>
+
+<p>Diskach, Avangard, Sopromat - universal large (but fast) drumkits with hundreds of samples on board; perhaps this is currently the core of Drumlabooh drumkits.</p>
+
+<p>Sixties Basic, Sixties Rock, JazzKit - "live" multi-layered drumkits tailored for jazz and rock music in the genres stated in the drumkit names.</p>
+
+<p>The remaining drumkits are sample sets either from old legendary drum machines - LEL, Cheetah SpecDrum, Klone Dual, or small experimental kits - Tamil, wooden, etc.</p>
+
+<p>Stay tuned, Petr Semiletov
 </p>
 
 
