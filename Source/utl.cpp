@@ -531,3 +531,40 @@ bool is_image(const std::string& filepath)
          ext == ".jpeg" || 
          ext == ".png";
 }
+
+
+inline std::string trim (const std::string &str)
+{
+  size_t first = str.find_first_not_of(" \t\r\n");
+  if (string::npos == first) return "";
+  size_t last = str.find_last_not_of(" \t\r\n");
+  return str.substr(first, (last - first + 1));
+}
+
+
+
+size_t string_to_file_size (const std::string &val)
+{
+  size_t result = 0;
+
+  char* end;
+
+  const char *st = val.c_str();
+
+  if (st)
+    result = strtoull (st, &end, 10);
+
+  std::string s = string_to_lower (val);
+
+  if (s.find ("k") != string::npos)
+    result = result * 1024;
+
+  if (s.find ("m") != string::npos)
+    result = result * 1048576;
+
+  if (s.find ("g") != string::npos)
+    result = result * 1073741824;
+
+  return result;
+}
+

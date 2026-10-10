@@ -113,6 +113,8 @@ std::string get_string_between (const std::string &s, const std::string &start, 
 std::string get_last_part (const std::string &path);
 
 void string_save_to_file (const std::string &fname, const std::string &s);
+std::string trim (const std::string &str);
+size_t string_to_file_size (const std::string &val);
 
 
 #if !defined(_WIN32) || !defined(_WIN64)

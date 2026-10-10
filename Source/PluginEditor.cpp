@@ -937,6 +937,22 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
 {
   //getLookAndFeel().setColour (TextButton::ColourIds::buttonColourId, juce::Colour (87, 110, 113));
 
+#if !defined(_WIN32) || !defined(_WIN64)
+
+  std::string options_fname = get_home_dir() + "/.config/drumlabooh/config.conf";
+
+#else
+
+  std::string options_fname = "C:\\drumlabooh\\config.conf";
+
+#endif
+
+  std::cout << "options_fname: " << options_fname << "\n";
+
+  options.load (options_fname);
+
+
+
   auto& lookAndFeel = juce::LookAndFeel::getDefaultLookAndFeel();
   //lookAndFeel.setColour(juce::ScrollBar::thumbColourId, juce::Colours::lightskyblue);
   
@@ -1273,7 +1289,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   sl_randomizer_seed.setSliderStyle (juce::Slider::LinearHorizontal);
   sl_randomizer_seed.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 32);
   
-  sl_randomizer_seed.setTopLeftPosition (/*l_randomizer_seed.getRight(),  */cmb_midimap_mode.getX() - 8,
+  sl_randomizer_seed.setTopLeftPosition (cmb_midimap_mode.getX() - 8,
                                          l_randomizer_seed.getY());
   sl_randomizer_seed.setSize (182, 32);
   sl_randomizer_seed.setRange (1, RND_MAX_TWEAK, 1.0);
@@ -1371,6 +1387,15 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   tmr_leds.startTimer (1000 / 15); //15 FPS
 
 //bt_test.setBounds (drumcells[0].getWidth() + 50, 400, 50, 50);
+
+  float gui_scale_factor = options.get_float ("gui_scale_factor", 1.0f);
+//  if (PluginHostType::getPluginLoadedAs() != AudioProcessor::wrapperType_Standalone)
+
+  std::cout << "gui_scale_factor: " << gui_scale_factor << "\n";
+
+  setScaleFactor (gui_scale_factor);
+
+
 }
 
 

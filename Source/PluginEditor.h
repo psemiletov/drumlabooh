@@ -8,6 +8,7 @@ this code is the public domain
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "pairfile.h"
 
 
 typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
@@ -326,6 +327,8 @@ public:
 
   CAudioProcessor &audioProcessor;
 
+  CPairFile options;
+
   //CDrumkitsListBoxScroller drumkits_listbox_lookandfeel;
 
   bool need_to_update_cells;
@@ -376,6 +379,7 @@ public:
   juce::Label l_randomizer_seed { {}, "Rnd seed tweak" };
   juce::Slider sl_randomizer_seed;
   
+
   juce::GroupComponent gr_options;
 
   
