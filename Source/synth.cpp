@@ -93,6 +93,70 @@ inline float get_deterministic_noise (uint32_t &state)
     return static_cast<float>(state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
 }
 
+juce::AudioBuffer<float>* render_gabber_kick (const std::string &formula_str, int samplerate)
+{
+    float f0 = 220.0f;       // Старт
+    float f1 = 42.0f;        // Низ
+    float decay = 0.38f;     // Длительность
+    float drive = 0.8f;      // Перегруз
+    float tone = 500.0f;     // Опустили точку среза, убираем «бутылочный» призвук
+
+    std::map<std::string, float> p = parse_synth_params (formula_str);
+    if (p.count("f0"))    f0 = p["f0"];
+    if (p.count("f1"))    f1 = p["f1"];
+    if (p.count("decay")) decay = p["decay"];
+    if (p.count("drive")) drive = p["drive"];
+    if (p.count("tone"))  tone = p["tone"];
+
+    int num_samples = static_cast<int>(samplerate * (decay * 1.1f));
+    if (num_samples < 100) num_samples = 100;
+
+    juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
+    float *data = buffer->getWritePointer (0);
+
+    double phase = 0.0;
+
+    // Простой однополюсный ФНЧ для сглаживания стеклянного песка вместо резонансного фильтра
+    float lpf_state = 0.0f;
+    float dt = 1.0f / static_cast<float>(samplerate);
+    float rc = 1.0f / (2.0f * 3.14159265f * tone);
+    float alpha = dt / (rc + dt);
+
+    for (int i = 0; i < num_samples; ++i)
+    {
+        float t = static_cast<float>(i) * dt;
+
+        // 1. Питч-бенд
+        float freq = f1 + (f0 - f1) * std::exp (-t * 32.0f);
+        phase += 2.0 * M_PI * freq * dt;
+
+        float raw_sine = std::sin (phase);
+
+        // 2. Жесткий дисторшн с динамическим гейном
+        float gain = 1.0f + (drive * 12.0f) * std::exp (-t * 15.0f);
+        float distorted = std::tanh (raw_sine * gain);
+
+        // 3. Смягчаем верхние гармоники через НЧ-фильтр вместо звонкого резонанса
+        lpf_state = lpf_state + alpha * (distorted - lpf_state);
+
+        // Смешиваем чистый саб (для плотности внизу) с перегруженным верхом
+        float mixed = (raw_sine * 0.3f) + (lpf_state * 0.7f);
+
+        // 4. Огибающая затухания
+        float env = std::exp (-t * (4.0f / decay));
+        float sample = mixed * env;
+
+        // Финальный лимитер
+        sample = std::tanh (sample * 1.1f);
+
+        data[i] = sample;
+    }
+
+    apply_buffer_fadeout (buffer, samplerate, 0.003f);
+    return buffer;
+}
+
+
 
 juce::AudioBuffer<float>* render_computer_snare (const std::string &formula_str, int samplerate)
 {
@@ -797,6 +861,11 @@ juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int 
            return render_computer_snare (formula_str, session_samplerate);
        }
 
+
+       if (formula_str.rfind ("gabber_kick(", 0) == 0)
+       {
+           return render_gabber_kick (formula_str, session_samplerate);
+       }
 
     return nullptr;
 }
