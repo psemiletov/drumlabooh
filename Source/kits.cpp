@@ -24,7 +24,8 @@ this code is the public domain
 #include "utl.h"
 //#include "speex_resampler_cpp.hpp"
 #include "resampler.h"
-//#include "pairfile.h"
+
+#include "synth.h"
 
 
 using namespace std;
@@ -224,9 +225,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
 }
 
 
-
-
-
+/*
 void CDrumLayer::load (const std::string &fname, int offset)
 {
 //  std::cout << "void CDrumLayer::load (const std::string &fname): " <<
@@ -245,6 +244,52 @@ void CDrumLayer::load (const std::string &fname, int offset)
   if (audio_buffer->getNumSamples() > 0)
       channel_data = audio_buffer->getReadPointer (0);
 }
+*/
+
+
+
+void CDrumLayer::load (const std::string &fname, int offset)
+{
+  std::cout << "void CDrumLayer::load (const std::string &fname): " <<
+                fname << " : " << session_samplerate << std::endl;
+
+  //audio_buffer = load_whole_sample_resampled (fname, session_samplerate, offset);
+
+
+  std::string ext = get_file_ext (fname);
+
+
+ if (ext == "syn")
+    {
+    std::cout << "!!! is_synth_formula (fname): " << fname << "\n";
+    audio_buffer = render_synth_sample (fname, session_samplerate);
+    file_name = fname;
+    length_in_samples = audio_buffer->getNumSamples();
+
+    std::cout << "!!! is_synth_formula END \n";
+
+  }
+  else
+  {
+    audio_buffer = load_whole_sample_resampled (fname, session_samplerate, offset);
+    file_name = fname;
+  }
+
+
+  if (! audio_buffer)
+     {
+      std::cout << "CDrumLayer::load ERROR: " << fname << std::endl;
+      return;
+     }
+
+
+  if (audio_buffer->getNumSamples() > 0)
+      channel_data = audio_buffer->getReadPointer (0);
+}
+
+
+
+
 
 
 CDrumLayer::CDrumLayer (CDrumSample *s)
@@ -321,10 +366,20 @@ void CDrumSample::sample_prev()
 }
 
 
+//УЧИТЫВАТЬ НАДПИСЬ В ЯЧЕЙКЕ может быть и CDrumSample.name и текст формулы по ее индексу!! ёпт
+//
+
+
 std::string CDrumSample::get_name (bool by_current_layer)
 {
-  if (by_current_layer)  
+//  std::cout << "std::string CDrumSample::get_name (bool by_current_layer) BEGIN\n";
+
+//  std::cout << "name: " << name << "\n";
+
+  if (by_current_layer)
      {
+
+
       std::string result;
       if (current_layer > v_layers.size() - 1)
           return result;
@@ -335,6 +390,9 @@ std::string CDrumSample::get_name (bool by_current_layer)
       return result; 
      }
   
+//  std::cout << "std::string CDrumSample::get_name (bool by_current_layer) END\n";
+
+
   return name;
 }
 
@@ -621,6 +679,8 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        temp_sample->name = item_sample.attribute ("name").value(); 
        std::string str_note = item_sample.attribute ("note").value(); 
        
+       std::cout << "DEBUG: Assigned name to sample = [" << temp_sample->name << "]" << std::endl;
+
        if (! str_note.empty())
           { 
            temp_sample->mapped_note = std::stoi (str_note);
@@ -674,26 +734,28 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        size_t check_for_list = fname.find (",");
        bool check_for_txt = false;
 
+       //bool check_for_formula = is_synth_formula (fname);
 
        bool check_for_dir = false; //is dir insead of file, file list or txt-file?
 
        if (fname.find (".") == string::npos)
-        {
+          {
 
        //  std::cout << "YES IT IS DIR!!!\n";
            if (is_directory_safe (kit_dir + "/" + fname))
              {
               check_for_dir = true;
+              check_for_txt = false;
               //std::cout << fname << " IS DIR\n";
              }
-
-       }
+           }
 
        if (fname.find (".txt") != string::npos)
           {
             check_for_txt = true;
             check_for_dir = false;
           }
+
 
        if ((check_for_list != string::npos) || check_for_txt || check_for_dir) //больше чем один сэмпл на слой
           {
@@ -708,7 +770,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
 
                 if (temp_sample->reverse_order_mode)
-                  std::reverse (v_fnames.begin(), v_fnames.end());
+                    std::reverse (v_fnames.begin(), v_fnames.end());
 
 
             //   v_fnames.resize (128); //во избежание глюков
@@ -728,13 +790,15 @@ void CDrumKit::load_labooh_xml (const std::string &data)
            if (v_fnames.size() == 0)
               continue;
              
-            if (v_fnames.size() > 128)
+           if (v_fnames.size() > 128)
                v_fnames.resize (128);
 
+           // //если просто элементы через запятые
            if (! check_for_txt && ! check_for_dir) //а если добавить ! check_for_dir то рушится и загрузка с check_for_txt
                for (auto f: v_fnames)
                    {
                     std::string filename = kit_dir + "/" + f;
+
                     temp_sample->add_layer();
 
                     if (file_exists (filename))
@@ -759,6 +823,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                     std::string samples_txt_full = kit_dir + "/" + fname; // full path to samples.txt
                     std::string fpath = parent_path_of (samples_txt_full); // parent dir without std::filesystem
                     std::string filename = fpath.empty() ? (kit_dir + "/" + f) : (fpath + "/" + f);
+
                    #endif
 
                    std::cout << "TRY TO LOAD, filename: " << filename << "\n";
@@ -797,7 +862,8 @@ void CDrumKit::load_labooh_xml (const std::string &data)
             }
          else //ONE LAYER PER SAMPLE
              {
-              string filename = kit_dir + "/" + fname;
+              std::string filename = kit_dir + "/" + fname;
+
 
               temp_sample->add_layer(); //add default layer
 

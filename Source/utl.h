@@ -92,6 +92,7 @@ std::vector<std::string> get_directories (const std::string& directory);
 bool is_kit_dir (const std::string &path);
 bool is_directory_safe (const std::string &path);
 bool is_image(const std::string& filepath);
+bool is_synth_formula (const std::string &str);
 
 
 std::string get_file_ext (const std::string &fname);

@@ -36,7 +36,7 @@ this code is the public domain
 
 using namespace std;
 
-
+/*
 bool file_exists (const string &name)
 {
   if (name.empty())
@@ -45,7 +45,20 @@ bool file_exists (const string &name)
   struct stat buffer;
   return (stat (name.c_str(), &buffer) == 0);
 }
+*/
 
+bool file_exists (const string &name)
+{
+  if (name.empty())
+    return false;
+
+  // Если это наша синтез-формула, файл на диске искать не нужно
+  if (is_synth_formula (name))
+     return true;
+
+  struct stat buffer;
+  return (stat (name.c_str(), &buffer) == 0);
+}
 
 bool ends_with (std::string const & value, std::string const & ending)
 {
@@ -568,3 +581,30 @@ size_t string_to_file_size (const std::string &val)
   return result;
 }
 
+
+
+/*
+bool is_synth_formula (const std::string &str)
+{
+  if (str.rfind ("kick(", 0) == 0 ||
+    str.rfind ("snare(", 0) == 0 ||
+    str.rfind ("hihat(", 0) == 0 ||
+    str.rfind ("clap(", 0) == 0)
+  {
+    return true;
+  }
+  return false;
+}
+*/
+
+
+
+bool is_synth_formula (const std::string &str)
+{
+ // std::cout << "is_synth_formula: " << str << "\n";
+
+  if (str.find ("(", 0) != std::string::npos)
+    return true;
+
+  return false;
+}
