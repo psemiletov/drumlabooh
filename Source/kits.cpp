@@ -671,6 +671,14 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
            break;
         
+         //load samples
+
+         std::string fname = item_sample.text().as_string(); //file name[s]
+
+         if (fname.empty())
+           continue;
+//////
+
        //std::cout << "item_sample " << item_sample.attribute("Filename").value() << "\n";
        temp_sample = add_sample (sample_counter++);
        
@@ -722,10 +730,10 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
        //load samples
 
-       std::string fname = item_sample.text().as_string(); //file name[s]
+//       std::string fname = item_sample.text().as_string(); //file name[s]
        
-       if (fname.empty())
-          continue;
+  //     if (fname.empty())
+    //      continue;
         
        fname = trim (fname); 
        
@@ -799,10 +807,11 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                    {
                     std::string filename = kit_dir + "/" + f;
 
-                    temp_sample->add_layer();
-
                     if (file_exists (filename))
+                       {
+                        temp_sample->add_layer();
                         temp_sample->v_layers.back()->load (filename.c_str());
+                       }
                    }
            else //v_fnames взяты из текстового файла или из каталога
                for (auto f: v_fnames)
@@ -828,9 +837,12 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
                    std::cout << "TRY TO LOAD, filename: " << filename << "\n";
 
-                   temp_sample->add_layer();
                    if (file_exists (filename))
-                      temp_sample->v_layers.back()->load (filename.c_str());
+                      {
+                       temp_sample->add_layer();
+                       temp_sample->v_layers.back()->load (filename.c_str());
+                      }
+
                   }
 
            float part_size = (float) 1 / temp_sample->v_layers.size();
@@ -865,10 +877,11 @@ void CDrumKit::load_labooh_xml (const std::string &data)
               std::string filename = kit_dir + "/" + fname;
 
 
-              temp_sample->add_layer(); //add default layer
+
 
               if (file_exists (filename))
                  {
+                  temp_sample->add_layer(); //add default layer
                   temp_sample->v_layers.back()->load (filename.c_str());
                   if (! str_note.empty())
                      {
@@ -2644,6 +2657,8 @@ std::string CDrumKit::get_description()
 
 void CDrumKit::setup_auto_mute()
 {
+  std::cout << "CDrumKit::setup_auto_mute() - BEGIN\n";
+
   if (! mute_groups_auto)
      return;
    
@@ -2653,6 +2668,15 @@ void CDrumKit::setup_auto_mute()
        if (! s)  
           continue;
          
+        // ПРЕДОХРАНИТЕЛЬ: если слоев нет вообще, даже не смотрим сигнатуры
+        if (s->v_layers.empty())
+        {
+          std::cout << "[setup_auto_mute] sample " << i
+          << " ('" << s->name << "') has EMPTY v_layers" << std::endl;
+          continue; // переходим к следующему сэмплу
+        }
+
+
        for (auto signature: v_auto_mute_signatures)
            {
             if (findStringIC (s->name, signature))
@@ -2661,14 +2685,6 @@ void CDrumKit::setup_auto_mute()
                 break;  
                } 
 
-           if (s->v_layers.empty())
-               {
-                 std::cout << "[setup_auto_mute] sample " << i
-                 << " ('" << s->name << "') has EMPTY v_layers" << std::endl;
-                 continue;
-               }
-
-
             if (findStringIC (s->v_layers[0]->file_name, signature))
                {
                 s->mute_group = 7777;   
@@ -2676,6 +2692,9 @@ void CDrumKit::setup_auto_mute()
                } 
           }    
       }   
+
+      std::cout << "CDrumKit::setup_auto_mute() - END\n";
+
 }
   
   

@@ -437,10 +437,10 @@ std::vector<std::string> files_names_get_list(const std::string &path)
 
 
 
-bool is_audio_ext(const std::string& ext)
+bool is_audio_ext (const std::string& ext)
 {
   return ext == ".wav"  || ext == ".aiff" || ext == ".aif"
-  || ext == ".flac" || ext == ".ogg"  || ext == ".mp3";
+  || ext == ".flac" || ext == ".ogg"  || ext == ".mp3" || ext == ".syn";
 }
 
 
