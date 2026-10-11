@@ -675,12 +675,30 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
          std::string fname = item_sample.text().as_string(); //file name[s]
 
-         if (fname.empty())
+        fname = trim (fname);
+
+        if (fname.empty())
            continue;
 //////
 
        //std::cout << "item_sample " << item_sample.attribute("Filename").value() << "\n";
        temp_sample = add_sample (sample_counter++);
+
+       auto cancel_sample_loading = [&]() {
+         // Удаляем маппинг ноты, если он успел прописаться
+         if (!item_sample.attribute("note").empty()) {
+           int note = std::stoi(item_sample.attribute("note").value());
+           map_samples.erase(note);
+         }
+         // Откатываем глобальный счетчик сэмплов назад
+         sample_counter--;
+         // Зануляем указатель в массиве, чтобы setup_auto_mute и другие методы туда не совались
+         a_samples[sample_counter] = nullptr;
+         // Удаляем объект из памяти (если add_sample выделяет его через new)
+         delete temp_sample;
+         temp_sample = nullptr;
+       };
+
        
        //read params
 
@@ -735,26 +753,23 @@ void CDrumKit::load_labooh_xml (const std::string &data)
   //     if (fname.empty())
     //      continue;
         
-       fname = trim (fname); 
+
        
       // std::cout << "fname" << fname << std::endl;
 
        size_t check_for_list = fname.find (",");
        bool check_for_txt = false;
 
-       //bool check_for_formula = is_synth_formula (fname);
 
        bool check_for_dir = false; //is dir insead of file, file list or txt-file?
 
        if (fname.find (".") == string::npos)
           {
 
-       //  std::cout << "YES IT IS DIR!!!\n";
            if (is_directory_safe (kit_dir + "/" + fname))
              {
               check_for_dir = true;
               check_for_txt = false;
-              //std::cout << fname << " IS DIR\n";
              }
            }
 
@@ -774,17 +789,17 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                 v_fnames = get_audio_files_list (kit_dir + "/" + fname);
                 //v_fnames = files_names_get_list (kit_dir + "/" + fname);
 
+                if (v_fnames.empty())
+                   {
+                    cancel_sample_loading();
+                    continue;
+                   }
+
                 std::sort (v_fnames.begin(), v_fnames.end());
 
 
                 if (temp_sample->reverse_order_mode)
                     std::reverse (v_fnames.begin(), v_fnames.end());
-
-
-            //   v_fnames.resize (128); //во избежание глюков
-
-               // std::cout << "FILE LIST FILLED\n";
-               // std::cout << "v_fnames.size(): " << v_fnames.size() << "\n";
               }
            else
            if (check_for_txt) //читаем список файлов из текстового файла
@@ -796,7 +811,10 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                v_fnames = split_string_to_vector (fname, ",", false);
              
            if (v_fnames.size() == 0)
-              continue;
+              {
+               cancel_sample_loading();
+               continue;
+              }
              
            if (v_fnames.size() > 128)
                v_fnames.resize (128);
