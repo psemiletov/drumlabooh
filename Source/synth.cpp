@@ -93,6 +93,124 @@ inline float get_deterministic_noise (uint32_t &state)
     return static_cast<float>(state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
 }
 
+
+juce::AudioBuffer<float>* render_computer_snare (const std::string &formula_str, int samplerate)
+{
+    // Настройки в духе "Boing Boom Tschak" (Electric Cafe): ниже тело, густой жирный звук без звона
+    float freq = 380.0f;     // Опустили частоту с 950 до плотного средне-низкого диапазона
+    float decay = 0.14f;     // Короткий, упругий хвост
+    float crunch = 0.55f;    // Плотный шумовой «хруст»
+    float tone = 1100.0f;    // Сильно ниже частота фильтра, убирающая весь стеклянный звон
+
+    std::map<std::string, float> p = parse_synth_params (formula_str);
+    if (p.count("freq"))   freq = p["freq"];
+    if (p.count("decay"))  decay = p["decay"];
+    if (p.count("crunch")) crunch = p["crunch"];
+    if (p.count("tone"))   tone = p["tone"];
+
+    int num_samples = static_cast<int>(samplerate * (decay * 1.1f));
+    if (num_samples < 100) num_samples = 100;
+
+    juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
+    float *data = buffer->getWritePointer (0);
+
+    double phase = 0.0;
+    uint32_t comp_snare_state = 7777;
+
+    float lpf_state = 0.0f;
+    float dt = 1.0f / static_cast<float>(samplerate);
+    float rc = 1.0f / (2.0f * 3.14159265f * tone);
+    float alpha = dt / (rc + dt);
+
+    for (int i = 0; i < num_samples; ++i)
+    {
+        float t = static_cast<float>(i) * dt;
+        float sample = 0.0f;
+
+        // 1. Плотное электронное тело (прямоугольная волна с легким сбросом частоты для «панча»)
+        if (t < decay)
+        {
+            // Небольшой питч-бенд вниз в самом начале для веса (как в "Tschak")
+            float current_freq = freq + freq * 0.5f * std::exp(-t * 60.0f);
+            phase += 2.0 * M_PI * current_freq * dt;
+            float square = (std::sin(phase) >= 0.0f) ? 1.0f : -1.0f;
+
+            float env = std::exp (-t * (6.0f / decay));
+            sample += square * env * 0.45f;
+        }
+
+        // 2. Сухой шумовой компонент (приглушенный crunch)
+        comp_snare_state ^= comp_snare_state << 13;
+        comp_snare_state ^= comp_snare_state >> 17;
+        comp_snare_state ^= comp_snare_state << 5;
+        float raw_noise = static_cast<float>(comp_snare_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
+
+        lpf_state = lpf_state + alpha * (raw_noise - lpf_state);
+
+        float noise_env = std::exp (-t * (9.0f / decay));
+        if (t < 0.0015f) noise_env *= (t / 0.0015f); // быстрый плотный щелчок на старте
+
+        sample += lpf_state * noise_env * crunch;
+
+        // Плотный аналоговый сатуратор для склейки тела и шума
+        sample = std::tanh (sample * 1.4f);
+
+        data[i] = sample;
+    }
+
+    apply_buffer_fadeout (buffer, samplerate, 0.003f);
+    return buffer;
+}
+
+juce::AudioBuffer<float>* render_computer_tom (const std::string &formula_str, int samplerate)
+{
+    float base_freq = 150.0f;  // Базовая нота тома
+    float decay = 0.35f;       // Длительность
+    float click_mix = 0.2f;    // Уровень "роботизированного" щелчка
+
+    std::map<std::string, float> p = parse_synth_params (formula_str);
+    if (p.count("freq"))   base_freq = p["freq"];
+    if (p.count("decay"))  decay = p["decay"];
+    if (p.count("click"))  click_mix = p["click"];
+
+    int num_samples = static_cast<int>(samplerate * (decay * 1.1f));
+    if (num_samples < 100) num_samples = 100;
+
+    juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
+    float *data = buffer->getWritePointer (0);
+
+    double phase = 0.0;
+    double click_phase = 0.0;
+
+    for (int i = 0; i < num_samples; ++i)
+    {
+        float t = static_cast<float>(i) / samplerate;
+
+        // Фирменный резкий питч-бенд Kraftwerk (начинается выше и быстро падает к базовой ноте)
+        float freq = base_freq + base_freq * 1.5f * std::exp (-t * 30.0f);
+        phase += 2.0 * M_PI * freq / samplerate;
+
+        // Основное тело (чистая синусоида с экспоненциальным затуханием)
+        float env = std::exp (-t * (4.0f / decay));
+        float sample = std::sin (phase) * env;
+
+        // Короткий прямоугольный импульс (скрежет процессора/калькулятора) в атаке
+        if (t < 0.008f)
+        {
+            click_phase += 2.0 * M_PI * (base_freq * 3.0f) / samplerate;
+            float square_click = (std::sin(click_phase) >= 0.0f) ? 1.0f : -1.0f;
+            float click_env = (1.0f - t / 0.008f);
+            sample += square_click * click_mix * click_env;
+        }
+
+        data[i] = sample;
+    }
+
+    apply_buffer_fadeout (buffer, samplerate, 0.003f);
+    return buffer;
+}
+
+
 juce::AudioBuffer<float>* render_coldwave_snare (const std::string &formula_str, int samplerate)
 {
     // Делаем дефолты более темными и плотными (без звона)
@@ -667,6 +785,16 @@ juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int 
        if (formula_str.rfind ("coldwave_snare(", 0) == 0)
        {
            return render_coldwave_snare (formula_str, session_samplerate);
+       }
+
+       if (formula_str.rfind ("computer_tom(", 0) == 0)
+       {
+           return render_computer_tom (formula_str, session_samplerate);
+       }
+
+       if (formula_str.rfind ("computer_snare(", 0) == 0)
+       {
+           return render_computer_snare (formula_str, session_samplerate);
        }
 
 
