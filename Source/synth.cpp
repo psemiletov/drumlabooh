@@ -9,6 +9,7 @@
 #include <cmath>
 #include <map>
 #include <algorithm>
+#include <random>
 #include <cstdlib>
 
 #include <sstream>
@@ -92,6 +93,169 @@ inline float get_deterministic_noise (uint32_t &state)
     // Сначала маска для uint32_t, потом каст в float
     return static_cast<float>(state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
 }
+
+
+// --- Вспомогательный класс фильтра (оставляем без изменений, он отличный) ---
+struct Biquad {
+    float b0=1, b1=0, b2=0, a1=0, a2=0;
+    float z1=0, z2=0;
+
+    void bandpass(float sr, float f0, float Q) {
+        float w0 = 2.0f * 3.14159265f * f0 / sr;
+        float cosw = std::cos(w0), sinw = std::sin(w0);
+        float alpha = sinw / (2.0f * Q);
+        float a0 = 1.0f + alpha;
+        b0 =  alpha / a0;
+        b1 =  0.0f;
+        b2 = -alpha / a0;
+        a1 = -2.0f * cosw / a0;
+        a2 = (1.0f - alpha) / a0;
+    }
+    float process(float x) {
+        float y = b0*x + z1;
+        z1 = b1*x - a1*y + z2;
+        z2 = b2*x - a2*y;
+        return y;
+    }
+};
+
+
+juce::AudioBuffer<float>* render_boom_sound (const std::string &formula_str, int samplerate)
+{
+    float duration   = 0.35f;
+    float base_freq  = 70.0f;
+    float freq_sweep = -40.0f;
+    float noise_amt  = 0.3f;
+    float roughness  = 0.6f;
+    float wobble_rate= 24.0f;
+    float attack     = 0.001f;
+    float release    = 0.12f;
+    float gain       = 0.95f;
+    float bubble_amt = 0.5f;
+
+    // Параметры фильтрации и гранулярности
+    float lpf_cutoff = 1400.0f;
+    float hpf_cutoff = 45.0f;
+    bool  granular   = true;
+    float grain_mix  = 0.4f;
+
+    std::map<std::string, float> p = parse_synth_params (formula_str);
+    if (p.count("duration"))   duration   = p["duration"];
+    if (p.count("freq"))       base_freq  = p["freq"];
+    if (p.count("sweep"))      freq_sweep = p["sweep"];
+    if (p.count("noise"))      noise_amt  = p["noise"];
+    if (p.count("roughness"))  roughness  = p["roughness"];
+    if (p.count("wobble"))     wobble_rate= p["wobble"];
+    if (p.count("attack"))     attack     = p["attack"];
+    if (p.count("release"))    release    = p["release"];
+    if (p.count("gain"))       gain       = p["gain"];
+    if (p.count("bubble"))     bubble_amt = p["bubble"];
+    if (p.count("tone"))       lpf_cutoff = p["tone"];
+    if (p.count("granular"))   granular   = (p["granular"] > 0.5f);
+    if (p.count("grain_mix"))  grain_mix  = p["grain_mix"];
+
+    int num_samples = static_cast<int>(samplerate * (duration * 1.1f));
+    if (num_samples < 100) num_samples = 100;
+
+    juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
+    float *data = buffer->getWritePointer (0);
+
+    uint32_t noise_state = 13579;
+    double phase1 = 0.0, phase2 = 0.0;
+    float wobblePhase = 0.0f;
+    float bubblePhase = 0.0f;
+
+    // Состояния фильтров
+    float lpf_state = 0.0f;
+    float hpf_prev_in = 0.0f;
+    float hpf_prev_out = 0.0f;
+
+    float dt = 1.0f / static_cast<float>(samplerate);
+
+    // Коэффициенты фильтров
+    float rc_lpf = 1.0f / (2.0f * M_PI * lpf_cutoff);
+    float alpha_lpf = dt / (rc_lpf + dt);
+
+    float rc_hpf = 1.0f / (2.0f * M_PI * hpf_cutoff);
+    float alpha_hpf = rc_hpf / (rc_hpf + dt);
+
+    // Переменные для гранулярности на стеке
+    float micro_burst_env = 0.0f;
+    float micro_burst_phase = 0.0f;
+    int   micro_burst_timer = 0;
+    int   next_burst_samples = static_cast<int>(samplerate * 0.02f);
+
+    for (int i = 0; i < num_samples; ++i)
+    {
+        float t = static_cast<float>(i) * dt;
+        float u = t / duration;
+
+        float body_env = (t < attack) ? (t / attack) : std::exp (-(t - attack) / release);
+        float noise_env = (t < attack) ? (t / attack) : std::exp (-(t - attack) / (release * 0.5f));
+
+        float kick_drop = std::exp (-t * 70.0f);
+        float freq1 = base_freq + (base_freq * 3.0f * kick_drop) + freq_sweep * u;
+        float freq2 = base_freq * 0.5f + freq_sweep * 0.8f * u;
+
+        float wobble = std::sin (wobblePhase) * roughness * 0.7f;
+        wobblePhase += 2.0f * M_PI * wobble_rate * dt;
+        freq1 *= (1.0f + wobble);
+
+        phase1 += 2.0 * M_PI * freq1 * dt;
+        phase2 += 2.0 * M_PI * freq2 * dt;
+        float tone = std::sin (phase1) * 0.75f + (std::sin (phase2 * 2.0f) * 0.25f);
+
+        float bubble = 1.0f + bubble_amt * std::sin (bubblePhase) * std::cos (bubblePhase * 0.4f);
+        bubblePhase += 2.0f * M_PI * 14.0f * dt;
+
+        float raw_noise = get_deterministic_noise (noise_state);
+
+        float granular_sig = 0.0f;
+        if (granular)
+        {
+            micro_burst_timer++;
+            if (micro_burst_timer >= next_burst_samples && u < 0.75f)
+            {
+                micro_burst_env = 1.0f;
+                micro_burst_timer = 0;
+                float jitter = get_deterministic_noise (noise_state);
+                next_burst_samples = static_cast<int>(samplerate * (0.012f + std::abs(jitter) * 0.015f));
+            }
+
+            if (micro_burst_env > 0.001f)
+            {
+                micro_burst_phase += 2.0 * M_PI * (base_freq * 1.6f) * dt;
+                granular_sig = std::sin (micro_burst_phase) * micro_burst_env;
+                micro_burst_env *= std::exp (-dt * 70.0f);
+            }
+        }
+
+        float click = 0.0f;
+        if (t < 0.0025f) {
+            click = raw_noise * (1.0f - (t / 0.0025f)) * 0.85f;
+        }
+
+        float body = (tone * (1.0f - noise_amt) + (raw_noise * noise_env * noise_amt)) + click;
+        if (granular) {
+            body = body * (1.0f - grain_mix) + (granular_sig * noise_env * grain_mix);
+        }
+
+        body *= body_env * bubble * gain;
+
+        lpf_state = lpf_state + alpha_lpf * (body - lpf_state);
+
+        float hpf_out = alpha_hpf * (hpf_prev_out + lpf_state - hpf_prev_in);
+        hpf_prev_in = lpf_state;
+        hpf_prev_out = hpf_out;
+
+        float s = std::tanh (hpf_out * 2.2f);
+        data[i] = s;
+    }
+
+    apply_buffer_fadeout (buffer, samplerate, 0.003f);
+    return buffer;
+}
+
 
 juce::AudioBuffer<float>* render_gabber_kick (const std::string &formula_str, int samplerate)
 {
@@ -400,6 +564,97 @@ juce::AudioBuffer<float>* render_psytrance_kick (const std::string &formula_str,
 }
 
 juce::AudioBuffer<float>* render_hihat (const std::string &formula_str, int samplerate)
+{
+    float decay = 0.08f;
+    float tone = 7000.0f;
+    float noise_mix = 0.5f;
+    float metal_mix = 0.5f;
+    float pitch = 1.0f;
+    float detune = 0.0f;  // Новый параметр: детюн металлических гармоник
+    float drive = 1.0f;   // Новый параметр: сатурация / перегруз
+
+    bool is_open = (formula_str.rfind ("hihat_open(", 0) == 0);
+    if (is_open)
+    {
+        decay = 0.35f; // Дефолт для открытого хэта длиннее
+    }
+
+    auto params = parse_synth_params (formula_str);
+    if (params.count("decay"))   decay = params["decay"];
+    if (params.count("tone"))    tone = params["tone"];
+    if (params.count("noise"))   noise_mix = params["noise"];
+    if (params.count("metal"))   metal_mix = params["metal"];
+    if (params.count("pitch"))   pitch = params["pitch"];
+    if (params.count("detune"))  detune = params["detune"];
+    if (params.count("drive"))   drive = params["drive"];
+
+    int num_samples = static_cast<int>(samplerate * (decay * 1.2f));
+    if (num_samples < 100) num_samples = 100;
+
+    auto* buffer = new juce::AudioBuffer<float>(1, num_samples);
+    float* data = buffer->getWritePointer(0);
+
+    uint32_t noise_state = 54321;
+
+    // Базовые частоты металлических пластин
+    float base_metal_freqs[6] = { 405.3f, 535.1f, 723.4f, 845.2f, 1150.0f, 1420.0f };
+    float metal_phases[6] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+
+    float hpf_prev_input = 0.0f;
+    float hpf_prev_output = 0.0f;
+
+    float dt = 1.0f / static_cast<float>(samplerate);
+    float rc = 1.0f / (2.0f * M_PI * tone);
+    float alpha = rc / (rc + dt);
+
+    for (int i = 0; i < num_samples; ++i)
+    {
+        float t = static_cast<float>(i) * dt;
+
+        // Металлический блок с расчетом детюна
+        float metal_sample = 0.0f;
+        for (int m = 0; m < 6; ++m)
+        {
+            float freq_mod = base_metal_freqs[m] * (1.0f + static_cast<float>(m) * detune * 0.15f);
+            metal_phases[m] += (freq_mod * pitch) * dt;
+            if (metal_phases[m] >= 1.0f) metal_phases[m] -= 1.0f;
+            float sq = (metal_phases[m] < 0.5f) ? 1.0f : -1.0f;
+            metal_sample += sq;
+        }
+        metal_sample /= 6.0f;
+
+        // Детерминированный шум
+        float noise_sample = get_deterministic_noise(noise_state);
+
+        // Микшируем металл и шум
+        float raw_mix = (metal_sample * metal_mix) + (noise_sample * noise_mix);
+
+        // Фильтр высоких частот (HPF)
+        float hpf_output = alpha * (hpf_prev_output + raw_mix - hpf_prev_input);
+        hpf_prev_input = raw_mix;
+        hpf_prev_output = hpf_output;
+
+        // Огибающая (быстрая атака + затухание)
+        float env = std::exp(-3.0f * (t / decay));
+        if (t < 0.002f) {
+            env *= (t / 0.002f);
+        }
+
+        float sample = hpf_output * env;
+
+        // Применяем сатурацию для хруста и плотности
+        if (drive > 1.0f) {
+            sample = std::tanh(sample * drive);
+        }
+
+        data[i] = sample;
+    }
+
+    apply_buffer_fadeout (buffer, samplerate, 0.003f);
+    return buffer;
+}
+
+juce::AudioBuffer<float>* render_hihat_old (const std::string &formula_str, int samplerate)
 {
     std::cout << "HIHAT: " << formula_str << "\n";
 
@@ -804,72 +1059,130 @@ std::cout << "DEBUB 02\n";
     return buffer;
 }
 
-juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int session_samplerate)
+juce::AudioBuffer<float>* render_wooden_sound (const std::string &formula_str, int samplerate)
 {
-    std::cout << "juce::AudioBuffer<float>* render_synth_sample: " << filename << "\n";
+    // Физиологические дефолты
+    float duration   = 0.32f;
+    float base_freq  = 55.0f;   // Низкая база для вибрирующего мяса/тканей
+    float freq_sweep = -25.0f;  // Плавное падение давления
+    float noise_mix  = 0.7f;    // Основной объем — коричневый шум воздуха
+    float bass_mix   = 0.4f;    // Плотный суб-басовый гул
+    float vibrato_r  = 22.0f;   // Частота вибрато сфинктера (Гц)
+    float vibrato_d  = 0.5f;    // Глубина вибрато
+    float squeak_mix = 0.25f;   // Высокий свист/писк струи воздуха на старте
+    float attack     = 0.002f;  // Быстрое открытие клапана
+    float release    = 0.14f;   // Затухание давления
+    float gain       = 0.95f;
 
-    std::string formula_str = string_file_load (filename);
+    // Параметры фильтрации воздуха
+    float cutoff_min = 120.0f;  // Нижняя точка фильтра
+    float cutoff_max = 900.0f;  // Верхняя точка (пик давления)
 
+    std::map<std::string, float> p = parse_synth_params (formula_str);
+    if (p.count("duration"))   duration   = p["duration"];
+    if (p.count("freq"))       base_freq  = p["freq"];
+    if (p.count("sweep"))      freq_sweep = p["sweep"];
+    if (p.count("noise"))      noise_mix  = p["noise"];
+    if (p.count("bass"))       bass_mix   = p["bass"];
+    if (p.count("vibrato"))    vibrato_r  = p["vibrato"];
+    if (p.count("squeak"))     squeak_mix = p["squeak"];
+    if (p.count("attack"))     attack     = p["attack"];
+    if (p.count("release"))    release    = p["release"];
+    if (p.count("gain"))       gain       = p["gain"];
 
+    int num_samples = static_cast<int>(samplerate * (duration * 1.1f));
+    if (num_samples < 100) num_samples = 100;
 
-    if (formula_str.rfind ("kick(", 0) == 0)
-       {
-         std::cout << "KICK\n";
+    juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
+    float *data = buffer->getWritePointer (0);
 
-        return render_kick (formula_str, session_samplerate);
+    uint32_t noise_state = 98765;
+    double bass_phase = 0.0;
+    double squeak_phase = 0.0;
+    float vibrato_phase = 0.0f;
 
-       }
+    // Переменные для генерации коричневого шума (интегрированный белый шум)
+    float brown_noise = 0.0f;
 
+    // Состояния фильтров
+    float lpf_state = 0.0f;
+    float hpf_prev_in = 0.0f;
+    float hpf_prev_out = 0.0f;
 
+    float dt = 1.0f / static_cast<float>(samplerate);
+    float hpf_cutoff = 35.0f; // Отрезаем инфранизкий мусор
+    float rc_hpf = 1.0f / (2.0f * M_PI * hpf_cutoff);
+    float alpha_hpf = rc_hpf / (rc_hpf + dt);
 
-       if (formula_str.rfind ("snare(", 0) == 0)
-       {
-           return render_snare (formula_str, session_samplerate);
-       }
+    for (int i = 0; i < num_samples; ++i)
+    {
+        float t = static_cast<float>(i) * dt;
+        float u = t / duration;
 
+        // Огибающая давления воздуха (быстрый старт, плавный спад)
+        float env = (t < attack)
+        ? (t / attack)
+        : std::exp (-(t - attack) / release);
 
-       if (formula_str.rfind ("hihat_close(", 0) == 0 || formula_str.rfind ("hihat_open(", 0) == 0)
-       {
-           return render_hihat (formula_str, session_samplerate);
-       }
+        // Дополнительный акцент на самое начало (порция сжатого воздуха)
+        float pressure_env = env * (1.0f + 1.5f * std::exp(-t * 25.0f));
 
+        // Быстрое вибрато (модуляция частоты колебания сфинктера)
+        float vibrato = std::sin (vibrato_phase) * vibrato_d;
+        vibrato_phase += 2.0f * M_PI * vibrato_r * dt;
 
-       if (formula_str.rfind ("clap(", 0) == 0)
-       {
-           return render_clap (formula_str, session_samplerate);
-       }
+        // Питч-контур баса
+        float current_freq = base_freq + freq_sweep * u;
+        current_freq *= (1.0f + vibrato);
 
+        // 1. Басовая составляющая (резонанс полости / плоть)
+        bass_phase += 2.0 * M_PI * current_freq * dt;
+        float bass_wave = std::sin (bass_phase);
+        // Добавляем гармонику для жира
+        bass_wave += std::sin (bass_phase * 2.0f) * 0.4f;
 
-       if (formula_str.rfind ("psytrance_kick(", 0) == 0)
-       {
-           return render_psytrance_kick (formula_str, session_samplerate);
-       }
+        // 2. Коричневый шум (воздушный поток через сужение)
+        float white = get_deterministic_noise (noise_state);
+        // Интегрируем белый шум в коричневый с мягким затуханием (leak)
+        brown_noise = brown_noise * 0.92f + white * 0.28f;
 
+        // 3. Высокий свист (сжатая струя в узком сопле на старте)
+        float squeak = 0.0f;
+        if (u < 0.4f)
+        {
+            float squeak_freq = 1800.0f + 600.0f * std::sin(u * 15.0f);
+            squeak_phase += 2.0 * M_PI * squeak_freq * dt;
+            // Свист модулируется шумом, чтобы звучать органично, а не как чистый синус
+            squeak = std::sin (squeak_phase) * (white * 0.5f + 0.5f) * (1.0f - u / 0.4f) * squeak_mix;
+        }
 
-       if (formula_str.rfind ("coldwave_snare(", 0) == 0)
-       {
-           return render_coldwave_snare (formula_str, session_samplerate);
-       }
+        // 4. Динамический фильтр низких частот (зависит от давления воздуха)
+        // Когда давление максимальное (в начале), фильтр шире открывается, выпуская больше средних частот
+        float dynamic_cutoff = cutoff_min + (cutoff_max - cutoff_min) * pressure_env;
+        float rc_lpf = 1.0f / (2.0f * M_PI * dynamic_cutoff);
+        float alpha_lpf = dt / (rc_lpf + dt);
 
-       if (formula_str.rfind ("computer_tom(", 0) == 0)
-       {
-           return render_computer_tom (formula_str, session_samplerate);
-       }
+        // Смешиваем шум и бас
+        float mixed = (brown_noise * noise_mix) + (bass_wave * bass_mix * 0.5f) + squeak;
+        mixed *= pressure_env;
 
-       if (formula_str.rfind ("computer_snare(", 0) == 0)
-       {
-           return render_computer_snare (formula_str, session_samplerate);
-       }
+        // Применяем динамический LPF
+        lpf_state = lpf_state + alpha_lpf * (mixed - lpf_state);
 
+        // Применяем статический HPF (убирает постоянку и бубнение)
+        float hpf_out = alpha_hpf * (hpf_prev_out + lpf_state - hpf_prev_in);
+        hpf_prev_in = lpf_state;
+        hpf_prev_out = hpf_out;
 
-       if (formula_str.rfind ("gabber_kick(", 0) == 0)
-       {
-           return render_gabber_kick (formula_str, session_samplerate);
-       }
+        // Мягкий аналоговый сатуратор (имитация перегруза тканей давлением)
+        float s = std::tanh (hpf_out * 2.5f) * gain;
 
-    return nullptr;
+        data[i] = s;
+    }
+
+    apply_buffer_fadeout (buffer, samplerate, 0.003f);
+    return buffer;
 }
-
 
 /*
 
@@ -923,3 +1236,85 @@ juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int 
 
 
  */
+
+
+
+juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int session_samplerate)
+{
+    std::cout << "juce::AudioBuffer<float>* render_synth_sample: " << filename << "\n";
+
+    std::string formula_str = string_file_load (filename);
+
+
+
+    if (formula_str.rfind ("kick(", 0) == 0)
+    {
+        std::cout << "KICK\n";
+
+        return render_kick (formula_str, session_samplerate);
+
+    }
+
+
+
+    if (formula_str.rfind ("snare(", 0) == 0)
+    {
+        return render_snare (formula_str, session_samplerate);
+    }
+
+
+    if (formula_str.rfind ("hihat_close(", 0) == 0 || formula_str.rfind ("hihat_open(", 0) == 0)
+    {
+        return render_hihat (formula_str, session_samplerate);
+    }
+
+
+    if (formula_str.rfind ("clap(", 0) == 0)
+    {
+        return render_clap (formula_str, session_samplerate);
+    }
+
+
+    if (formula_str.rfind ("psytrance_kick(", 0) == 0)
+    {
+        return render_psytrance_kick (formula_str, session_samplerate);
+    }
+
+
+    if (formula_str.rfind ("coldwave_snare(", 0) == 0)
+    {
+        return render_coldwave_snare (formula_str, session_samplerate);
+    }
+
+    if (formula_str.rfind ("computer_tom(", 0) == 0)
+    {
+        return render_computer_tom (formula_str, session_samplerate);
+    }
+
+    if (formula_str.rfind ("computer_snare(", 0) == 0)
+    {
+        return render_computer_snare (formula_str, session_samplerate);
+    }
+
+
+    if (formula_str.rfind ("gabber_kick(", 0) == 0)
+    {
+        return render_gabber_kick (formula_str, session_samplerate);
+    }
+
+
+    if (formula_str.rfind ("boom_sound(", 0) == 0)
+    {
+        return render_boom_sound (formula_str, session_samplerate);
+    }
+
+
+    if (formula_str.rfind ("wooden_sound(", 0) == 0)
+    {
+        return render_wooden_sound (formula_str, session_samplerate);
+    }
+
+
+    return nullptr;
+}
+

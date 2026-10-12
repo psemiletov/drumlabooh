@@ -786,6 +786,9 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
            if (check_for_dir) //читаем список файлов из директории
               {
+                //FIXME!! ПРОВЕРИТЬ СУЩЕСТВУЕТ Ли kit_dir + "/" + fname
+
+
                 v_fnames = get_audio_files_list (kit_dir + "/" + fname);
                 //v_fnames = files_names_get_list (kit_dir + "/" + fname);
 
@@ -804,6 +807,9 @@ void CDrumKit::load_labooh_xml (const std::string &data)
            else
            if (check_for_txt) //читаем список файлов из текстового файла
               {
+                //FIXME!! ПРОВЕРИТЬ СУЩЕСТВУЕТ Ли kit_dir + "/" + fname
+
+
                std::string file_data = string_file_load (kit_dir + "/" + fname);
                v_fnames = split_string_to_vector (file_data, "\n", false);
               }
@@ -950,7 +956,7 @@ void CDrumKit::load_directory (const std::string &path)
       instrument_dirs.resize (36);
    
    
-  std::vector <std::string> extensions = {".wav", ".aiff", ".aif", ".flac", ".mp3", ".ogg"};
+  std::vector <std::string> extensions = {".wav", ".aiff", ".aif", ".flac", ".mp3", ".ogg", ".syn"};
  
   
   for (size_t i = 0; i < instrument_dirs.size(); i++)
