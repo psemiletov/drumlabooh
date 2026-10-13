@@ -1321,6 +1321,78 @@ juce::AudioBuffer<float>* render_cowbell_sound (const std::string &formula_str, 
     return buffer;
 }
 
+
+juce::AudioBuffer<float>* render_rimshot (const std::string &formula_str, int samplerate)
+{
+    float freq   = 440.0f; // Основная частота резонанса обода
+    float decay  = 0.12f;  // Общая длительность
+    float click  = 0.7f;   // Интенсивность щелчка обода
+    float tone   = 2500.0f;// Частота фильтра для щелчка
+    float drive  = 1.4f;   // Сатурация
+
+    std::map<std::string, float> p = parse_synth_params (formula_str);
+    if (p.count("freq"))  freq  = p["freq"];
+    if (p.count("decay")) decay = p["decay"];
+    if (p.count("click")) click = p["click"];
+    if (p.count("tone"))  tone  = p["tone"];
+    if (p.count("drive")) drive = p["drive"];
+
+    int num_samples = static_cast<int>(samplerate * (decay * 1.2f));
+    if (num_samples < 100) num_samples = 100;
+
+    auto* buffer = new juce::AudioBuffer<float> (1, num_samples);
+    float* data = buffer->getWritePointer (0);
+
+    double phase = 0.0;
+    uint32_t rim_noise_state = 54321;
+    float lpf_state = 0.0f;
+    float dt = 1.0f / static_cast<float>(samplerate);
+
+    float rc = 1.0f / (2.0f * M_PI * tone);
+    float alpha = dt / (rc + dt);
+
+    for (int i = 0; i < num_samples; ++i)
+    {
+        float t = static_cast<float>(i) * dt;
+
+        // 1. Тональное тело обода (высокий затухающий тон с питч-огибающей)
+        float current_freq = freq + freq * 0.8f * std::exp (-t * 80.0f);
+        phase += 2.0 * M_PI * current_freq * dt;
+        float body_env = std::exp (-t * (5.0f / decay));
+        float body = std::sin (phase) * body_env * 0.4f;
+
+        // 2. Ультра-короткий деревянный/металлический щелчок на атаке
+        rim_noise_state ^= rim_noise_state << 13;
+        rim_noise_state ^= rim_noise_state >> 17;
+        rim_noise_state ^= rim_noise_state << 5;
+        float raw_noise = static_cast<float>(rim_noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
+
+        lpf_state = lpf_state + alpha * (raw_noise - lpf_state);
+
+        float click_env = 0.0f;
+        if (t < 0.003f) {
+            click_env = (1.0f - t / 0.003f);
+        } else {
+            click_env = std::exp (-t * 30.0f) * 0.15f;
+        }
+
+        float rim_click = lpf_state * click_env * click;
+
+        // Суммируем тело и щелчок
+        float sample = body + rim_click;
+
+        if (drive > 1.0f) {
+            sample = std::tanh (sample * drive);
+        }
+
+        data[i] = sample;
+    }
+
+    apply_buffer_fadeout (buffer, samplerate, 0.003f);
+    return buffer;
+}
+
+
 juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int session_samplerate)
 {
     std::cout << "juce::AudioBuffer<float>* render_synth_sample: " << filename << "\n";
@@ -1402,6 +1474,10 @@ juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int 
         return render_cowbell_sound (formula_str, session_samplerate);
     }
 
+    if (formula_str.rfind ("rimshot(", 0) == 0)
+    {
+        return render_rimshot (formula_str, session_samplerate);
+    }
 
 
     return nullptr;

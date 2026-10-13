@@ -281,12 +281,17 @@ void CDrumLayer::load (const std::string &fname, int offset)
       return;
      }
 
+     //   length_in_samples = audio_buffer->getNumSamples();
 
-   length_in_samples = audio_buffer->getNumSamples();
+
+     if (audio_buffer->getNumSamples() > 0)
+        channel_data = audio_buffer->getReadPointer (0);
+
+     length_in_samples = audio_buffer->getNumSamples();
 
 
-  if (audio_buffer->getNumSamples() > length_in_samples)
-      channel_data = audio_buffer->getReadPointer (0);
+  //if (audio_buffer->getNumSamples() > length_in_samples)
+    //  channel_data = audio_buffer->getReadPointer (0);
 }
 
 
