@@ -1393,6 +1393,140 @@ juce::AudioBuffer<float>* render_rimshot (const std::string &formula_str, int sa
 }
 
 
+juce::AudioBuffer<float>* render_dnb_kick (const std::string &formula_str, int samplerate)
+{
+    float start_freq = 150.0f; // Стартовая частота питч-огибающей
+    float end_freq   = 45.0f;  // Конечная саб-частота
+    float pitch_time = 0.035f; // Скорость падения питча (ударность)
+    float decay      = 0.35f;  // Общая длительность
+    float click      = 1.5f;   // Интенсивность щелчка атаки
+    float drive      = 2.0f;   // Жесткий индастриал-перегруз
+
+    std::map<std::string, float> p = parse_synth_params (formula_str);
+    if (p.count("start_freq")) start_freq = p["start_freq"];
+    if (p.count("end_freq"))   end_freq   = p["end_freq"];
+    if (p.count("pitch_time")) pitch_time = p["pitch_time"];
+    if (p.count("decay"))      decay      = p["decay"];
+    if (p.count("click"))      click      = p["click"];
+    if (p.count("drive"))      drive      = p["drive"];
+
+    int num_samples = static_cast<int>(samplerate * (decay * 1.2f));
+    if (num_samples < 100) num_samples = 100;
+
+    auto* buffer = new juce::AudioBuffer<float> (1, num_samples);
+    float* data = buffer->getWritePointer (0);
+
+    double phase = 0.0;
+    float dt = 1.0f / static_cast<float>(samplerate);
+    uint32_t noise_state = 13579;
+
+    for (int i = 0; i < num_samples; ++i)
+    {
+        float t = static_cast<float>(i) * dt;
+
+        // Экспоненциальная питч-огибающая для плотного удара в грудь
+        float freq = end_freq + (start_freq - end_freq) * std::exp (-t / pitch_time);
+        phase += 2.0 * M_PI * freq * dt;
+
+        // Основной саб-корпус бочки
+        float env = std::exp (-t * (3.0f / decay));
+        float sub = std::sin (phase) * env;
+
+        // Транзиентный щелчок (мощный клик на атаке для прорезания микса)
+        noise_state ^= noise_state << 13;
+        noise_state ^= noise_state >> 17;
+        noise_state ^= noise_state << 5;
+        float noise = static_cast<float>(noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
+
+        float click_env = 0.0f;
+        if (t < 0.004f) {
+            click_env = (1.0f - t / 0.004f) * click;
+        }
+        float trans = noise * click_env;
+
+        // Смешиваем саб и транзиент
+        float sample = sub + trans;
+
+        // Индастриал-сатурация (мягкий/жесткий клиппинг)
+        sample = std::tanh (sample * drive);
+
+        data[i] = sample;
+    }
+
+    apply_buffer_fadeout (buffer, samplerate, 0.005f);
+    return buffer;
+}
+
+
+juce::AudioBuffer<float>* render_dnb_snare (const std::string &formula_str, int samplerate)
+{
+    float body_freq = 210.0f; // Частота тонального тела малого
+    float decay     = 0.25f;  // Длительность хвоста
+    float snap      = 2.0f;   // Количество «пружин» (сеточки)
+    float tone      = 3500.0f;// Частота фильтра для шума сеточки
+    float drive     = 1.8f;   // Плотность и компрессия
+
+    std::map<std::string, float> p = parse_synth_params (formula_str);
+    if (p.count("body_freq")) body_freq = p["body_freq"];
+    if (p.count("decay"))     decay     = p["decay"];
+    if (p.count("snap"))      snap      = p["snap"];
+    if (p.count("tone"))      tone      = p["tone"];
+    if (p.count("drive"))     drive     = p["drive"];
+
+    int num_samples = static_cast<int>(samplerate * (decay * 1.2f));
+    if (num_samples < 100) num_samples = 100;
+
+    auto* buffer = new juce::AudioBuffer<float> (1, num_samples);
+    float* data = buffer->getWritePointer (0);
+
+    double phase = 0.0;
+    uint32_t noise_state = 98765;
+    float lpf_state = 0.0f;
+    float dt = 1.0f / static_cast<float>(samplerate);
+
+    float rc = 1.0f / (2.0f * M_PI * tone);
+    float alpha = dt / (rc + dt);
+
+    for (int i = 0; i < num_samples; ++i)
+    {
+        float t = static_cast<float>(i) * dt;
+
+        // 1. Тональное тело с быстрым падением частоты
+        float cur_freq = body_freq + body_freq * 0.5f * std::exp (-t * 50.0f);
+        phase += 2.0 * M_PI * cur_freq * dt;
+        float body_env = std::exp (-t * (6.0f / decay));
+        float body = std::sin (phase) * body_env * 0.6f;
+
+        // 2. Шум сеточки (snare wires) с фильтрацией
+        noise_state ^= noise_state << 13;
+        noise_state ^= noise_state >> 17;
+        noise_state ^= noise_state << 5;
+        float raw_noise = static_cast<float>(noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
+
+        lpf_state = lpf_state + alpha * (raw_noise - lpf_state);
+
+        // Огибающая сеточки: резкий удар + длинный шлейф
+        float wire_env = std::exp (-t * (4.0f / decay)) * snap;
+        // Добавляем акцент на самый первый момент удара
+        if (t < 0.002f) {
+            wire_env *= 2.5f;
+        }
+        float wires = lpf_state * wire_env * 0.5f;
+
+        // Суммируем тело пластика и сеточку
+        float sample = body + wires;
+
+        // Перегруз для фирменного плотного звучания
+        sample = std::tanh (sample * drive);
+
+        data[i] = sample;
+    }
+
+    apply_buffer_fadeout (buffer, samplerate, 0.004f);
+    return buffer;
+}
+
+
 juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int session_samplerate)
 {
     std::cout << "juce::AudioBuffer<float>* render_synth_sample: " << filename << "\n";
@@ -1479,6 +1613,16 @@ juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int 
         return render_rimshot (formula_str, session_samplerate);
     }
 
+
+    if (formula_str.rfind ("dnb_kick(", 0) == 0)
+    {
+        return render_dnb_kick (formula_str, session_samplerate);
+    }
+
+    if (formula_str.rfind ("dnb_snare(", 0) == 0)
+    {
+        return render_dnb_snare (formula_str, session_samplerate);
+    }
 
     return nullptr;
 }
