@@ -264,7 +264,6 @@ void CDrumLayer::load (const std::string &fname, int offset)
     std::cout << "!!! is_synth_formula (fname): " << fname << "\n";
     audio_buffer = render_synth_sample (fname, session_samplerate);
     file_name = fname;
-    length_in_samples = audio_buffer->getNumSamples();
 
     std::cout << "!!! is_synth_formula END \n";
 
@@ -283,7 +282,10 @@ void CDrumLayer::load (const std::string &fname, int offset)
      }
 
 
-  if (audio_buffer->getNumSamples() > 0)
+   length_in_samples = audio_buffer->getNumSamples();
+
+
+  if (audio_buffer->getNumSamples() > length_in_samples)
       channel_data = audio_buffer->getReadPointer (0);
 }
 
@@ -789,6 +791,12 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                 //FIXME!! ПРОВЕРИТЬ СУЩЕСТВУЕТ Ли kit_dir + "/" + fname
 
 
+                if  (! file_exists (kit_dir + "/" + fname))
+                {
+                  cancel_sample_loading();
+                  continue;
+                }
+
                 v_fnames = get_audio_files_list (kit_dir + "/" + fname);
                 //v_fnames = files_names_get_list (kit_dir + "/" + fname);
 
@@ -809,6 +817,11 @@ void CDrumKit::load_labooh_xml (const std::string &data)
               {
                 //FIXME!! ПРОВЕРИТЬ СУЩЕСТВУЕТ Ли kit_dir + "/" + fname
 
+                if  (! file_exists (kit_dir + "/" + fname))
+                {
+                  cancel_sample_loading();
+                  continue;
+                }
 
                std::string file_data = string_file_load (kit_dir + "/" + fname);
                v_fnames = split_string_to_vector (file_data, "\n", false);
@@ -866,6 +879,12 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                        temp_sample->add_layer();
                        temp_sample->v_layers.back()->load (filename.c_str());
                       }
+                   else //ДОБАВИЛИ!
+                     {
+                       cancel_sample_loading();
+                       continue;
+                     }
+
 
                   }
 

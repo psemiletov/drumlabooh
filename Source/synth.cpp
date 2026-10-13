@@ -1059,7 +1059,7 @@ std::cout << "DEBUB 02\n";
     return buffer;
 }
 
-juce::AudioBuffer<float>* render_wooden_sound (const std::string &formula_str, int samplerate)
+juce::AudioBuffer<float>* render_box_sound (const std::string &formula_str, int samplerate)
 {
     // Физиологические дефолты
     float duration   = 0.32f;
@@ -1238,6 +1238,88 @@ juce::AudioBuffer<float>* render_wooden_sound (const std::string &formula_str, i
  */
 
 
+juce::AudioBuffer<float>* render_cowbell_sound (const std::string &formula_str, int samplerate)
+{
+    std::cout << "[DEBUG] render_cowbell started with formula: " << formula_str << ", samplerate: " << samplerate << "\n";
+
+    float base_freq = 560.0f;
+    float ratio     = 1.45f;
+    float decay     = 0.18f;
+    float tone      = 1200.0f;
+    float drive     = 1.2f;
+
+    std::cout << "[DEBUG] parsing synth params...\n";
+    std::map<std::string, float> p = parse_synth_params (formula_str);
+    if (p.count("freq"))   base_freq = p["freq"];
+    if (p.count("ratio"))  ratio     = p["ratio"];
+    if (p.count("decay"))  decay     = p["decay"];
+    if (p.count("tone"))   tone      = p["tone"];
+    if (p.count("drive"))  drive     = p["drive"];
+
+    std::cout << "[DEBUG] params parsed. base_freq=" << base_freq << ", decay=" << decay << "\n";
+
+    int num_samples = static_cast<int>(samplerate * (decay * 1.2f));
+    if (num_samples < 100) num_samples = 100;
+
+    std::cout << "[DEBUG] allocating audio buffer, num_samples=" << num_samples << "\n";
+    juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
+    if (!buffer)
+    {
+        std::cerr << "[ERROR] Failed to allocate audio buffer for cowbell!\n";
+        return nullptr;
+    }
+
+    float *data = buffer->getWritePointer (0);
+    std::cout << "[DEBUG] buffer allocated successfully. Entering DSP loop...\n";
+
+    double phase1 = 0.0;
+    double phase2 = 0.0;
+
+    float dt = 1.0f / static_cast<float>(samplerate);
+
+    float lpf_state = 0.0f;
+    float rc = 1.0f / (2.0f * M_PI * tone);
+    float alpha = dt / (rc + dt);
+
+    for (int i = 0; i < num_samples; ++i)
+    {
+        float t = static_cast<float>(i) * dt;
+
+        float freq1 = base_freq;
+        float freq2 = base_freq * ratio;
+
+        phase1 += 2.0 * M_PI * freq1 * dt;
+        phase2 += 2.0 * M_PI * freq2 * dt;
+
+        float sq1 = (std::sin(phase1) >= 0.0f) ? 1.0f : -1.0f;
+        float sq2 = (std::sin(phase2) >= 0.0f) ? 1.0f : -1.0f;
+
+        float raw_signal = (sq1 * 0.5f) + (sq2 * 0.5f);
+
+        lpf_state = lpf_state + alpha * (raw_signal - lpf_state);
+
+        float env = std::exp (-t * (4.0f / decay));
+
+        float click = 0.0f;
+        if (t < 0.0015f) {
+            click = (1.0f - t / 0.0015f) * 0.4f;
+        }
+
+        float sample = (lpf_state + click) * env;
+
+        if (drive > 1.0f) {
+            sample = std::tanh (sample * drive);
+        }
+
+        data[i] = sample;
+    }
+
+    std::cout << "[DEBUG] DSP loop finished. Applying fadeout...\n";
+    apply_buffer_fadeout (buffer, samplerate, 0.003f);
+    std::cout << "[DEBUG] render_cowbell completed successfully.\n";
+
+    return buffer;
+}
 
 juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int session_samplerate)
 {
@@ -1309,10 +1391,17 @@ juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int 
     }
 
 
-    if (formula_str.rfind ("wooden_sound(", 0) == 0)
+    if (formula_str.rfind ("box(", 0) == 0)
     {
-        return render_wooden_sound (formula_str, session_samplerate);
+        return render_box_sound (formula_str, session_samplerate);
     }
+
+
+    if (formula_str.rfind ("cowbell(", 0) == 0)
+    {
+        return render_cowbell_sound (formula_str, session_samplerate);
+    }
+
 
 
     return nullptr;
