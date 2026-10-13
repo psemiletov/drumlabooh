@@ -80,6 +80,8 @@ public:
   ~CDrumLayer();
 
   void load (const std::string &fname, int offset = 0); //loads the sample, sets internal info, data, file_name
+  void load_formula (const std::string &formula); //loads the formula, sets internal info, data, file_name
+
   void print();
   
   juce::AudioBuffer<float> * load_whole_sample (const std::string &fname, int offset = 0); //called from load_whole_sample_resampled
@@ -101,6 +103,7 @@ public:
 
   int session_samplerate; //session srate, taken from the upper level object
 
+  bool check_for_synpak;
 
   bool reverse_order_mode;
   bool active; //is sample triggered to play? 

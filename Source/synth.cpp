@@ -1527,11 +1527,17 @@ juce::AudioBuffer<float>* render_dnb_snare (const std::string &formula_str, int 
 }
 
 
-juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int session_samplerate)
+juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int session_samplerate, bool is_filename)
 {
     std::cout << "juce::AudioBuffer<float>* render_synth_sample: " << filename << "\n";
 
-    std::string formula_str = string_file_load (filename);
+
+    std::string formula_str;
+
+    if (is_filename)
+       formula_str = string_file_load (filename);
+    else
+        formula_str = filename;
 
 
 

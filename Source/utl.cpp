@@ -60,6 +60,7 @@ bool file_exists (const string &name)
   return (stat (name.c_str(), &buffer) == 0);
 }
 
+
 bool ends_with (std::string const & value, std::string const & ending)
 {
   if (ending.size() > value.size())
