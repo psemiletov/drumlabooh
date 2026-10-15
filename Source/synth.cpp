@@ -1527,6 +1527,95 @@ juce::AudioBuffer<float>* render_dnb_snare (const std::string &formula_str, int 
 }
 
 
+juce::AudioBuffer<float>* render_snare_fluffy (const std::string &formula_str, int samplerate)
+{
+    float body_freq  = 190.0f; // Основная частота тела (150-250 Гц)
+    float decay      = 0.22f;  // Общая длительность
+    float snap       = 2.2f;   // Интенсивность и плотность сеточки
+    float fm_amount  = 1.5f;   // Агрессивность FM-щелчка на атаке
+    float tone       = 4200.0f;// Частота среза шума
+    float drive      = 2.0f;   // Плотность и сатурация
+
+    std::map<std::string, float> p = parse_synth_params (formula_str);
+    if (p.count("freq"))      body_freq = p["freq"];
+    if (p.count("body_freq")) body_freq = p["body_freq"];
+    if (p.count("decay"))     decay     = p["decay"];
+    if (p.count("snap"))      snap      = p["snap"];
+    if (p.count("fm"))        fm_amount = p["fm"];
+    if (p.count("tone"))      tone      = p["tone"];
+    if (p.count("drive"))     drive     = p["drive"];
+
+    int num_samples = static_cast<int>(samplerate * (decay * 1.2f));
+    if (num_samples < 100) num_samples = 100;
+
+    auto* buffer = new juce::AudioBuffer<float> (1, num_samples);
+    float* data = buffer->getWritePointer (0);
+
+    double phase1 = 0.0, phase2 = 0.0, fm_phase = 0.0;
+    uint32_t noise_state = 0xACE1u;
+    float lpf_state = 0.0f;
+    float dt = 1.0f / static_cast<float>(samplerate);
+
+    float rc = 1.0f / (2.0f * M_PI * tone);
+    float alpha = dt / (rc + dt);
+
+    const int delay_len = static_cast<int>(samplerate * 0.002f); // 2 мс микро-резонатор
+    std::vector<float> noise_delay(delay_len > 0 ? delay_len : 1, 0.0f);
+    int delay_idx = 0;
+
+    for (int i = 0; i < num_samples; ++i)
+    {
+        float t = static_cast<float>(i) * dt;
+
+        // 1. Питч-огибающая для тела
+        float pitch_env = std::exp (-t * 60.0f);
+        float cur_freq = body_freq + (body_freq * 0.7f * pitch_env);
+
+        // 2. FM-модуляция на атаке (первые 8 мс)
+        float fm_env = std::exp (-t * 250.0f) * fm_amount;
+        fm_phase += 2.0 * M_PI * (cur_freq * 2.25f) * dt;
+        float fm_mod = std::sin (fm_phase) * fm_env;
+
+        // 3. Двухгармоническое тело (фундаментал + вторая гармоника)
+        phase1 += 2.0 * M_PI * cur_freq * dt + fm_mod;
+        phase2 += 2.0 * M_PI * (cur_freq * 1.6f) * dt;
+
+        float body_env = std::exp (-t * (5.5f / decay));
+        float body = (std::sin (phase1) * 0.6f + std::sin (phase2) * 0.3f) * body_env;
+
+        // 4. Диффузный шум сеточки
+        noise_state ^= noise_state << 13;
+        noise_state ^= noise_state >> 17;
+        noise_state ^= noise_state << 5;
+        float raw_noise = static_cast<float>(noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
+
+        lpf_state = lpf_state + alpha * (raw_noise - lpf_state);
+
+        float delayed_noise = noise_delay[delay_idx];
+        noise_delay[delay_idx] = lpf_state;
+        delay_idx = (delay_idx + 1) % noise_delay.size();
+
+        float dense_noise = lpf_state + (delayed_noise * 0.4f);
+
+        float snap_env = std::exp (-t * (4.2f / decay)) * snap;
+        if (t < 0.003f) {
+            snap_env *= 2.2f;
+        }
+        float wires = dense_noise * snap_env * 0.45f;
+
+        float sample = body + wires;
+        if (drive > 1.0f) {
+            sample = std::tanh (sample * drive);
+        }
+
+        data[i] = sample;
+    }
+
+    apply_buffer_fadeout (buffer, samplerate, 0.004f);
+    return buffer;
+}
+
+
 juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int session_samplerate, bool is_filename)
 {
     std::cout << "juce::AudioBuffer<float>* render_synth_sample: " << filename << "\n";
@@ -1625,9 +1714,9 @@ juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int 
         return render_dnb_kick (formula_str, session_samplerate);
     }
 
-    if (formula_str.rfind ("dnb_snare(", 0) == 0)
+    if (formula_str.rfind ("snare_fluffy(", 0) == 0)
     {
-        return render_dnb_snare (formula_str, session_samplerate);
+        return render_snare_fluffy(formula_str, session_samplerate);
     }
 
     return nullptr;
