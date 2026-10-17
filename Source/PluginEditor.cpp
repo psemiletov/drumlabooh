@@ -1313,9 +1313,9 @@ valueTreeState (vts)
   sl_global_analog_amount.setTopLeftPosition (bt_global_analog_on.getRight() - 8, bt_global_analog_on.getY());
 
   #ifdef MULTICHANNEL
-  sl_global_analog_amount.setSize (182, 32); // Уменьшенная ширина для мультиканального режима
+  sl_global_analog_amount.setSize (182, 32);
   #else
-  sl_global_analog_amount.setSize (232 + 8, 32); // Ширина под размер cmb_pan_mode для стерео
+  sl_global_analog_amount.setSize (232 + 8, 32);
   #endif
 
   sl_global_analog_amount.setRange (0.0f, 1.0f, 0.01f);
@@ -1326,12 +1326,63 @@ valueTreeState (vts)
 
   att_global_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "global_analog_amount", sl_global_analog_amount));
 
+
+  // //////////////UI ZOOM (через ComboBox)
+  addAndMakeVisible (l_ui_zoom);
+  l_ui_zoom.setText ("UI zoom", juce::NotificationType::dontSendNotification);
+  l_ui_zoom.setSize (80, 32);
+  l_ui_zoom.setTopLeftPosition (bt_global_analog_on.getX(), sl_global_analog_amount.getBottom() + YFILLER);
+  l_ui_zoom.setTooltip ("Interface scale factor");
+
+  addAndMakeVisible (cmb_ui_zoom);
+  cmb_ui_zoom.setTopLeftPosition (sl_global_analog_amount.getX(), l_ui_zoom.getY());
+
+  #ifdef MULTICHANNEL
+  cmb_ui_zoom.setSize (182, 32);
+  #else
+  cmb_ui_zoom.setSize (232 + 8, 32);
+  #endif
+
+  cmb_ui_zoom.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
+  cmb_ui_zoom.setColour (juce::ComboBox::textColourId, Colours::white);
+
+  cmb_ui_zoom.addItem ("50% (0.5x)", 1);
+  cmb_ui_zoom.addItem ("100% (1.0x)", 2);
+  cmb_ui_zoom.addItem ("150% (1.5x)", 3);
+  cmb_ui_zoom.addItem ("200% (2.0x)", 4);
+
+  // Установка текущего значения в зависимости от конфига
+  float current_gui_scale = options.get_float ("gui_scale_factor", 1.0f);
+  if (current_gui_scale <= 0.5f)      cmb_ui_zoom.setSelectedId (1, juce::dontSendNotification);
+  else if (current_gui_scale <= 1.0f) cmb_ui_zoom.setSelectedId (2, juce::dontSendNotification);
+  else if (current_gui_scale <= 1.5f) cmb_ui_zoom.setSelectedId (3, juce::dontSendNotification);
+  else                                cmb_ui_zoom.setSelectedId (4, juce::dontSendNotification);
+
+  cmb_ui_zoom.onChange = [this] {
+    float new_scale = 1.0f;
+    int id = cmb_ui_zoom.getSelectedId();
+    if (id == 1) new_scale = 0.5f;
+    else if (id == 2) new_scale = 1.0f;
+    else if (id == 3) new_scale = 1.5f;
+    else if (id == 4) new_scale = 2.0f;
+
+    options.set_float ("gui_scale_factor", new_scale);
+
+    //#if !defined(_WIN32) || !defined(_WIN64)
+    //std::string options_fname = get_home_dir() + "/.config/drumlabooh/config.conf";
+    //#else
+    //std::string options_fname = "C:\\drumlabooh\\config.conf";
+    //#endif
+    options.save();
+    setScaleFactor (new_scale);
+  };
+
   #ifndef MULTICHANNEL
 
-  // PAN MODE (теперь снизу)
+  // PAN MODE (теперь смещен ниже, под блок зума)
   addAndMakeVisible (l_pan_mode);
   l_pan_mode.setTopLeftPosition (bt_global_analog_on.getX(),
-                                 bt_global_analog_on.getBottom() + YFILLER);
+                                 l_ui_zoom.getBottom() + YFILLER);
   l_pan_mode.setSize (100, 32);
 
   cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
@@ -1340,7 +1391,7 @@ valueTreeState (vts)
   addAndMakeVisible (cmb_pan_mode);
   cmb_pan_mode.setSize (232, 32);
 
-  cmb_pan_mode.addItem ("equal power panning, law: -3 dB", PANMODE01); //sin/cos panner
+  cmb_pan_mode.addItem ("equal power panning, law: -3 dB", PANMODE01);
   cmb_pan_mode.addItem ("square root panner, law: -3 dB", PANMODE02);
   cmb_pan_mode.addItem ("linear panner, law: 0 dB", PANMODE03);
   cmb_pan_mode.addItem ("linear panner, law: -6 dB", PANMODE04);
@@ -1352,9 +1403,7 @@ valueTreeState (vts)
 
   cmb_pan_mode.setTopLeftPosition (l_pan_mode.getRight() - 8, l_pan_mode.getY());
 
-
   #endif
-
 
   gr_options.setSize (drumcells_group.getWidth(), 194);
 

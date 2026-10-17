@@ -356,6 +356,10 @@ public:
   std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_global_analog_amount = nullptr;
   juce::Slider sl_global_analog_amount;
 
+  juce::Label l_ui_zoom;
+  //juce::Slider sl_ui_zoom;
+
+  juce::ComboBox cmb_ui_zoom;
 
 #ifndef MULTICHANNEL
 
