@@ -931,21 +931,21 @@ void CAudioProcessorEditor::adapt_drumlabooh()
 
 
 CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::AudioProcessorValueTreeState &vts)
-                                             : AudioProcessorEditor (&parent),
-                                               audioProcessor (parent),
-                                               valueTreeState (vts)
+: AudioProcessorEditor (&parent),
+audioProcessor (parent),
+valueTreeState (vts)
 {
   //getLookAndFeel().setColour (TextButton::ColourIds::buttonColourId, juce::Colour (87, 110, 113));
 
-#if !defined(_WIN32) || !defined(_WIN64)
+  #if !defined(_WIN32) || !defined(_WIN64)
 
   std::string options_fname = get_home_dir() + "/.config/drumlabooh/config.conf";
 
-#else
+  #else
 
   std::string options_fname = "C:\\drumlabooh\\config.conf";
 
-#endif
+  #endif
 
   std::cout << "options_fname: " << options_fname << "\n";
 
@@ -955,28 +955,28 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
 
   auto& lookAndFeel = juce::LookAndFeel::getDefaultLookAndFeel();
   //lookAndFeel.setColour(juce::ScrollBar::thumbColourId, juce::Colours::lightskyblue);
-  
-  lookAndFeel.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (87, 110, 113)); 
-  
+
+  lookAndFeel.setColour (TextButton::ColourIds::buttonColourId, juce::Colour (87, 110, 113));
+
   drumkits_model.editor = this;
   need_to_update_cells = true;
-  
- // kit_image_default = juce::ImageFileFormat::loadFrom (labooh_png, labooh_pngSize);
+
+  // kit_image_default = juce::ImageFileFormat::loadFrom (labooh_png, labooh_pngSize);
 
   update_kits_list();
-      
+
   drumkits_listbox.getViewport()->setScrollBarThickness (24);
   drumkits_listbox.setRowHeight (32);
-  drumkits_listbox.setModel (&drumkits_model);    
-      
+  drumkits_listbox.setModel (&drumkits_model);
+
   //drumkits_listbox.setLookAndFeel(&drumkits_listbox_lookandfeel);
-  
-//TOP SECTION
-  
+
+  //TOP SECTION
+
   addAndMakeVisible (gr_topbar);
-  
+
   std::string PRODUCT = "DRUMLABOOH " + std::string (VERSION_NUMBER);
-    
+
   addAndMakeVisible (l_plugin_name);
   l_plugin_name.setSize (280 + XFILLER, 36);
   l_plugin_name.setTopLeftPosition (XFILLER, YFILLER / 2);
@@ -998,175 +998,175 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   hl_homepage.setFont (f_sitelink, false, juce::Justification::left);
   hl_homepage.setColour (juce::HyperlinkButton::textColourId, juce::Colour (121, 164, 103));
   //make link color 121 164 103
-  
+
   gr_topbar.setSize (hl_homepage.getRight() + XFILLER, l_plugin_name.getHeight() + YFILLER / 2);
   gr_topbar.setTopLeftPosition (1, 1);
- 
-//TOP SECTION END
-  
-//LEFT SECTION  
-  
-//DRUMKITS SELECTOR    
+
+  //TOP SECTION END
+
+  //LEFT SECTION
+
+  //DRUMKITS SELECTOR
   addAndMakeVisible (gr_drumkits);
 
   gr_drumkits.setTopLeftPosition (gr_topbar.getX(), gr_topbar.getBottom());
   //gr_drumkits.setSize (280 + XFILLER + XFILLER, 240 + YFILLER + YFILLER);
- 
+
   addAndMakeVisible (drumkits_listbox);
-  
+
   drumkits_listbox.setSize (280, 240);
   drumkits_listbox.setTopLeftPosition (gr_drumkits.getX() + XFILLER * 2, gr_drumkits.getY() + YFILLER);
-    
+
   gr_drumkits.setSize (drumkits_listbox.getWidth() + XFILLER * 4, drumkits_listbox.getHeight() + YFILLER * 2);
 
   //gr_drumkits.setSize (drumkits_listbox.getWidth() + XFILLER * 4, drumkits_listbox.getHeight() + YFILLER);
 
   //KIT INFO
-    
+
   addAndMakeVisible (gr_kitinfo);
   gr_kitinfo.setTopLeftPosition (gr_drumkits.getX(), gr_drumkits.getBottom());
-  gr_kitinfo.setSize (gr_drumkits.getWidth(), 228); 
-  
+  gr_kitinfo.setSize (gr_drumkits.getWidth(), 228);
+
   addAndMakeVisible (l_kit_name);
-  
+
   l_kit_name.setText ("EMPTY KIT",  NotificationType::dontSendNotification);
   l_kit_name.setFont (f_kitname_font);
   l_kit_name.setSize (280, 48);
 
-  
+
   auto kitinfoBounds = gr_kitinfo.getBounds();
   int lWidth  = l_kit_name.getWidth();
   int lHeight = l_kit_name.getHeight();
 
   int yCenter = kitinfoBounds.getY() + (kitinfoBounds.getHeight() - lHeight) / 2;
   l_kit_name.setTopLeftPosition (kitinfoBounds.getX() + 16, yCenter);
-  
-  
-//BELOW KIT INFO
-  
+
+
+  //BELOW KIT INFO
+
   addAndMakeVisible (kit_image);
-  
- // kit_image.setSize (gr_kitinfo.getWidth() - XFILLER * 3, 220 - YFILLER * 4);
-  // kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2), 
-    //                           (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2) + YFILLER /* * 1.5*/);
+
+  // kit_image.setSize (gr_kitinfo.getWidth() - XFILLER * 3, 220 - YFILLER * 4);
+  // kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2),
+  //                             (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2) + YFILLER /* * 1.5*/);
 
   kit_image.setBounds (gr_kitinfo.getBounds().reduced (10));
- 
-  
+
+
   addAndMakeVisible (gr_kitinfo);
   gr_kitinfo.setTopLeftPosition (gr_drumkits.getX(), gr_drumkits.getBottom());
-  gr_kitinfo.setSize (gr_drumkits.getWidth(), 228); 
+  gr_kitinfo.setSize (gr_drumkits.getWidth(), 228);
 
-   addAndMakeVisible (gr_kit_tools);
-  gr_kit_tools.setSize (gr_kitinfo.getWidth(), 154); 
+  addAndMakeVisible (gr_kit_tools);
+  gr_kit_tools.setSize (gr_kitinfo.getWidth(), 154);
   gr_kit_tools.setTopLeftPosition (gr_kitinfo.getX(), gr_kitinfo.getBottom());
-  
-  
+
+
   addAndMakeVisible (log_area);
   log_area.setMultiLine (true, true);
   log_area.setReadOnly (true);
   log_area.setTopLeftPosition (gr_kit_tools.getX() + XFILLER + XFILLER , gr_kit_tools.getY() + YFILLER);
   log_area.setSize (gr_kit_tools.getWidth() - (XFILLER * 4), 98);
-  
-  
-//SOME BUTTONS
-  
+
+
+  //SOME BUTTONS
+
   bt_file_open.setButtonText ("OPEN");
   addAndMakeVisible (bt_file_open);
   bt_file_open.setTooltip ("Select the drumkit file to open");
-  
+
   bt_file_open.setTopLeftPosition (gr_kit_tools.getX() + XFILLER + 2, log_area.getBottom() + 2);
   bt_file_open.setSize (54, 32);
-    
+
   bt_file_open.onClick = [this] {
 
-                                 dlg_fileopen = std::make_unique<juce::FileChooser> ("Select file to load...",
-                                                                                      File::getSpecialLocation (juce::File::userHomeDirectory),
-                                                                                      "*.xml;*.txt;*.sfz;*.labooh");
+    dlg_fileopen = std::make_unique<juce::FileChooser> ("Select file to load...",
+                                                        File::getSpecialLocation (juce::File::userHomeDirectory),
+                                                        "*.xml;*.txt;*.sfz;*.labooh");
 
-                                 auto folderChooserFlags = juce::FileBrowserComponent::openMode;
+    auto folderChooserFlags = juce::FileBrowserComponent::openMode;
 
-                                 dlg_fileopen->launchAsync (folderChooserFlags, [this] (const juce::FileChooser& chooser)
-                                    {
-                                     juce::File f (dlg_fileopen->getResult());
-                                     if (! f.exists())
-                                        return;
+    dlg_fileopen->launchAsync (folderChooserFlags, [this] (const juce::FileChooser& chooser)
+    {
+      juce::File f (dlg_fileopen->getResult());
+      if (! f.exists())
+        return;
 
-                                     std::string full (f.getFullPathName().toRawUTF8());
+      std::string full (f.getFullPathName().toRawUTF8());
 
-                                     bool supported = false;
+      bool supported = false;
 
-                                     if (ends_with (full, ".xml"))
-                                        supported = true;
+      if (ends_with (full, ".xml"))
+        supported = true;
 
-                                     if (ends_with (full, ".sfz"))
-                                        supported = true;
+      if (ends_with (full, ".sfz"))
+        supported = true;
 
-                                     if (ends_with (full, "drumkit.txt"))
-                                        supported = true;
+      if (ends_with (full, "drumkit.txt"))
+        supported = true;
 
-                                     if (ends_with (full, "drumkit.labooh"))
-                                        supported = true;
-                                      
-                                     if (ends_with (full, "drumkitq.txt"))
-                                        supported = true;
+      if (ends_with (full, "drumkit.labooh"))
+        supported = true;
 
-                                     if (! supported)
-                                        return;
+      if (ends_with (full, "drumkitq.txt"))
+        supported = true;
 
-                                     audioProcessor.drumkit_path = full;
-                             
-                                     tmr_leds.stopTimer();
+      if (! supported)
+        return;
 
-                                     audioProcessor.reset_layer_index();
-                                     audioProcessor.load_kit (full);
-                                     load_kit();
-                                     
-                                     need_to_update_cells = false;
-                                    
-                                    // log (audioProcessor.drumkit->get_description());
+      audioProcessor.drumkit_path = full;
 
-                                     //update gui with timer 
-                                     tmr_leds.startTimer (1000 / 15); //15 FPS
-                                    });
-                            };
+      tmr_leds.stopTimer();
 
-                            
+      audioProcessor.reset_layer_index();
+      audioProcessor.load_kit (full);
+      load_kit();
+
+      need_to_update_cells = false;
+
+      // log (audioProcessor.drumkit->get_description());
+
+      //update gui with timer
+      tmr_leds.startTimer (1000 / 15); //15 FPS
+    });
+  };
+
+
   bt_kit_adapt.setButtonText ("ADAPT");
   addAndMakeVisible (bt_kit_adapt);
-  
+
   bt_kit_adapt.setTooltip ("Clone the current kit\n with the current samplerate");
 
   bt_kit_adapt.setTopLeftPosition (bt_file_open.getX() + bt_file_open.getWidth() + XFILLER, bt_file_open.getY());
-  
-  
-  bt_kit_adapt.setSize (54, 32);
-    
-  bt_kit_adapt.onClick = [this] { 
-                                 adapt(); 
-                                };                             
-                                
 
-//END KIT BUTTONS
-/////////////////////////////////                            
-                            
-//RIGHT AREA                           
-                            
-//DRUMCELLS      
-                            
+
+  bt_kit_adapt.setSize (54, 32);
+
+  bt_kit_adapt.onClick = [this] {
+    adapt();
+  };
+
+
+  //END KIT BUTTONS
+  /////////////////////////////////
+
+  //RIGHT AREA
+
+  //DRUMCELLS
+
 
   drumcells_container.setSize (drumcells[0].getWidth() + XFILLER, drumcells[0].getHeight() * 36);
-                                
+
 
   for (size_t i = 0; i < 36; i++)
-      {
-       drumcells[i].setTopLeftPosition (0, i * drumcells[i].getHeight());
-       drumcells_container.addAndMakeVisible (drumcells[i]);
-       drumcells[i].attach_params (this, i);
-      }
+  {
+    drumcells[i].setTopLeftPosition (0, i * drumcells[i].getHeight());
+    drumcells_container.addAndMakeVisible (drumcells[i]);
+    drumcells[i].attach_params (this, i);
+  }
 
 
-//  load_kit (audioProcessor.drumkit_path);
+  //  load_kit (audioProcessor.drumkit_path);
 
   addAndMakeVisible (drumcells_group);
 
@@ -1176,7 +1176,7 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
 
   drumcells_viewer.setSize (drumcells_container.getWidth() + (XFILLER * 5), 420); //WAS
 
-  
+
   drumcells_viewer.setScrollBarThickness (24);
 
   drumcells_group.setTopLeftPosition (gr_drumkits.getRight() + XFILLER, gr_topbar.getBottom());
@@ -1190,132 +1190,156 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
 
   addAndMakeVisible (drumcells_viewer);
 
-/////////////////////////  
-//DRUMCELLS END  
-  
- 
-////////////OPTIONS
-  
+  /////////////////////////
+  //DRUMCELLS END
+
+
+  ////////////OPTIONS
+
   addAndMakeVisible (gr_options);
   gr_options.setTopLeftPosition (gr_kit_tools.getWidth() + XFILLER, drumcells_group.getBottom());
-  
+
   addAndMakeVisible (l_midimap_mode);
   l_midimap_mode.setTopLeftPosition (gr_options.getX() + XFILLER, gr_options.getY() + YFILLER);
   l_midimap_mode.setSize (120, 32);
   l_midimap_mode.setTooltip ("Map drums by the order (Auto)\n or from the kit settings (Kit)");
-  
+
   cmb_midimap_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
   cmb_midimap_mode.setColour (juce::ComboBox::textColourId, Colours::white);
- 
+
   addAndMakeVisible (cmb_midimap_mode);
   //cmb_midimap_mode.setSize (120 + XFILLER, 42);
   cmb_midimap_mode.setSize (80, 32);
-  
+
   cmb_midimap_mode.setTopLeftPosition (l_midimap_mode.getX() + l_midimap_mode.getWidth(),
                                        l_midimap_mode.getY());
-  
-  cmb_midimap_mode.addItem ("Auto", MIDIMAPMODE_LABOOH); 
+
+  cmb_midimap_mode.addItem ("Auto", MIDIMAPMODE_LABOOH);
   cmb_midimap_mode.addItem ("Kit", MIDIMAPMODE_FROMKIT);
-  
+
   att_midimap_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "midimap_mode", cmb_midimap_mode));
-  
-  
+
+
   //MIDI MAP MODE
   addAndMakeVisible (l_base_note);
   l_base_note.setSize (120, 32);
   l_base_note.setTopLeftPosition (gr_options.getX() + XFILLER, cmb_midimap_mode.getBottom() + YFILLER);
-  
-  
+
+
   l_base_note.setTooltip ("Number of MIDI note from which\n we start to map instruments in Auto mode,\n default 36");
- 
-  
+
+
   addAndMakeVisible (sl_base_note);
 
-  sl_base_note.setBounds (cmb_midimap_mode.getX(), l_base_note.getY(), 80, 32); 
+  sl_base_note.setBounds (cmb_midimap_mode.getX(), l_base_note.getY(), 80, 32);
   sl_base_note.setRange(0, 127);
   sl_base_note.setValue (audioProcessor.base_note_number);
-        
-  sl_base_note.onValueChange = [this](int newValue)
-                               {
-                                audioProcessor.base_note_number = newValue;
-                               // DBG("Value changed to: " << newValue); // для отладки
-                                
-                                if (! audioProcessor.drumkit)
-                                   return;
- 
-                                for (size_t i = 0; i < 36; i++)
-                                    {
-                                     CDrumSample *s = audioProcessor.drumkit->a_samples[i];
-                                     drumcells[i].cell_label.setTooltip ("");  
-       
-                                     if (! s)
-                                       continue;
- 
 
-                                     std::string midi_note_auto = "if MIDI map mode = Auto, MIDI note #: " + std::to_string (i + audioProcessor.base_note_number); 
-                                     std::string midi_note_kit = "if MIDI map mode = Kit, MIDI note #: "; 
-              
-                                     int mapped_note = -1;
-       
-                                     if (s->mapped_note != -1)    
-                                        midi_note_kit += std::to_string (s->mapped_note); 
-                                     else    
-                                         midi_note_kit += "not defined"; 
-         
-                                     std::string tooltip = midi_note_auto + "\n" + midi_note_kit;   
-         
-                                     drumcells[i].cell_label.setTooltip (tooltip);  
-                                    } 
-                               };
-  
+  sl_base_note.onValueChange = [this](int newValue)
+  {
+    audioProcessor.base_note_number = newValue;
+    // DBG("Value changed to: " << newValue); // для отладки
+
+    if (! audioProcessor.drumkit)
+      return;
+
+    for (size_t i = 0; i < 36; i++)
+    {
+      CDrumSample *s = audioProcessor.drumkit->a_samples[i];
+      drumcells[i].cell_label.setTooltip ("");
+
+      if (! s)
+        continue;
+
+
+      std::string midi_note_auto = "if MIDI map mode = Auto, MIDI note #: " + std::to_string (i + audioProcessor.base_note_number);
+      std::string midi_note_kit = "if MIDI map mode = Kit, MIDI note #: ";
+
+      int mapped_note = -1;
+
+      if (s->mapped_note != -1)
+        midi_note_kit += std::to_string (s->mapped_note);
+      else
+        midi_note_kit += "not defined";
+
+      std::string tooltip = midi_note_auto + "\n" + midi_note_kit;
+
+      drumcells[i].cell_label.setTooltip (tooltip);
+    }
+  };
+
   addAndMakeVisible (bt_ignore_midi_velocity);
-  
+
   att_ignore_midi_velocity.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "ignore_midi_velocity", bt_ignore_midi_velocity));
   bt_ignore_midi_velocity.setButtonText ("Fixed MIDI velocity");
   bt_ignore_midi_velocity.setTooltip ("If turned on, play first layer\n of multi-layered samples,\n and with the maximun velocity");
   bt_ignore_midi_velocity.setSize (180 + XFILLER, 32);
   bt_ignore_midi_velocity.setTopLeftPosition (l_base_note.getX(), sl_base_note.getBottom() + YFILLER);
-  
- 
-//RND 
-  
+
+
+  //RND
+
   addAndMakeVisible (l_randomizer_seed);
   l_randomizer_seed.setSize (120, 32);
-  l_randomizer_seed.setTopLeftPosition (bt_ignore_midi_velocity.getX(), 
+  l_randomizer_seed.setTopLeftPosition (bt_ignore_midi_velocity.getX(),
                                         bt_ignore_midi_velocity.getBottom() + 8);
-  
+
   addAndMakeVisible (sl_randomizer_seed);
-  
+
   sl_randomizer_seed.setSliderStyle (juce::Slider::LinearHorizontal);
   sl_randomizer_seed.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 32);
-  
+
   sl_randomizer_seed.setTopLeftPosition (cmb_midimap_mode.getX() - 8,
                                          l_randomizer_seed.getY());
   sl_randomizer_seed.setSize (182, 32);
   sl_randomizer_seed.setRange (1, RND_MAX_TWEAK, 1.0);
   sl_randomizer_seed.setValue (audioProcessor.randomizer_seed, dontSendNotification);
   sl_randomizer_seed.setColour (juce::Slider::thumbColourId, juce::Colours::cornsilk);
-  
+
   sl_randomizer_seed.addListener (this);
-  
-#ifndef MULTICHANNEL
-  
- 
-  // PAN MODE
-  
+
+
+  // //////////////NEW GLOBAL ANALOG
+  addAndMakeVisible (bt_global_analog_on);
+  bt_global_analog_on.setButtonText ("Analog");
+  bt_global_analog_on.setTooltip ("Turn the Analog saturator on");
+  bt_global_analog_on.setSize (80, 32);
+  bt_global_analog_on.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER * 5,
+                                          l_midimap_mode.getY());
+
+  att_global_analog_on.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "global_analog_on", bt_global_analog_on));
+
+  addAndMakeVisible (sl_global_analog_amount);
+  sl_global_analog_amount.setTopLeftPosition (bt_global_analog_on.getRight() - 8, bt_global_analog_on.getY());
+
+  #ifdef MULTICHANNEL
+  sl_global_analog_amount.setSize (182, 32); // Уменьшенная ширина для мультиканального режима
+  #else
+  sl_global_analog_amount.setSize (232 + 8, 32); // Ширина под размер cmb_pan_mode для стерео
+  #endif
+
+  sl_global_analog_amount.setRange (0.0f, 1.0f, 0.01f);
+  sl_global_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_global_analog_amount.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 20);
+  sl_global_analog_amount.setColour (juce::Slider::thumbColourId, juce::Colours::orange);
+  sl_global_analog_amount.setTooltip ("Level of Analog saturator");
+
+  att_global_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "global_analog_amount", sl_global_analog_amount));
+
+  #ifndef MULTICHANNEL
+
+  // PAN MODE (теперь снизу)
   addAndMakeVisible (l_pan_mode);
-  
-  l_pan_mode.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER * 5, 
-                                 l_midimap_mode.getY());
+  l_pan_mode.setTopLeftPosition (bt_global_analog_on.getX(),
+                                 bt_global_analog_on.getBottom() + YFILLER);
   l_pan_mode.setSize (100, 32);
-  
+
   cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
   cmb_pan_mode.setColour (juce::ComboBox::textColourId, Colours::white);
 
   addAndMakeVisible (cmb_pan_mode);
-      //  cmb_pan_mode.onChange = [this] { panner_modeMenuChanged(); };
   cmb_pan_mode.setSize (232, 32);
-  
+
   cmb_pan_mode.addItem ("equal power panning, law: -3 dB", PANMODE01); //sin/cos panner
   cmb_pan_mode.addItem ("square root panner, law: -3 dB", PANMODE02);
   cmb_pan_mode.addItem ("linear panner, law: 0 dB", PANMODE03);
@@ -1327,75 +1351,48 @@ CAudioProcessorEditor::CAudioProcessorEditor (CAudioProcessor &parent, juce::Aud
   att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
 
   cmb_pan_mode.setTopLeftPosition (l_pan_mode.getRight() - 8, l_pan_mode.getY());
-    
-  
-  //////////////NEW GLOBAL ANALOG
-  addAndMakeVisible (bt_global_analog_on);
-  bt_global_analog_on.setButtonText ("Analog");
-  
-  bt_global_analog_on.setTooltip ("Turn the Analog saturator on");
-  
-  bt_global_analog_on.setSize (80, 32);
-  bt_global_analog_on.setTopLeftPosition (l_pan_mode.getX(), 
-                                         (l_pan_mode.getBottom() + YFILLER));
 
-  att_global_analog_on.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "global_analog_on", bt_global_analog_on));
-  
- 
-  addAndMakeVisible (sl_global_analog_amount);
-  sl_global_analog_amount.setTopLeftPosition (cmb_pan_mode.getX() - 8, bt_global_analog_on.getY());
-  sl_global_analog_amount.setSize (/*182*/cmb_pan_mode.getWidth() + 8, 32);
-  sl_global_analog_amount.setRange (0.0f, 1.0f, 0.01f);
-  sl_global_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
-  sl_global_analog_amount.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 20);
-  sl_global_analog_amount.setColour (juce::Slider::thumbColourId, juce::Colours::orange);
-  sl_global_analog_amount.setTooltip ("Level of Analog saturator");
 
-  att_global_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "global_analog_amount", sl_global_analog_amount));
-    
-  
-#endif  
+  #endif
 
-   
+
   gr_options.setSize (drumcells_group.getWidth(), 194);
-  
+
   //all plugin
-  setSize (drumcells_viewer.getRight() + XFILLER * 2, 
+  setSize (drumcells_viewer.getRight() + XFILLER * 2,
            gr_kit_tools.getBottom());
-  
-  //setSize (drumcells_viewer.getRight() + XFILLER * 2, 
-    //       gr_options.getBottom());
-  
-  
-  
+
+  //setSize (drumcells_viewer.getRight() + XFILLER * 2,
+  //      gr_options.getBottom());
+
+
+
   if (audioProcessor.drumkit)
-     {
-//      log (audioProcessor.drumkit->get_description());
-  
-     }
+  {
+    //     log (audioProcessor.drumkit->get_description());
+
+  }
 
   //load_kit();
-  
-  for (size_t i = 0; i < 36; i++)
-      {
-       drumcells[i].set_name ("EMPTY CELL");
-       drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (CELLCOLOR_EMPTY));
-      }
 
- 
+  for (size_t i = 0; i < 36; i++)
+  {
+    drumcells[i].set_name ("EMPTY CELL");
+    drumcells[i].cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (CELLCOLOR_EMPTY));
+  }
+
+
   tmr_leds.uplink = this;
   tmr_leds.startTimer (1000 / 15); //15 FPS
 
-//bt_test.setBounds (drumcells[0].getWidth() + 50, 400, 50, 50);
+  //bt_test.setBounds (drumcells[0].getWidth() + 50, 400, 50, 50);
 
   float gui_scale_factor = options.get_float ("gui_scale_factor", 1.0f);
-//  if (PluginHostType::getPluginLoadedAs() != AudioProcessor::wrapperType_Standalone)
+  //  if (PluginHostType::getPluginLoadedAs() != AudioProcessor::wrapperType_Standalone)
 
   std::cout << "gui_scale_factor: " << gui_scale_factor << "\n";
 
   setScaleFactor (gui_scale_factor);
-
-
 }
 
 
@@ -1404,12 +1401,13 @@ CAudioProcessorEditor::~CAudioProcessorEditor()
   att_ignore_midi_velocity = nullptr;
  // att_base_note = nullptr;
   //att_randomizer_seed = nullptr;
+  att_global_analog_amount = nullptr;
+  att_global_analog_on = nullptr;
+
   
 #ifndef MULTICHANNEL
 
   att_pan_mode = nullptr;
-  att_global_analog_amount = nullptr;
-  att_global_analog_on = nullptr;
 
 #endif
 }

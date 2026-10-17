@@ -350,14 +350,16 @@ public:
 //////////////////////////////////
 //OPTIONS CONTROLS  
   
-#ifndef MULTICHANNEL
-
   std::unique_ptr <juce::AudioProcessorValueTreeState::ButtonAttachment> att_global_analog_on = nullptr;
   juce::ToggleButton bt_global_analog_on;
 
   std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_global_analog_amount = nullptr;
   juce::Slider sl_global_analog_amount;
-  
+
+
+#ifndef MULTICHANNEL
+
+
   std::unique_ptr <juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_pan_mode;
   juce::Label l_pan_mode { {}, "Pan mode" };
   juce::ComboBox cmb_pan_mode;
