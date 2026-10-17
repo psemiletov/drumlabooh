@@ -454,6 +454,7 @@ juce::AudioBuffer<float>* render_computer_snare (const std::string &formula_str,
     return buffer;
 }
 
+
 juce::AudioBuffer<float>* render_computer_tom (const std::string &formula_str, int samplerate)
 {
     float base_freq = 150.0f;  // Базовая нота тома
@@ -796,50 +797,6 @@ juce::AudioBuffer<float>* render_hihat_old (const std::string &formula_str, int 
 
 
 
-/*
-
-// Вспомогательная функция для парсинга параметров через ';'
-std::map<std::string, float> parse_synth_params (const std::string &formula_str)
-{
-
-    std::map<std::string, float> params;
-
-    // Находим скобки
-    size_t start = formula_str.find ('(');
-    size_t end = formula_str.rfind (')');
-    if (start == std::string::npos || end == std::string::npos || end <= start)
-        return params; // Возвращает пустой мап, генератор применит дефолты
-
-        std::string inner = formula_str.substr (start + 1, end - start - 1);
-
-    // Разбиваем по точке с запятой
-    std::stringstream ss(inner);
-    std::string item;
-    while (std::getline(ss, item, ','))
-    {
-        // Убираем пробелы (если нужно) или сразу ищем '='
-        size_t eq = item.find ('=');
-        if (eq != std::string::npos)
-        {
-            std::string key = item.substr(0, eq);
-            std::string val_str = item.substr(eq + 1);
-
-            // Тримминг пробелов по вкусу, затем конвертация в float
-            try {
-                float val = std::stof(val_str);
-                // Убираем возможные пробелы из ключа
-                key.erase(std::remove_if(key.begin(), key.end(), ::isspace), key.end());
-                params[key] = val;
-            } catch (...) {}
-        }
-    }
-
-    return params;
-}
-*/
-
-
-
 juce::AudioBuffer<float>* render_clap (const std::string &formula_str, int session_samplerate)
 {
     std::cout << "CLAP: " << formula_str << "\n";
@@ -912,65 +869,6 @@ juce::AudioBuffer<float>* render_clap (const std::string &formula_str, int sessi
     return buffer;
 }
 
-/*
-
-juce::AudioBuffer<float>* render_snare (const std::string &formula_str, int samplerate)
-{
-    float f0 = 220.0f;       // Начальная частота корпуса
-    float f1 = 130.0f;       // Конечная частота корпуса
-    float decay = 0.2f;      // Длительность тела
-    float noise_level = 0.7f; // Громкость пружин
-    float noise_decay = 0.3f; // Длительность шуршания пружин
-
-    // Парсим параметры (теперь через запятую!)
-    std::map<std::string, float> p = parse_synth_params (formula_str);
-    if (p.count("f0"))       f0 = p["f0"];
-    if (p.count("f1"))       f1 = p["f1"];
-    if (p.count("decay"))    decay = p["decay"];
-    if (p.count("noise"))    noise_level = p["noise"];
-    if (p.count("n_decay"))  noise_decay = p["n_decay"];
-
-    int num_samples = static_cast<int>(samplerate * std::max(decay, noise_decay));
-    if (num_samples <= 0)
-        num_samples = samplerate * 0.3f;
-
-    juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
-    float *data = buffer->getWritePointer (0);
-
-    double phase = 0.0;
-    float noise_state = 0.0f; // Для простого фильтра шума
-
-    for (int i = 0; i < num_samples; ++i)
-    {
-        float t = static_cast<float>(i) / samplerate;
-        float sample = 0.0f;
-
-        // 1. Тональная часть (корпус / пластик)
-        if (t < decay)
-        {
-            float freq = f1 + (f0 - f1) * std::exp (-t * 35.0f);
-            phase += 2.0 * M_PI * freq / samplerate;
-            float env = std::exp (-t * (5.0f / decay));
-            sample += std::sin (phase) * env * 0.5f;
-        }
-
-        // 2. Шумовая часть (пружины / snare wires)
-        if (t < noise_decay)
-        {
-            float white_noise = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f);
-            // Простейший фильтр низких частот для смягчения шума
-            noise_state = noise_state * 0.5f + white_noise * 0.5f;
-            float noise_env = std::exp (-t * (3.0f / noise_decay));
-            sample += noise_state * noise_env * noise_level;
-        }
-
-        data[i] = sample;
-    }
-
-    apply_buffer_fadeout (buffer, samplerate, 0.003f); // 3 мс на сглаживание хвоста
-    return buffer;
-}
-*/
 
 juce::AudioBuffer<float>* render_snare (const std::string &formula_str, int samplerate)
 {
@@ -1060,15 +958,12 @@ juce::AudioBuffer<float>* render_snare (const std::string &formula_str, int samp
 juce::AudioBuffer<float>* render_kick (const std::string &formula_str, int samplerate)
 {
 
-std::cout << "juce::AudioBuffer<float>* render_kick BEGIN \n";
 
-std::cout << "DEBUB 01\n";
     float f0 = 150.0f;
     float f1 = 45.0f;
     float decay = 0.35f;
     float click_level = 0.2f;
 
-std::cout << "DEBUB 02\n";
 
     // Парсим параметры из строки
     std::map<std::string, float> p = parse_synth_params (formula_str);
@@ -1078,22 +973,12 @@ std::cout << "DEBUB 02\n";
     if (p.count("click")) click_level = p["click"];
 
 
-    std::cout << "DEBUB 03\n";
-
-
     int num_samples = static_cast<int>(samplerate * decay);
     if (num_samples <= 0)
         num_samples = samplerate * 0.5f;
 
-    std::cout << "DEBUB 04\n";
-
-
-
     juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
     float *data = buffer->getWritePointer (0);
-
-    std::cout << "DEBUB 05\n";
-
 
     double phase = 0.0;
 
@@ -1114,10 +999,6 @@ std::cout << "DEBUB 02\n";
 
         data[i] = sample;
     }
-
-    std::cout << "DEBUB 06\n";
-
-    std::cout << "juce::AudioBuffer<float>* render_kick END \n";
 
     apply_buffer_fadeout (buffer, samplerate, 0.003f); // 3 мс на сглаживание хвоста
     return buffer;
@@ -2224,336 +2105,7 @@ struct Mode {
 };
 
 
-juce::AudioBuffer<float>* render_crash_4 (const std::string &formula_str, int samplerate)
-{
-    float size = 18.0f;     // Размер тарелки в дюймах
-    float decay = 0.0f;     // Если 0, рассчитывается автоматически
-    float tone = 5500.0f;   // Базовая частота среза HPF
-    float noise_mix = 0.6f; // Доля шума
-    float metal_mix = 0.4f; // Доля металлических гармоник
-    float pitch = 1.0f;
-    float detune = 0.35f;
-    float drive = 1.2f;
-    float brightness = 0.8f; // Новый параметр из пресетов
 
-    auto params = parse_synth_params (formula_str);
-    if (params.count("size"))       size = params["size"];
-    if (params.count("decay"))      decay = params["decay"];
-    if (params.count("tone"))       tone = params["tone"];
-    if (params.count("noise"))      noise_mix = params["noise"];
-    if (params.count("metal"))      metal_mix = params["metal"];
-    if (params.count("pitch"))      pitch = params["pitch"];
-    if (params.count("detune"))     detune = params["detune"];
-    if (params.count("drive"))      drive = params["drive"];
-    if (params.count("brightness")) brightness = params["brightness"];
-
-    if (size < 12.0f) size = 12.0f;
-    if (size > 24.0f) size = 24.0f;
-
-    float size_scale = 16.0f / size;
-    pitch *= size_scale;
-    tone *= (1.0f - (size - 14.0f) * 0.03f);
-
-    if (decay <= 0.0f) {
-        decay = 1.2f + (size - 14.0f) * 0.18f;
-    }
-
-    int num_samples = static_cast<int>(samplerate * (decay * 1.1f));
-    if (num_samples < 100) num_samples = 100;
-
-    auto* buffer = new juce::AudioBuffer<float>(1, num_samples);
-    if (!buffer) return nullptr;
-    float* data = buffer->getWritePointer(0);
-
-    uint32_t noise_state = 0xABCD1234u;
-
-    float base_metal_freqs[6] = { 280.5f, 410.2f, 595.8f, 780.4f, 1050.0f, 1380.0f };
-    float metal_phases[6] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-
-    float hpf_prev_input = 0.0f;
-    float hpf_prev_output = 0.0f;
-
-    float dt = 1.0f / static_cast<float>(samplerate);
-    float rc = 1.0f / (2.0f * M_PI * tone);
-    float alpha = rc / (rc + dt);
-
-    float prev_raw_noise = 0.0f;
-
-    for (int i = 0; i < num_samples; ++i)
-    {
-        float t = static_cast<float>(i) * dt;
-
-        // Металлический блок гармоник
-        float metal_sample = 0.0f;
-        for (int m = 0; m < 6; ++m)
-        {
-            float freq_mod = base_metal_freqs[m] * (1.0f + static_cast<float>(m) * detune * 0.2f);
-            metal_phases[m] += (freq_mod * pitch) * dt;
-            if (metal_phases[m] >= 1.0f) metal_phases[m] -= 1.0f;
-            float sq = (metal_phases[m] < 0.5f) ? 1.0f : -1.0f;
-            metal_sample += sq;
-        }
-        metal_sample /= 6.0f;
-
-        // Шум с учетом яркости (brightness)
-        noise_state ^= noise_state << 13;
-        noise_state ^= noise_state >> 17;
-        noise_state ^= noise_state << 5;
-        float raw_noise = static_cast<float>(noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
-
-        // Дифференциация для воздушного «песка»
-        float noise_diff = raw_noise - prev_raw_noise;
-        prev_raw_noise = raw_noise;
-        float noise_sample = (raw_noise * (1.0f - brightness) + noise_diff * brightness * 2.0f);
-
-        float raw_mix = (metal_sample * metal_mix) + (noise_sample * noise_mix);
-
-        float hpf_output = alpha * (hpf_prev_output + raw_mix - hpf_prev_input);
-        hpf_prev_input = raw_mix;
-        hpf_prev_output = hpf_output;
-
-        float env = std::exp(-2.5f * (t / decay));
-        if (t < 0.003f) {
-            env *= (t / 0.003f) * 2.5f;
-        }
-
-        float sample = hpf_output * env;
-
-        if (drive > 1.0f) {
-            sample = std::tanh(sample * drive);
-        }
-
-        if (!std::isfinite(sample)) sample = 0.0f;
-        data[i] = sample;
-    }
-
-    // Твой проверенный и безопасный фейдаут
-    apply_buffer_fadeout(buffer, samplerate, 0.015f);
-    return buffer;
-}
-
-/*
-juce::AudioBuffer<float>* render_crash_hybrid (const std::string &formula_str, int samplerate)
-{
-    if (samplerate <= 0) samplerate = 44100;
-
-    float decay     = 1.5f;
-    float tone      = 5500.0f; // Частота среза HPF
-    float pitch     = 1.0f;
-    float drive     = 1.2f;
-    float noise_mix = 0.5f;    // Баланс между металлом (квадраты) и шумом (песок)
-
-    auto params = parse_synth_params(formula_str);
-    if (params.count("decay"))     decay     = params["decay"];
-    if (params.count("tone"))      tone      = params["tone"];
-    if (params.count("pitch"))     pitch     = params["pitch"];
-    if (params.count("drive"))     drive     = params["drive"];
-    if (params.count("noise"))     noise_mix = params["noise"];
-
-    // Безопасные лимиты
-    if (decay < 0.1f) decay = 0.1f;
-    if (decay > 6.0f) decay = 6.0f;
-    if (pitch < 0.3f) pitch = 0.3f;
-    if (pitch > 3.0f) pitch = 3.0f;
-    if (noise_mix < 0.0f) noise_mix = 0.0f;
-    if (noise_mix > 1.0f) noise_mix = 1.0f;
-
-    // Умный маппинг tone: если передан диапазон 0.0..1.0, переводим в герцы (2kHz - 10kHz)
-    float cutoff = tone;
-    if (cutoff <= 1.0f) {
-        cutoff = 2000.0f + cutoff * 8000.0f;
-    }
-    if (cutoff < 500.0f) cutoff = 500.0f;
-    if (cutoff > samplerate * 0.45f) cutoff = samplerate * 0.45f;
-
-    int num_samples = static_cast<int>(samplerate * (decay * 1.1f));
-    if (num_samples < 512) num_samples = 512;
-
-    auto* buffer = new juce::AudioBuffer<float>(1, num_samples);
-    if (!buffer) return nullptr;
-    float* data = buffer->getWritePointer(0);
-
-    uint32_t noise_state = 0xABCD1234u;
-
-    // 6 классических 808-осцилляторов (прямоугольные волны)
-    float base_freqs[6] = { 205.3f, 304.4f, 369.6f, 522.7f, 540.0f, 800.0f };
-    float phases[6]     = { 0.0f,   0.0f,   0.0f,   0.0f,   0.0f,   0.0f };
-
-    float dt = 1.0f / static_cast<float>(samplerate);
-
-    // HPF фильтр из стабильного кода
-    float hpf_prev_input = 0.0f;
-    float hpf_prev_output = 0.0f;
-    float rc = 1.0f / (2.0f * M_PI * cutoff);
-    float alpha = rc / (rc + dt);
-
-    float prev_raw_noise = 0.0f;
-
-    for (int i = 0; i < num_samples; ++i)
-    {
-        float t = static_cast<float>(i) * dt;
-
-        // 1. Металлический блок (суммируем квадраты)
-        float metal_sample = 0.0f;
-        for (int m = 0; m < 6; ++m)
-        {
-            phases[m] += (base_freqs[m] * pitch) * dt;
-            if (phases[m] >= 1.0f) phases[m] -= 1.0f;
-            metal_sample += (phases[m] < 0.5f) ? 1.0f : -1.0f;
-        }
-        metal_sample /= 6.0f;
-
-        // 2. Воздушный шумовой хвост с дифференциальным акцентом верхов
-        noise_state ^= noise_state << 13;
-        noise_state ^= noise_state >> 17;
-        noise_state ^= noise_state << 5;
-        float raw_noise = static_cast<float>(noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
-
-        float noise_diff = raw_noise - prev_raw_noise;
-        prev_raw_noise = raw_noise;
-        float noise_sample = (raw_noise * 0.3f + noise_diff * 0.7f);
-
-        // 3. Гибридный микс квадратов и шума
-        float raw_mix = (metal_sample * (1.0f - noise_mix)) + (noise_sample * noise_mix);
-
-        // 4. Пропускаем через чистый фильтр
-        float hpf_output = alpha * (hpf_prev_output + raw_mix - hpf_prev_input);
-        hpf_prev_input = raw_mix;
-        hpf_prev_output = hpf_output;
-
-        // 5. Огибающая (хлесткий удар на атаке + экспоненциальный хвост)
-        float env = std::exp(-2.5f * (t / decay));
-        if (t < 0.003f) {
-            env *= (t / 0.003f) * 2.5f;
-        }
-
-        float sample = hpf_output * env;
-
-        // 6. Плотный сатуратор
-        if (drive > 1.0f) {
-            sample = std::tanh(sample * drive);
-        }
-
-        if (!std::isfinite(sample)) sample = 0.0f;
-        data[i] = sample;
-    }
-
-    apply_buffer_fadeout(buffer, samplerate, 0.015f);
-    return buffer;
-}
-*/
-/*
-
-juce::AudioBuffer<float>* render_crash_hybrid (const std::string &formula_str, int samplerate)
-{
-    if (samplerate <= 0) samplerate = 44100;
-
-    float decay     = 1.5f;
-    float tone      = 5500.0f;
-    float pitch     = 1.0f;
-    float drive     = 1.2f;
-    float noise_mix = 0.5f;
-
-    auto params = parse_synth_params(formula_str);
-    if (params.count("decay"))     decay     = params["decay"];
-    if (params.count("tone"))      tone      = params["tone"];
-    if (params.count("pitch"))     pitch     = params["pitch"];
-    if (params.count("drive"))     drive     = params["drive"];
-    if (params.count("noise"))     noise_mix = params["noise"];
-
-    if (decay < 0.1f) decay = 0.1f;
-    if (decay > 6.0f) decay = 6.0f;
-    if (pitch < 0.3f) pitch = 0.3f;
-    if (pitch > 3.0f) pitch = 3.0f;
-    if (noise_mix < 0.0f) noise_mix = 0.0f;
-    if (noise_mix > 1.0f) noise_mix = 1.0f;
-
-    float cutoff = tone;
-    if (cutoff <= 1.0f) {
-        cutoff = 2000.0f + cutoff * 8000.0f;
-    }
-    if (cutoff < 500.0f) cutoff = 500.0f;
-    if (cutoff > samplerate * 0.45f) cutoff = samplerate * 0.45f;
-
-    int num_samples = static_cast<int>(samplerate * (decay * 1.1f));
-    if (num_samples < 512) num_samples = 512;
-
-    auto* buffer = new juce::AudioBuffer<float>(1, num_samples);
-    if (!buffer) return nullptr;
-    float* data = buffer->getWritePointer(0);
-
-    uint32_t noise_state = 0xABCD1234u;
-
-    float base_freqs[6] = { 205.3f, 304.4f, 369.6f, 522.7f, 540.0f, 800.0f };
-    float phases[6]     = { 0.0f,   0.0f,   0.0f,   0.0f,   0.0f,   0.0f };
-
-    float dt = 1.0f / static_cast<float>(samplerate);
-
-    float hpf_prev_input = 0.0f;
-    float hpf_prev_output = 0.0f;
-    float rc = 1.0f / (2.0f * M_PI * cutoff);
-    float alpha = rc / (rc + dt);
-
-    // Дополнительный мягкий фильтр для сглаживания самого шума (делает хвост «тоньше»)
-    float noise_lpf_state = 0.0f;
-    float noise_alpha = dt / (0.00015f + dt); // Срез примерно на 1 кГц для смягчения песка
-
-    for (int i = 0; i < num_samples; ++i)
-    {
-        float t = static_cast<float>(i) * dt;
-
-        // 1. Металлический блок
-        float metal_sample = 0.0f;
-        for (int m = 0; m < 6; ++m)
-        {
-            phases[m] += (base_freqs[m] * pitch) * dt;
-            if (phases[m] >= 1.0f) phases[m] -= 1.0f;
-            metal_sample += (phases[m] < 0.5f) ? 1.0f : -1.0f;
-        }
-        metal_sample /= 6.0f;
-
-        // 2. Мягкий и тонкий шумовой хвост
-        noise_state ^= noise_state << 13;
-        noise_state ^= noise_state >> 17;
-        noise_state ^= noise_state << 5;
-        float raw_noise = static_cast<float>(noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
-
-        // Интегрируем/смягчаем шум, убирая резкий цифровой скрежет
-        noise_lpf_state += noise_alpha * (raw_noise - noise_lpf_state);
-        float noise_sample = noise_lpf_state * 1.4f;
-
-        // 3. Микс квадратов и шелковистого шума
-        float raw_mix = (metal_sample * (1.0f - noise_mix)) + (noise_sample * noise_mix);
-
-        // 4. Основной фильтр
-        float hpf_output = alpha * (hpf_prev_output + raw_mix - hpf_prev_input);
-        hpf_prev_input = raw_mix;
-        hpf_prev_output = hpf_output;
-
-        // 5. Плавная огибающая с естественным закруглением на хвосте
-        float env = std::exp(-2.5f * (t / decay));
-        if (t < 0.003f) {
-            env *= (t / 0.003f) * 2.5f;
-        } else {
-            // Легкое дополнительное сужение к концу для избавления от статического гула
-            float tail_progress = t / decay;
-            env *= (1.0f - tail_progress * 0.15f);
-        }
-
-        float sample = hpf_output * env;
-
-        if (drive > 1.0f) {
-            sample = std::tanh(sample * drive);
-        }
-
-        if (!std::isfinite(sample)) sample = 0.0f;
-        data[i] = sample;
-    }
-
-    apply_buffer_fadeout(buffer, samplerate, 0.02f);
-    return buffer;
-}
-*/
 juce::AudioBuffer<float>* render_crash_hybrid (const std::string &formula_str, int samplerate)
 {
     if (samplerate <= 0) samplerate = 44100;
@@ -2781,121 +2333,120 @@ juce::AudioBuffer<float>* render_ride (const std::string &formula_str, int sampl
     return buffer;
 }
 
-/*
+
  //glass
-juce::AudioBuffer<float>* render_glass (const std::string &formula_str, int samplerate)
-{
-    float decay  = 1.8f;
-    float pitch  = 1.1f;    // Соответствует pitch из пресетов
-    float tone   = 0.6f;    // Нормализованный тон (0.0 - 1.0)
-    float drive  = 1.1f;
-    float noise  = 0.25f;   // Уровень шума
-    float ping   = 0.6f;    // Сила удара
+ juce::AudioBuffer<float>* render_glass (const std::string &formula_str, int samplerate)
+ {
+     float decay  = 1.8f;
+     float pitch  = 1.1f;    // Соответствует pitch из пресетов
+     float tone   = 0.6f;    // Нормализованный тон (0.0 - 1.0)
+     float drive  = 1.1f;
+     float noise  = 0.25f;   // Уровень воздушного шума
+     float ping   = 0.6f;    // Сила стеклянного удара
 
-    std::map<std::string, float> p = parse_synth_params (formula_str);
-    if (p.count("decay")) decay = p["decay"];
-    if (p.count("pitch")) pitch = p["pitch"];
-    if (p.count("tone"))  tone  = p["tone"];
-    if (p.count("drive")) drive = p["drive"];
-    if (p.count("noise")) noise = p["noise"];
-    if (p.count("ping"))  ping  = p["ping"];
+     std::map<std::string, float> p = parse_synth_params (formula_str);
+     if (p.count("decay")) decay = p["decay"];
+     if (p.count("pitch")) pitch = p["pitch"];
+     if (p.count("tone"))  tone  = p["tone"];
+     if (p.count("drive")) drive = p["drive"];
+     if (p.count("noise")) noise = p["noise"];
+     if (p.count("ping"))  ping  = p["ping"];
 
-    if (decay < 0.1f) decay = 0.1f;
-    if (decay > 8.0f) decay = 8.0f;
+     if (decay < 0.1f) decay = 0.1f;
+     if (decay > 8.0f) decay = 8.0f;
 
-    // Умный маппинг tone: если передан диапазон 0..1, переводим в Герцы (от 3kHz до 12kHz)
-    float filter_freq = tone;
-    if (filter_freq <= 1.0f) {
-        filter_freq = 3000.0f + filter_freq * 9000.0f;
-    }
-    if (filter_freq < 500.0f) filter_freq = 500.0f;
-    if (filter_freq > samplerate * 0.45f) filter_freq = samplerate * 0.45f;
+     // Умный маппинг tone: переводим в Герцы (от 3kHz до 12kHz для стеклянного звона)
+     float filter_freq = tone;
+     if (filter_freq <= 1.0f) {
+         filter_freq = 3000.0f + filter_freq * 9000.0f;
+     }
+     if (filter_freq < 500.0f) filter_freq = 500.0f;
+     if (filter_freq > samplerate * 0.45f) filter_freq = samplerate * 0.45f;
 
-    int num_samples = static_cast<int>(samplerate * decay);
-    if (num_samples < 100) num_samples = 100;
+     int num_samples = static_cast<int>(samplerate * decay);
+     if (num_samples < 100) num_samples = 100;
 
-    auto* buffer = new juce::AudioBuffer<float> (1, num_samples);
-    float* data = buffer->getWritePointer (0);
+     auto* buffer = new juce::AudioBuffer<float> (1, num_samples);
+     float* data = buffer->getWritePointer (0);
 
-    double p1 = 0.0, p2 = 0.0, p3 = 0.0, p4 = 0.0, p5 = 0.0, p6 = 0.0;
-    uint32_t noise_state = 0x87654321u;
+     double p1 = 0.0, p2 = 0.0, p3 = 0.0, p4 = 0.0, p5 = 0.0, p6 = 0.0;
+     uint32_t noise_state = 0x87654321u;
 
-    float dt = 1.0f / static_cast<float>(samplerate);
+     float dt = 1.0f / static_cast<float>(samplerate);
 
-    float bpf_s1 = 0.0f, bpf_s2 = 0.0f;
-    float w0 = 2.0f * M_PI * filter_freq * dt;
-    if (w0 > 0.9f) w0 = 0.9f;
-    float q = 1.8f;
-    float alpha = w0 / q;
+     float bpf_s1 = 0.0f, bpf_s2 = 0.0f;
+     float w0 = 2.0f * M_PI * filter_freq * dt;
+     if (w0 > 0.9f) w0 = 0.9f;
+     float q = 1.8f;
+     float alpha = w0 / q;
 
-    // Базовая частота металла умножается на pitch из пресета
-    float base_metal = 1200.0f * pitch;
+     // Базовая частота стеклянного резонанса умножается на pitch из пресета
+     float base_glass = 1200.0f * pitch;
 
-    for (int i = 0; i < num_samples; ++i)
-    {
-        float t = static_cast<float>(i) * dt;
+     for (int i = 0; i < num_samples; ++i)
+     {
+         float t = static_cast<float>(i) * dt;
 
-        // 1. Металлический кластер
-        p1 += 2.0 * M_PI * (base_metal * 1.000f) * dt;
-        p2 += 2.0 * M_PI * (base_metal * 1.618f) * dt;
-        p3 += 2.0 * M_PI * (base_metal * 2.542f) * dt;
-        p4 += 2.0 * M_PI * (base_metal * 3.833f) * dt;
-        p5 += 2.0 * M_PI * (base_metal * 5.211f) * dt;
-        p6 += 2.0 * M_PI * (base_metal * 7.145f) * dt;
+         // 1. Стеклянный гармонический кластер
+         p1 += 2.0 * M_PI * (base_glass * 1.000f) * dt;
+         p2 += 2.0 * M_PI * (base_glass * 1.618f) * dt;
+         p3 += 2.0 * M_PI * (base_glass * 2.542f) * dt;
+         p4 += 2.0 * M_PI * (base_glass * 3.833f) * dt;
+         p5 += 2.0 * M_PI * (base_glass * 5.211f) * dt;
+         p6 += 2.0 * M_PI * (base_glass * 7.145f) * dt;
 
-        float osc1 = std::sin(p1);
-        float osc2 = std::sin(p2);
-        float osc3 = std::sin(p3);
-        float osc4 = std::sin(p4);
-        float osc5 = std::sin(p5);
-        float osc6 = std::sin(p6);
+         float osc1 = std::sin(p1);
+         float osc2 = std::sin(p2);
+         float osc3 = std::sin(p3);
+         float osc4 = std::sin(p4);
+         float osc5 = std::sin(p5);
+         float osc6 = std::sin(p6);
 
-        float metallic_ring = (osc1 * osc3 + osc2 * osc4 + osc5 * osc6) * 0.25f;
+         float glass_ring = (osc1 * osc3 + osc2 * osc4 + osc5 * osc6) * 0.25f;
 
-        // 2. Управляемый из пресетов шум
-        noise_state ^= noise_state << 13;
-        noise_state ^= noise_state >> 17;
-        noise_state ^= noise_state << 5;
-        float raw_noise = static_cast<float>(noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
+         // 2. Управляемый из пресетов воздушный шум
+         noise_state ^= noise_state << 13;
+         noise_state ^= noise_state >> 17;
+         noise_state ^= noise_state << 5;
+         float raw_noise = static_cast<float>(noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
 
-        // Микс зависит от параметра noise
-        float combined = (raw_noise * noise) + (metallic_ring * (1.0f - noise));
+         // Микс шума и стеклянного резонанса
+         float combined = (raw_noise * noise) + (glass_ring * (1.0f - noise));
 
-        // 3. Фильтрация
-        bpf_s1 = bpf_s1 + w0 * (combined - bpf_s1 - alpha * bpf_s2);
-        bpf_s2 = bpf_s2 + w0 * bpf_s1;
-        float filtered = bpf_s1;
+         // 3. Фильтрация
+         bpf_s1 = bpf_s1 + w0 * (combined - bpf_s1 - alpha * bpf_s2);
+         bpf_s2 = bpf_s2 + w0 * bpf_s1;
+         float filtered = bpf_s1;
 
-        // 4. Огибающая и атака (ping)
-        float body_env = std::exp(-t * (5.0f / decay));
+         // 4. Огибающая и стеклянный удар (ping)
+         float body_env = std::exp(-t * (5.0f / decay));
 
-        float attack = 0.0f;
-        if (t < 0.0012f) {
-            attack = (1.0f - t / 0.0012f) * 3.5f * ping;
-        }
+         float attack = 0.0f;
+         if (t < 0.0012f) {
+             attack = (1.0f - t / 0.0012f) * 3.5f * ping;
+         }
 
-        float sample = (filtered * body_env * 0.5f + metallic_ring * body_env * 0.3f + attack);
+         float sample = (filtered * body_env * 0.5f + glass_ring * body_env * 0.3f + attack);
 
-        // 5. Плавный релиз
-        float release_fade = 1.0f;
-        float tail_time = decay * 0.25f;
-        if (t > (decay - tail_time)) {
-            release_fade = (decay - t) / tail_time;
-            if (release_fade < 0.0f) release_fade = 0.0f;
-        }
+         // 5. Плавный релиз в конце буфера
+         float release_fade = 1.0f;
+         float tail_time = decay * 0.25f;
+         if (t > (decay - tail_time)) {
+             release_fade = (decay - t) / tail_time;
+             if (release_fade < 0.0f) release_fade = 0.0f;
+         }
 
-        sample *= release_fade;
+         sample *= release_fade;
 
-        if (drive > 1.0f) {
-            sample = std::tanh(sample * drive);
-        }
+         if (drive > 1.0f) {
+             sample = std::tanh(sample * drive);
+         }
 
-        data[i] = sample;
-    }
+         data[i] = sample;
+     }
 
-    return buffer;
-}
-*/
+     return buffer;
+ }
 
 juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int session_samplerate, bool is_filename)
 {
@@ -2913,8 +2464,6 @@ juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int 
 
     if (formula_str.rfind ("kick(", 0) == 0)
     {
-        std::cout << "KICK\n";
-
         return render_kick (formula_str, session_samplerate);
 
     }
@@ -3006,21 +2555,17 @@ juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int 
         return render_ride (formula_str, session_samplerate);
     }
 
-    /*if (formula_str.rfind ("crash(", 0) == 0)
-    {
-        return render_crash (formula_str, session_samplerate);
-    }
-*/
+
     if (formula_str.rfind ("metal(", 0) == 0)
     {
         return render_crash (formula_str, session_samplerate);
     }
-/*
-    if (formula_str.rfind ("crash(", 0) == 0)
+
+    if (formula_str.rfind ("glass(", 0) == 0)
     {
-        return render_crash  (formula_str, session_samplerate);
+        return render_glass  (formula_str, session_samplerate);
     }
-*/
+
 
     if (formula_str.rfind ("crash_hybrid(", 0) == 0)
     {
