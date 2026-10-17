@@ -350,11 +350,6 @@ public:
 //////////////////////////////////
 //OPTIONS CONTROLS  
   
-  std::unique_ptr <juce::AudioProcessorValueTreeState::ButtonAttachment> att_global_analog_on = nullptr;
-  juce::ToggleButton bt_global_analog_on;
-
-  std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_global_analog_amount = nullptr;
-  juce::Slider sl_global_analog_amount;
 
   juce::Label l_ui_zoom;
   //juce::Slider sl_ui_zoom;
@@ -363,6 +358,11 @@ public:
 
 #ifndef MULTICHANNEL
 
+  std::unique_ptr <juce::AudioProcessorValueTreeState::ButtonAttachment> att_global_analog_on = nullptr;
+  juce::ToggleButton bt_global_analog_on;
+
+  std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_global_analog_amount = nullptr;
+  juce::Slider sl_global_analog_amount;
 
   std::unique_ptr <juce::AudioProcessorValueTreeState::ComboBoxAttachment> att_pan_mode;
   juce::Label l_pan_mode { {}, "Pan mode" };

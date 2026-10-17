@@ -1048,7 +1048,7 @@ valueTreeState (vts)
 
   // kit_image.setSize (gr_kitinfo.getWidth() - XFILLER * 3, 220 - YFILLER * 4);
   // kit_image.setCentrePosition ((gr_kitinfo.getX() + gr_kitinfo.getWidth() / 2),
-  //                             (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2) + YFILLER /* * 1.5*/);
+  //                              (gr_kitinfo.getY() + gr_kitinfo.getHeight() / 2) + YFILLER /* * 1.5*/);
 
   kit_image.setBounds (gr_kitinfo.getBounds().reduced (10));
 
@@ -1148,7 +1148,7 @@ valueTreeState (vts)
 
 
   //END KIT BUTTONS
-  /////////////////////////////////
+  //////////////////////////
 
   //RIGHT AREA
 
@@ -1299,43 +1299,15 @@ valueTreeState (vts)
   sl_randomizer_seed.addListener (this);
 
 
-  // //////////////NEW GLOBAL ANALOG
-  addAndMakeVisible (bt_global_analog_on);
-  bt_global_analog_on.setButtonText ("Analog");
-  bt_global_analog_on.setTooltip ("Turn the Analog saturator on");
-  bt_global_analog_on.setSize (80, 32);
-  bt_global_analog_on.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER * 5,
-                                          l_midimap_mode.getY());
-
-  att_global_analog_on.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "global_analog_on", bt_global_analog_on));
-
-  addAndMakeVisible (sl_global_analog_amount);
-  sl_global_analog_amount.setTopLeftPosition (bt_global_analog_on.getRight() - 8, bt_global_analog_on.getY());
-
-  #ifdef MULTICHANNEL
-  sl_global_analog_amount.setSize (182, 32);
-  #else
-  sl_global_analog_amount.setSize (232 + 8, 32);
-  #endif
-
-  sl_global_analog_amount.setRange (0.0f, 1.0f, 0.01f);
-  sl_global_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
-  sl_global_analog_amount.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 20);
-  sl_global_analog_amount.setColour (juce::Slider::thumbColourId, juce::Colours::orange);
-  sl_global_analog_amount.setTooltip ("Level of Analog saturator");
-
-  att_global_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "global_analog_amount", sl_global_analog_amount));
-
-
-  // //////////////UI ZOOM (через ComboBox)
+  // //////////////UI ZOOM (сверху справа, доступен во всех режимах)
   addAndMakeVisible (l_ui_zoom);
   l_ui_zoom.setText ("UI zoom", juce::NotificationType::dontSendNotification);
   l_ui_zoom.setSize (80, 32);
-  l_ui_zoom.setTopLeftPosition (bt_global_analog_on.getX(), sl_global_analog_amount.getBottom() + YFILLER);
+  l_ui_zoom.setTopLeftPosition (cmb_midimap_mode.getRight() + XFILLER * 5, l_midimap_mode.getY());
   l_ui_zoom.setTooltip ("Interface scale factor");
 
   addAndMakeVisible (cmb_ui_zoom);
-  cmb_ui_zoom.setTopLeftPosition (sl_global_analog_amount.getX(), l_ui_zoom.getY());
+  cmb_ui_zoom.setTopLeftPosition (l_ui_zoom.getRight() - 8, l_ui_zoom.getY());
 
   #ifdef MULTICHANNEL
   cmb_ui_zoom.setSize (182, 32);
@@ -1351,7 +1323,6 @@ valueTreeState (vts)
   cmb_ui_zoom.addItem ("150% (1.5x)", 3);
   cmb_ui_zoom.addItem ("200% (2.0x)", 4);
 
-  // Установка текущего значения в зависимости от конфига
   float current_gui_scale = options.get_float ("gui_scale_factor", 1.0f);
   if (current_gui_scale <= 0.5f)      cmb_ui_zoom.setSelectedId (1, juce::dontSendNotification);
   else if (current_gui_scale <= 1.0f) cmb_ui_zoom.setSelectedId (2, juce::dontSendNotification);
@@ -1367,29 +1338,24 @@ valueTreeState (vts)
     else if (id == 4) new_scale = 2.0f;
 
     options.set_float ("gui_scale_factor", new_scale);
-
-    //#if !defined(_WIN32) || !defined(_WIN64)
-    //std::string options_fname = get_home_dir() + "/.config/drumlabooh/config.conf";
-    //#else
-    //std::string options_fname = "C:\\drumlabooh\\config.conf";
-    //#endif
     options.save();
     setScaleFactor (new_scale);
   };
 
+
   #ifndef MULTICHANNEL
 
-  // PAN MODE (теперь смещен ниже, под блок зума)
+  // PAN MODE (ниже зума, левый и правый края выровнены по cmb_ui_zoom)
   addAndMakeVisible (l_pan_mode);
-  l_pan_mode.setTopLeftPosition (bt_global_analog_on.getX(),
-                                 l_ui_zoom.getBottom() + YFILLER);
+  l_pan_mode.setTopLeftPosition (l_ui_zoom.getX(), l_ui_zoom.getBottom() + YFILLER);
   l_pan_mode.setSize (100, 32);
 
   cmb_pan_mode.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
   cmb_pan_mode.setColour (juce::ComboBox::textColourId, Colours::white);
 
   addAndMakeVisible (cmb_pan_mode);
-  cmb_pan_mode.setSize (232, 32);
+  cmb_pan_mode.setTopLeftPosition (cmb_ui_zoom.getX(), l_pan_mode.getY());
+  cmb_pan_mode.setSize (cmb_ui_zoom.getRight() - cmb_ui_zoom.getX(), 32);
 
   cmb_pan_mode.addItem ("equal power panning, law: -3 dB", PANMODE01);
   cmb_pan_mode.addItem ("square root panner, law: -3 dB", PANMODE02);
@@ -1401,7 +1367,27 @@ valueTreeState (vts)
 
   att_pan_mode.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (valueTreeState, "panner_mode", cmb_pan_mode));
 
-  cmb_pan_mode.setTopLeftPosition (l_pan_mode.getRight() - 8, l_pan_mode.getY());
+
+  // //////////////GLOBAL ANALOG (ниже панорамы)
+  addAndMakeVisible (bt_global_analog_on);
+  bt_global_analog_on.setButtonText ("Analog");
+  bt_global_analog_on.setTooltip ("Turn the Analog saturator on");
+  bt_global_analog_on.setSize (80, 32);
+  bt_global_analog_on.setTopLeftPosition (l_pan_mode.getX(), cmb_pan_mode.getBottom() + YFILLER);
+
+  att_global_analog_on.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (valueTreeState, "global_analog_on", bt_global_analog_on));
+
+  addAndMakeVisible (sl_global_analog_amount);
+  sl_global_analog_amount.setTopLeftPosition (bt_global_analog_on.getRight() - 8, bt_global_analog_on.getY());
+  sl_global_analog_amount.setSize (232 + 8, 32);
+
+  sl_global_analog_amount.setRange (0.0f, 1.0f, 0.01f);
+  sl_global_analog_amount.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_global_analog_amount.setTextBoxStyle (juce::Slider::TextBoxRight, false, 80, 20);
+  sl_global_analog_amount.setColour (juce::Slider::thumbColourId, juce::Colours::orange);
+  sl_global_analog_amount.setTooltip ("Level of Analog saturator");
+
+  att_global_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (valueTreeState, "global_analog_amount", sl_global_analog_amount));
 
   #endif
 
@@ -1450,11 +1436,12 @@ CAudioProcessorEditor::~CAudioProcessorEditor()
   att_ignore_midi_velocity = nullptr;
  // att_base_note = nullptr;
   //att_randomizer_seed = nullptr;
-  att_global_analog_amount = nullptr;
-  att_global_analog_on = nullptr;
 
   
 #ifndef MULTICHANNEL
+
+  att_global_analog_amount = nullptr;
+  att_global_analog_on = nullptr;
 
   att_pan_mode = nullptr;
 

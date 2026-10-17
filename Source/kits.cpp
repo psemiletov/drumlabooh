@@ -2178,6 +2178,8 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
 CDrumKit::CDrumKit()
 {
+  init_synth_wavetables();
+
   mute_groups_auto = true;
   layers_supported = false;
   has_mapping = false;
