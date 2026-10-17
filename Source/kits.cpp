@@ -270,6 +270,26 @@ void CDrumLayer::load_formula (const std::string &formula)
 
   if (! audio_buffer)
      return;
+/*
+  // --- DIAGNOSTICS: print basic stats and first samples ---
+  int ns = audio_buffer->getNumSamples();
+  const float* rd = audio_buffer->getReadPointer(0);
+  double sumsq = 0.0;
+  float minv =  1e30f, maxv = -1e30f;
+  int inspectN = std::min(ns, 24);
+  std::cout << "[LOAD_FORMULA] buffer samples=" << ns << " first_" << inspectN << " =";
+  for (int i = 0; i < inspectN; ++i) {
+    float v = rd[i];
+    sumsq += double(v) * double(v);
+    if (v < minv) minv = v;
+    if (v > maxv) maxv = v;
+    std::cout << " " << v;
+  }
+  double rms = (ns>0) ? std::sqrt(sumsq / ns) : 0.0;
+  std::cout << "\n[LOAD_FORMULA] min=" << minv << " max=" << maxv << " rms=" << rms << std::endl;
+  // --- end diagnostics ---
+*/
+
 
   length_in_samples = audio_buffer->getNumSamples();
 
