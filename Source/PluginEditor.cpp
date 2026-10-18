@@ -1147,6 +1147,105 @@ valueTreeState (vts)
   };
 
 
+
+
+  bt_kit_info.setButtonText ("INFO");
+  addAndMakeVisible (bt_kit_info);
+  bt_kit_info.setTooltip ("Show kit information (info.txt)");
+  bt_kit_info.setTopLeftPosition (bt_kit_adapt.getRight() + XFILLER, bt_kit_adapt.getY());
+  bt_kit_info.setSize (bt_kit_adapt.getWidth(), bt_kit_adapt.getHeight());
+  bt_kit_info.onClick = [this]
+  {
+    if (! audioProcessor.drumkit)
+      return;
+
+    // Пробуем загрузить info.txt из папки кита
+    juce::String info_text;
+
+    std::string kit_dir = audioProcessor.drumkit->kit_dir;
+    if (! kit_dir.empty())
+    {
+      juce::File info_file (juce::File (kit_dir).getChildFile ("info.txt"));
+      if (info_file.existsAsFile())
+        info_text = info_file.loadFileAsString();
+    }
+
+    const int W = 520;
+    const int H = 400;
+
+    // Создаём окно один раз
+    if (! wnd_kit_info)
+    {
+      wnd_kit_info = std::make_unique<CDocumentWindow> (
+        "KIT INFO",
+        juce::Colours::darkslategrey,
+        juce::DocumentWindow::TitleBarButtons::closeButton,
+        false);
+
+      auto* content = new juce::Component();
+      content->setSize (W, H);
+
+      txt_kit_info = std::make_unique<juce::TextEditor>();
+      txt_kit_info->setMultiLine (true, true);
+      txt_kit_info->setReadOnly (true);
+      txt_kit_info->setScrollbarsShown (true);
+      txt_kit_info->setCaretVisible (false);
+      txt_kit_info->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff1e1e1e));
+      txt_kit_info->setColour (juce::TextEditor::textColourId,        juce::Colours::whitesmoke);
+      txt_kit_info->setColour (juce::TextEditor::outlineColourId,     juce::Colours::grey);
+      txt_kit_info->setBounds (8, 8, W - 16, H - 56);
+
+      bt_kit_info_close = std::make_unique<juce::TextButton> ("CLOSE");
+      bt_kit_info_close->setBounds (W - 108, H - 40, 100, 32);
+      bt_kit_info_close->onClick = [this]
+      {
+        if (wnd_kit_info)
+        {
+          wnd_kit_info->setVisible (false);
+          wnd_kit_info->removeFromDesktop();
+        }
+      };
+
+      content->addAndMakeVisible (*txt_kit_info);
+      content->addAndMakeVisible (*bt_kit_info_close);
+
+      wnd_kit_info->setContentOwned (content, true);
+      wnd_kit_info->setResizable (false, false);
+    }
+
+    // Заполняем текстом
+    if (info_text.isNotEmpty())
+      txt_kit_info->setText (info_text, juce::dontSendNotification);
+    else
+      txt_kit_info->setText ("(info.txt not found in kit folder)",
+                             juce::dontSendNotification);
+
+      // Добавляем на рабочий стол
+      if (! wnd_kit_info->isOnDesktop())
+        wnd_kit_info->addToDesktop (juce::ComponentPeer::windowIsTemporary);
+
+    wnd_kit_info->setVisible (true);
+    wnd_kit_info->toFront (true);
+
+    // Центрируем по центру монитора, на котором находится плагин
+    auto* display = juce::Desktop::getInstance()
+    .getDisplays()
+    .getDisplayForRect (getScreenBounds());
+
+    juce::Rectangle<int> area = display ? display->userArea
+    : juce::Rectangle<int> (0, 0, 1920, 1080);
+
+    // Размер окна с учётом заголовка/рамки
+    auto wb = wnd_kit_info->getBounds();
+    int wndW = wb.getWidth()  > 0 ? wb.getWidth()  : W;
+    int wndH = wb.getHeight() > 0 ? wb.getHeight() : H;
+
+    int x = area.getCentreX() - wndW / 2;
+    int y = area.getCentreY() - wndH / 2;
+
+    wnd_kit_info->setBounds (x, y, wndW, wndH);
+  };
+
   //END KIT BUTTONS
   //////////////////////////
 
@@ -1436,6 +1535,10 @@ CAudioProcessorEditor::~CAudioProcessorEditor()
   att_ignore_midi_velocity = nullptr;
  // att_base_note = nullptr;
   //att_randomizer_seed = nullptr;
+
+  bt_kit_info_close.reset();
+  txt_kit_info.reset();
+  wnd_kit_info.reset();
 
   
 #ifndef MULTICHANNEL

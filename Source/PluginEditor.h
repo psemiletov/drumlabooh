@@ -347,6 +347,16 @@ public:
   
   TextEditor log_area;
 
+
+
+
+
+  juce::TextButton bt_kit_info;
+  std::unique_ptr<juce::DocumentWindow> wnd_kit_info;
+  std::unique_ptr<juce::TextEditor>   txt_kit_info;
+  std::unique_ptr<juce::TextButton>   bt_kit_info_close;
+
+
 //////////////////////////////////
 //OPTIONS CONTROLS  
   
