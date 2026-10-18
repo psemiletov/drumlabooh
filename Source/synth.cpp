@@ -14,6 +14,7 @@
 #include <string>
 #include <sstream>
 #include <map>
+#include <cmath>
 
 
 #include <juce_audio_basics/juce_audio_basics.h>
@@ -23,8 +24,6 @@
 #include "utl.h"
 
 
-#pragma once
-#include <cmath>
 
 // Константа размера таблицы (можно использовать для любых волновых таблиц)
 constexpr int kSineTableSize = 2048;
@@ -36,53 +35,55 @@ float g_sine_table[kSineTableSize + 1];
 // Функция инициализации таблиц (вызывается один раз при старте приложения/плагина)
 void init_synth_wavetables()
 {
-    for (int i = 0; i <= kSineTableSize; ++i)
-    {
-        g_sine_table[i] = std::sin(static_cast<float>(i) * (2.0f * 3.14159265f / static_cast<float>(kSineTableSize)));
-    }
+  for (int i = 0; i <= kSineTableSize; ++i)
+      {
+       g_sine_table[i] = std::sin (static_cast<float>(i) * (2.0f * 3.14159265f / static_cast<float> (kSineTableSize)));
+      }
 }
 
 // Быстрая inline-функция для чтения из таблицы с линейной интерполяцией
-inline float fast_sin(float phase)
+inline float fast_sin (float phase)
 {
-    phase -= static_cast<int>(phase);
-    if (phase < 0.0f) phase += 1.0f;
-    float idx_f = phase * static_cast<float>(kSineTableSize);
-    int idx = static_cast<int>(idx_f);
-    float frac = idx_f - static_cast<float>(idx);
-    return g_sine_table[idx] + frac * (g_sine_table[idx + 1] - g_sine_table[idx]);
+  phase -= static_cast<int>(phase);
+
+  if (phase < 0.0f)
+     phase += 1.0f;
+
+  float idx_f = phase * static_cast<float> (kSineTableSize);
+  int idx = static_cast<int>(idx_f);
+  float frac = idx_f - static_cast<float> (idx);
+
+  return g_sine_table[idx] + frac * (g_sine_table[idx + 1] - g_sine_table[idx]);
 }
-
-
-
 
 
 void apply_buffer_fadeout (juce::AudioBuffer<float>* buffer, int samplerate, float fade_duration_sec = 0.003f)
 {
-    if (! buffer)
-        return;
+  if (! buffer)
+     return;
 
-    int num_samples = buffer->getNumSamples();
-    int fade_samples = static_cast<int>(samplerate * fade_duration_sec);
+  int num_samples = buffer->getNumSamples();
+  int fade_samples = static_cast<int> (samplerate * fade_duration_sec);
 
-    // Если буфер слишком короткий, сглаживаем последнюю четверть
-    if (fade_samples > num_samples / 2)
-        fade_samples = num_samples / 2;
-    if (fade_samples < 2)
-        fade_samples = 2; // Минимум пара семплов
+   // Если буфер слишком короткий, сглаживаем последнюю четверть
+  if (fade_samples > num_samples / 2)
+      fade_samples = num_samples / 2;
 
-        float* data = buffer->getWritePointer (0);
-    int start_fade_idx = num_samples - fade_samples;
+  if (fade_samples < 2)
+      fade_samples = 2; // Минимум пара семплов
 
-    for (int i = 0; i < fade_samples; ++i)
-    {
-        // Линейный коэффициент от 1.0 до 0.0 на отрезке фейда
-        float coeff = static_cast<float>(fade_samples - i) / static_cast<float>(fade_samples);
-        data[start_fade_idx + i] *= coeff;
-    }
+  float* data = buffer->getWritePointer (0);
+  int start_fade_idx = num_samples - fade_samples;
+
+  for (int i = 0; i < fade_samples; ++i)
+      {
+       // Линейный коэффициент от 1.0 до 0.0 на отрезке фейда
+       float coeff = static_cast<float>(fade_samples - i) / static_cast<float>(fade_samples);
+       data[start_fade_idx + i] *= coeff;
+     }
 }
 
-
+/*
 std::map<std::string, float> parse_synth_params (const std::string &formula_str)
 {
     std::map<std::string, float> params;
@@ -116,72 +117,57 @@ std::map<std::string, float> parse_synth_params (const std::string &formula_str)
 
     return params;
 }
+*/
 
-/*
-#include <map>
-#include <string>
-#include <sstream>
-#include <algorithm>
-#include <cctype>
 
-// trim helpers
-static inline std::string ltrim(const std::string& s) {
-    size_t i = 0;
-    while (i < s.size() && std::isspace(static_cast<unsigned char>(s[i]))) ++i;
-    return s.substr(i);
-}
-static inline std::string rtrim(const std::string& s) {
-    if (s.empty()) return s;
-    size_t i = s.size();
-    while (i > 0 && std::isspace(static_cast<unsigned char>(s[i-1]))) --i;
-    return s.substr(0, i);
-}
-//static inline std::string trim(const std::string& s) {
-//    return rtrim(ltrim(s));
-//}
-
-std::map<std::string, float> parse_synth_params (const std::string &formula_str)
+std::map <std::string, float> parse_synth_params (const std::string &formula_str)
 {
-    std::map<std::string, float> params;
+  std::map<std::string, float> params;
 
-    size_t start = formula_str.find('(');
-    size_t end   = formula_str.rfind(')');
-    if (start == std::string::npos || end == std::string::npos || end <= start)
-        return params;
+  size_t start = formula_str.find('(');
+  size_t end   = formula_str.rfind(')');
 
-    std::string inner = formula_str.substr(start + 1, end - start - 1);
-    std::stringstream ss(inner);
-    std::string item;
+  if (start == std::string::npos || end == std::string::npos || end <= start)
+      return params;
 
-    while (std::getline(ss, item, ',')) {
-        // skip empty items (e.g. trailing commas)
-        item = trim(item);
-        if (item.empty()) continue;
+  std::string inner = formula_str.substr (start + 1, end - start - 1);
+  std::stringstream ss(inner);
+  std::string item;
 
-        size_t eq = item.find('=');
-        if (eq == std::string::npos) continue;
+  while (std::getline(ss, item, ','))
+        {
+         // skip empty items (e.g. trailing commas)
+         item = trim (item);
 
-        std::string key = item.substr(0, eq);
-        std::string val_str = item.substr(eq + 1);
+         if (item.empty())
+             continue;
 
-        key = trim(key);
-        val_str = trim(val_str);
+         size_t eq = item.find('=');
+         if (eq == std::string::npos)
+            continue;
+
+        std::string key = item.substr (0, eq);
+        std::string val_str = item.substr (eq + 1);
+
+        key = trim (key);
+        val_str = trim (val_str);
 
         // normalize key to lowercase
         std::transform(key.begin(), key.end(), key.begin(),
                        [](unsigned char c){ return static_cast<char>(std::tolower(c)); });
 
         try {
-            float val = std::stof(val_str); // supports "1.23", "2e3", leading/trailing spaces
-            params[key] = val;
-        } catch (...) {
-            // ignore parse errors
-        }
+             float val = std::stof(val_str); // supports "1.23", "2e3", leading/trailing spaces
+             params[key] = val;
+            } catch (...)
+                    {
+                     // ignore parse errors
+                    }
     }
 
-    return params;
+  return params;
 }
-*/
+
 // Вспомогательный генератор детерминированного шума (xorshift32)
 inline float get_deterministic_noise (uint32_t &state)
 {
@@ -194,29 +180,35 @@ inline float get_deterministic_noise (uint32_t &state)
 
 
 // --- Вспомогательный класс фильтра (оставляем без изменений, он отличный) ---
-struct Biquad {
-    float b0=1, b1=0, b2=0, a1=0, a2=0;
-    float z1=0, z2=0;
+class Biquad
+{
+public:
 
-    void bandpass(float sr, float f0, float Q) {
-        float w0 = 2.0f * 3.14159265f * f0 / sr;
-        float cosw = std::cos(w0), sinw = std::sin(w0);
-        float alpha = sinw / (2.0f * Q);
-        float a0 = 1.0f + alpha;
-        b0 =  alpha / a0;
-        b1 =  0.0f;
-        b2 = -alpha / a0;
-        a1 = -2.0f * cosw / a0;
-        a2 = (1.0f - alpha) / a0;
-    }
-    float process(float x) {
-        float y = b0*x + z1;
-        z1 = b1*x - a1*y + z2;
-        z2 = b2*x - a2*y;
-        return y;
-    }
+  float b0=1, b1=0, b2=0, a1=0, a2=0;
+  float z1=0, z2=0;
+
+  void bandpass (float sr, float f0, float Q)
+                {
+                 float w0 = 2.0f * 3.14159265f * f0 / sr;
+                 float cosw = std::cos(w0), sinw = std::sin(w0);
+                 float alpha = sinw / (2.0f * Q);
+                 float a0 = 1.0f + alpha;
+                 b0 =  alpha / a0;
+                 b1 =  0.0f;
+                 b2 = -alpha / a0;
+                 a1 = -2.0f * cosw / a0;
+                 a2 = (1.0f - alpha) / a0;
+                }
+
+
+ float process (float x)
+               {
+                float y = b0*x + z1;
+                z1 = b1*x - a1*y + z2;
+                z2 = b2*x - a2*y;
+                return y;
+               }
 };
-
 
 
 juce::AudioBuffer<float>* render_boom_sound (const std::string &formula_str, int samplerate)
@@ -238,6 +230,7 @@ juce::AudioBuffer<float>* render_boom_sound (const std::string &formula_str, int
     float grain_mix  = 0.4f;
 
     std::map<std::string, float> p = parse_synth_params (formula_str);
+
     if (p.count("duration"))   duration   = p["duration"];
     if (p.count("freq"))       base_freq  = p["freq"];
     if (p.count("sweep"))      freq_sweep = p["sweep"];
@@ -253,7 +246,8 @@ juce::AudioBuffer<float>* render_boom_sound (const std::string &formula_str, int
     if (p.count("grain_mix"))  grain_mix  = p["grain_mix"];
 
     int num_samples = static_cast<int>(samplerate * (duration * 1.1f));
-    if (num_samples < 100) num_samples = 100;
+    if (num_samples < 100)
+        num_samples = 100;
 
     juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
     float *data = buffer->getWritePointer (0);
@@ -286,17 +280,20 @@ juce::AudioBuffer<float>* render_boom_sound (const std::string &formula_str, int
     float noise_env = 1.0f;
 
     for (int i = 0; i < num_samples; ++i)
-    {
-        float t = static_cast<float>(i) * dt;
-        float u = t / duration;
+        {
+         float t = static_cast<float>(i) * dt;
+         float u = t / duration;
 
-        if (t >= attack) {
-            body_env *= body_env_factor;
-            noise_env *= noise_env_factor;
-        } else {
-            body_env = t / attack;
-            noise_env = t / attack;
-        }
+         if (t >= attack)
+            {
+             body_env *= body_env_factor;
+             noise_env *= noise_env_factor;
+            }
+         else
+             {
+              body_env = t / attack;
+              noise_env = t / attack;
+             }
 
         float kick_drop = std::exp (-t * 70.0f);
         float freq1 = base_freq + (base_freq * 3.0f * kick_drop) + freq_sweep * u;
@@ -317,33 +314,33 @@ juce::AudioBuffer<float>* render_boom_sound (const std::string &formula_str, int
 
         float granular_sig = 0.0f;
         if (granular)
-        {
+           {
             micro_burst_timer++;
             if (micro_burst_timer >= next_burst_samples && u < 0.75f)
-            {
+               {
                 micro_burst_env = 1.0f;
                 micro_burst_timer = 0;
                 float jitter = get_deterministic_noise (noise_state);
                 next_burst_samples = static_cast<int>(samplerate * (0.012f + std::abs(jitter) * 0.015f));
-            }
+               }
 
             if (micro_burst_env > 0.001f)
-            {
+               {
                 micro_burst_phase += 2.0 * M_PI * (base_freq * 1.6f) * dt;
                 granular_sig = std::sin (micro_burst_phase) * micro_burst_env;
                 micro_burst_env *= std::exp (-dt * 70.0f);
-            }
-        }
+               }
+           }
 
         float click = 0.0f;
-        if (t < 0.0025f) {
+
+        if (t < 0.0025f)
             click = raw_noise * (1.0f - (t / 0.0025f)) * 0.85f;
-        }
 
         float body = (tone_sig * (1.0f - noise_amt) + (raw_noise * noise_env * noise_amt)) + click;
-        if (granular) {
+
+        if (granular)
             body = body * (1.0f - grain_mix) + (granular_sig * noise_env * grain_mix);
-        }
 
         body *= body_env * bubble * gain;
 
@@ -360,7 +357,6 @@ juce::AudioBuffer<float>* render_boom_sound (const std::string &formula_str, int
     apply_buffer_fadeout (buffer, samplerate, 0.003f);
     return buffer;
 }
-
 
 
 juce::AudioBuffer<float>* render_gabber_kick (const std::string &formula_str, int samplerate)
@@ -392,7 +388,7 @@ juce::AudioBuffer<float>* render_gabber_kick (const std::string &formula_str, in
     float alpha = dt / (rc + dt);
 
     // Оптимизация огибающей затухания
-    float env_factor = std::exp(-dt * (4.0f / decay));
+    float env_factor = std::exp (-dt * (4.0f / decay));
     float env = 1.0f;
 
     for (int i = 0; i < num_samples; ++i)
@@ -422,7 +418,6 @@ juce::AudioBuffer<float>* render_gabber_kick (const std::string &formula_str, in
     apply_buffer_fadeout (buffer, samplerate, 0.003f);
     return buffer;
 }
-
 
 
 juce::AudioBuffer<float>* render_computer_snare (const std::string &formula_str, int samplerate)
@@ -616,6 +611,7 @@ juce::AudioBuffer<float>* render_coldwave_snare (const std::string &formula_str,
     return buffer;
 }
 
+
 juce::AudioBuffer<float>* render_psytrance_kick (const std::string &formula_str, int samplerate)
 {
     float f0 = 240.0f;
@@ -669,6 +665,7 @@ juce::AudioBuffer<float>* render_psytrance_kick (const std::string &formula_str,
     apply_buffer_fadeout (buffer, samplerate, 0.003f);
     return buffer;
 }
+
 
 juce::AudioBuffer<float>* render_hihat (const std::string &formula_str, int samplerate)
 {
