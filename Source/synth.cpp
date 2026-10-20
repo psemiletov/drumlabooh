@@ -2461,6 +2461,180 @@ juce::AudioBuffer<float>* render_ride (const std::string &formula_str, int sampl
      return buffer;
  }
 
+ juce::AudioBuffer<float>* render_psykick (const std::string &formula_str, int samplerate)
+ {
+     float f0 = 240.0f;
+     float f1 = 38.0f;
+     float decay = 0.22f;
+     float click_level = 0.25f;
+     float drive = 0.5f;        // Интенсивность дисторшна
+     float curve = 35.0f;       // Крутизна питча
+     float fm = 0.3f;           // FM-модуляция (дает "псай-лазерный" характер)
+     float click_hp = 3000.0f;
+
+     std::map<std::string, float> p = parse_synth_params (formula_str);
+     if (p.count("f0"))       f0 = p["f0"];
+     if (p.count("f1"))       f1 = p["f1"];
+     if (p.count("decay"))    decay = p["decay"];
+     if (p.count("click"))    click_level = p["click"];
+     if (p.count("drive"))    drive = p["drive"];
+     if (p.count("curve"))    curve = p["curve"];
+     if (p.count("fm"))       fm = p["fm"];
+     if (p.count("click_hp")) click_hp = p["click_hp"];
+
+     int num_samples = static_cast<int>(samplerate * (decay * 1.1f));
+     if (num_samples < 100) num_samples = 100;
+
+     juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
+     float *data = buffer->getWritePointer (0);
+
+     double phase = 0.0;
+     uint32_t click_noise_state = 9999;
+
+     float dt = 1.0f / static_cast<float>(samplerate);
+     float env_factor = std::exp(-dt * (4.0f / decay));
+     float env = 1.0f;
+
+     float hp_alpha = 1.0f / (1.0f + 2.0f * M_PI * click_hp * dt);
+     float prev_noise_in = 0.0f;
+     float prev_noise_out = 0.0f;
+
+     for (int i = 0; i < num_samples; ++i)
+     {
+         float t = static_cast<float>(i) * dt;
+
+         // Базовая частота с огибающей
+         float freq_env = std::exp (-t * curve);
+         float freq = f1 + (f0 - f1) * freq_env;
+
+         // FM-модуляция: модулируем фазу в начале удара (дает характерный псай-панч)
+         float fm_mod = std::sin(2.0 * M_PI * freq * 2.0 * t) * fm * freq_env * 50.0f;
+         phase += 2.0 * M_PI * (freq + fm_mod) * dt;
+
+         env *= env_factor;
+         float body_signal = std::sin (phase) * env;
+
+         // Агрессивный Waveshaper / Hard/Soft Clipping для плотности и гармоник
+         if (drive > 0.001f)
+         {
+             // Усиление сигнала перед ограничением
+             float pre_gain = 1.0f + drive * 6.0f;
+             float raw_driven = body_signal * pre_gain;
+
+             // Комбинация жесткого клиппинга и tanh для максимального "кача"
+             float clipped = std::max(-1.0f, std::min(1.0f, raw_driven));
+             body_signal = juce::jmap(drive, 0.0f, 1.0f, body_signal, clipped * 0.9f);
+         }
+
+         float sample = body_signal;
+
+         // Клик (шум + быстрый щелчок)
+         if (t < 0.004f)
+         {
+             click_noise_state ^= click_noise_state << 13;
+             click_noise_state ^= click_noise_state >> 17;
+             click_noise_state ^= click_noise_state << 5;
+             float raw_noise = static_cast<float>(click_noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
+
+             float filtered_noise = hp_alpha * (prev_noise_out + raw_noise - prev_noise_in);
+             prev_noise_in = raw_noise;
+             prev_noise_out = filtered_noise;
+
+             float click_env = (1.0f - t / 0.004f);
+             sample += filtered_noise * click_level * click_env;
+         }
+
+         data[i] = sample;
+     }
+
+     apply_buffer_fadeout (buffer, samplerate, 0.003f);
+     return buffer;
+ }
+
+
+ juce::AudioBuffer<float>* render_goakick (const std::string &formula_str, int samplerate)
+ {
+     float f0 = 220.0f;          // Старт питча
+     float f1 = 48.0f;           // Базовая частота (бочка 90-х часто чуть выше современных 38 Гц)
+     float decay = 0.28f;        // Чуть более длинный, глубокий хвост
+     float punch = 0.40f;        // Уровень тонального щелчка колотушки (Thump)
+     float warmth = 0.35f;       // Аналоговое насыщение гармониками (Triangle/Saturate)
+     float bit_depth = 16.0f;    // Эмуляция сэмплера Akai (например, 12.0 ... 16.0)
+
+     std::map<std::string, float> p = parse_synth_params (formula_str);
+     if (p.count("f0"))        f0 = p["f0"];
+     if (p.count("f1"))        f1 = p["f1"];
+     if (p.count("decay"))     decay = p["decay"];
+     if (p.count("punch"))     punch = p["punch"];
+     if (p.count("warmth"))    warmth = p["warmth"];
+     if (p.count("bit_depth")) bit_depth = p["bit_depth"];
+
+     int num_samples = static_cast<int>(samplerate * (decay * 1.1f));
+     if (num_samples < 100) num_samples = 100;
+
+     juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
+     float *data = buffer->getWritePointer (0);
+
+     double phase_body = 0.0;
+     double phase_punch = 0.0;
+
+     float dt = 1.0f / static_cast<float>(samplerate);
+     float env_factor = std::exp(-dt * (3.5f / decay));
+     float env = 1.0f;
+
+     // Шаг квантования для эмуляции цап сэмплеров 90-х
+     float steps = std::pow(2.0f, bit_depth - 1.0f);
+
+     for (int i = 0; i < num_samples; ++i)
+     {
+         float t = static_cast<float>(i) * dt;
+
+         // 1. Двухэтапный спад питча (Быстрый сброс на старте + плавающее тело)
+         float pitch_env = std::exp(-t * 28.0f);
+         float freq_body = f1 + (f0 - f1) * pitch_env;
+         phase_body += 2.0 * M_PI * freq_body * dt;
+
+         // 2. Генерация тела: смеси синусоиды и треугольной волны (Triangle-like logic)
+         env *= env_factor;
+         float sin_wave = std::sin(phase_body);
+         // Создаем треугольную форму для аналогового характера: asin(sin(x))
+         float tri_wave = (2.0f / M_PI) * std::asin(sin_wave);
+         float body_signal = juce::jmap(warmth, 0.0f, 1.0f, sin_wave, tri_wave) * env;
+
+         // 3. Акустический щелчок колотушки (Short Tonal Thump 120-180Hz)
+         float punch_signal = 0.0f;
+         if (t < 0.015f) // Первые 15 мс
+         {
+             float punch_env = (1.0f - t / 0.015f);
+             float freq_punch = 160.0f * punch_env;
+             phase_punch += 2.0 * M_PI * freq_punch * dt;
+             punch_signal = std::sin(phase_punch) * punch_env * punch;
+         }
+
+         float sample = body_signal + punch_signal;
+
+         // 4. Аналоговая асимметричная сатурация пульта Mackie
+         if (warmth > 0.05f)
+         {
+             // Небольшое смещение фазы (асимметрия дает "древесный" окрас)
+             sample += 0.05f * warmth;
+             sample = std::tanh(sample * (1.0f + warmth * 1.8f));
+         }
+
+         // 5. Ло-фай эмуляция ЦАП (Akai S1000 Bit-Crush effect)
+         if (bit_depth < 15.9f)
+         {
+             sample = std::round(sample * steps) / steps;
+         }
+
+         data[i] = sample;
+     }
+
+     apply_buffer_fadeout (buffer, samplerate, 0.003f);
+     return buffer;
+ }
+
+
 juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int session_samplerate, bool is_filename)
 {
     std::cout << "juce::AudioBuffer<float>* render_synth_sample: " << filename << "\n";
@@ -2501,10 +2675,22 @@ juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int 
     }
 
 
-    if (formula_str.rfind ("psytrance_kick(", 0) == 0)
+    if (formula_str.rfind ("psykick(", 0) == 0)
     {
         return render_psytrance_kick (formula_str, session_samplerate);
     }
+
+    if (formula_str.rfind ("psytrance_kick(", 0) == 0)
+    {
+        return render_psykick(formula_str, session_samplerate);
+    }
+
+
+    if (formula_str.rfind ("goakick(", 0) == 0)
+    {
+        return render_goakick(formula_str, session_samplerate);
+    }
+
 
 
     if (formula_str.rfind ("coldwave_snare(", 0) == 0)

@@ -1858,12 +1858,13 @@ void CDrumCell::apply_preset_number (int n)
   if (! s)
     return;
 
-  if (s->v_layers.size() <= 1)
-    return;   // нечего переключать
+  // переключаем слои только для ALT-режима
+  if (s->layer_index_mode != LAYER_INDEX_MODE_ALT)
+    return;
 
-    int idx = n - 1;                       // визуально нумеруем с 1
-    if (idx < 0 || idx >= (int) s->v_layers.size())
-      return;
+  int idx = n - 1;                       // визуально нумеруем с 1
+  if (idx < 0 || idx >= (int) s->v_layers.size())
+    return;
 
   editor->tmr_leds.stopTimer();
   editor->audioProcessor.suspendProcessing (true);
