@@ -2635,6 +2635,110 @@ juce::AudioBuffer<float>* render_ride (const std::string &formula_str, int sampl
  }
 
 
+ juce::AudioBuffer<float>* render_goasnare (const std::string &formula_str, int samplerate)
+ {
+     float tone_freq = 180.0f;     // Базовая частота тела барабана
+     float tone_decay = 0.08f;     // Длина тонального удара (деревянного клика)
+     float noise_freq = 3200.0f;   // Центральная частота фильтра пружины/шума
+     float noise_decay = 0.16f;    // Длина шумового хвоста
+     float snappy = 0.50f;         // Баланс: 0.0 = только тон, 1.0 = только шум
+     float drive = 0.35f;          // Перегруз аналогового пульта
+     float bit_depth = 16.0f;      // Эмуляция Akai сэмплера (12.0 - 16.0)
+
+     std::map<std::string, float> p = parse_synth_params (formula_str);
+     if (p.count("tone_freq"))   tone_freq = p["tone_freq"];
+     if (p.count("tone_decay"))  tone_decay = p["tone_decay"];
+     if (p.count("noise_freq"))  noise_freq = p["noise_freq"];
+     if (p.count("noise_decay")) noise_decay = p["noise_decay"];
+     if (p.count("snappy"))      snappy = p["snappy"];
+     if (p.count("drive"))       drive = p["drive"];
+     if (p.count("bit_depth"))   bit_depth = p["bit_depth"];
+
+     float max_decay = std::max(tone_decay, noise_decay);
+     int num_samples = static_cast<int>(samplerate * (max_decay * 1.2f));
+     if (num_samples < 100) num_samples = 100;
+
+     juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
+     float *data = buffer->getWritePointer (0);
+
+     double phase1 = 0.0;
+     double phase2 = 0.0;
+     uint32_t noise_state = 54321;
+
+     float dt = 1.0f / static_cast<float>(samplerate);
+     float tone_env_factor = std::exp(-dt * (4.5f / tone_decay));
+     float noise_env_factor = std::exp(-dt * (4.0f / noise_decay));
+
+     float env_tone = 1.0f;
+     float env_noise = 1.0f;
+
+     // Простой 2-полюсный Band-Pass фильтр для шума (около noise_freq)
+     float w0 = 2.0f * M_PI * noise_freq * dt;
+     float q = 1.8f; // Резонанс полосового фильтра
+     float alpha = std::sin(w0) / (2.0f * q);
+     float b0 = alpha;
+     float b2 = -alpha;
+     float a0 = 1.0f + alpha;
+     float a1 = -2.0f * std::cos(w0);
+     float a2 = 1.0f - alpha;
+
+     float x1 = 0.0f, x2 = 0.0f, y1 = 0.0f, y2 = 0.0f;
+
+     // Шаг квантования для ло-фай сэмплера
+     float steps = std::pow(2.0f, bit_depth - 1.0f);
+
+     for (int i = 0; i < num_samples; ++i)
+     {
+         float t = static_cast<float>(i) * dt;
+
+         // 1. Тональное тело TR-909 style (два тона с небольшим питч-дропом)
+         float pitch_drop = std::exp(-t * 40.0f);
+         float f1 = tone_freq + 60.0f * pitch_drop;
+         float f2 = tone_freq * 1.55f + 80.0f * pitch_drop; // Второй интервальный тон
+
+         phase1 += 2.0 * M_PI * f1 * dt;
+         phase2 += 2.0 * M_PI * f2 * dt;
+
+         env_tone *= tone_env_factor;
+         float tone_signal = (std::sin(phase1) * 0.6f + std::sin(phase2) * 0.4f) * env_tone;
+
+         // 2. Генератор шума и полосовая фильтрация (Пружина)
+         noise_state ^= noise_state << 13;
+         noise_state ^= noise_state >> 17;
+         noise_state ^= noise_state << 5;
+         float raw_noise = static_cast<float>(noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
+
+         // Band-pass фильтр
+         float filtered_noise = (b0/a0)*raw_noise + (b2/a0)*x2 - (a1/a0)*y1 - (a2/a0)*y2;
+         x2 = x1; x1 = raw_noise;
+         y2 = y1; y1 = filtered_noise;
+
+         env_noise *= noise_env_factor;
+         float noise_signal = filtered_noise * env_noise;
+
+         // 3. Микширование тона и шума
+         float sample = tone_signal * (1.0f - snappy * 0.7f) + noise_signal * (snappy * 1.3f);
+
+         // 4. Аналоговая сатурация микшерного пульта (Mackie / Soundcraft)
+         if (drive > 0.01f)
+         {
+             sample = std::tanh(sample * (1.0f + drive * 2.5f));
+         }
+
+         // 5. Ло-фай квантование Akai S1000
+         if (bit_depth < 15.9f)
+         {
+             sample = std::round(sample * steps) / steps;
+         }
+
+         data[i] = sample;
+     }
+
+     apply_buffer_fadeout (buffer, samplerate, 0.003f);
+     return buffer;
+ }
+
+
 juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int session_samplerate, bool is_filename)
 {
     std::cout << "juce::AudioBuffer<float>* render_synth_sample: " << filename << "\n";
@@ -2661,6 +2765,14 @@ juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int 
     {
         return render_snare (formula_str, session_samplerate);
     }
+
+
+
+    if (formula_str.rfind ("goasnare(", 0) == 0)
+    {
+        return render_goasnare (formula_str, session_samplerate);
+    }
+
 
 
     if (formula_str.rfind ("hihat_close(", 0) == 0 || formula_str.rfind ("hihat_open(", 0) == 0)
