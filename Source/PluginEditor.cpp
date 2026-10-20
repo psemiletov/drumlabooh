@@ -364,6 +364,11 @@ CDrumCell::CDrumCell()
 
   //cell_label.cell = this; //for CDrumCell
   
+  cell_label.setWantsKeyboardFocus (true);
+  cell_label.addKeyListener (this);
+  cell_label.addMouseListener (this, true);   // ловим mouseDown на cell_label
+
+
   xoffs += cell_label.getWidth();
   xoffs += XFILLER;
 
@@ -581,6 +586,10 @@ CDrumCell::CDrumCell()
   cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
   //cell_label.cell = this;
   
+  cell_label.setWantsKeyboardFocus (true);
+  cell_label.addKeyListener (this);
+  cell_label.addMouseListener (this, true);   // ловим mouseDown на cell_label
+
   xoffs += cell_label.getWidth();
   xoffs += XFILLER;
 
@@ -1756,4 +1765,115 @@ void CDrumkitsListBoxModel::selectedRowsChanged (int lastRowSelected)
   // update GUI
   if (editor->audioProcessor.drumkit)
      editor->load_kit();
+}
+
+
+void CDrumCell::mouseDown (const juce::MouseEvent& e)
+{
+  if (e.eventComponent != &cell_label)
+    return;
+
+  if (e.mods.isPopupMenu())
+  {
+    // правый клик — позже здесь можно показать PopupMenu со слоями
+    return;
+  }
+
+  // левый клик — вход в режим ввода номера
+  cell_label.grabKeyboardFocus();
+  clear_preset_input();
+
+  // визуальная обратная связь: подсветить рамку
+  cell_label.setColour (juce::Label::outlineColourId, juce::Colours::orange);
+  cell_label.repaint();
+}
+
+
+void CDrumCell::focusLost (FocusChangeType)
+{
+  // если фокус ушёл с cell_label — снимаем подсветку и сбрасываем ввод
+  if (! cell_label.hasKeyboardFocus (false))
+  {
+    cell_label.setColour (juce::Label::outlineColourId,
+                          juce::Colours::transparentBlack);
+    cell_label.repaint();
+    clear_preset_input();
+  }
+}
+
+
+bool CDrumCell::keyPressed (const juce::KeyPress& key,
+                            juce::Component* originatingComponent)
+{
+  if (originatingComponent != &cell_label)
+    return false;
+
+  auto ch = key.getTextCharacter();
+  if (ch >= '0' && ch <= '9')
+  {
+    append_preset_digit (ch - '0');
+    return true;
+  }
+
+  if (key == juce::KeyPress::escapeKey)
+  {
+    clear_preset_input();
+    return true;
+  }
+
+  return false;
+}
+
+
+void CDrumCell::append_preset_digit (int d)
+{
+  auto now = juce::Time::getMillisecondCounter();
+
+  // сброс по таймауту или если уже набрано 3 цифры
+  if (preset_input.size() >= 3 || now - last_digit_ms > 1500)
+    preset_input.clear();
+
+  last_digit_ms = now;
+  preset_input.push_back (char ('0' + d));
+
+  if (preset_input.size() == 3)
+    apply_preset_number (std::stoi (preset_input));
+}
+
+
+void CDrumCell::clear_preset_input()
+{
+  preset_input.clear();
+}
+
+
+void CDrumCell::apply_preset_number (int n)
+{
+  preset_input.clear();
+
+  if (! editor || ! editor->audioProcessor.drumkit)
+    return;
+
+  CDrumSample* s = editor->audioProcessor.drumkit->a_samples[cell_number];
+  if (! s)
+    return;
+
+  if (s->v_layers.size() <= 1)
+    return;   // нечего переключать
+
+    int idx = n - 1;                       // визуально нумеруем с 1
+    if (idx < 0 || idx >= (int) s->v_layers.size())
+      return;
+
+  editor->tmr_leds.stopTimer();
+  editor->audioProcessor.suspendProcessing (true);
+
+  editor->need_to_update_cells = false;  // чтобы кит не подгрузился по таймеру
+
+  s->current_layer = idx;
+  set_name (s->get_name (true));
+
+  editor->audioProcessor.drumkit->loaded = true;
+  editor->audioProcessor.suspendProcessing (false);
+  editor->tmr_leds.startTimer (1000 / 15); // 15 FPS
 }

@@ -203,8 +203,8 @@ public:
 #ifndef MULTICHANNEL
 
 
-class CDrumCell: public juce::Component/*,
-                 public juce::Slider::Listener*/
+class CDrumCell: public juce::Component,
+                 private juce::KeyListener
 {
 public:
 
@@ -256,6 +256,23 @@ public:
   void attach_params (CAudioProcessorEditor *ed, int cellno);
   void set_name (const std::string &n);
 
+
+
+  // --- ввод номера пресета/слоя по клику на cell_label ---
+  void mouseDown (const juce::MouseEvent& e) override;
+  void focusLost (FocusChangeType cause) override;   // опционально, для сброса
+
+  bool keyPressed (const juce::KeyPress& key,
+                   juce::Component* originatingComponent) override;
+
+                   void append_preset_digit (int d);
+                   void clear_preset_input();
+                   void apply_preset_number (int n);
+
+                   std::string  preset_input;
+                   juce::uint32 last_digit_ms = 0;
+
+
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CDrumCell)
 };
 
@@ -263,8 +280,8 @@ public:
 #else
 
 
-class CDrumCell: public juce::Component/*,
-                 public juce::Slider::Listener*/
+class CDrumCell: public juce::Component,
+                  private juce::KeyListener
 {
 public:
 
@@ -311,6 +328,22 @@ public:
 
   void attach_params (CAudioProcessorEditor *ed, int cellno);
   void set_name (const std::string &n);
+
+
+  // --- ввод номера пресета/слоя по клику на cell_label ---
+  void mouseDown (const juce::MouseEvent& e) override;
+  void focusLost (FocusChangeType cause) override;   // опционально, для сброса
+
+  bool keyPressed (const juce::KeyPress& key,
+                   juce::Component* originatingComponent) override;
+
+                   void append_preset_digit (int d);
+                   void clear_preset_input();
+                   void apply_preset_number (int n);
+
+                   std::string  preset_input;
+                   juce::uint32 last_digit_ms = 0;
+
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CDrumCell)
 };
