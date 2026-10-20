@@ -450,7 +450,14 @@ std::string CDrumSample::get_name (bool by_current_layer)
 
       if (! check_for_synpak)
           result = get_last_part (result);
-        
+
+
+      std::string num = std::to_string (current_layer + 1);
+      int zeroes = 3 - num.size();
+      num.insert (0, zeroes, '0');
+
+      result = num + ":" + result;
+
       return result; 
      }
   

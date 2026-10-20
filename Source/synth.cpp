@@ -817,6 +817,91 @@ juce::AudioBuffer<float>* render_clap (const std::string &formula_str, int sessi
 }
 
 
+juce::AudioBuffer<float>* render_fart (const std::string &formula_str, int session_samplerate)
+{
+    // Параметры по умолчанию
+    float decay = 0.45f;       // Длительность (в секундах)
+    float tone = 650.0f;       // Частота фильтра (чем ниже, тем глуше/басовее)
+    float spread = 0.022f;     // Интервал между импульсами срыва (период трепыхания)
+    int burst_count = 8;       // Количество импульсов
+    float pitch = 45.0f;       // Низкочастотный резонанс ("сочность"/бубнение, Гц)
+    float wet = 1.2f;          // Сатурация / нелинейная плотность
+
+    auto params = parse_synth_params (formula_str);
+    if (params.count("decay"))       decay = params["decay"];
+    if (params.count("tone"))        tone = params["tone"];
+    if (params.count("spread"))      spread = params["spread"];
+    if (params.count("count"))       burst_count = static_cast<int>(params["count"]);
+    if (params.count("pitch"))       pitch = params["pitch"];
+    if (params.count("freq"))        pitch = params["freq"]; // Альтернативный алиас
+    if (params.count("wet"))         wet = params["wet"];
+
+    // Защита диапазона параметров
+    if (burst_count < 1) burst_count = 1;
+    if (tone < 80.0f) tone = 80.0f;
+
+    int num_samples = static_cast<int>(session_samplerate * (decay * 1.2f));
+    if (num_samples < 200) num_samples = 200;
+
+    auto* buffer = new juce::AudioBuffer<float>(1, num_samples);
+    float* data = buffer->getWritePointer(0);
+
+    uint32_t noise_state = 77777;
+    float lpf_state = 0.0f;
+    float dt = 1.0f / static_cast<float>(session_samplerate);
+
+    // Расчет коэффициента LPF
+    float rc = 1.0f / (2.0f * 3.14159265f * tone);
+    float alpha = dt / (rc + dt);
+
+    double phase = 0.0;
+
+    for (int i = 0; i < num_samples; ++i)
+    {
+        float t = static_cast<float>(i) * dt;
+
+        // 1. Серия импульсов давления (burst envelope)
+        float burst_env = 0.0f;
+        for (int b = 0; b < burst_count; ++b)
+        {
+            float burst_time = static_cast<float>(b) * spread;
+            if (t >= burst_time)
+            {
+                float dt_burst = t - burst_time;
+                // Более плавное спадание каждого всплеска для объема
+                burst_env += std::exp(-dt_burst * 120.0f);
+            }
+        }
+
+        // Общая затухающая огибающая
+        float main_env = std::exp(-t * (3.0f / decay));
+
+        // 2. Генерация отфильтрованного шума
+        float noise = get_deterministic_noise(noise_state);
+        lpf_state = lpf_state + alpha * (noise - lpf_state);
+
+        // 3. Низкочастотная тональная составляющая (Pitch drop)
+        // В начале атаки частота чуть выше, затем опускается к чистой pitch
+        float current_pitch = pitch + pitch * 0.5f * std::exp(-t * 25.0f);
+        phase += 2.0 * 3.14159265 * current_pitch * dt;
+        float sub_osc = std::sin(phase) * main_env;
+
+        // 4. Смешивание шумовых импульсов и суб-осциллятора
+        float combined_signal = (lpf_state * burst_env * 0.7f) + (sub_osc * 0.4f);
+
+        // 5. Итоговая огибающая и ограничение (tanh для "влажной" сатурации)
+        float sample = combined_signal * main_env;
+        if (wet > 0.1f)
+        {
+            sample = std::tanh(sample * (1.0f + wet));
+        }
+
+        data[i] = sample;
+    }
+
+    apply_buffer_fadeout (buffer, session_samplerate, 0.003f);
+    return buffer;
+}
 
 juce::AudioBuffer<float>* render_snare (const std::string &formula_str, int samplerate)
 {
@@ -940,6 +1025,7 @@ juce::AudioBuffer<float>* render_kick (const std::string &formula_str, int sampl
     apply_buffer_fadeout (buffer, samplerate, 0.003f); // 3 мс на сглаживание хвоста
     return buffer;
 }
+
 
 juce::AudioBuffer<float>* render_box_sound (const std::string &formula_str, int samplerate)
 {
@@ -1122,7 +1208,6 @@ juce::AudioBuffer<float>* render_box_sound (const std::string &formula_str, int 
 
 juce::AudioBuffer<float>* render_cowbell_sound (const std::string &formula_str, int samplerate)
 {
-    std::cout << "[DEBUG] render_cowbell started with formula: " << formula_str << ", samplerate: " << samplerate << "\n";
 
     float base_freq = 560.0f;
     float ratio     = 1.45f;
@@ -1130,7 +1215,6 @@ juce::AudioBuffer<float>* render_cowbell_sound (const std::string &formula_str, 
     float tone      = 1200.0f;
     float drive     = 1.2f;
 
-    std::cout << "[DEBUG] parsing synth params...\n";
     std::map<std::string, float> p = parse_synth_params (formula_str);
     if (p.count("freq"))   base_freq = p["freq"];
     if (p.count("ratio"))  ratio     = p["ratio"];
@@ -1138,21 +1222,20 @@ juce::AudioBuffer<float>* render_cowbell_sound (const std::string &formula_str, 
     if (p.count("tone"))   tone      = p["tone"];
     if (p.count("drive"))  drive     = p["drive"];
 
-    std::cout << "[DEBUG] params parsed. base_freq=" << base_freq << ", decay=" << decay << "\n";
 
     int num_samples = static_cast<int>(samplerate * (decay * 1.2f));
     if (num_samples < 100) num_samples = 100;
 
-    std::cout << "[DEBUG] allocating audio buffer, num_samples=" << num_samples << "\n";
+//    std::cout << "[DEBUG] allocating audio buffer, num_samples=" << num_samples << "\n";
     juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
-    if (!buffer)
+
+    if (! buffer)
     {
         std::cerr << "[ERROR] Failed to allocate audio buffer for cowbell!\n";
         return nullptr;
     }
 
     float *data = buffer->getWritePointer (0);
-    std::cout << "[DEBUG] buffer allocated successfully. Entering DSP loop...\n";
 
     double phase1 = 0.0;
     double phase2 = 0.0;
@@ -1196,9 +1279,7 @@ juce::AudioBuffer<float>* render_cowbell_sound (const std::string &formula_str, 
         data[i] = sample;
     }
 
-    std::cout << "[DEBUG] DSP loop finished. Applying fadeout...\n";
     apply_buffer_fadeout (buffer, samplerate, 0.003f);
-    std::cout << "[DEBUG] render_cowbell completed successfully.\n";
 
     return buffer;
 }
@@ -2507,6 +2588,12 @@ juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int 
     if (formula_str.rfind ("ride(", 0) == 0)
     {
         return render_ride (formula_str, session_samplerate);
+    }
+
+
+    if (formula_str.rfind ("fart(", 0) == 0)
+    {
+        return render_fart (formula_str, session_samplerate);
     }
 
 
