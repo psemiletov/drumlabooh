@@ -2073,7 +2073,7 @@ struct Mode {
 
 
 
-juce::AudioBuffer<float>* render_crash_hybrid (const std::string &formula_str, int samplerate)
+juce::AudioBuffer<float>* render_crash_hybrid2 (const std::string &formula_str, int samplerate)
 {
     if (samplerate <= 0) samplerate = 44100;
 
@@ -2168,6 +2168,285 @@ juce::AudioBuffer<float>* render_crash_hybrid (const std::string &formula_str, i
         } else {
             float tail_progress = t / decay;
             env *= (1.0f - tail_progress * 0.15f);
+        }
+
+        float sample = hpf_output * env;
+
+        if (drive > 1.0f) {
+            sample = std::tanh(sample * drive);
+        }
+
+        if (!std::isfinite(sample)) sample = 0.0f;
+        data[i] = sample;
+    }
+
+    apply_buffer_fadeout(buffer, samplerate, 0.02f);
+    return buffer;
+}
+
+
+juce::AudioBuffer<float>* render_crash_hybrid3 (const std::string &formula_str, int samplerate)
+{
+    if (samplerate <= 0) samplerate = 44100;
+
+    float decay     = 1.5f;
+    float tone      = 5500.0f;
+    float pitch     = 1.0f;
+    float drive     = 1.2f;
+    float noise_mix = 0.5f;
+
+    auto params = parse_synth_params(formula_str);
+    if (params.count("decay"))     decay     = params["decay"];
+    if (params.count("tone"))      tone      = params["tone"];
+    if (params.count("pitch"))     pitch     = params["pitch"];
+    if (params.count("drive"))     drive     = params["drive"];
+    if (params.count("noise"))     noise_mix = params["noise"];
+
+    if (decay < 0.1f) decay = 0.1f;
+    if (decay > 6.0f) decay = 6.0f;
+    if (pitch < 0.3f) pitch = 0.3f;
+    if (pitch > 3.0f) pitch = 3.0f;
+    if (noise_mix < 0.0f) noise_mix = 0.0f;
+    if (noise_mix > 1.0f) noise_mix = 1.0f;
+
+    float cutoff = tone;
+    if (cutoff <= 1.0f) {
+        cutoff = 2000.0f + cutoff * 8000.0f;
+    }
+    if (cutoff < 500.0f) cutoff = 500.0f;
+    if (cutoff > samplerate * 0.45f) cutoff = samplerate * 0.45f;
+
+    int num_samples = static_cast<int>(samplerate * (decay * 1.1f));
+    if (num_samples < 512) num_samples = 512;
+
+    auto* buffer = new juce::AudioBuffer<float>(1, num_samples);
+    if (!buffer) return nullptr;
+    float* data = buffer->getWritePointer(0);
+
+    uint32_t noise_state = 0xABCD1234u;
+    uint32_t strike_noise_state = 0x55AA3311u;
+
+    // Базовые частоты 808 меандров (тело тарелки)
+    float base_freqs[6] = { 205.3f, 304.4f, 369.6f, 522.7f, 540.0f, 800.0f };
+    float phases[6]     = { 0.0f,   0.0f,   0.0f,   0.0f,   0.0f,   0.0f };
+
+    // Высокочастотные бронзовые обертоны для звонкого удара (Strike Inharmonic Pitch Set)
+    float strike_freqs[4] = { 3500.0f, 4800.0f, 6100.0f, 7900.0f };
+    float strike_phases[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+    float dt = 1.0f / static_cast<float>(samplerate);
+
+    float hpf_prev_input = 0.0f;
+    float hpf_prev_output = 0.0f;
+    float rc = 1.0f / (2.0f * M_PI * cutoff);
+    float alpha = rc / (rc + dt);
+
+    float noise_lpf_state = 0.0f;
+    float noise_alpha = dt / (0.00006f + dt);
+
+    for (int i = 0; i < num_samples; ++i)
+    {
+        float t = static_cast<float>(i) * dt;
+
+        // 1. Металлический блок осцилляторов (Тело тарелки)
+        float metal_sample = 0.0f;
+        for (int m = 0; m < 6; ++m)
+        {
+            phases[m] += (base_freqs[m] * pitch) * dt;
+            if (phases[m] >= 1.0f) phases[m] -= 1.0f;
+            metal_sample += (phases[m] < 0.5f) ? 1.0f : -1.0f;
+        }
+        metal_sample /= 6.0f;
+
+        // 2. Бронзовый транзиент атаки (Усиленный удар / Strike Ping)
+        float strike_sample = 0.0f;
+        float pitch_drop = 1.0f + 2.0f * std::exp(-t * 1500.0f);
+
+        for (int s = 0; s < 4; ++s)
+        {
+            strike_phases[s] += (strike_freqs[s] * pitch * pitch_drop) * dt;
+            if (strike_phases[s] >= 1.0f) strike_phases[s] -= 1.0f;
+            strike_sample += std::sin(strike_phases[s] * 2.0f * M_PI);
+        }
+        strike_sample *= 0.25f;
+
+        // Очень короткая и агрессивная огибающая удара (~8 миллисекунд)
+        float strike_env = std::exp(-t * 350.0f);
+
+        // Ультра-короткий шумовой «щелчок» деревянной палочки о металл (Stick Click)
+        strike_noise_state ^= strike_noise_state << 13;
+        strike_noise_state ^= strike_noise_state >> 17;
+        strike_noise_state ^= strike_noise_state << 5;
+        float stick_click = static_cast<float>(strike_noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
+        stick_click *= std::exp(-t * 800.0f); // Живет меньше 3 миллисекунд
+
+        // 3. Основной яркий, шелковистый шумовой хвост
+        noise_state ^= noise_state << 13;
+        noise_state ^= noise_state >> 17;
+        noise_state ^= noise_state << 5;
+        float raw_noise = static_cast<float>(noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
+
+        noise_lpf_state += noise_alpha * (raw_noise - noise_lpf_state);
+        float noise_diff = raw_noise - noise_lpf_state;
+        float noise_sample = (noise_lpf_state * 0.7f + noise_diff * 0.8f);
+
+        // 4. Гибридный микс: тело + акцентированный звонкий удар + щелчок палочки
+        float raw_mix = (metal_sample * (1.0f - noise_mix))
+        + (noise_sample * noise_mix)
+        + (strike_sample * strike_env * 1.5f)
+        + (stick_click * 0.8f);
+
+        // 5. Основной фильтр высоких частот (HPF)
+        float hpf_output = alpha * (hpf_prev_output + raw_mix - hpf_prev_input);
+        hpf_prev_input = raw_mix;
+        hpf_prev_output = hpf_output;
+
+        // 6. Огибающая с хлесткой атакой и мягким затуханием (хвост зависит от decay)
+        float env = std::exp(-2.5f * (t / decay));
+        if (t < 0.001f) {
+            env *= (t / 0.001f);
+        } else {
+            float tail_progress = t / decay;
+            env *= (1.0f - tail_progress * 0.15f);
+        }
+
+        float sample = hpf_output * env;
+
+        if (drive > 1.0f) {
+            sample = std::tanh(sample * drive);
+        }
+
+        if (!std::isfinite(sample)) sample = 0.0f;
+        data[i] = sample;
+    }
+
+    apply_buffer_fadeout(buffer, samplerate, 0.02f);
+    return buffer;
+}
+
+
+juce::AudioBuffer<float>* render_crash_hybrid (const std::string &formula_str, int samplerate)
+{
+    if (samplerate <= 0) samplerate = 44100;
+
+    float decay     = 1.5f;
+    float tone      = 5500.0f;
+    float pitch     = 1.0f;
+    float drive     = 1.2f;
+    float noise_mix = 0.5f;
+
+    auto params = parse_synth_params(formula_str);
+    if (params.count("decay"))     decay     = params["decay"];
+    if (params.count("tone"))      tone      = params["tone"];
+    if (params.count("pitch"))     pitch     = params["pitch"];
+    if (params.count("drive"))     drive     = params["drive"];
+    if (params.count("noise"))     noise_mix = params["noise"];
+
+    if (decay < 0.1f) decay = 0.1f;
+    if (decay > 6.0f) decay = 6.0f;
+    if (pitch < 0.3f) pitch = 0.3f;
+    if (pitch > 3.0f) pitch = 3.0f;
+    if (noise_mix < 0.0f) noise_mix = 0.0f;
+    if (noise_mix > 1.0f) noise_mix = 1.0f;
+
+    float cutoff = tone;
+    if (cutoff <= 1.0f) {
+        cutoff = 2000.0f + cutoff * 8000.0f;
+    }
+    if (cutoff < 500.0f) cutoff = 500.0f;
+    if (cutoff > samplerate * 0.45f) cutoff = samplerate * 0.45f;
+
+    int num_samples = static_cast<int>(samplerate * (decay * 1.1f));
+    if (num_samples < 512) num_samples = 512;
+
+    auto* buffer = new juce::AudioBuffer<float>(1, num_samples);
+    if (!buffer) return nullptr;
+    float* data = buffer->getWritePointer(0);
+
+    uint32_t noise_state = 0xABCD1234u;
+    uint32_t strike_noise_state = 0x55AA3311u;
+
+    // Базовые частоты 808 меандров (тело тарелки)
+    float base_freqs[6] = { 205.3f, 304.4f, 369.6f, 522.7f, 540.0f, 800.0f };
+    float phases[6]     = { 0.0f,   0.0f,   0.0f,   0.0f,   0.0f,   0.0f };
+
+    // Высокочастотные бронзовые обертоны для короткого звонкого удара
+    float strike_freqs[4] = { 3800.0f, 5100.0f, 6600.0f, 8400.0f };
+    float strike_phases[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+    float dt = 1.0f / static_cast<float>(samplerate);
+
+    float hpf_prev_input = 0.0f;
+    float hpf_prev_output = 0.0f;
+    float rc = 1.0f / (2.0f * M_PI * cutoff);
+    float alpha = rc / (rc + dt);
+
+    // Более высокий срез для шумового хвоста, чтобы он был «тонким» и воздушным, а не басовито-жирным
+    float noise_lpf_state = 0.0f;
+    float noise_alpha = dt / (0.00003f + dt);
+
+    for (int i = 0; i < num_samples; ++i)
+    {
+        float t = static_cast<float>(i) * dt;
+
+        // 1. Металлический блок осцилляторов (Тело тарелки)
+        float metal_sample = 0.0f;
+        for (int m = 0; m < 6; ++m)
+        {
+            phases[m] += (base_freqs[m] * pitch) * dt;
+            if (phases[m] >= 1.0f) phases[m] -= 1.0f;
+            metal_sample += (phases[m] < 0.5f) ? 1.0f : -1.0f;
+        }
+        metal_sample /= 6.0f;
+
+        // 2. Сверхкороткий бронзовый транзиент атаки (Звяк)
+        float strike_sample = 0.0f;
+        float pitch_drop = 1.0f + 3.0f * std::exp(-t * 3000.0f); // Молниеносный спад частоты
+
+        for (int s = 0; s < 4; ++s)
+        {
+            strike_phases[s] += (strike_freqs[s] * pitch * pitch_drop) * dt;
+            if (strike_phases[s] >= 1.0f) strike_phases[s] -= 1.0f;
+            strike_sample += std::sin(strike_phases[s] * 2.0f * M_PI);
+        }
+        strike_sample *= 0.25f;
+
+        // Ультра-короткая огибающая звяка (~3-4 миллисекунды вместо 8)
+        float strike_env = std::exp(-t * 900.0f);
+
+        // Сухой микро-щелчок палочки (1.5 миллисекунды)
+        strike_noise_state ^= strike_noise_state << 13;
+        strike_noise_state ^= strike_noise_state >> 17;
+        strike_noise_state ^= strike_noise_state << 5;
+        float stick_click = static_cast<float>(strike_noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
+        stick_click *= std::exp(-t * 1800.0f);
+
+        // 3. Тонкий, прозрачный шумовой хвост
+        noise_state ^= noise_state << 13;
+        noise_state ^= noise_state >> 17;
+        noise_state ^= noise_state << 5;
+        float raw_noise = static_cast<float>(noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
+
+        noise_lpf_state += noise_alpha * (raw_noise - noise_lpf_state);
+        float noise_diff = raw_noise - noise_lpf_state;
+        // Акцент на самую верхушку спектра для воздушности
+        float noise_sample = (noise_lpf_state * 0.4f + noise_diff * 1.2f);
+
+        // 4. Микс компонентов
+        float raw_mix = (metal_sample * (1.0f - noise_mix))
+        + (noise_sample * noise_mix)
+        + (strike_sample * strike_env * 1.2f)
+        + (stick_click * 0.6f);
+
+        // 5. HPF фильтрация
+        float hpf_output = alpha * (hpf_prev_output + raw_mix - hpf_prev_input);
+        hpf_prev_input = raw_mix;
+        hpf_prev_output = hpf_output;
+
+        // 6. Быстро спадающая, прозрачная общая огибающая хвоста
+        float env = std::exp(-3.5f * std::pow(t / decay, 0.85f));
+        if (t < 0.0008f) {
+            env *= (t / 0.0008f);
         }
 
         float sample = hpf_output * env;
