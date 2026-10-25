@@ -252,7 +252,7 @@ void CDrumLayer::load (const std::string &fname, int offset)
 void CDrumLayer::load_formula (const std::string &formula)
 {
 
-  std::cout << "void CDrumLayer::load_formual " << formula << " : " << session_samplerate << std::endl;
+ // std::cout << "void CDrumLayer::load_formual " << formula << " : " << session_samplerate << std::endl;
 
   std::vector <std::string> v = split_string_to_vector (formula, "^", false);
 
@@ -261,9 +261,9 @@ void CDrumLayer::load_formula (const std::string &formula)
 
   file_name = v.at (0);
 
-  std::cout << "FILENAME:" << file_name << "\n";
+  //std::cout << "FILENAME:" << file_name << "\n";
 
-  std::cout << "FORMULA:" << v.at (1) << "\n";
+  //std::cout << "FORMULA:" << v.at (1) << "\n";
 
 
   audio_buffer = render_synth_sample (v.at (1), session_samplerate, false);
@@ -296,7 +296,7 @@ void CDrumLayer::load_formula (const std::string &formula)
   if (audio_buffer->getNumSamples() > 0)
      channel_data = audio_buffer->getReadPointer (0);
 
- std::cout << "22222\n";
+ //std::cout << "22222\n";
 
 
 }
@@ -304,8 +304,8 @@ void CDrumLayer::load_formula (const std::string &formula)
 
 void CDrumLayer::load (const std::string &fname, int offset)
 {
-  std::cout << "void CDrumLayer::load (const std::string &fname): " <<
-                fname << " : " << session_samplerate << std::endl;
+  //std::cout << "void CDrumLayer::load (const std::string &fname): " <<
+    //            fname << " : " << session_samplerate << std::endl;
 
   //audio_buffer = load_whole_sample_resampled (fname, session_samplerate, offset);
 
@@ -315,11 +315,11 @@ void CDrumLayer::load (const std::string &fname, int offset)
 
  if (ext == "syn")
     {
-    std::cout << "!!! is_synth_formula (fname): " << fname << "\n";
+    //std::cout << "!!! is_synth_formula (fname): " << fname << "\n";
     audio_buffer = render_synth_sample (fname, session_samplerate);
     file_name = fname;
 
-    std::cout << "!!! is_synth_formula END \n";
+    //std::cout << "!!! is_synth_formula END \n";
 
   }
   else
@@ -779,7 +779,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
        temp_sample->name = item_sample.attribute ("name").value(); 
        std::string str_note = item_sample.attribute ("note").value(); 
        
-       std::cout << "DEBUG: Assigned name to sample = [" << temp_sample->name << "]" << std::endl;
+    //  std::cout << "DEBUG: Assigned name to sample = [" << temp_sample->name << "]" << std::endl;
 
        if (! str_note.empty())
           { 
@@ -985,8 +985,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
                    #endif
 
-                   std::cout << "TRY TO LOAD, filename: " << filename << "\n";
-
+                  //
 
                    if (file_exists (filename))
                       {
@@ -2017,7 +2016,7 @@ void CDrumKit::load_hydrogen (const std::string &data)
     if (info_end != std::string::npos)
     {
       source.erase (info_start, info_end - info_start + 7);
-      std::cout << "[load_hydrogen] stripped <info>" << std::endl;
+  //    std::cout << "[load_hydrogen] stripped <info>" << std::endl;
     }
   }
   // ===== END NEW =====
@@ -2828,7 +2827,7 @@ std::string CDrumKit::get_description()
 
 void CDrumKit::setup_auto_mute()
 {
-  std::cout << "CDrumKit::setup_auto_mute() - BEGIN\n";
+  //std::cout << "CDrumKit::setup_auto_mute() - BEGIN\n";
 
   if (! mute_groups_auto)
      return;
@@ -2842,8 +2841,7 @@ void CDrumKit::setup_auto_mute()
         // ПРЕДОХРАНИТЕЛЬ: если слоев нет вообще, даже не смотрим сигнатуры
         if (s->v_layers.empty())
         {
-          std::cout << "[setup_auto_mute] sample " << i
-          << " ('" << s->name << "') has EMPTY v_layers" << std::endl;
+          std::cout << "[setup_auto_mute] sample " << i << " ('" << s->name << "') has EMPTY v_layers" << std::endl;
           continue; // переходим к следующему сэмплу
         }
 
@@ -2864,7 +2862,7 @@ void CDrumKit::setup_auto_mute()
           }    
       }   
 
-      std::cout << "CDrumKit::setup_auto_mute() - END\n";
+     // std::cout << "CDrumKit::setup_auto_mute() - END\n";
 
 }
   
