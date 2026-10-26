@@ -822,16 +822,10 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
        //load samples
 
-//       std::string fname = item_sample.text().as_string(); //file name[s]
-       
-  //     if (fname.empty())
-    //      continue;
-        
-
        
       // std::cout << "fname" << fname << std::endl;
 
-       size_t check_for_list = fname.find (",");
+//       size_t check_for_list = fname.find (",");
        bool check_for_txt = false;
 
        bool check_for_synpak = false;
@@ -864,77 +858,72 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
 
 
-       if ((check_for_list != string::npos) || check_for_txt || check_for_dir || check_for_synpak)
+   //    if ((check_for_list != string::npos) || check_for_txt || check_for_dir || check_for_synpak)
        //больше чем один слой на сэмпл
+
+       std::vector <std::string> v_fnames;
+
+       // BEGIN CHECK FOR DIR
+       if (check_for_dir) //читаем список файлов из директории
           {
-           std::vector <std::string> v_fnames;
+           if  (! file_exists (kit_dir + "/" + fname))
+               {
+                cancel_sample_loading();
+                continue;
+               }
 
-           // BEGIN CHECK FOR DIR
-           if (check_for_dir) //читаем список файлов из директории
+           v_fnames = get_audio_files_list (kit_dir + "/" + fname);
+
+           if (v_fnames.empty())
               {
-               if  (! file_exists (kit_dir + "/" + fname))
-                  {
-                   cancel_sample_loading();
-                   continue;
-                  }
+               cancel_sample_loading();
+               continue;
+              }
 
-               v_fnames = get_audio_files_list (kit_dir + "/" + fname);
-
-               if (v_fnames.empty())
-                  {
-                   cancel_sample_loading();
-                   continue;
-                  }
-
-              std::sort (v_fnames.begin(), v_fnames.end());
+           std::sort (v_fnames.begin(), v_fnames.end());
 
 
-              if (temp_sample->reverse_order_mode)
-                 std::reverse (v_fnames.begin(), v_fnames.end());
-             }
-             // END CHECK FOR DIR
+           if (temp_sample->reverse_order_mode)
+              std::reverse (v_fnames.begin(), v_fnames.end());
+          }
+         // END CHECK FOR DIR
 
-             else// BEGIN CHECK FOR TXT
-
-           if (check_for_txt) //читаем список файлов из текстового файла
+       else// BEGIN CHECK FOR TXT
+       if (check_for_txt) //читаем список файлов из текстового файла
+          {
+           //нет текстового файла? охрана отмена!
+           if (! file_exists (kit_dir + "/" + fname))
               {
+               cancel_sample_loading();
+               continue;
+              }
 
-                //нет текстового файла? охрана отмена!
-                if (! file_exists (kit_dir + "/" + fname))
-                {
-                  cancel_sample_loading();
-                  continue;
-                }
+           std::string file_data = string_file_load (kit_dir + "/" + fname);
+           v_fnames = split_string_to_vector (file_data, "\n", false);
+          } // END CHECK FOR DIR
+       else
+       if (check_for_synpak)
+          // BEGIN CHECK FOR SYNPAK
+          {
+           //есть ли файл с синпаком? нет? охрана отмена
+           if (! file_exists (kit_dir + "/" + fname))
+              {
+               cancel_sample_loading();
+               continue;
+              }
 
-               std::string file_data = string_file_load (kit_dir + "/" + fname);
-               v_fnames = split_string_to_vector (file_data, "\n", false);
-              } // END CHECK FOR DIR
-            else
-                if (check_for_synpak)
-                  // BEGIN CHECK FOR SYNPAK
-                  {
-                    //есть ли файл с синпаком? нет? охрана отмена
-                    if (! file_exists (kit_dir + "/" + fname))
-                       {
-                        cancel_sample_loading();
-                        continue;
-                      }
-
-                    std::string file_content = string_file_load (kit_dir + "/" + fname);
-                    v_fnames = split_string_to_vector (file_content, "\n", false);
-                  }
-                  // END CHECK FOR SYNPAK
-
-
-              else// BEGIN JUST COMMA SEPARATED LIST
-
+           std::string file_content = string_file_load (kit_dir + "/" + fname);
+           v_fnames = split_string_to_vector (file_content, "\n", false);
+          }
+          // END CHECK FOR SYNPAK
+        else// BEGIN JUST COMMA SEPARATED LIST
              //читаем список файлов прямо из элемента
                v_fnames = split_string_to_vector (fname, ",", false);
              
               // END JUST COMMA SEPARATED LIST
 
-           //список файлов/патчей пустой? охрана отмена
-           if (v_fnames.size() == 0)
+        //список файлов/патчей пустой? охрана отмена
+        if (v_fnames.size() == 0)
               {
                cancel_sample_loading();
                continue;
@@ -1039,27 +1028,8 @@ void CDrumKit::load_labooh_xml (const std::string &data)
                                   l->max = 1.0f;
                                  }
                              }
-          }
-         else //ONE LAYER PER SAMPLE
-             {
-              std::string filename = kit_dir + "/" + fname;
 
 
-
-
-              if (file_exists (filename))
-                 {
-                  temp_sample->add_layer(); //add default layer
-                  temp_sample->v_layers.back()->load (filename.c_str());
-                  if (! str_note.empty())
-                     {
-                      temp_sample->mapped_note = std::stoi (str_note);
-                      map_samples[temp_sample->mapped_note] = temp_sample;
-                    //  std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
-                      has_mapping = true;
-                     } 
-                 } 
-             }
         }
       
       
