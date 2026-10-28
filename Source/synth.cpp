@@ -586,66 +586,96 @@ juce::AudioBuffer<float>* render_gabber_kick (const std::string &formula_str, in
 
 juce::AudioBuffer<float>* render_computer_snare (const std::string &formula_str, int samplerate)
 {
-    float freq = 380.0f;
-    float decay = 0.14f;
-    float crunch = 0.55f;
-    float tone = 1100.0f;
+    float freq = 210.0f;    // Основная частота тела снеира
+    float decay = 0.2f;     // Время затухания
+    float snap = 0.5f;      // Плотность и яркость шумовых «пружин»
+    float tone = 1200.0f;   // Мастер LP-фильтр: снизили дефолт для более глухого звука
 
     std::map<std::string, float> p = parse_synth_params (formula_str);
     if (p.count("freq"))   freq = p["freq"];
     if (p.count("decay"))  decay = p["decay"];
-    if (p.count("crunch")) crunch = p["crunch"];
+    if (p.count("snap"))   snap = p["snap"];
     if (p.count("tone"))   tone = p["tone"];
 
-    int num_samples = static_cast<int>(samplerate * (decay * 1.1f));
+    // Расширяем диапазон снизу до 200 Гц для максимально глухих пресетов
+    if (tone < 200.0f) tone = 200.0f;
+    if (tone > samplerate * 0.45f) tone = samplerate * 0.45f;
+
+    int num_samples = static_cast<int>(samplerate * (decay * 1.2f));
     if (num_samples < 100) num_samples = 100;
 
     juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
+    if (!buffer) return nullptr;
     float *data = buffer->getWritePointer (0);
 
-    double phase = 0.0;
-    uint32_t comp_snare_state = 7777;
+    double phase1 = 0.0;
+    double phase2 = 0.0;
+    uint32_t noise_state = 0x12345678u;
 
-    float lpf_state = 0.0f;
-    float dt = 1.0f / static_cast<float>(samplerate);
-    float rc = 1.0f / (2.0f * 3.14159265f * tone);
-    float alpha = dt / (rc + dt);
+    const float dt = 1.0f / static_cast<float>(samplerate);
+    const double TWO_PI = 2.0 * M_PI;
 
-    float body_env_factor = std::exp(-dt * (6.0f / decay));
+    float f1 = freq;
+    float f2 = freq * 1.48f;
+
+    // Внутренний фильтр для пружин (фиксированный, чтобы они не пропадали полностью)
+    float noise_lpf_state = 0.0f;
+    float noise_rc = 1.0f / (TWO_PI * 1200.0f);
+    float noise_alpha = dt / (noise_rc + dt);
+
+    // Мастер LP-фильтр (управляется параметром tone, теперь сбалансирован под глухие тембры)
+    float master_lpf_state = 0.0f;
+    float master_rc = 1.0f / (TWO_PI * tone);
+    float master_alpha = dt / (master_rc + dt);
+
+    // Экспоненциальные множители (без std::exp в цикле)
+    const float body_env_factor = std::exp(-dt * (4.5f / decay));
     float body_env = 1.0f;
 
-    float noise_env_factor = std::exp(-dt * (9.0f / decay));
+    const float noise_env_factor = std::exp(-dt * (6.0f / decay));
     float noise_env = 1.0f;
 
     for (int i = 0; i < num_samples; ++i)
     {
         float t = static_cast<float>(i) * dt;
-        float sample = 0.0f;
 
-        if (t < decay)
-        {
-            float current_freq = freq + freq * 0.5f * std::exp(-t * 60.0f);
-            phase += 2.0 * M_PI * current_freq * dt;
-            float square = (std::sin(phase) >= 0.0f) ? 1.0f : -1.0f;
+        // Питч-сброс для тела
+        float pitch_env = std::exp(-t * 35.0f);
+        float current_f1 = f1 + (f1 * 0.5f) * pitch_env;
+        float current_f2 = f2 + (f2 * 0.3f) * pitch_env;
 
-            body_env *= body_env_factor;
-            sample += square * body_env * 0.45f;
-        }
+        phase1 += TWO_PI * current_f1 * dt;
+        if (phase1 > TWO_PI) phase1 -= TWO_PI;
 
-        comp_snare_state ^= comp_snare_state << 13;
-        comp_snare_state ^= comp_snare_state >> 17;
-        comp_snare_state ^= comp_snare_state << 5;
-        float raw_noise = static_cast<float>(comp_snare_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
+        phase2 += TWO_PI * current_f2 * dt;
+        if (phase2 > TWO_PI) phase2 -= TWO_PI;
 
-        lpf_state = lpf_state + alpha * (raw_noise - lpf_state);
+        float body = (std::sin(phase1) + std::sin(phase2) * 0.6f) * 0.5f;
+        body_env *= body_env_factor;
+        body *= body_env;
+
+        // Генерация и фильтрация шума пружин
+        noise_state ^= noise_state << 13;
+        noise_state ^= noise_state >> 17;
+        noise_state ^= noise_state << 5;
+        float raw_noise = static_cast<float>(noise_state & 0x7FFFFFFF) / 1073741824.0f - 1.0f;
+
+        noise_lpf_state = noise_lpf_state + noise_alpha * (raw_noise - noise_lpf_state);
+        float snare_wires = raw_noise - noise_lpf_state;
 
         noise_env *= noise_env_factor;
-        float current_n_env = noise_env;
-        if (t < 0.0015f) current_n_env *= (t / 0.0015f);
+        float wire_envelope = noise_env * (1.0f - std::exp(-t * 800.0f));
+        snare_wires *= wire_envelope * snap * 1.8f;
 
-        sample += lpf_state * current_n_env * crunch;
+        // Смешиваем тело и пружины
+        float raw_sample = body * 0.7f + snare_wires;
 
-        sample = std::tanh (sample * 1.4f);
+        // Применяем мастер LP-фильтр
+        master_lpf_state = master_lpf_state + master_alpha * (raw_sample - master_lpf_state);
+        float sample = master_lpf_state;
+
+        // Мягкий аналоговый сатуратор для плотности
+        sample = std::tanh(sample * 1.5f);
 
         data[i] = sample;
     }
