@@ -1,5 +1,5 @@
 /*
-written at 2023-25 by Peter Semiletov
+written at 2023-26 by Peter Semiletov
 this code is the public domain
 */
 
@@ -12,7 +12,6 @@ this code is the public domain
 #include <cctype>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 
 
 #if !defined(_WIN32) || !defined(_WIN64)
@@ -36,16 +35,6 @@ this code is the public domain
 
 using namespace std;
 
-/*
-bool file_exists (const string &name)
-{
-  if (name.empty())
-     return false;
-
-  struct stat buffer;
-  return (stat (name.c_str(), &buffer) == 0);
-}
-*/
 
 bool file_exists (const string &name)
 {
@@ -53,7 +42,8 @@ bool file_exists (const string &name)
     return false;
 
   // Если это наша синтез-формула, файл на диске искать не нужно
-  if (is_synth_formula (name))
+  //FIXME НАДО ПОНЯТЬ ДОХОДИТ ЛИ СЮДА ПРОВЕРКА НА ФОРМУЛУ, Я ЗАБЫЛ
+    if (is_synth_formula (name))
      return true;
 
   struct stat buffer;
@@ -103,45 +93,72 @@ std::string resolve_symlink (const std::string &path)
 #endif
 }
 
-//AI-generated
 
-std::vector<std::string> files_get_list(const std::string &path)
+std::vector<std::string> files_get_list (const std::string &path)
 {
-    std::vector<std::string> result;
-    if (path.empty()) return result;
+  std::vector<std::string> result;
+  if (path.empty())
+     return result;
 
-    namespace fs = std::filesystem;
-    try {
-        for (const auto& entry : fs::directory_iterator(path)) {
+  try {
+       for (const auto& entry : std::filesystem::directory_iterator (path))
+           {
             std::string name = entry.path().filename().string();
-            if (name != "." && name != "..") {
-                result.push_back(path + "/" + name);
-            }
-        }
-    } catch (...) {
-        // Игнорируем ошибки
-    }
-    return result;
+            if (name != "." && name != "..")
+               result.push_back(path + "/" + name);
+           }
+     } catch (...)
+             {
+              // Игнорируем ошибки
+             }
+  return result;
 }
 
 
-std::vector<std::string> files_get_list(const std::string &path, const std::string &ext) {
-    std::vector<std::string> result;
-    if (path.empty()) return result;
+std::vector<std::string> files_get_list (const std::string &path, const std::string &ext)
+{
+  std::vector<std::string> result;
+  if (path.empty())
+     return result;
 
-    namespace fs = std::filesystem;
-    try {
-        for (const auto& entry : fs::directory_iterator(path)) {
-            std::string name = entry.path().filename().string();
-            if (name.rfind(ext) != std::string::npos) {
-                result.push_back(path + "/" + name);
+  try {
+       for (const auto& entry : std::filesystem::directory_iterator (path))
+          {
+           std::string name = entry.path().filename().string();
+           if (name.rfind (ext) != std::string::npos)
+              result.push_back (path + "/" + name);
+
+         }
+     } catch (...)
+             {
+              // Игнорируем ошибки
             }
-        }
-    } catch (...) {
-        // Игнорируем ошибки
-    }
-    return result;
+  return result;
 }
+
+
+std::vector<std::string> files_names_get_list (const std::string &path)
+{
+  std::vector<std::string> result;
+  if (path.empty())
+    return result;
+
+  try {
+    for (const auto& entry : std::filesystem::directory_iterator(path))
+    {
+      std::string name = entry.path().filename().string();
+      if (name != "." && name != "..")
+        result.push_back (name);
+
+    }
+  } catch (...)
+  {
+    // Игнорируем ошибки
+  }
+  return result;
+}
+
+
 
 
 std::string get_home_dir()
@@ -171,8 +188,9 @@ std::string get_home_dir()
 std::string get_file_ext (const std::string &fname)
 {
   std::string::size_type i = fname.rfind('.');
+
   if (i != std::string::npos)
-     return fname.substr (i+1);
+     return fname.substr (i + 1);
   else
       return string();
 }
@@ -198,18 +216,19 @@ std::string string_file_load (const string &fname)
   std::string s ((std::istreambuf_iterator<char>(t)),
                   std::istreambuf_iterator<char>());
 
- return s;
+  return s;
 }
 
 
 /// Try to find in the Haystack the Needle - ignore case
 bool findStringIC (const std::string & strHaystack, const std::string & strNeedle)
 {
-  auto it = std::search(
-    strHaystack.begin(), strHaystack.end(),
-    strNeedle.begin(),   strNeedle.end(),
-    [](unsigned char ch1, unsigned char ch2) { return std::toupper(ch1) == std::toupper(ch2); }
-  );
+  auto it = std::search (
+                         strHaystack.begin(), strHaystack.end(),
+                         strNeedle.begin(), strNeedle.end(),
+                         [](unsigned char ch1, unsigned char ch2) { return std::toupper(ch1) == std::toupper(ch2); }
+                        );
+
   return (it != strHaystack.end() );
 }
 
@@ -260,10 +279,9 @@ std::vector <std::string> split_string_to_vector (const std::string& s, const st
 }
 
 
-
-string string_replace_all (const string &s, const string &from, const string &to)
+std::string string_replace_all (const std::string &s, const std::string &from, const std::string &to)
 {
-  string result = s;
+  std::string result = s;
   size_t i = 0;
   do
     {
@@ -279,18 +297,21 @@ string string_replace_all (const string &s, const string &from, const string &to
 
 std::string replace_string (std::string subject, const std::string& search, const std::string& replace) 
 {
-    size_t pos = 0;
-    while ((pos = subject.find(search, pos)) != std::string::npos) {
+  size_t pos = 0;
+  while ((pos = subject.find(search, pos)) != std::string::npos)
+        {
          subject.replace(pos, search.length(), replace);
          pos += replace.length();
-    }
-    return subject;
+        }
+
+  return subject;
 }
 
 
 std::string transform_kit_path_to_local (const std::string &path) 
 {
   std::string result = path;
+
   if (result.rfind ("$HOME", 0) == 0)
      result = replace_string (result, "$HOME", get_home_dir()); 
     
@@ -417,27 +438,6 @@ std::vector<std::string> get_files_with_extensions (const std::string& directory
 }
 
 
-std::vector<std::string> files_names_get_list(const std::string &path)
-{
-  std::vector<std::string> result;
-  if (path.empty()) return result;
-
-  namespace fs = std::filesystem;
-  try {
-    for (const auto& entry : fs::directory_iterator(path)) {
-      std::string name = entry.path().filename().string();
-      if (name != "." && name != "..") {
-        result.push_back(name);
-      }
-    }
-  } catch (...) {
-    // Игнорируем ошибки
-  }
-  return result;
-}
-
-
-
 bool is_audio_ext (const std::string& ext)
 {
   return ext == ".wav"  || ext == ".aiff" || ext == ".aif"
@@ -471,10 +471,7 @@ std::vector<std::string> get_audio_files_list(const std::string& directory_path)
 }
 
 
-
-
 // Функция для получения списка каталогов в указанной директории с сортировкой по алфавиту
-
 std::vector<std::string> get_directories (const std::string& directory) 
 {
   std::vector<std::string> directories;
@@ -497,13 +494,13 @@ std::vector<std::string> get_directories (const std::string& directory)
 
 bool is_directory_safe (const std::string& path)
 {
-    std::error_code ec;
-    bool result = filesystem::is_directory(path, ec);
-    if (ec) {
+  std::error_code ec;
+  bool result = filesystem::is_directory(path, ec);
+  if (ec)
         // Обработка ошибки (нет прав, путь не существует и т.д.)
         return false;
-    }
-    return result;
+
+  return result;
 }
 /*
 
@@ -529,12 +526,11 @@ bool is_kit_dir (const std::string& path)
 }
 
 
-
-bool is_image(const std::string& filepath) 
+bool is_image (const std::string& filepath)
 {
-  size_t dotPos = filepath.find_last_of('.');
+  size_t dotPos = filepath.find_last_of ('.');
   if (dotPos == std::string::npos) 
-        return false; 
+     return false;
     
   std::string ext = filepath.substr (dotPos);
     
@@ -549,12 +545,15 @@ bool is_image(const std::string& filepath)
 
 inline std::string trim (const std::string &str)
 {
-  size_t first = str.find_first_not_of(" \t\r\n");
-  if (string::npos == first) return "";
-  size_t last = str.find_last_not_of(" \t\r\n");
-  return str.substr(first, (last - first + 1));
-}
+  size_t first = str.find_first_not_of (" \t\r\n");
 
+  if (string::npos == first)
+     return "";
+
+  size_t last = str.find_last_not_of (" \t\r\n");
+
+  return str.substr (first, (last - first + 1));
+}
 
 
 size_t string_to_file_size (const std::string &val)
@@ -582,24 +581,7 @@ size_t string_to_file_size (const std::string &val)
   return result;
 }
 
-
-
-/*
-bool is_synth_formula (const std::string &str)
-{
-  if (str.rfind ("kick(", 0) == 0 ||
-    str.rfind ("snare(", 0) == 0 ||
-    str.rfind ("hihat(", 0) == 0 ||
-    str.rfind ("clap(", 0) == 0)
-  {
-    return true;
-  }
-  return false;
-}
-*/
-
-
-
+//FIXME НАДО ПОНЯТЬ ВЫЗЫВАЕТСЯ ЛИ РЕАЛЬНО, Я ЗАБЫЛ
 bool is_synth_formula (const std::string &str)
 {
  // std::cout << "is_synth_formula: " << str << "\n";

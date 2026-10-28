@@ -313,15 +313,11 @@ void CDrumLayer::load (const std::string &fname, int offset)
   std::string ext = get_file_ext (fname);
 
 
- if (ext == "syn")
+ if (ext == "syn") //вообще на кой они нужны, син-файлы
     {
-    //std::cout << "!!! is_synth_formula (fname): " << fname << "\n";
     audio_buffer = render_synth_sample (fname, session_samplerate);
     file_name = fname;
-
-    //std::cout << "!!! is_synth_formula END \n";
-
-  }
+   }
   else
   {
     audio_buffer = load_whole_sample_resampled (fname, session_samplerate, offset);
@@ -2050,6 +2046,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   kit_filename = filename;
   kit_dir = get_file_path (kit_filename);
   
+  //FIXME: надо исследовать насколько они вааще нужны, эти кит дирз
   if (is_kit_dir (kit_filename))
      {
       //LOAD DIRECTORY
