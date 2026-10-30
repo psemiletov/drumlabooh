@@ -27,7 +27,8 @@
 
 // Константа размера таблицы (можно использовать для любых волновых таблиц)
 constexpr int kSineTableSize = 2048;
-constexpr double TWO_PI = 2.0 * M_PI;
+//constexpr double TWO_PI = 2.0 * M_PI;
+constexpr float TWO_PI = 2.0 * M_PI;
 
 
 //extern float g_sine_table[kSineTableSize + 1];
@@ -375,154 +376,6 @@ juce::AudioBuffer<float>* render_boom_sound (const std::string &formula_str, int
 }
 
 
-juce::AudioBuffer<float>* render_boom_sound2 (const std::string &formula_str, int samplerate)
-{
-    float duration   = 0.35f;
-    float base_freq  = 70.0f;
-    float freq_sweep = -40.0f;
-    float noise_amt  = 0.3f;
-    float roughness  = 0.6f;
-    float wobble_rate= 24.0f;
-    float attack     = 0.001f;
-    float release    = 0.12f;
-    float gain       = 0.95f;
-    float bubble_amt = 0.5f;
-
-    float lpf_cutoff = 1400.0f;
-    float hpf_cutoff = 45.0f;
-    bool  granular   = true;
-    float grain_mix  = 0.4f;
-
-    std::map<std::string, float> p = parse_synth_params (formula_str);
-
-    if (p.count("duration"))   duration   = p["duration"];
-    if (p.count("freq"))       base_freq  = p["freq"];
-    if (p.count("sweep"))      freq_sweep = p["sweep"];
-    if (p.count("noise"))      noise_amt  = p["noise"];
-    if (p.count("roughness"))  roughness  = p["roughness"];
-    if (p.count("wobble"))     wobble_rate= p["wobble"];
-    if (p.count("attack"))     attack     = p["attack"];
-    if (p.count("release"))    release    = p["release"];
-    if (p.count("gain"))       gain       = p["gain"];
-    if (p.count("bubble"))     bubble_amt = p["bubble"];
-    if (p.count("tone"))       lpf_cutoff = p["tone"];
-    if (p.count("granular"))   granular   = (p["granular"] > 0.5f);
-    if (p.count("grain_mix"))  grain_mix  = p["grain_mix"];
-
-    int num_samples = static_cast<int>(samplerate * (duration * 1.1f));
-    if (num_samples < 100)
-        num_samples = 100;
-
-    juce::AudioBuffer<float> *buffer = new juce::AudioBuffer<float> (1, num_samples);
-    float *data = buffer->getWritePointer (0);
-
-    uint32_t noise_state = 13579;
-    double phase1 = 0.0, phase2 = 0.0;
-    float wobblePhase = 0.0f;
-    float bubblePhase = 0.0f;
-
-    float lpf_state = 0.0f;
-    float hpf_prev_in = 0.0f;
-    float hpf_prev_out = 0.0f;
-
-    float dt = 1.0f / static_cast<float>(samplerate);
-
-    float rc_lpf = 1.0f / (2.0f * M_PI * lpf_cutoff);
-    float alpha_lpf = dt / (rc_lpf + dt);
-
-    float rc_hpf = 1.0f / (2.0f * M_PI * hpf_cutoff);
-    float alpha_hpf = rc_hpf / (rc_hpf + dt);
-
-    float micro_burst_env = 0.0f;
-    float micro_burst_phase = 0.0f;
-    int   micro_burst_timer = 0;
-    int   next_burst_samples = static_cast<int>(samplerate * 0.02f);
-
-    float body_env_factor = std::exp(-dt / release);
-    float noise_env_factor = std::exp(-dt / (release * 0.5f));
-    float body_env = 1.0f;
-    float noise_env = 1.0f;
-
-    for (int i = 0; i < num_samples; ++i)
-        {
-         float t = static_cast<float>(i) * dt;
-         float u = t / duration;
-
-         if (t >= attack)
-            {
-             body_env *= body_env_factor;
-             noise_env *= noise_env_factor;
-            }
-         else
-             {
-              body_env = t / attack;
-              noise_env = t / attack;
-             }
-
-        float kick_drop = std::exp (-t * 70.0f);
-        float freq1 = base_freq + (base_freq * 3.0f * kick_drop) + freq_sweep * u;
-        float freq2 = base_freq * 0.5f + freq_sweep * 0.8f * u;
-
-        float wobble = std::sin (wobblePhase) * roughness * 0.7f;
-        wobblePhase += 2.0f * M_PI * wobble_rate * dt;
-        freq1 *= (1.0f + wobble);
-
-        phase1 += 2.0 * M_PI * freq1 * dt;
-        phase2 += 2.0 * M_PI * freq2 * dt;
-        float tone_sig = std::sin (phase1) * 0.75f + (std::sin (phase2 * 2.0f) * 0.25f);
-
-        float bubble = 1.0f + bubble_amt * std::sin (bubblePhase) * std::cos (bubblePhase * 0.4f);
-        bubblePhase += 2.0f * M_PI * 14.0f * dt;
-
-        float raw_noise = get_deterministic_noise (noise_state);
-
-        float granular_sig = 0.0f;
-        if (granular)
-           {
-            micro_burst_timer++;
-            if (micro_burst_timer >= next_burst_samples && u < 0.75f)
-               {
-                micro_burst_env = 1.0f;
-                micro_burst_timer = 0;
-                float jitter = get_deterministic_noise (noise_state);
-                next_burst_samples = static_cast<int>(samplerate * (0.012f + std::abs(jitter) * 0.015f));
-               }
-
-            if (micro_burst_env > 0.001f)
-               {
-                micro_burst_phase += 2.0 * M_PI * (base_freq * 1.6f) * dt;
-                granular_sig = std::sin (micro_burst_phase) * micro_burst_env;
-                micro_burst_env *= std::exp (-dt * 70.0f);
-               }
-           }
-
-        float click = 0.0f;
-
-        if (t < 0.0025f)
-            click = raw_noise * (1.0f - (t / 0.0025f)) * 0.85f;
-
-        float body = (tone_sig * (1.0f - noise_amt) + (raw_noise * noise_env * noise_amt)) + click;
-
-        if (granular)
-            body = body * (1.0f - grain_mix) + (granular_sig * noise_env * grain_mix);
-
-        body *= body_env * bubble * gain;
-
-        lpf_state = lpf_state + alpha_lpf * (body - lpf_state);
-
-        float hpf_out = alpha_hpf * (hpf_prev_out + lpf_state - hpf_prev_in);
-        hpf_prev_in = lpf_state;
-        hpf_prev_out = hpf_out;
-
-        float s = std::tanh (hpf_out * 2.2f);
-        data[i] = s;
-    }
-
-    apply_buffer_fadeout (buffer, samplerate, 0.003f);
-    return buffer;
-}
-
-
 juce::AudioBuffer<float>* render_gabber_kick (const std::string &formula_str, int samplerate)
 {
     float f0 = 220.0f;
@@ -560,7 +413,7 @@ juce::AudioBuffer<float>* render_gabber_kick (const std::string &formula_str, in
         float t = static_cast<float>(i) * dt;
 
         float freq = f1 + (f0 - f1) * std::exp (-t * 32.0f);
-        phase += 2.0 * M_PI * freq * dt;
+        phase += TWO_PI * freq * dt;
 
         float raw_sine = std::sin (phase);
 
@@ -613,7 +466,7 @@ juce::AudioBuffer<float>* render_computer_snare (const std::string &formula_str,
     uint32_t noise_state = 0x12345678u;
 
     const float dt = 1.0f / static_cast<float>(samplerate);
-    const double TWO_PI = 2.0 * M_PI;
+    //const double TWO_PI = 2.0 * M_PI;
 
     float f1 = freq;
     float f2 = freq * 1.48f;
@@ -1281,7 +1134,7 @@ juce::AudioBuffer<float>* render_kick (const std::string &formula_str, int sampl
     uint32_t noise_state = 0x13579BDFu; // Детерминированный генератор вместо rand()
 
     const float dt = 1.0f / static_cast<float>(samplerate);
-    const double TWO_PI = 2.0 * M_PI;
+    //const double TWO_PI = 2.0 * M_PI;
     const double TWO_PI_DT = TWO_PI * dt;
     const float env_decay_coeff = 3.0f / decay;
     const float inv_click_duration = 1.0f / 0.005f;

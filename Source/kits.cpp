@@ -393,6 +393,7 @@ CDrumSample::CDrumSample (int sample_rate)
   mute_group = -1;
   reverse_order_mode = false;
   check_for_synpak = false;
+  show_instrument_name_for_alts = false;
 }
 
 
@@ -452,7 +453,10 @@ std::string CDrumSample::get_name (bool by_current_layer)
       int zeroes = 3 - num.size();
       num.insert (0, zeroes, '0');
 
-      result = num + ":" + result;
+      if (show_instrument_name_for_alts)
+         result = name + ":" + num + ":" + result;
+      else
+          result = num + ":" + result;
 
       return result; 
      }
@@ -812,8 +816,14 @@ void CDrumKit::load_labooh_xml (const std::string &data)
           temp_sample->layer_index_mode = LAYER_INDEX_MODE_ALT; 
        
        std::string reverse_order_mode = item_sample.attribute ("reverse_order_mode").value();
-        if (reverse_order_mode == "1" || reverse_order_mode == "on")
-            temp_sample->reverse_order_mode = true;
+       if (reverse_order_mode == "1" || reverse_order_mode == "on")
+           temp_sample->reverse_order_mode = true;
+
+       std::string show_instrument_name_for_alts = item_sample.attribute ("show_instrument_name_for_alts").value();
+       if (show_instrument_name_for_alts == "1" || show_instrument_name_for_alts == "on")
+          temp_sample->show_instrument_name_for_alts = true;
+
+
 
 
        //load samples

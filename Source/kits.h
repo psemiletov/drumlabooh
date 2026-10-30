@@ -105,6 +105,8 @@ public:
 
   bool check_for_synpak;
 
+  bool show_instrument_name_for_alts; //если включено то предваряем ячейку name из сэмпла
+
   bool reverse_order_mode;
   bool active; //is sample triggered to play? 
   
