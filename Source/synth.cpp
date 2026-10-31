@@ -215,7 +215,7 @@ public:
 };
 
 
-juce::AudioBuffer<float>* render_boom_sound (const std::string &formula_str, int samplerate)
+juce::AudioBuffer<float>* render_boom (const std::string &formula_str, int samplerate)
 {
     float duration   = 0.35f;
     float base_freq  = 70.0f;
@@ -3021,6 +3021,11 @@ juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int 
     else
         formula_str = filename;
 
+    if (formula_str.rfind ("boom(", 0) == 0)
+    {
+        return render_boom (formula_str, session_samplerate);
+
+    }
 
 
     if (formula_str.rfind ("kick(", 0) == 0)
@@ -3096,11 +3101,6 @@ juce::AudioBuffer<float>* render_synth_sample (const std::string &filename, int 
         return render_gabber_kick (formula_str, session_samplerate);
     }
 
-
-    if (formula_str.rfind ("boom_sound(", 0) == 0)
-    {
-        return render_boom_sound (formula_str, session_samplerate);
-    }
 
 
     if (formula_str.rfind ("box(", 0) == 0)
