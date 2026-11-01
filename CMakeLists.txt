@@ -103,32 +103,35 @@ set(JUCE_FORMATS VST3 Standalone)
 if(UNIX AND NOT APPLE)
     message(STATUS "Building LV2 plugin format")
     list(APPEND JUCE_FORMATS LV2)
+
+    # Подключаем OpenMP только для Linux
+    find_package(OpenMP REQUIRED)
 endif()
 
 add_definitions(-DJUCE_DISPLAY_SPLASH_SCREEN=0 -DJUCE_USE_MP3AUDIOFORMAT=1)
 
 
 juce_add_plugin(drumlabooh
-    # VERSION ...                               # Set this if the plugin version is different to the project version
-    # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
+    # VERSION ...                                   # Set this if the plugin version is different to the project version
+    # ICON_BIG ...                                # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
     # ICON_SMALL ...
      NEEDS_WEB_BROWSER=0
      NEEDS_MIDI_INPUT=TRUE
      JUCE_DISPLAY_SPLASH_SCREEN=0
      LV2URI https://github.com/psemiletov/drumlabooh
      LV2_SHARED_LIBRARY_NAME drumlabooh
-     COMPANY_NAME Semiletov                          # Specify the name of the plugin's author
-     IS_SYNTH TRUE                       # Is this a synth or an effect?
-     NEEDS_MIDI_INPUT TRUE               # Does the plugin need midi input?
+     COMPANY_NAME Semiletov                       # Specify the name of the plugin's author
+     IS_SYNTH TRUE                          # Is this a synth or an effect?
+     NEEDS_MIDI_INPUT TRUE                  # Does the plugin need midi input?
      VST3_CATEGORIES Instrument Sampler Synth Drum Generator
-    # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
-    # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
-     EDITOR_WANTS_KEYBOARD_FOCUS TRUE    # Does the editor need keyboard focus?
-    # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE        # Should the plugin be installed to a default location after building?
-     PLUGIN_MANUFACTURER_CODE PetR               # A four-character manufacturer id with at least one upper-case character
-     PLUGIN_CODE Petr                            # A unique four-character plugin id with exactly one upper-case character
+    # NEEDS_MIDI_OUTPUT TRUE/FALSE                 # Does the plugin need midi output?
+    # IS_MIDI_EFFECT TRUE/FALSE                    # Is this plugin a MIDI effect?
+     EDITOR_WANTS_KEYBOARD_FOCUS TRUE     # Does the editor need keyboard focus?
+    # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE         # Should the plugin be installed to a default location after building?
+     PLUGIN_MANUFACTURER_CODE PetR                # A four-character manufacturer id with at least one upper-case character
+     PLUGIN_CODE Petr                             # A unique four-character plugin id with exactly one upper-case character
                                                 # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
-     FORMATS ${JUCE_FORMATS}                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+     FORMATS ${JUCE_FORMATS}                    # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
      PRODUCT_NAME "drumlabooh")        # The name of the final executable, which can differ from the target name
 
 # `juce_generate_juce_header` will create a JuceHeader.h for a given target, which will be generated
@@ -164,7 +167,7 @@ target_compile_definitions(drumlabooh
     PUBLIC
         # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
         JUCE_JACK=0
-        NEEDS_WEBVIEW2=0 
+        NEEDS_WEBVIEW2=0
         JUCE_PLUGINHOST_LADSPA=0
         JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
         JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
@@ -177,6 +180,7 @@ target_link_libraries(drumlabooh
     PRIVATE
         # AudioPluginData           # If we'd created a binary data target, we'd link to it here
         juce::juce_audio_utils
+        $<$<BOOL:${UNIX}>:OpenMP::OpenMP_CXX> # Линкуем OpenMP под Linux
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
@@ -206,13 +210,13 @@ if(MULTI)
      NEEDS_MIDI_INPUT=TRUE
      LV2URI https://github.com/psemiletov/drumlabooh-multi
      LV2_SHARED_LIBRARY_NAME drumlabooh-multi
-     COMPANY_NAME Semiletov                     # Specify the name of the plugin's author
-     IS_SYNTH TRUE                       # Is this a synth or an effect?
-     NEEDS_MIDI_INPUT TRUE               # Does the plugin need midi input?
+     COMPANY_NAME Semiletov                      # Specify the name of the plugin's author
+     IS_SYNTH TRUE                          # Is this a synth or an effect?
+     NEEDS_MIDI_INPUT TRUE                  # Does the plugin need midi input?
      VST3_CATEGORIES Instrument Sampler Synth Drum Generator
-     EDITOR_WANTS_KEYBOARD_FOCUS TRUE    # Does the editor need keyboard focus?
-     PLUGIN_MANUFACTURER_CODE PEtR               # A four-character manufacturer id with at least one upper-case character
-     PLUGIN_CODE PetR                            # A unique four-character plugin id with exactly one upper-case character
+     EDITOR_WANTS_KEYBOARD_FOCUS TRUE     # Does the editor need keyboard focus?
+     PLUGIN_MANUFACTURER_CODE PEtR                # A four-character manufacturer id with at least one upper-case character
+     PLUGIN_CODE PetR                             # A unique four-character plugin id with exactly one upper-case character
                                                 # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
     FORMATS ${JUCE_FORMATS}                     # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
     PRODUCT_NAME "drumlabooh-multi")        # The name of the final executable, which can differ from the target name
@@ -234,7 +238,7 @@ target_sources(drumlabooh-multi
         ./Source/synth.cpp
         ./Source/fx-resofilter.cpp
         ./Source/resampler.c
-        
+
 )
 
   target_compile_definitions(drumlabooh-multi
@@ -243,7 +247,7 @@ target_sources(drumlabooh-multi
         -DMULTICHANNEL=1
         NEEDS_MIDI_INPUT=TRUE
         JUCE_JACK=0
-        NEEDS_WEBVIEW2=0 
+        NEEDS_WEBVIEW2=0
         JUCE_PLUGINHOST_LADSPA=0
         JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
         JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
@@ -253,6 +257,7 @@ target_sources(drumlabooh-multi
 target_link_libraries(drumlabooh-multi
     PRIVATE
         juce::juce_audio_utils
+        $<$<BOOL:${UNIX}>:OpenMP::OpenMP_CXX> # Линкуем OpenMP под Linux
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags

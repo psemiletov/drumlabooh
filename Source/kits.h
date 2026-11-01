@@ -60,8 +60,10 @@ public:
 
   int umin; //uint
   int umax; //uint
-  
-  
+
+  bool read_actually;
+  bool is_formula;
+
   std::string file_name; //name of the loaded file, full path
   
  // int channels; //channels at this layer
@@ -132,11 +134,16 @@ public:
   size_t map_uint_velo_to_layer_number (int velo);
 
   std::string get_name (bool by_current_layer = false);  
+
+  void load_actually();
+
   
   void add_layer();
 
   void print();
   void print_stats();
+
+
 
   void sample_next();
   void sample_prev();
@@ -210,7 +217,9 @@ public:
 
   void rnd_set_rnd_seed (uint64_t seed);
 
-  
+  void load_actually();
+
+
   void print();
   void print_stats();
   

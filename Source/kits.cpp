@@ -7,6 +7,10 @@ this code is the public domain
 #include <fstream>
 #include <sstream>
 
+
+#include <execution>
+
+
 #include <algorithm>
 #include <string>
 #include <chrono>
@@ -252,12 +256,22 @@ void CDrumLayer::load (const std::string &fname, int offset)
 void CDrumLayer::load_formula (const std::string &formula)
 {
 
- // std::cout << "void CDrumLayer::load_formual " << formula << " : " << session_samplerate << std::endl;
+  //std::cout << "void CDrumLayer::load_formual " << formula << " : " << session_samplerate << "\n";
+  //std::cout << "read_actually: " << read_actually << "\n";
+
+
+  file_name = formula;
+
+  if (! read_actually)
+    return;
+
 
   std::vector <std::string> v = split_string_to_vector (formula, "^", false);
 
   if (v.size() != 2)
      return;
+
+  //is_formula = true;
 
   file_name = v.at (0);
 
@@ -266,36 +280,19 @@ void CDrumLayer::load_formula (const std::string &formula)
   //std::cout << "FORMULA:" << v.at (1) << "\n";
 
 
+
   audio_buffer = render_synth_sample (v.at (1), session_samplerate, false);
 
   if (! audio_buffer)
      return;
-/*
-  // --- DIAGNOSTICS: print basic stats and first samples ---
-  int ns = audio_buffer->getNumSamples();
-  const float* rd = audio_buffer->getReadPointer(0);
-  double sumsq = 0.0;
-  float minv =  1e30f, maxv = -1e30f;
-  int inspectN = std::min(ns, 24);
-  std::cout << "[LOAD_FORMULA] buffer samples=" << ns << " first_" << inspectN << " =";
-  for (int i = 0; i < inspectN; ++i) {
-    float v = rd[i];
-    sumsq += double(v) * double(v);
-    if (v < minv) minv = v;
-    if (v > maxv) maxv = v;
-    std::cout << " " << v;
-  }
-  double rms = (ns>0) ? std::sqrt(sumsq / ns) : 0.0;
-  std::cout << "\n[LOAD_FORMULA] min=" << minv << " max=" << maxv << " rms=" << rms << std::endl;
-  // --- end diagnostics ---
-*/
-
 
   length_in_samples = audio_buffer->getNumSamples();
 
   if (audio_buffer->getNumSamples() > 0)
      channel_data = audio_buffer->getReadPointer (0);
 
+
+  std::cout << "void CDrumLayer::load_formual END \n";
  //std::cout << "22222\n";
 
 
@@ -311,18 +308,17 @@ void CDrumLayer::load (const std::string &fname, int offset)
 
 
   std::string ext = get_file_ext (fname);
+  file_name = fname;
+
+  if (! read_actually)
+    return;
+
 
 
  if (ext == "syn") //вообще на кой они нужны, син-файлы
-    {
     audio_buffer = render_synth_sample (fname, session_samplerate);
-    file_name = fname;
-   }
   else
-  {
     audio_buffer = load_whole_sample_resampled (fname, session_samplerate, offset);
-    file_name = fname;
-  }
 
 
   if (! audio_buffer)
@@ -347,10 +343,6 @@ void CDrumLayer::load (const std::string &fname, int offset)
 }
 
 
-
-
-
-
 CDrumLayer::CDrumLayer (CDrumSample *s)
 {
   drum_sample = s;
@@ -359,6 +351,8 @@ CDrumLayer::CDrumLayer (CDrumSample *s)
   audio_buffer = 0;
   length_in_samples = 0;
   channel_data = 0;
+  read_actually = false;
+  is_formula = false;
 }
 
 
@@ -404,6 +398,85 @@ CDrumSample::~CDrumSample()
        if (v_layers[i]) 
           delete v_layers[i];
       }
+}
+
+/*
+void CDrumSample::load_actually()
+{
+
+  //std::cout << "CDrumSample::load_actually() BEGIN\n";
+//  std::cout << "v_layers.size()" << v_layers.size() << "\n";
+
+  for (size_t i = 0; i < v_layers.size(); i++)
+  {
+
+    CDrumLayer *l = v_layers[i];
+    if (! l)
+       continue;
+
+   l->read_actually = true;
+
+   if (l->is_formula)
+     {
+       l->load_formula (l->file_name.c_str());
+    //   std::cout << "is_formula!!!!!!!!!!!!!!!!!!!!!! \n";
+     }
+   else
+      l->load (l->file_name.c_str());
+
+  }
+
+//  std::cout << "CDrumSample::load_actually() END\n";
+
+}
+*/
+
+
+void CDrumSample::load_actually()
+{
+//  #ifndef _WIN32
+//  #pragma omp parallel for num_threads(4)
+//  #endif
+
+  //#ifndef _WIN32
+  // Автоматически определяем потоки: берем аппаратный лимит,
+  // но ограничиваем сверху (например, не больше 8 или 16), чтобы не перегревать систему
+  //int num_t = std::min(6, (int)std::thread::hardware_concurrency());
+  //if (num_t < 1) num_t = 2;
+
+  //#pragma omp parallel for num_threads(num_t)
+  //#endif
+
+  #ifndef _WIN32
+  // Получаем количество логических потоков системы
+  unsigned int hw_threads = std::thread::hardware_concurrency();
+
+  // Делим на 2, чтобы задействовать только физические ядра,
+  // но защищаемся от слишком низких значений (минимум 2 потока)
+  int num_t = std::max(2u, hw_threads / 2);
+
+  // При желании можно поставить разумный потолок (например, не больше 8 или 16),
+  // если плагин запустится на мощном 32-ядерном монстре
+  //num_t = std::min(num_t, 8);
+
+  #pragma omp parallel for num_threads(num_t)
+  #endif
+
+
+  for (size_t i = 0; i < v_layers.size(); i++)
+  {
+    CDrumLayer *l = v_layers[i];
+    if (!l)
+      continue;
+
+    l->read_actually = true;
+
+    if (l->is_formula)
+      l->load_formula (l->file_name.c_str());
+    else
+      l->load (l->file_name.c_str());
+
+  }
 }
 
 
@@ -674,7 +747,6 @@ bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
 }
 
 
-//AI-generated
 std::string trim (const std::string& str) 
 {
   size_t first = 0;
@@ -988,7 +1060,9 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
                        if (check_for_synpak)
                          {
+
                            temp_sample->v_layers.back()->load_formula (filename.c_str());
+                           temp_sample->v_layers.back()->is_formula = true;
                            temp_sample->check_for_synpak = true;
                          }
                        else
@@ -2061,7 +2135,12 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
      {
       //LOAD DIRECTORY
   
+
+
       load_directory (kit_filename);    
+
+      load_actually();
+
       setup_auto_mute();
         
       auto stop = chrono::high_resolution_clock::now();
@@ -2085,6 +2164,8 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (ends_with (kit_filename, "drumkit.labooh"))
      {
       load_labooh_xml (source);
+      load_actually();
+
       setup_auto_mute();
       
       auto stop = chrono::high_resolution_clock::now();
@@ -2100,6 +2181,9 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (ends_with (kit_filename, "drumkit.txt"))
      {
       load_txt (source);
+
+         load_actually();
+
       setup_auto_mute();
      
       auto stop = chrono::high_resolution_clock::now();
@@ -2115,6 +2199,9 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (ends_with (kit_filename, "drumkitq.txt"))
      {
       load_qtxt (source);
+
+      load_actually();
+
       setup_auto_mute();
 
       auto stop = chrono::high_resolution_clock::now();
@@ -2130,6 +2217,9 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (ends_with (kit_filename, ".sfz"))
      {
       load_sfz (source);
+
+         load_actually();
+
       setup_auto_mute();
 
       auto stop = chrono::high_resolution_clock::now();
@@ -2144,6 +2234,9 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   //else Hydrogen format
   
   load_hydrogen (source);
+
+     load_actually();
+
   setup_auto_mute();
   
 
@@ -2322,6 +2415,7 @@ void CDrumKit::adapt() //used at Adapt button handler
            } 
       }
 }
+
 
 void CDrumKit::print()
 {
@@ -2857,3 +2951,24 @@ void CDrumKit::rnd_set_rnd_seed (uint64_t seed)
 }
   
   
+
+void  CDrumKit::load_actually()
+{
+//  std::cout << "CDrumKit::load_actually()  - 1 \n";
+
+  for (size_t i = 0; i < MAX_SAMPLES; i++)
+     {
+      CDrumSample *s = a_samples[i];
+      if (! s)
+        continue;
+
+  //     std::cout << "Sample name:" << s->get_name() << "\n";
+
+       s->load_actually();
+     }
+     //std::cout << "CDrumKit::load_actually()  - 2 \n";
+}
+
+
+
+
