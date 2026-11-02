@@ -1,38 +1,30 @@
 /*
-written at 2023-25 by Peter Semiletov
+written at 2023-26 by Peter Semiletov
 this code is the public domain
- */
+*/
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
-
-
 #include <execution>
-
-
 #include <algorithm>
 #include <string>
 #include <chrono>
 #include <random>
-
 #include <filesystem>
+#include <cctype> // для std::isspace
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <cctype> // для std::isspace
 
 
 #include "kits.h"
 #include "utl.h"
-//#include "speex_resampler_cpp.hpp"
 #include "resampler.h"
 
 #include "synth.h"
 
-
-using namespace std;
 
 
 std::mt19937 rnd_mt19937;
@@ -105,7 +97,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
   if (ext == "mp3")
   {
     // MP3 support not compiled in — skip and log
-    std::cerr << "MP3 support not available in this build, skipping file: " << fname << std::endl;
+    std::cerr << "MP3 support not available in this build, skipping file: " << fname << "\n";
     // reader stays nullptr; function will return 0 below
   }
   #endif
@@ -140,7 +132,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample (const std::string &fna
   //   if (! reader->read (buffer,  0, bufsize, offset,  true, true))
   if (! reader->read (buffer,  0, bufsize, offset,  true, false)) //read just left channel
      {
-      std::cout << "! reader->read from: " << fname << std::endl;
+      std::cout << "! reader->read from: " << fname << "\n";
 
       delete reader;
       delete buffer;
@@ -166,7 +158,7 @@ juce::AudioBuffer <float>* CDrumLayer::load_whole_sample_resampled (const std::s
 
   if (! buffer)
   {
-    std::cout << "load error: " << fname << std::endl;
+    std::cout << "load error: " << fname << "\n";
     return 0;
   }
 
@@ -323,7 +315,7 @@ void CDrumLayer::load (const std::string &fname, int offset)
 
   if (! audio_buffer)
      {
-      std::cout << "CDrumLayer::load ERROR: " << fname << std::endl;
+      std::cout << "CDrumLayer::load ERROR: " << fname << "\n";
       return;
      }
 
@@ -358,11 +350,11 @@ CDrumLayer::CDrumLayer (CDrumSample *s)
 
 void CDrumLayer::print()
 {
-  cout << "sample layer -- start" << endl;
-  cout << "file_name: " << file_name << endl;
-  cout << "min: " << min << endl;
-  cout << "max: " << max << endl;
-  cout << "sample layer -- end"  << endl;
+  std::cout << "sample layer -- start\n";
+  std::cout << "file_name: " << file_name << "\n";
+  std::cout << "min: " << min << "\n";
+  std::cout << "max: " << max << "\n";
+  std::cout << "sample layer -- end\n";
 }
 
 
@@ -434,19 +426,6 @@ void CDrumSample::load_actually()
 
 void CDrumSample::load_actually()
 {
-//  #ifndef _WIN32
-//  #pragma omp parallel for num_threads(4)
-//  #endif
-
-  //#ifndef _WIN32
-  // Автоматически определяем потоки: берем аппаратный лимит,
-  // но ограничиваем сверху (например, не больше 8 или 16), чтобы не перегревать систему
-  //int num_t = std::min(6, (int)std::thread::hardware_concurrency());
-  //if (num_t < 1) num_t = 2;
-
-  //#pragma omp parallel for num_threads(num_t)
-  //#endif
-
   #ifndef _WIN32
   // Получаем количество логических потоков системы
   unsigned int hw_threads = std::thread::hardware_concurrency();
@@ -461,33 +440,26 @@ void CDrumSample::load_actually()
 
   #pragma omp parallel for num_threads(num_t)
   #endif
-
-
   for (size_t i = 0; i < v_layers.size(); i++)
-  {
-    CDrumLayer *l = v_layers[i];
-    if (!l)
-      continue;
+      {
+       CDrumLayer *l = v_layers[i];
+       if (!l)
+         continue;
 
-    l->read_actually = true;
+       l->read_actually = true;
 
-    if (l->is_formula)
-      l->load_formula (l->file_name.c_str());
-    else
-      l->load (l->file_name.c_str());
-
-  }
+      if (l->is_formula)
+         l->load_formula (l->file_name.c_str());
+      else
+          l->load (l->file_name.c_str());
+     }
 }
 
 
 void CDrumSample::sample_next()
 {
-//  std::cout << "sample_next(), was: " << current_layer << std::endl;
-  
   if (current_layer < v_layers.size() - 1) 
       current_layer++;
-  
-//   std::cout << "sample_next(), now: " << current_layer << std::endl;
 }
 
 
@@ -495,21 +467,11 @@ void CDrumSample::sample_prev()
 {
   if (current_layer > 0) 
      current_layer--;
-  
-//  std::cout << "sample_prev(), now: " << current_layer << std::endl;
 }
-
-
-//УЧИТЫВАТЬ НАДПИСЬ В ЯЧЕЙКЕ может быть и CDrumSample.name и текст формулы по ее индексу!! ёпт
-//
 
 
 std::string CDrumSample::get_name (bool by_current_layer)
 {
-//  std::cout << "std::string CDrumSample::get_name (bool by_current_layer) BEGIN\n";
-
-//  std::cout << "name: " << name << "\n";
-
   if (by_current_layer)
      {
       std::string result;
@@ -533,10 +495,6 @@ std::string CDrumSample::get_name (bool by_current_layer)
 
       return result; 
      }
-  
-//  std::cout << "std::string CDrumSample::get_name (bool by_current_layer) END\n";
-
-
   return name;
 }
 
@@ -597,10 +555,10 @@ void CDrumSample::add_layer()
 
 void CDrumSample::print()
 {
-  cout << "CDrumSample -- start"  << endl;
+  std::cout << "CDrumSample -- start\n";
 
-  cout << "id: " << id << endl;
-  cout << "name: " << name << endl;
+  std::cout << "id: " << id << "\n";
+  std::cout << "name: " << name << "\n";
 //  cout << "midiOutNote: " << midiOutNote << endl;
 
   for (auto l: v_layers)
@@ -608,14 +566,14 @@ void CDrumSample::print()
        l->print();
       }
 
-  cout << "CDrumSample -- end"  << endl;
+  std::cout << "CDrumSample -- end\n";
 }
 
 
 void CDrumSample::print_stats()
 {
 //  cout << "id: " << id << endl;
-  cout << "name: " << name << endl;
+  std::cout << "name: " << name << "\n";
  // cout << "midiOutNote: " << midiOutNote << endl;
 }
 
@@ -630,7 +588,7 @@ CHydrogenXMLWalker::CHydrogenXMLWalker (CDrumKit *hkit)
 
 bool CHydrogenXMLWalker::for_each (pugi::xml_node &node)
 {
-  string node_name = node.name();
+  std::string node_name = node.name();
   pugi::xml_text txt = node.text();
 
    //if (node_name == "drumkit_info")
@@ -765,7 +723,7 @@ std::string trim (const std::string& str)
         }
 
   // Возвращаем подстроку без начальных и конечных пробелов
-  return str.substr(first, last - first);
+  return str.substr (first, last - first);
 }
 
 //NEW FOR MAC
@@ -912,7 +870,7 @@ void CDrumKit::load_labooh_xml (const std::string &data)
 
        bool check_for_dir = false; //is dir insead of file, file list or txt-file?
 
-       if (fname.find (".") == string::npos) //is directory?
+       if (fname.find (".") == std::string::npos) //is directory?
           {
            if (is_directory_safe (kit_dir + "/" + fname))
               {
@@ -921,13 +879,13 @@ void CDrumKit::load_labooh_xml (const std::string &data)
               }
           }
 
-       if (fname.find (".txt") != string::npos)
+       if (fname.find (".txt") != std::string::npos)
           {
             check_for_txt = true;
             check_for_dir = false;
           }
 
-      if (fname.find (".synpak") != string::npos)
+      if (fname.find (".synpak") != std::string::npos)
           {
             check_for_txt = false;
             check_for_dir = false;
@@ -1212,8 +1170,8 @@ void CDrumKit::load_txt (const std::string &data)
 
   kit_type = KIT_TYPE_DRUMLABOOH;
   
-  stringstream st (data);
-  string line;
+  std::stringstream st (data);
+  std::string line;
 
   while (getline (st, line))
         {
@@ -1225,15 +1183,15 @@ void CDrumKit::load_txt (const std::string &data)
 
          size_t pos = line.find ("=");
 
-         if (pos == string::npos)
+         if (pos == std::string::npos)
              continue;
 
          if (pos > line.size())
              continue;
 
 
-         string sample_name = line.substr (0, pos);
-         string fname = line.substr (pos + 1, line.size() - pos);
+         std::string sample_name = line.substr (0, pos);
+         std::string fname = line.substr (pos + 1, line.size() - pos);
 
          if (fname.empty())
             continue;
@@ -1254,7 +1212,7 @@ void CDrumKit::load_txt (const std::string &data)
   //       bool check_for_random_noice = false;
          bool check_for_txt = false;
                   
-         if (fname.find (".txt") != string::npos)
+         if (fname.find (".txt") != std::string::npos)
              check_for_txt = true;
          
          if (sample_name.rfind ("*", 0) == 0) 
@@ -1276,9 +1234,9 @@ void CDrumKit::load_txt (const std::string &data)
             } 
 
             
-         if ((check_for_list != string::npos) || check_for_txt)
+         if ((check_for_list != std::string::npos) || check_for_txt)
             {
-             vector <string> v_fnames;
+             std::vector <std::string> v_fnames;
              
              if (check_for_txt)
                 {
@@ -1296,7 +1254,7 @@ void CDrumKit::load_txt (const std::string &data)
              
              if (! str_note.empty())
                 {
-                 temp_sample->mapped_note = std::stoi(str_note);
+                 temp_sample->mapped_note = std::stoi (str_note);
                  map_samples[temp_sample->mapped_note] = temp_sample;
                 // std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
                  has_mapping = true;
@@ -1316,7 +1274,7 @@ void CDrumKit::load_txt (const std::string &data)
              if (! check_for_txt) 
              for (auto f: v_fnames)
                  {
-                  string filename = kit_dir + "/" + f;
+                  std::string filename = kit_dir + "/" + f;
                   temp_sample->add_layer();
 
                   if (file_exists (filename))
@@ -1325,10 +1283,10 @@ void CDrumKit::load_txt (const std::string &data)
              else   
              for (auto f: v_fnames)
                  {
-                  filesystem::path pt (kit_dir + "/" + fname); //full path for samples.txt
+                  std::filesystem::path pt (kit_dir + "/" + fname); //full path for samples.txt
  
-                  string fpath = pt.parent_path().string();  //get path with dirs only
-                  string filename = fpath + "/" + f; // get full path to filename of the each sample
+                  std::string fpath = pt.parent_path().string();  //get path with dirs only
+                  std::string filename = fpath + "/" + f; // get full path to filename of the each sample
                   temp_sample->add_layer();
 
                   if (file_exists (filename))
@@ -1432,7 +1390,7 @@ void CDrumKit::load_qtxt (const std::string &data)
           
          size_t pos = line.find ("=");
 
-         if (pos == string::npos)
+         if (pos == std::string::npos)
              continue;
 
          if (pos > line.size())
@@ -1587,24 +1545,24 @@ std::string sfz_extract_sample_filename (const std::string &line)
   std::string pattern = "sample=";
   
   size_t start_pos = line.find (pattern);
-  if (start_pos == string::npos) 
+  if (start_pos == std::string::npos)
       return result;
     
   ext = ".wav";
   size_t end_pos = line.find (ext);
   
-  if (end_pos == string::npos) 
+  if (end_pos == std::string::npos)
      {
       ext = ".flac";
-      if (end_pos == string::npos) 
+      if (end_pos == std::string::npos)
          {
           ext = ".aif"; //aiff too
           end_pos = line.find (ext);
-          if (end_pos == string::npos) 
+          if (end_pos == std::string::npos)
             {
              ext = ".ogg";
              end_pos = line.find (ext);
-             if (end_pos == string::npos) 
+             if (end_pos == std::string::npos)
                 {
                  ext = ".mp3";
                  end_pos = line.find (ext);
@@ -1614,7 +1572,7 @@ std::string sfz_extract_sample_filename (const std::string &line)
      }
     
 
-  if (end_pos != string::npos) 
+  if (end_pos != std::string::npos)
      result = line.substr (start_pos + pattern.size(), end_pos + ext.size());
   
   return result;
@@ -1867,20 +1825,20 @@ void CDrumKit::load_sfz (const std::string &data)
    
        // В начале load_sfz, после проверки data.empty() и data.find("lorand")
        // (lorand уже проверяется, добавим остальные)
-  if (data.find ("seq_position")     != string::npos ||
-    data.find ("seq_length")       != string::npos ||
-    data.find ("hirand")           != string::npos ||
-    data.find ("lorand")           != string::npos ||
-    data.find ("sw_last")          != string::npos ||
-    data.find ("sw_lokey")         != string::npos ||
-    data.find ("sw_hikey")         != string::npos ||
-    data.find ("sw_previous")      != string::npos ||
-    data.find ("sw_default")       != string::npos ||
-    data.find ("pitch_keycenter")  != string::npos ||
-    data.find ("lokey=")           != string::npos ||
-    data.find ("hikey=")           != string::npos)
+  if (data.find ("seq_position")     != std::string::npos ||
+    data.find ("seq_length")       != std::string::npos ||
+    data.find ("hirand")           != std::string::npos ||
+    data.find ("lorand")           != std::string::npos ||
+    data.find ("sw_last")          != std::string::npos ||
+    data.find ("sw_lokey")         != std::string::npos ||
+    data.find ("sw_hikey")         != std::string::npos ||
+    data.find ("sw_previous")      != std::string::npos ||
+    data.find ("sw_default")       != std::string::npos ||
+    data.find ("pitch_keycenter")  != std::string::npos ||
+    data.find ("lokey=")           != std::string::npos ||
+    data.find ("hikey=")           != std::string::npos)
   {
-    std::cout << "Unsupported SFZ: advanced features detected" << std::endl;
+    std::cout << "Unsupported SFZ: advanced features detected\n";
     return;
   }
 
@@ -1972,7 +1930,7 @@ void CDrumKit::load_sfz (const std::string &data)
            continue;
 
        // A new region or group marks the end of the previous one.
-       if (line.find ("<region>") != string::npos || line.find ("<group>") != string::npos)
+       if (line.find ("<region>") != std::string::npos || line.find ("<group>") != std::string::npos)
           {
            commit_region();
            region_scope = true;
@@ -2002,7 +1960,7 @@ void CDrumKit::load_sfz (const std::string &data)
           }
 
        std::string temp_file_just_name;
-       if (line.find ("sample=") != string::npos)
+       if (line.find ("sample=") != std::string::npos)
           temp_file_just_name = sfz_extract_sample_filename (line);
 
        if (! temp_file_just_name.empty())
@@ -2115,7 +2073,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   if (fname.empty())
      return;
      
-  auto start = chrono::high_resolution_clock::now();
+  auto start = std::chrono::high_resolution_clock::now();
 
   samplerate = sample_rate;
 
@@ -2143,7 +2101,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
       setup_auto_mute();
         
-      auto stop = chrono::high_resolution_clock::now();
+      auto stop = std::chrono::high_resolution_clock::now();
       //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
  
       load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
@@ -2168,11 +2126,11 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
       setup_auto_mute();
       
-      auto stop = chrono::high_resolution_clock::now();
+      auto stop = std::chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
       load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
-      str_load_duration_msecs  = "Loaded, msecs: " + std::to_string (load_duration_msecs);
+      str_load_duration_msecs = "Loaded, msecs: " + std::to_string (load_duration_msecs);
 
       return;
      }
@@ -2186,11 +2144,11 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
       setup_auto_mute();
      
-      auto stop = chrono::high_resolution_clock::now();
+      auto stop = std::chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
       load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
-      str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
+      str_load_duration_msecs = "loaded at msecs: " + std::to_string (load_duration_msecs);
 
       return;
      }
@@ -2204,11 +2162,11 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
       setup_auto_mute();
 
-      auto stop = chrono::high_resolution_clock::now();
+      auto stop = std::chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
       load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
-      str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
+      str_load_duration_msecs = "loaded at msecs: " + std::to_string (load_duration_msecs);
   
       return;
      }
@@ -2222,11 +2180,11 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
 
       setup_auto_mute();
 
-      auto stop = chrono::high_resolution_clock::now();
+      auto stop = std::chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
       load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
-      str_load_duration_msecs  = "loaded at msecs: " + std::to_string (load_duration_msecs);
+      str_load_duration_msecs = "loaded at msecs: " + std::to_string (load_duration_msecs);
   
       return;
      }
@@ -2240,7 +2198,7 @@ void CDrumKit::load (const std::string &fname, int sample_rate)
   setup_auto_mute();
   
 
-  auto stop = chrono::high_resolution_clock::now();
+  auto stop = std::chrono::high_resolution_clock::now();
   //auto duration_msecs = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
   load_duration_msecs = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
@@ -2419,7 +2377,7 @@ void CDrumKit::adapt() //used at Adapt button handler
 
 void CDrumKit::print()
 {
-  cout << "void CDrumKit::print() -- start" << endl;
+  std::cout << "void CDrumKit::print() -- start\n";
 
   for (size_t i = 0; i < 36; i++)
       {
@@ -2427,16 +2385,16 @@ void CDrumKit::print()
            a_samples[i]->print();
       }
 
-  cout << "samples count:" << sample_counter << endl;
-  cout << "void CDrumKit::print() -- end" << endl;
+  std::cout << "samples count:" << sample_counter << "\n";
+ std::cout << "void CDrumKit::print() -- end\n";
 }
 
 
 void CDrumKit::print_stats()
 {
-  cout << "void CDrumKit::print-stats() -- start" << endl;
+  std::cout << "void CDrumKit::print-stats() -- start\n";
 
-  cout << "kitname: " << kit_name << endl;
+  std::cout << "kitname: " << kit_name << "\n";
 
   for (size_t i = 0; i < 36; i++)
       {
@@ -2444,7 +2402,7 @@ void CDrumKit::print_stats()
           a_samples[i]->print_stats();
       }
 
-  cout << "void CDrumKit::print-stats() -- end" << endl;
+  std::cout << "void CDrumKit::print-stats() -- end\n";
 }
 
 
@@ -2607,7 +2565,7 @@ void CDrumKitsScanner::scan()
           {
            std::string kit_name = get_last_part (kd);
            
-           map_kits.insert (pair<string,string> (kit_name, kd));
+           map_kits.insert (std::pair<std::string,std::string> (kit_name, kd));
            v_kits_names.push_back (kit_name);
            
            continue;
@@ -2684,7 +2642,7 @@ void CDrumKitsScanner::scan()
            
            if (! kit_name.empty())
               {
-               map_kits.insert (pair<string,string> (kit_name, fname));
+               map_kits.insert (std::pair<std::string,std::string> (kit_name, fname));
                v_kits_names.push_back (kit_name);
              //  std::cout << "ADD kit_name: " << kit_name << " |||| fname: " << fname << std::endl;
               }
