@@ -1,0 +1,62 @@
+# This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
+# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
+name: CMake + NSIS on Windows V3
+
+on: [workflow_dispatch]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DMULTI=ON
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Copy OpenMP Runtime (vcomp140.dll)
+      shell: pwsh
+      run: |
+        # Ищем vcomp140.dll по стандартному пути MSVC через переменную окружения VCINSTALLDIR
+        $vcompPath = Get-ChildItem "$env:VCInstallerDir\Tools\MSVC\*\bin\Hostx64\x64\vcomp140.dll" -ErrorAction SilentlyContinue | Select-Object -First 1
+        if (-not $vcompPath) {
+            # Запасной поиск, если переменная не подхватилась
+            $vcompPath = Get-ChildItem "C:\Program Files*\Microsoft Visual Studio\*\Enterprise\VC\Tools\MSVC\*\bin\Hostx64\x64\vcomp140.dll" -ErrorAction SilentlyContinue | Select-Object -First 1
+        }
+        if (-not $vcompPath) {
+            $vcompPath = Get-ChildItem "C:\Program Files*\Microsoft Visual Studio\*\Community\VC\Tools\MSVC\*\bin\Hostx64\x64\vcomp140.dll" -ErrorAction SilentlyContinue | Select-Object -First 1
+        }
+
+        if ($vcompPath) {
+            Write-Host "Found OpenMP DLL: $($vcompPath.FullName)"
+            $targetDir1 = "${{github.workspace}}/build/drumlabooh_artefacts/Release/VST3/drumlabooh.vst3/Contents/x86_64-win"
+            $targetDir2 = "${{github.workspace}}/build/drumlabooh-multi_artefacts/Release/VST3/drumlabooh-multi.vst3/Contents/x86_64-win"
+
+            if (Test-Path $targetDir1) { Copy-Item $vcompPath.FullName $targetDir1 -Force }
+            if (Test-Path $targetDir2) { Copy-Item $vcompPath.FullName $targetDir2 -Force }
+            Write-Host "vcomp140.dll successfully copied to plugin bundles."
+        } else {
+            Write-Warning "vcomp140.dll not found, OpenMP might run on system runtime if available."
+        }
+
+    - name: Install NSIS
+      run: choco install nsis -y
+
+    - name: Create NSIS installer
+      uses: joncloud/makensis-action@v5.0
+      with:
+        arguments: "/V3"
+        script-file: ${{github.workspace}}/install.nsi
+
+    - name: Get installer
+      uses: actions/upload-artifact@v4
+      with:
+        name: drumlabooh-installer.exe
+        path: drumlabooh-installer.exe

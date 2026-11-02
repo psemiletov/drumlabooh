@@ -1,5 +1,5 @@
 /*
-2023-25, Peter Semiletov
+2023-26, Peter Semiletov
 */
 
 #include <random>
@@ -437,8 +437,6 @@ float VelocityToLevel (int velocity)
 }
 
 
-
-
 //==============================================================================
 bool CAudioProcessor::hasEditor() const
 {
@@ -458,7 +456,6 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
   //std::string  get_home_dir
  
 //  std::cout << "void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)\n";
-
   
   //for ALT kits 
   if (drumkit)
@@ -475,8 +472,8 @@ void CAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
   
   std::string drumkitpath_to_save = transform_kit_path_from_local (drumkit_path); 
   
-  std::cout << "SAVE PATH drumkitpath_to_save: " << drumkitpath_to_save << std::endl;
-  std::cout << "SAVE PATH drumkit_path: " << drumkit_path << std::endl;
+  std::cout << "SAVE PATH drumkitpath_to_save: " << drumkitpath_to_save << "\n";
+  std::cout << "SAVE PATH drumkit_path: " << drumkit_path << "\n";
   
   //save_string_keyval ("drumkit_path", drumkit_path);
   save_string_keyval ("drumkit_path", drumkitpath_to_save);
@@ -612,7 +609,7 @@ bool CAudioProcessor::load_kit (const std::string &fullpath)
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new CAudioProcessor();
+  return new CAudioProcessor();
 }
 
 
@@ -673,9 +670,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
    
    
   drumkit->rnd_set_rnd_seed (currentSamplePosition + randomizer_seed);
-  
-  
-     //////////////////////
+
+  //////////////////////
   // CACHE ALL ATOMIC PARAMETERS
  
  
@@ -733,28 +729,17 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                s = drumkit->map_samples[note_number];
            else           
                s = drumkit->a_samples[nn];
-
            
-           /*
-           if (int_midimap_mode == MIDIMAPMODE_LABOOH)
-               s = drumkit->a_samples[nn];
-            else
-                if (drumkit->map_samples.count (note_number) > 0) 
-                    s = drumkit->map_samples[note_number];
              
-            */ 
-             
-//                    std::cout << "play mapped note: " << note_number << std::endl;
-  
-            if (! s)
+           if (! s)
                continue;
   
-            if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
-                s->trigger_sample (velocity);
-            else //new
-                if (s->layer_index_mode == LAYER_INDEX_MODE_ALT)
-                   s->trigger_sample_uint_by_index (uvelocity, velocity);  
-                else            
+           if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
+               s->trigger_sample (velocity);
+           else //new
+               if (s->layer_index_mode == LAYER_INDEX_MODE_ALT)
+                  s->trigger_sample_uint_by_index (uvelocity, velocity);
+               else
                    s->trigger_sample_uint (uvelocity, velocity);
             
 //            std::cout << "s->current_layer:" << s->current_layer << std::endl;
@@ -805,26 +790,26 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
     //for each drum instrument
      for (int drum_sample_index = 0; drum_sample_index < MAX_SAMPLES; drum_sample_index++)
-        {
+         {
          //for each sample out_buf_offs
-         for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
-             {
-              CDrumSample *s = drumkit->a_samples[drum_sample_index];
-              if (! s)
+          for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
+              {
+               CDrumSample *s = drumkit->a_samples[drum_sample_index];
+               if (! s)
                  // std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
                   continue;
 
-              if (! s->active)
-                 continue;
+               if (! s->active)
+                  continue;
 
 
               //std::cout << "s->current_layer:" << s->current_layer << std::endl;
 
-              CDrumLayer *l = s->v_layers.at (s->current_layer);
+               CDrumLayer *l = s->v_layers.at (s->current_layer);
 
-              if (! l)
+               if (! l)
                  {
-                  std::cout << "!l at s->current_layer:" << s->current_layer << std::endl;
+                  std::cout << "!l at s->current_layer:" << s->current_layer << "\n";
                   break;
                  }
 
@@ -860,23 +845,22 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                        }
 
 
-                   //bool hp_on = *(hps[drum_sample_index]) > 0.5f;
                     bool hp_on = a_hps [drum_sample_index];
 
                                       
-                   if (hp_on)
-                      {
-                       hp[drum_sample_index].set_cutoff (a_hp_cutoff[drum_sample_index]);
-                       hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
+                    if (hp_on)
+                       {
+                        hp[drum_sample_index].set_cutoff (a_hp_cutoff[drum_sample_index]);
+                        hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
 
-                       fl = softLimit (hp[drum_sample_index].process (fl));
-                      }
+                        fl = softLimit (hp[drum_sample_index].process (fl));
+                       }
  
-                   if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
+                    if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
                        fl *= s->velocity;
                   
-                   channel_data[drum_sample_index][out_buf_offs] = fl;
-                  }
+                    channel_data[drum_sample_index][out_buf_offs] = fl;
+                   }
 
              }
         } 
@@ -1140,7 +1124,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   
               if (! l)
                  {
-                  std::cout << "!l at s->current_layer:" << s->current_layer << std::endl;
+                  std::cout << "!l at s->current_layer:" << s->current_layer << "\n";
                   break;
                  }
 
