@@ -1129,6 +1129,12 @@ void CDrumKit::load_labooh_xml2 (const std::string &data)
                                              {
                                               int note = std::stoi (item_sample.attribute ("note").value());
                                               map_samples.erase (note);
+
+                                              // Если после удаления маппингов не осталось —
+                                              // сбрасываем флаг, иначе он останется true при пустом map_samples
+                                              if (map_samples.empty())
+                                                has_mapping = false;
+
                                              }
                                           // Откатываем глобальный счетчик сэмплов назад
 
