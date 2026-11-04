@@ -1636,6 +1636,53 @@ void CAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
 }
 
 
+
+void CTimer::timerCallback()
+{
+  if (! uplink)
+    return;
+
+  if (! uplink->isVisible())
+    return;
+
+  if (! uplink->audioProcessor.drumkit)
+    return;
+
+  if (uplink->need_to_update_cells && uplink->audioProcessor.drumkit->loaded)
+  {
+    uplink->need_to_update_cells = false;
+    uplink->load_kit();
+  }
+
+  //  for (int i = 0; i < uplink->audioProcessor.drumkit->v_samples.size(); i++)
+  for (int i = 0; i < 36; i++)
+  {
+    CDrumSample *s = 0;
+    s = uplink->audioProcessor.drumkit->a_samples[i];
+
+    if (! s)
+      continue;
+
+    #ifndef MULTICHANNEL
+    bool mute = *(uplink->audioProcessor.mutes[i]) > 0.5f;
+
+    if (mute)
+    {
+      uplink->drumcells[i].led.is_on = false;
+      uplink->drumcells[i].led.velocity = 0;
+
+      continue;
+    }
+
+    #endif
+    bool actv = s->active;
+    uplink->drumcells[i].led.is_on = actv;
+    uplink->drumcells[i].led.velocity = s->velocity;
+    uplink->drumcells[i].led.repaint();
+  }
+}
+
+/*
 void CTimer::hiResTimerCallback()
 {
   if (! uplink)
@@ -1680,6 +1727,7 @@ void CTimer::hiResTimerCallback()
          uplink->drumcells[i].led.repaint();
         }
 }
+*/
 
 
 CDrumkitsListBoxModel::CDrumkitsListBoxModel()

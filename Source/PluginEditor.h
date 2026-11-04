@@ -119,6 +119,7 @@ public:
 };
 
 
+/*
 class CTimer: public juce::HighResolutionTimer
 {
 public:
@@ -126,6 +127,14 @@ public:
   CTimer() {};
   CAudioProcessorEditor *uplink = 0;
   void hiResTimerCallback() override;
+};
+*/
+
+class CTimer : public juce::Timer
+{
+public:
+  void timerCallback() override;   // вместо hiResTimerCallback
+  CAudioProcessorEditor *uplink = nullptr;
 };
 
 
