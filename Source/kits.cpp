@@ -305,12 +305,16 @@ void CDrumLayer::load (const std::string &fname, int offset)
   if (! read_actually)
     return;
 
-
-
+  //FIXME проверить как это отображается в слотах ваще
  if (ext == "syn") //вообще на кой они нужны, син-файлы
-    audio_buffer = render_synth_sample (fname, session_samplerate);
+    {
+     audio_buffer = render_synth_sample (fname, session_samplerate);
+     is_formula = true;
+     file_name = fname;
+    }
+
   else
-    audio_buffer = load_whole_sample_resampled (fname, session_samplerate, offset);
+      audio_buffer = load_whole_sample_resampled (fname, session_samplerate, offset);
 
 
   if (! audio_buffer)
@@ -319,9 +323,8 @@ void CDrumLayer::load (const std::string &fname, int offset)
       return;
      }
 
-//        length_in_samples = audio_buffer->getNumSamples();
 
-//FIXME: ВОТ ТУТ ПОНЯТЬ!!!
+//FIXME: ВОТ ТУТ УТОЧНИТЬ
 
       length_in_samples = audio_buffer->getNumSamples();
 
@@ -444,9 +447,11 @@ std::string CDrumSample::get_name (bool by_current_layer)
   if (by_current_layer)
      {
       std::string result;
-      if (current_layer > v_layers.size() - 1)
+    // if (current_layer > v_layers.size() - 1)
+      if (v_layers.empty() || current_layer >= v_layers.size())
           return result;
-        
+
+
       result = v_layers[current_layer]->file_name;
 
       if (! check_for_synpak)
@@ -707,6 +712,369 @@ static inline std::string parent_path_of (const std::string &fullpath)
 
 void CDrumKit::load_labooh_xml (const std::string &data)
 {
+  // std::cout << "void CDrumKit::load_labooh_xml (const std::string &data)\n";
+
+  if (data.empty())
+    return;
+
+  size_t sep_pos = kit_dir.rfind (DIR_SEPARATOR);
+  kit_name = kit_dir.substr (sep_pos + 1);
+
+  kit_type = KIT_TYPE_DRUMLABOOH;
+
+  pugi::xml_document doc;
+
+  // cout << "loading kit: " << fname << endl;
+  //cout << "source: " << source << endl;
+
+  pugi::xml_parse_result result = doc.load_buffer (data.c_str(), data.size());
+
+  if (! result)
+    return;
+
+  pugi::xml_node samples = doc.child ("root");
+
+  //  std::string str_kit_type = samples.attribute ("type").value();
+  //if (str_kit_type == "alt")
+  // kit_type = KIT_TYPE_ALTDRUMLABOOH;
+
+
+  for (pugi::xml_node item_sample = samples.first_child(); item_sample; item_sample = item_sample.next_sibling())
+  {
+    // std::cout << item_sample.text().as_string() << std::endl;
+
+    if (sample_counter == MAX_SAMPLES) //WE DON'T LOAD MORE THAN 36 SAMPLES
+      break;
+
+    //load samples
+
+    std::string fname = item_sample.text().as_string(); //file name[s]
+
+    fname = trim (fname);
+
+    if (fname.empty())
+      continue;
+    //////
+
+    //std::cout << "item_sample " << item_sample.attribute("Filename").value() << "\n";
+    temp_sample = add_sample (sample_counter++);
+
+    auto cancel_sample_loading = [&]()
+    {
+      // Удаляем маппинг ноты, если он успел прописаться
+      if (! item_sample.attribute("note").empty())
+      {
+        int note = std::stoi (item_sample.attribute ("note").value());
+        map_samples.erase (note);
+      }
+      // Откатываем глобальный счетчик сэмплов назад
+
+      sample_counter--;
+      // Зануляем указатель в массиве, чтобы setup_auto_mute и другие методы туда не совались
+      a_samples[sample_counter] = nullptr;
+      // Удаляем объект из памяти (если add_sample выделяет его через new)
+      delete temp_sample;
+      temp_sample = nullptr;
+    };
+
+
+    //read params
+
+    temp_sample->name = item_sample.attribute ("name").value();
+    std::string str_note = item_sample.attribute ("note").value();
+
+    //  std::cout << "DEBUG: Assigned name to sample = [" << temp_sample->name << "]" << std::endl;
+
+    if (! str_note.empty())
+    {
+      temp_sample->mapped_note = std::stoi (str_note);
+      map_samples[temp_sample->mapped_note] = temp_sample;
+      // std::cout << "MIDI note " << v_samples.back()->mapped_note << " is mapped\n";
+      has_mapping = true;
+    }
+
+    std::string str_mute_group = item_sample.attribute ("mute_group").value();
+    if (! str_mute_group.empty())
+    {
+      temp_sample->mute_group = std::stoi (str_mute_group);
+      mute_groups_auto = false;
+    }
+
+
+    std::string layer_index_mode = item_sample.attribute ("layer_index_mode").value();
+
+    //   std::cout << "layer_index_mode" << layer_index_mode << std::endl;
+
+    temp_sample->layer_index_mode = LAYER_INDEX_MODE_VEL; //default
+
+    if (layer_index_mode == "rnd")
+      temp_sample->layer_index_mode = LAYER_INDEX_MODE_RND;
+
+    if (layer_index_mode == "robin")
+      temp_sample->layer_index_mode = LAYER_INDEX_MODE_ROBIN;
+
+    if (layer_index_mode == "no_velocity")
+      temp_sample->layer_index_mode = LAYER_INDEX_MODE_NOVELOCITY;
+
+    if (layer_index_mode == "alt")
+      temp_sample->layer_index_mode = LAYER_INDEX_MODE_ALT;
+
+    std::string reverse_order_mode = item_sample.attribute ("reverse_order_mode").value();
+    if (reverse_order_mode == "1" || reverse_order_mode == "on")
+      temp_sample->reverse_order_mode = true;
+
+    std::string show_instrument_name_for_alts = item_sample.attribute ("show_instrument_name_for_alts").value();
+    if (show_instrument_name_for_alts == "1" || show_instrument_name_for_alts == "on")
+      temp_sample->show_instrument_name_for_alts = true;
+
+
+
+
+    //load samples
+
+
+    // std::cout << "fname" << fname << std::endl;
+
+    //       size_t check_for_list = fname.find (",");
+    bool check_for_txt = false;
+
+    bool check_for_synpak = false;
+
+
+
+    bool check_for_dir = false; //is dir insead of file, file list or txt-file?
+
+    if (fname.find (".") == std::string::npos) //is directory?
+    {
+      if (is_directory_safe (kit_dir + "/" + fname))
+      {
+        check_for_dir = true;
+        check_for_txt = false;
+      }
+    }
+
+    if (fname.find (".txt") != std::string::npos)
+    {
+      check_for_txt = true;
+      check_for_dir = false;
+    }
+
+    if (fname.find (".synpak") != std::string::npos)
+    {
+      check_for_txt = false;
+      check_for_dir = false;
+      check_for_synpak = true;
+    }
+
+
+
+    //    if ((check_for_list != string::npos) || check_for_txt || check_for_dir || check_for_synpak)
+    //больше чем один слой на сэмпл
+
+    std::vector <std::string> v_fnames;
+
+    // BEGIN CHECK FOR DIR
+    if (check_for_dir) //читаем список файлов из директории
+    {
+      if  (! file_exists (kit_dir + "/" + fname))
+      {
+        cancel_sample_loading();
+        continue;
+      }
+
+      v_fnames = get_audio_files_list (kit_dir + "/" + fname);
+
+      if (v_fnames.empty())
+      {
+        cancel_sample_loading();
+        continue;
+      }
+
+      std::sort (v_fnames.begin(), v_fnames.end());
+
+
+      if (temp_sample->reverse_order_mode)
+        std::reverse (v_fnames.begin(), v_fnames.end());
+    }
+    // END CHECK FOR DIR
+
+    else// BEGIN CHECK FOR TXT
+      if (check_for_txt) //читаем список файлов из текстового файла
+      {
+        //нет текстового файла? охрана отмена!
+        if (! file_exists (kit_dir + "/" + fname))
+        {
+          cancel_sample_loading();
+          continue;
+        }
+
+        std::string file_data = string_file_load (kit_dir + "/" + fname);
+        v_fnames = split_string_to_vector (file_data, "\n", false);
+      } // END CHECK FOR DIR
+      else
+        if (check_for_synpak)
+          // BEGIN CHECK FOR SYNPAK
+        {
+          //есть ли файл с синпаком? нет? охрана отмена
+          if (! file_exists (kit_dir + "/" + fname))
+          {
+            cancel_sample_loading();
+            continue;
+          }
+
+          std::string file_content = string_file_load (kit_dir + "/" + fname);
+          v_fnames = split_string_to_vector (file_content, "\n", false);
+        }
+        // END CHECK FOR SYNPAK
+        else// BEGIN JUST COMMA SEPARATED LIST
+          //читаем список файлов прямо из элемента
+          v_fnames = split_string_to_vector (fname, ",", false);
+
+    // END JUST COMMA SEPARATED LIST
+
+    //список файлов/патчей пустой? охрана отмена
+    if (v_fnames.size() == 0)
+    {
+      cancel_sample_loading();
+      continue;
+    }
+
+    if (v_fnames.size() > 128)
+      v_fnames.resize (128);
+
+    //тут у нас уже гарантированно больше нуля элементов v_fnames
+
+    //если просто элементы через запятые
+    if (! check_for_txt && ! check_for_dir && ! check_for_synpak)
+      for (auto f: v_fnames)
+      {
+
+        //формируем полный путь
+        std::string filename = kit_dir + "/" + f;
+
+        std::cout << "HERE WE ARE: " << filename << "\n";
+
+
+        if (file_exists (filename))
+        {
+          std::cout << "YEAH\n";
+
+          temp_sample->add_layer();
+          temp_sample->v_layers.back()->load (filename.c_str());
+        }
+      }
+      else //v_fnames взяты из текстового файла или из каталога либо из синпака
+        for (auto f: v_fnames)
+        {
+          #if !defined(__APPLE__)
+          // non-macOS: use std::filesystem if available
+          std::filesystem::path pt (kit_dir + "/" + fname); // full path for samples.txt
+          std::string fpath = pt.parent_path().string();    // get path with dirs only
+          std::string filename = fpath + "/" + f;           // full path to each sample
+
+          if (check_for_dir)
+            filename = kit_dir + "/" + fname + "/" + f;
+
+          if (check_for_synpak)
+            filename = f;
+
+          //   std::cout << "filename: " << filename << "\n";
+
+          #else
+
+          //FIXME: В ТОПКУ МАК! ТУТ НАДО МНОГО ПЕРЕПИСАТЬ
+          // macOS (or when std::filesystem::path is unavailable): use string operations
+          std::string samples_txt_full = kit_dir + "/" + fname; // full path to samples.txt
+          std::string fpath = parent_path_of (samples_txt_full); // parent dir without std::filesystem
+          std::string filename = fpath.empty() ? (kit_dir + "/" + f) : (fpath + "/" + f);
+
+          #endif
+
+          //
+
+          if (file_exists (filename))
+          {
+            temp_sample->add_layer();
+
+            if (check_for_synpak)
+            {
+
+              temp_sample->v_layers.back()->load_formula (filename.c_str());
+              temp_sample->v_layers.back()->is_formula = true;
+              temp_sample->check_for_synpak = true;
+            }
+            else
+              temp_sample->v_layers.back()->load (filename.c_str());
+          }
+          /* else //ОХРАНА ОТМЕНА!
+           *                    {
+           *                      cancel_sample_loading();
+           *                      continue;
+        }*/
+        }
+
+        //но что если тут мы не загрузили слои?
+        //FIXME: нет же проверки
+
+        if (temp_sample)
+          if (temp_sample->v_layers.size() > 0)
+          {
+            float part_size = (float) 1 / temp_sample->v_layers.size();
+
+            int uint_part_size = 127 / temp_sample->v_layers.size();
+
+            CDrumLayer *l = 0;
+            //evaluate min and max velocities by the file position in the vector
+
+            for (size_t i = 0; i < temp_sample->v_layers.size(); i++)
+            {
+              l = temp_sample->v_layers[i];
+
+              float segment_start = part_size * i;
+              float segment_end = part_size * (i + 1) - 0.001f;
+
+              l->min = segment_start; //for Hydrogen
+              l->max = segment_end;   //for Hydrogen
+
+              l->umin = uint_part_size * i;  //Labooh/SFZ
+              l->umax = uint_part_size * i + uint_part_size - 1; //Labooh/SFZ
+            }
+
+            if (l)  //for last layer
+            {
+              l->umax = 127;
+              l->max = 1.0f;
+            }
+          }
+
+          // BEGIN FIX: guard against samples with empty v_layers
+          // Если после всех попыток загрузки у сэмпла так и не появилось ни одного слоя,
+          // откатываем его, чтобы он не попал в a_samples и не привёл к крашу
+          // при обращении к v_layers[0] / v_layers.back() в коде UI и плеера.
+          if (! temp_sample || temp_sample->v_layers.empty())
+          {
+            cancel_sample_loading();
+            continue;
+          }
+          // END FIX: guard against samples with empty v_layers
+
+  }
+
+
+  std::string kitimg = kit_dir + "/image.jpg";
+
+  if (! file_exists (kitimg))
+    kitimg = kit_dir + "/image.png";
+
+  if (file_exists (kitimg))
+    image_fname = kitimg;
+
+  loaded = true;
+
+}
+
+void CDrumKit::load_labooh_xml2 (const std::string &data)
+{
  // std::cout << "void CDrumKit::load_labooh_xml (const std::string &data)\n";
   
   if (data.empty())
@@ -921,37 +1289,43 @@ void CDrumKit::load_labooh_xml (const std::string &data)
            v_fnames = split_string_to_vector (file_content, "\n", false);
           }
           // END CHECK FOR SYNPAK
-        else// BEGIN JUST COMMA SEPARATED LIST
+      else// BEGIN JUST COMMA SEPARATED LIST
              //читаем список файлов прямо из элемента
-               v_fnames = split_string_to_vector (fname, ",", false);
+            v_fnames = split_string_to_vector (fname, ",", false);
              
-              // END JUST COMMA SEPARATED LIST
+            // END JUST COMMA SEPARATED LIST
 
-        //список файлов/патчей пустой? охрана отмена
-        if (v_fnames.size() == 0)
+      //список файлов/патчей пустой? охрана отмена
+      if (v_fnames.size() == 0)
+         {
+          cancel_sample_loading();
+          continue;
+         }
+             
+      if (v_fnames.size() > 128)
+         v_fnames.resize (128);
+
+      //тут у нас уже гарантированно больше нуля элементов v_fnames
+
+      //если просто элементы через запятые
+      if (! check_for_txt && ! check_for_dir && ! check_for_synpak)
+          for (auto f: v_fnames)
               {
-               cancel_sample_loading();
-               continue;
+
+               //формируем полный путь
+               std::string filename = kit_dir + "/" + f;
+
+              // std::cout << "HERE WE ARE: " << filename << "\n";
+
+
+               if (file_exists (filename))
+                  {
+                //   std::cout << "YEAH\n";
+
+                   temp_sample->add_layer();
+                   temp_sample->v_layers.back()->load (filename.c_str());
+                  }
               }
-             
-           if (v_fnames.size() > 128)
-               v_fnames.resize (128);
-
-           //тут у нас уже гарантированно больше нуля элементов v_fnames
-
-           //если просто элементы через запятые
-           if (! check_for_txt && ! check_for_dir && ! check_for_synpak)
-               for (auto f: v_fnames)
-                   {
-                    //формируем полный путь
-                    std::string filename = kit_dir + "/" + f;
-
-                    if (file_exists (filename))
-                       {
-                        temp_sample->add_layer();
-                        temp_sample->v_layers.back()->load (filename.c_str());
-                       }
-                   }
            else //v_fnames взяты из текстового файла или из каталога либо из синпака
                for (auto f: v_fnames)
                    {
@@ -2289,7 +2663,8 @@ void CDrumKit::adapt() //used at Adapt button handler
             layer = s->v_layers.at(j);
             if (! layer)
                 continue;
-                        
+
+            if (! layer->is_formula)
             if (layer->audio_buffer)
                {
                 juce::File fl (layer->file_name);

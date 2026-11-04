@@ -200,6 +200,8 @@ public:
   void load_hydrogen (const std::string &data);
   void load_txt (const std::string &tdata);
   void load_labooh_xml (const std::string &tdata);
+  void load_labooh_xml2 (const std::string &tdata);
+
   void load_directory (const std::string &path);
 
   void load_qtxt (const std::string &data);
