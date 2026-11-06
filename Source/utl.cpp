@@ -159,8 +159,6 @@ std::vector<std::string> files_names_get_list (const std::string &path)
 }
 
 
-
-
 std::string get_home_dir()
 {
   std::string result;
