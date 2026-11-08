@@ -861,11 +861,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                     float fl = l->channel_data[l->sample_offset++];
 
                  //DSP
-                    bool analog_on = a_analog_on [drum_sample_index];
- 
-                    if (analog_on)
-                       fl = warmify (fl, a_analog_amount[drum_sample_index]);
-
 
                     bool lp_on = a_lps[drum_sample_index];
 
@@ -897,11 +892,20 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                     }
                     //////
 
+                    bool analog_on = a_analog_on [drum_sample_index];
+
+                    if (analog_on)
+                      fl = warmify (fl, a_analog_amount[drum_sample_index]);
+
+
+
+
                     if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
                        fl *= s->velocity;
                   
                     channel_data[drum_sample_index][out_buf_offs] = fl;
                    }
+
 
              }
         } 
@@ -1221,9 +1225,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                  //DSP
 
 
-                  if (a_analog_on [drum_sample_index]) 
-                     fl = warmify (fl, a_analog_amount[drum_sample_index]);
-           
                 // bool lp_on = *(lps[drum_sample_index]) > 0.5f;
                   //bool lp_on = a_lps[drum_sample_index];
 
@@ -1263,6 +1264,12 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
                  fl = softLimit (hp[drum_sample_index].process (fl));
                }
+
+
+               if (a_analog_on [drum_sample_index])
+                 fl = warmify (fl, a_analog_amount[drum_sample_index]);
+
+
                  //AFTER DSP
 
 //                 float vol = juce::Decibels::decibelsToGain ((float)*(vols[drum_sample_index]));

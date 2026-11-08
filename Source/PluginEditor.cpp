@@ -68,7 +68,7 @@ bool CDocumentWindow::keyPressed (const KeyPress &key)
   return false;
 }
 
-
+/*
 CFx::CFx()
 {
   int xoffs = XFILLER * 2;
@@ -220,7 +220,132 @@ CFx::CFx()
   setSize (gr_group_live.getRight() + XFILLER * 2,
            gr_group_lp.getHeight() + gr_group_hp.getHeight() + YFILLER * 3);
 }
+*/
 
+CFx::CFx()
+{
+  int xoffs = XFILLER * 2;
+  int yoffs = YFILLER * 2;
+
+  // LP ///////////////////////////////
+  addChildComponent (gr_group_lp);
+  gr_group_lp.setText ("LP");
+
+  bt_lp.setButtonText ("ON");
+  addAndMakeVisible (bt_lp);
+  bt_lp.setTopLeftPosition (xoffs, yoffs);
+  bt_lp.setSize (48, 32);
+
+  int lp_x = xoffs + bt_lp.getWidth() + XFILLER;
+
+  addAndMakeVisible (sl_lp_cutoff);
+  sl_lp_cutoff.setTopLeftPosition (lp_x, yoffs);
+  sl_lp_cutoff.setSize (68, 32);
+  sl_lp_cutoff.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_lp_cutoff.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_lp_cutoff.setTooltip ("Cutoff");
+
+  lp_x += sl_lp_cutoff.getWidth() + XFILLER;
+
+  addAndMakeVisible (sl_lp_reso);
+  sl_lp_reso.setTopLeftPosition (lp_x, yoffs);
+  sl_lp_reso.setSize (68, 32);
+  sl_lp_reso.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_lp_reso.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_lp_reso.setTooltip ("Reso");
+
+  gr_group_lp.setTopLeftPosition (XFILLER, YFILLER);
+  gr_group_lp.setSize (bt_lp.getWidth() + XFILLER + sl_lp_cutoff.getWidth() + XFILLER + sl_lp_reso.getWidth() + XFILLER,
+                       bt_lp.getHeight() + YFILLER * 2);
+  gr_group_lp.setVisible (true);
+
+
+  // HP ///////////////////////////////
+  addChildComponent (gr_group_hp);
+  gr_group_hp.setText ("HP");
+
+  bt_hp.setButtonText ("ON");
+  addAndMakeVisible (bt_hp);
+  bt_hp.setTopLeftPosition (xoffs, gr_group_lp.getBottom() + YFILLER * 2);
+  bt_hp.setSize (48, 32);
+
+  int hp_y = gr_group_lp.getBottom() + YFILLER * 2;
+  int hp_x = xoffs + bt_hp.getWidth() + XFILLER;
+
+  addAndMakeVisible (sl_hp_cutoff);
+  sl_hp_cutoff.setTopLeftPosition (hp_x, hp_y);
+  sl_hp_cutoff.setSize (68, 32);
+  sl_hp_cutoff.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_hp_cutoff.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_hp_cutoff.setTooltip ("Cutoff");
+
+  hp_x += sl_hp_cutoff.getWidth() + XFILLER;
+
+  addAndMakeVisible (sl_hp_reso);
+  sl_hp_reso.setTopLeftPosition (hp_x, hp_y);
+  sl_hp_reso.setSize (68, 32);
+  sl_hp_reso.setSliderStyle (juce::Slider::LinearHorizontal);
+  sl_hp_reso.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+  sl_hp_reso.setTooltip ("Reso");
+
+  gr_group_hp.setTopLeftPosition (gr_group_lp.getX(), gr_group_lp.getBottom() + YFILLER);
+  gr_group_hp.setSize (gr_group_lp.getWidth(),
+                       bt_hp.getHeight() + YFILLER * 2);
+  gr_group_hp.setVisible (true);
+
+
+  // LIVE ///////////////////////////////
+  xoffs = gr_group_lp.getRight() + XFILLER;
+
+  addChildComponent (gr_group_live);
+  gr_group_live.setText ("LIVE");
+
+  gr_group_live.setTopLeftPosition (xoffs, YFILLER);
+  gr_group_live.setSize (82 + XFILLER * 2,
+                         gr_group_lp.getHeight() + gr_group_hp.getHeight() + YFILLER);
+  gr_group_live.setVisible (true);
+
+  addAndMakeVisible (sl_live_amount);
+
+  int live_slider_y = gr_group_live.getY() + (gr_group_live.getHeight() - 82) / 2 + 4;
+
+  sl_live_amount.setTopLeftPosition (gr_group_live.getX() + XFILLER, live_slider_y);
+  sl_live_amount.setSize (82, 82);
+
+  sl_live_amount.setSliderStyle (juce::Slider::Rotary);
+  sl_live_amount.setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
+  sl_live_amount.setTooltip ("Live micro-variation amount");
+  sl_live_amount.setColour (juce::Slider::thumbColourId, juce::Colours::lightgreen);
+
+
+  // ANALOG (перенесено в крайнее правое положение после LIVE) ///////////////////////////////
+  xoffs = gr_group_live.getRight() + XFILLER;
+
+  addChildComponent (gr_group_analog);
+  gr_group_analog.setText ("ANALOG");
+
+  gr_group_analog.setTopLeftPosition (xoffs, YFILLER);
+  gr_group_analog.setSize (82 + XFILLER * 2,
+                           gr_group_lp.getHeight() + gr_group_hp.getHeight() + YFILLER);
+  gr_group_analog.setVisible (true);
+
+  addAndMakeVisible (bt_analog);
+  bt_analog.setTopLeftPosition (gr_group_analog.getX() + XFILLER, gr_group_analog.getY() + YFILLER + 2);
+  bt_analog.setSize (48, 32);
+
+  addAndMakeVisible (sl_analog_amount);
+  int analog_slider_y = bt_analog.getBottom() + 4;
+  sl_analog_amount.setTopLeftPosition (gr_group_analog.getX() + XFILLER, analog_slider_y);
+  sl_analog_amount.setSize (82, 82);
+
+  sl_analog_amount.setSliderStyle (juce::Slider::Rotary);
+  sl_analog_amount.setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
+  sl_analog_amount.setTooltip ("Amount");
+
+  // Обновляем общую ширину и высоту окна CFx с учетом нового правого блока ANALOG
+  setSize (gr_group_analog.getRight() + XFILLER * 2,
+           gr_group_lp.getHeight() + gr_group_hp.getHeight() + YFILLER * 3);
+}
 
 CFx::~CFx()
 {

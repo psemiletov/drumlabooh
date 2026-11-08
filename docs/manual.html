@@ -125,9 +125,11 @@ You can add your own custom folders to this list. To do this, create a text file
     <h3>2.3 Drumlabooh Drum Kits</h3>
     <p>Drumlabooh uses its own kit formats (there are two formats, text-based and XML). One kit equals one directory, which should be placed in user-defined or pre-defined locations such as <i>$HOME/drumlabooh-kits</i>, <i>$HOME/drum_sklad</i>, or <i>/usr/share/drumlabooh-kits</i> on Linux, and in <i>C:\drumlabooh-kits</i>, <i>D:\drumlabooh-kits</i>, <i>C:\drum_sklad</i>, or <i>D:\drum_sklad</i> on Windows.</p>
 
-<p>Drumlabooh usually installs kits automatically from its official <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad repository on GitHub</a>. You can also <b>find detailed information about the formats</b> there — it is quite simple. The word "sklad" means "warehouse," "storage," or "repository."</p>
+<p>Drumlabooh usually installs kits automatically from its official <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad repository on GitHub</a>. You can also <b>find detailed information about the formats</b> there - it is quite simple. The word "sklad" means "warehouse," "storage," or "repository."</p>
 
-    <p>Additional kits that are not hosted on GitHub can be downloaded from the <a href="https://t.me/drum_sklad">Drum Sklad channel on Telegram</a>. The complete Drumlabooh kit collection therefore includes Drum Sklad on GitHub and Drum Sklad on Telegram.
+<p>Drumlabooh combines a sampler and a synthesizer in its engine. A single kit can contain both samples and "formulas" for the engine's built-in synthesizers. Purely synth-based kits, such as "OM Kit" or "RITM," take up very little disk space, and all sounds from the formula presets are rendered into RAM when the kit is loaded, matching the sample rate of the current DAW session.</p>
+
+<p>Additional kits that are not hosted on GitHub can be downloaded from the <a href="https://t.me/drum_sklad">Drum Sklad channel on Telegram</a>. The complete Drumlabooh kit collection therefore includes Drum Sklad on GitHub and Drum Sklad on Telegram.
 </p>
 
 <p>Many of native Drumlabooh kits include optional built-in General MIDI mapping settings, which can be used in <b>MIDI Map mode</b> by selecting the <b>Kit</b> option there.</p>
@@ -173,9 +175,17 @@ The tooltip over the instrument name shows the current MIDI mapping settings for
 
 
     <p>3. <strong>FX</strong> – button to open the FX window for this instrument. You can close the window using the "close" button or the Escape key. All effects in that window can be turned on or off, so they work only when enabled.</p>
-    <p>There are <strong>LP</strong> (Low-pass filter, allows only frequencies below the <strong>cutoff</strong> value) and <strong>HP</strong> (High-pass filter, allows only frequencies above the <strong>cutoff</strong> value). To simplify the code and improve performance, the cutoff parameter is not in Hz but a floating-point number within the range 0..1.</p>
-    <p>Both filters are resonant and have the <strong>resonance</strong> parameter. Experiment with the sliders to create new and interesting sounds. The HP filter works best for hi-hats, the LP for kicks; either HP or LP can produce cool effects on the snare. If your sample sounds weak or thin, try the <strong>Analog</strong> slider to add some warmth.</p>
-    <p><i>The following interface elements are not available in the Multi-channel version of the plugin, as they would duplicate the DAW's elements for the tracks associated with the plugin.</i></p>
+
+    <p>
+If your sample sounds weak or thin, try the <strong>Analog</strong> slider to add some warmth.
+<br>
+There are <strong>LP</strong> (Low-pass filter, allows only frequencies below the <strong>cutoff</strong> value) and <strong>HP</strong> (High-pass filter, allows only frequencies above the <strong>cutoff</strong> value). To simplify the code and improve performance, the cutoff parameter is not in Hz but a floating-point number within the range 0..1.</p>
+<p>Both filters are resonant and have the <strong>resonance</strong> parameter. Experiment with the sliders to create new and interesting sounds. The HP filter works best for hi-hats, the LP for kicks; either HP or LP can produce cool effects on the snare. 
+<br>
+The <strong>Live</strong> knob only works when one or both filters are enabled. The further clockwise the knob is turned, the more varied the instrument sounds; with certain filter settings, you may need to tweak their parameters to achieve an audible effect. This variation is based on a deterministic pseudo-random number generator, meaning the sound will be identical across song-mixing sessions while still remaining varied.
+</p>
+
+<p><i>The following interface elements are not available in the Multi-channel version of the plugin, as they would duplicate the DAW's elements for the tracks associated with the plugin.</i></p>
     <p>4. <strong>Pan control</strong> – values range from 0 (full left) to 1 (full right), with 0.5 being the center. See the <strong>Pan mode</strong> option to understand the panning algorithm. It is important to note that different DAWs have different pan modes for mixing; sometimes the DAW provides an option to select it. Drumlabooh internally behaves like the DAW mixer and offers the same flexibility.</p>
     <p>5. <strong>Volume slider</strong> – non-linear, with values ranging from -96 to +6 dB.</p>
     <p>6. <strong>Mute switch</strong> – mutes the instrument.</p>
