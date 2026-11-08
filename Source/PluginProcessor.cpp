@@ -822,6 +822,27 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                   continue;
 
 
+
+                // --- НОВОЕ: ДЕТЕРМИНИРОВАННЫЙ ЛАЙВ-ОЖИВЛЯЖ НА УДАР ---
+                if (a_live_amount[ drum_sample_index ] > 0.0f)
+                {
+                  long long rnd_val = s->rnd_generator.next (-1000, 1000);
+                  float rnd_normalized = (float) rnd_val / 1000.0f; // от -1.0 до 1.0
+
+                  // Максимальный размах отклонения (например, ±30% от текущего значения, масштабированный ручкой live)
+                  float depth = 0.7f * a_live_amount[drum_sample_index ];
+
+                  // Сохраняем мультипликативный множитель (вокруг 1.0, например от 0.7 до 1.3)
+                  s->live_cutoff_multiplier = 1.0f + (rnd_normalized * depth);
+                }
+                else
+                {
+                  s->live_cutoff_multiplier = 1.0f; // нейтральный множитель (без изменений)
+                }
+                // -----------------------------------------------------
+
+
+
               //std::cout << "s->current_layer:" << s->current_layer << std::endl;
 
                CDrumLayer *l = s->v_layers.at (s->current_layer);
@@ -854,27 +875,36 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                        fl = warmify (fl, a_analog_amount[drum_sample_index]);
 
 
-                    bool lp_on = a_lps [drum_sample_index];
+                    bool lp_on = a_lps[drum_sample_index];
 
                     if (lp_on)
-                       {
-                        lp[drum_sample_index].set_cutoff (a_lp_cutoff[drum_sample_index]);
-                        lp[drum_sample_index].set_resonance (a_lp_reso[drum_sample_index]);
-                        fl = softLimit (lp[drum_sample_index].process (fl));
-                       }
+                    {
+                      // Умножаем базовый срез на наш коэффициент
+                      float target_cutoff = a_lp_cutoff[drum_sample_index] * s->live_cutoff_multiplier;
+                      target_cutoff = juce::jlimit (0.0f, 0.999f, target_cutoff); // защита от выхода за границы
+
+                      lp[drum_sample_index].set_cutoff (target_cutoff);
+                      lp[drum_sample_index].set_resonance (a_lp_reso[drum_sample_index]);
+
+                      fl = softLimit (lp[drum_sample_index].process (fl));
+                    }
+
+                    bool hp_on = a_hps[drum_sample_index];
 
 
-                    bool hp_on = a_hps [drum_sample_index];
-
-                                      
                     if (hp_on)
-                       {
-                        hp[drum_sample_index].set_cutoff (a_hp_cutoff[drum_sample_index]);
-                        hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
+                    {
+                      // Используем мультипликативный множитель live-модуляции
+                      float target_cutoff = a_hp_cutoff[drum_sample_index] * s->live_cutoff_multiplier;
+                      target_cutoff = juce::jlimit (0.0f, 0.999f, target_cutoff); // защита от выхода за границы
 
-                        fl = softLimit (hp[drum_sample_index].process (fl));
-                       }
- 
+                      hp[drum_sample_index].set_cutoff (target_cutoff);
+                      hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
+
+                      fl = softLimit (hp[drum_sample_index].process (fl));
+                    }
+                    //////
+
                     if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
                        fl *= s->velocity;
                   
@@ -1227,18 +1257,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                   fl = softLimit (lp[drum_sample_index].process (fl));
                 }
 
-
-//                 bool hp_on = *(hps[drum_sample_index]) > 0.5f;
                   bool hp_on = a_hps[drum_sample_index];
-
-               /*   if (hp_on)
-                     {
-                      hp[drum_sample_index].set_cutoff (a_hp_cutoff[drum_sample_index]);
-                      hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
- 
-                      fl = softLimit (hp[drum_sample_index].process (fl));
-                     //fr = fl;
-                     }*/
 
 
                if (hp_on)

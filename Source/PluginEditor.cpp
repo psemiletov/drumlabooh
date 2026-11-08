@@ -476,7 +476,7 @@ CDrumCell::CDrumCell()
 
 #else
 //MULTICHANNEL VERSION
-
+/*
 CDrumCell::CDrumCell()
 {
   addChildComponent (fx);
@@ -660,6 +660,180 @@ CDrumCell::CDrumCell()
                           wnd_fx->setTopLeftPosition (bt_fx.getScreenX() + bt_fx.getWidth(), bt_fx.getScreenY() + bt_fx.getHeight());
                          };
 }
+*/
+
+
+CDrumCell::CDrumCell()
+{
+  addChildComponent (fx);
+  addChildComponent (gr_group);
+
+  int xoffs = XFILLER * 2;
+
+  // 1. Светодиод слева
+  addAndMakeVisible (led);
+  led.setTopLeftPosition (xoffs, YFILLER);
+  led.setSize (16, 32);
+
+  xoffs += led.getWidth();
+  xoffs += XFILLER; // Сдвигаем xoffs правее светодиода
+
+  addAndMakeVisible (bt_cell_plus);
+
+  juce::Image cachedImage_plusc_png = juce::ImageCache::getFromMemory (btplusc_png, btplusc_pngSize);
+  DrawableImage img_plusc (cachedImage_plusc_png);
+
+  juce::Image cachedImage_plusb_png = juce::ImageCache::getFromMemory (btplusb_png, btplusb_pngSize);
+  DrawableImage img_plusb (cachedImage_plusb_png);
+
+  juce::Image cachedImage_plus_png = juce::ImageCache::getFromMemory (btplus_png, btplus_pngSize);
+  DrawableImage img_plus (cachedImage_plus_png);
+
+  bt_cell_plus.setImages (&img_plus, &img_plusb, &img_plusc);
+
+  bt_cell_plus.setTopLeftPosition (xoffs, YFILLER);
+  bt_cell_plus.setSize (24, 16);
+  bt_cell_plus.setTooltip ("Alternate-sample drum kit: next sample");
+
+  bt_cell_plus.onClick = [this] {
+
+    if (! editor)
+      return;
+
+    if (editor->audioProcessor.drumkit)
+    {
+      CDrumSample *s = editor->audioProcessor.drumkit->a_samples [cell_number];
+
+      if (s)
+        if (s->layer_index_mode != LAYER_INDEX_MODE_ALT)
+          return;
+
+      editor->tmr_leds.stopTimer();
+      editor->audioProcessor.suspendProcessing (true);
+
+      editor->need_to_update_cells = false;
+
+      s->sample_next();
+      std::string cell_caption = s->get_name (true);
+      set_name (cell_caption);
+
+      editor->audioProcessor.drumkit->loaded = true;
+
+      editor->audioProcessor.suspendProcessing (false);
+      editor->tmr_leds.startTimer (1000 / 15);
+      return;
+    }
+
+  };
+
+  addAndMakeVisible (bt_cell_minus);
+
+  juce::Image cachedImage_minusc_png = juce::ImageCache::getFromMemory (btminusc_png, btminusc_pngSize);
+  DrawableImage img_minusc (cachedImage_minusc_png);
+
+  juce::Image cachedImage_minusb_png = juce::ImageCache::getFromMemory (btminusb_png, btminusb_pngSize);
+  DrawableImage img_minusb (cachedImage_minusb_png);
+
+  juce::Image cachedImage_minus_png = juce::ImageCache::getFromMemory (btminus_png, btminus_pngSize);
+  DrawableImage img_minus (cachedImage_minus_png);
+
+  bt_cell_minus.setImages (&img_minus, &img_minusb, &img_minusc);
+
+  bt_cell_minus.setTopLeftPosition (bt_cell_plus.getX(), bt_cell_plus.getBottom() + 1);
+  bt_cell_minus.setSize (24, 16);
+
+  bt_cell_minus.setTooltip ("Alternate-sample drum kit: previous sample");
+
+  bt_cell_minus.onClick = [this] {
+    if (! editor)
+      return;
+
+    if (! editor->audioProcessor.drumkit)
+      return;
+
+    CDrumSample *s = editor->audioProcessor.drumkit->a_samples [cell_number];
+
+    if (s)
+      if (s->layer_index_mode != LAYER_INDEX_MODE_ALT)
+      {
+        editor->log ("NO ALT SAMPLES!\n");
+        return;
+      }
+
+      editor->tmr_leds.stopTimer();
+    editor->audioProcessor.suspendProcessing (true);
+
+    editor->need_to_update_cells = false;
+
+    s->sample_prev();
+    std::string cell_caption = s->get_name (true);
+    set_name (cell_caption);
+
+    editor->audioProcessor.drumkit->loaded = true;
+
+    editor->audioProcessor.suspendProcessing (false);
+    editor->tmr_leds.startTimer (1000 / 15);
+    return;
+  };
+
+  // Сдвигаем xoffs правее кнопок плюс/минус для текстового поля
+  xoffs += bt_cell_plus.getWidth();
+  xoffs += XFILLER;
+
+  addAndMakeVisible (cell_label);
+  cell_label.setTopLeftPosition (xoffs, YFILLER);
+  cell_label.setSize (380, 32);
+
+  cell_label.setColour (juce::Label::textColourId, juce::Colours::black);
+  cell_label.setColour (juce::Label::backgroundColourId, juce::Colour (CELLCOLOR_EMPTY));
+  cell_label.setFont (f_samplename_font);
+  cell_label.setText ("EMPTY CELL", juce::dontSendNotification);
+
+  cell_label.setWantsKeyboardFocus (true);
+  cell_label.addKeyListener (this);
+  cell_label.addMouseListener (this, true);
+
+  xoffs += cell_label.getWidth();
+  xoffs += XFILLER;
+
+  wnd_fx = 0;
+
+  addAndMakeVisible (bt_fx);
+
+  bt_fx.setButtonText ("FX");
+  bt_fx.setColour (TextButton::ColourIds::buttonColourId,  Colours::darkslategrey);
+  bt_fx.setTopLeftPosition (xoffs, YFILLER);
+  bt_fx.setSize (42, 32);
+
+  xoffs += bt_fx.getWidth();
+  xoffs += XFILLER;
+
+  gr_group.setVisible (true);
+  gr_group.setSize (xoffs, 32 + YFILLER + YFILLER);
+
+  setSize (xoffs + XFILLER, 32 + YFILLER + YFILLER);
+
+
+  bt_fx.onClick = [this] {
+    if (! wnd_fx)
+    {
+      wnd_fx = new CDocumentWindow ("FX", Colours::darkslategrey, DocumentWindow::TitleBarButtons::closeButton, false);
+      wnd_fx->setContentNonOwned (&fx, true);
+    }
+
+    if (! wnd_fx)
+      return;
+
+    if (wnd_fx->isOnDesktop())
+      wnd_fx->removeFromDesktop();
+    else
+      wnd_fx->addToDesktop();
+
+    wnd_fx->setVisible (! wnd_fx->isVisible());
+    wnd_fx->setTopLeftPosition (bt_fx.getScreenX() + bt_fx.getWidth(), bt_fx.getScreenY() + bt_fx.getHeight());
+  };
+}
+
 
 #endif
 
