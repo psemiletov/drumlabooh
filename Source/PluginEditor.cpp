@@ -186,10 +186,39 @@ CFx::CFx()
 
   gr_group_hp.setVisible (true);
 
-  setSize (gr_group_analog.getWidth() + XFILLER + gr_group_lp.getWidth() + XFILLER * 2,
-           gr_group_lp.getHeight() + gr_group_lp.getHeight() + YFILLER * 3);
+//  setSize (gr_group_analog.getWidth() + XFILLER + gr_group_lp.getWidth() + XFILLER * 2,
+  //         gr_group_lp.getHeight() + gr_group_lp.getHeight() + YFILLER * 3);
 
-  //setAlwaysOnTop(true);
+
+  // LIVE ///////////////////////////////
+
+  xoffs = gr_group_lp.getRight() + XFILLER;
+  yoffs = YFILLER * 2;
+
+  addChildComponent (gr_group_live);
+  gr_group_live.setText ("LIVE");
+
+  gr_group_live.setTopLeftPosition (xoffs, YFILLER);
+  gr_group_live.setSize (82 + XFILLER * 2,
+                         gr_group_lp.getHeight() + gr_group_hp.getHeight() + YFILLER);
+  gr_group_live.setVisible (true);
+
+  addAndMakeVisible (sl_live_amount);
+
+  // Выравнивание по центру: вычисляем Y от центра группы gr_group_live
+  int live_slider_y = gr_group_live.getY() + (gr_group_live.getHeight() - 82) / 2 + 4;
+
+  sl_live_amount.setTopLeftPosition (gr_group_live.getX() + XFILLER, live_slider_y);
+  sl_live_amount.setSize (82, 82);
+
+  sl_live_amount.setSliderStyle (juce::Slider::Rotary);
+  sl_live_amount.setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
+  sl_live_amount.setTooltip ("Live micro-variation amount");
+  sl_live_amount.setColour (juce::Slider::thumbColourId, juce::Colours::lightgreen);
+
+  // Обновляем общую ширину окна CFx
+  setSize (gr_group_live.getRight() + XFILLER * 2,
+           gr_group_lp.getHeight() + gr_group_hp.getHeight() + YFILLER * 3);
 }
 
 
@@ -208,6 +237,7 @@ CFx::~CFx()
   att_analog = nullptr;
   att_analog_amount = nullptr;
   
+  att_live_amount = nullptr; // НОВОЕ
 }
 
 
@@ -683,6 +713,9 @@ void CDrumCell::attach_params (CAudioProcessorEditor *ed, int cellno)
 
   param_name = "analog_amount" + std::to_string (cell_number);
   fx.att_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_analog_amount));
+
+  param_name = "live_amount" + std::to_string (cell_number);
+  fx.att_live_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_live_amount));
 }
 
 #else
@@ -718,6 +751,9 @@ void CDrumCell::attach_params (CAudioProcessorEditor *ed, int cellno)
 
   param_name = "analog_amount" + std::to_string (cell_number);
   fx.att_analog_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_analog_amount));
+
+  param_name = "live_amount" + std::to_string (cell_number);
+  fx.att_live_amount.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (ed->valueTreeState, param_name, fx.sl_live_amount));
 }
 #endif
 

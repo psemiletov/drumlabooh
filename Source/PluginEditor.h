@@ -176,6 +176,11 @@ public:
   std::unique_ptr <juce::AudioProcessorValueTreeState::ButtonAttachment> att_analog;
   std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_analog_amount;
 
+  std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> att_live_amount; // НОВОЕ
+  juce::GroupComponent gr_group_live;                                                    // НОВОЕ
+  juce::Slider sl_live_amount;
+
+
   juce::GroupComponent gr_group_lp;
   juce::GroupComponent gr_group_hp;
   juce::GroupComponent gr_group_analog;

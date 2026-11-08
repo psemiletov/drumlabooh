@@ -39,6 +39,8 @@ public:
   bool a_analog_on [36] = {false};
   float a_analog_amount [36] = {0.000f};  
 
+  float a_live_amount [36] = {0.000f};
+
   
   float a_hp_cutoff [36] = {0.000f};  
   float a_hp_reso [36] = {0.000f};  
@@ -83,6 +85,7 @@ public:
   std::atomic<float>* hp_reso[36]; //
 
   std::atomic<float>* analog_amount[36]; //
+  std::atomic<float>* live_amount[36]; //
 
 
 #ifndef MULTICHANNEL
@@ -103,6 +106,7 @@ public:
   CResoFilter lp[36];
   CResoFilter hp[36];
 
+  //float live_cutoff_offsets[36] = {0.0f};
 
   int base_note_number; //default 36, the base for note number mapping to array index (i.e. MIDI note minus base note to get the array index)
   int randomizer_seed;  

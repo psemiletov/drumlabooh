@@ -103,6 +103,7 @@ public:
   
   int current_layer; //текущий слой
 
+
   int session_samplerate; //session srate, taken from the upper level object
 
   bool check_for_synpak;
@@ -120,7 +121,9 @@ public:
   int layer_index_mode; //0 - velocity, 1 - rnd, 2 - round robin
 
   FastDeterministicRNG rnd_generator;
- 
+  //float live_cutoff_offset = 0.0f; //для live
+  float live_cutoff_multiplier = 1.0f;
+
   size_t robin_counter; 
   
   float velocity;

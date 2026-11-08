@@ -43,6 +43,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
        hp_cutoff[i] = nullptr;
        hp_reso[i] = nullptr;
 
+       live_amount[i] = nullptr;
+
        analog[i] = nullptr;
        analog_amount[i] = nullptr;
       }
@@ -120,8 +122,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout CAudioProcessor::createParam
 
        layout.add (std::make_unique<juce::AudioParameterFloat> ("hp_reso" + std::to_string(i),
                                                                 "hp_reso" + std::to_string(i),
-                                                                 juce::NormalisableRange<float> (0, 1.0f, 0.001f), // parameter range
+                                                                 juce::NormalisableRange<float> (0.0f, 1.0f, 0.001f), // parameter range
                                                                  0.001f));
+
+       layout.add (std::make_unique<juce::AudioParameterFloat> ("live_amount" + std::to_string(i),
+                                                                "live_amount" + std::to_string(i),
+                                                                juce::NormalisableRange<float> (0.000f, 1.0f, 0.001f), // parameter range
+                                                                0.000f));
 
 
        layout.add (std::make_unique<juce::AudioParameterFloat> ("analog_amount" + std::to_string(i),
@@ -226,6 +233,10 @@ CAudioProcessor::CAudioProcessor()
 
        analog[i] = parameters.getRawParameterValue ("analog" + std::to_string(i));
        analog_amount[i] = parameters.getRawParameterValue ("analog_amount" + std::to_string(i));
+
+       live_amount[i] = parameters.getRawParameterValue ("live_amount" + std::to_string(i));
+
+
       }
 
   //panner_mode = parameters.getRawParameterValue ("panner_mode");
@@ -279,6 +290,9 @@ CAudioProcessor::CAudioProcessor()
 
        analog[i] = parameters.getRawParameterValue ("analog" + std::to_string(i));
        analog_amount[i] = parameters.getRawParameterValue ("analog_amount" + std::to_string(i));
+
+       live_amount[i] = parameters.getRawParameterValue ("live_amount" + std::to_string(i));
+
       }
      
       
@@ -675,12 +689,15 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   // CACHE ALL ATOMIC PARAMETERS
  
  
-  for (size_t i = 0; i < 35; i++)
+  for (size_t i = 0; i < 36; i++)
      {
       //a_mutes [i] = *(mutes[i]) > 0.5f;
       a_lps [i] = *(lps[i]) > 0.5f;
       a_hps [i] = *(hps[i]) > 0.5f;
-      
+
+      a_live_amount [i] = *(live_amount[i]);
+
+
       a_analog_amount [i] = *(analog_amount[i]);
       a_analog_on [i] = *(analog[i]);
       
@@ -689,6 +706,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       
       a_hp_cutoff [i] = *(hp_cutoff[i]); 
       a_hp_reso [i] = *(hp_reso[i]);
+
+
      } 
   
   
@@ -719,7 +738,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                                                     // nn is index for drumkit->a_samples[nn]
            
            if (int_midimap_mode == MIDIMAPMODE_LABOOH)
-               if (nn < 0 || nn > 35) // MAX_SAMPLES = 36
+               if (nn < 0 || nn > 36) // MAX_SAMPLES = 36
                    continue;
 
            CDrumSample *s = 0;
@@ -943,7 +962,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   float vol_sum = 0.0f;
    
  
-  for (size_t i = 0; i < 35; i++)
+  for (size_t i = 0; i < 36; i++)
       {
        a_vols [i] = db2lin(*(vols[i]));
        a_mutes [i] = *(mutes[i]) > 0.5f;
@@ -958,7 +977,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
        a_analog_on [i] = *(analog[i]);
        a_analog_amount [i] = *(analog_amount[i]);
-      
+
+       a_live_amount [i] = *(live_amount[i]);
  
        float pan = *(pans[i]); //float pan = *(pans[drum_sample_index]);
       
@@ -1023,8 +1043,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
 
             if (int_midimap_mode == MIDIMAPMODE_LABOOH)
-                if (nn < 0 || nn > 35)
-                    continue;
+            if (nn < 0 || nn > 35)
+                continue;
+
 
                     //std::cout << "nn < 0 || nn > 35: " << nn << std::endl; 
 //             std::cout << "GO ON with n: " << nn << std::endl;
@@ -1052,6 +1073,28 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             if (! s)
                continue;
   
+
+
+            // --- НОВОЕ: ДЕТЕРМИНИРОВАННЫЙ ЛАЙВ-ОЖИВЛЯЖ НА УДАР ---
+            if (a_live_amount[nn] > 0.0f)
+            {
+              long long rnd_val = s->rnd_generator.next (-1000, 1000);
+              float rnd_normalized = (float) rnd_val / 1000.0f; // от -1.0 до 1.0
+
+              // Максимальный размах отклонения (например, ±30% от текущего значения, масштабированный ручкой live)
+              float depth = 0.7f * a_live_amount[nn];
+
+              // Сохраняем мультипликативный множитель (вокруг 1.0, например от 0.7 до 1.3)
+              s->live_cutoff_multiplier = 1.0f + (rnd_normalized * depth);
+            }
+            else
+            {
+              s->live_cutoff_multiplier = 1.0f; // нейтральный множитель (без изменений)
+            }
+            // -----------------------------------------------------
+
+
+
             
            if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
                s->trigger_sample (velocity);
@@ -1160,30 +1203,55 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                      fl = warmify (fl, a_analog_amount[drum_sample_index]);
            
                 // bool lp_on = *(lps[drum_sample_index]) > 0.5f;
-                  bool lp_on = a_lps[drum_sample_index];
+                  //bool lp_on = a_lps[drum_sample_index];
 
                    
-                  if (lp_on)
+                /* if (lp_on)
                      {
                       lp[drum_sample_index].set_cutoff (a_lp_cutoff[drum_sample_index]);
                       lp[drum_sample_index].set_resonance (a_lp_reso[drum_sample_index]);
 
                       fl = softLimit (lp[drum_sample_index].process (fl));
-                     }
+                     }*/
+                bool lp_on = a_lps[drum_sample_index];
+
+                if (lp_on)
+                {
+                  // Умножаем базовый срез на наш коэффициент
+                  float target_cutoff = a_lp_cutoff[drum_sample_index] * s->live_cutoff_multiplier;
+                  target_cutoff = juce::jlimit (0.0f, 0.999f, target_cutoff); // защита от выхода за границы
+
+                  lp[drum_sample_index].set_cutoff (target_cutoff);
+                  lp[drum_sample_index].set_resonance (a_lp_reso[drum_sample_index]);
+
+                  fl = softLimit (lp[drum_sample_index].process (fl));
+                }
 
 
 //                 bool hp_on = *(hps[drum_sample_index]) > 0.5f;
                   bool hp_on = a_hps[drum_sample_index];
 
-                  if (hp_on)
+               /*   if (hp_on)
                      {
                       hp[drum_sample_index].set_cutoff (a_hp_cutoff[drum_sample_index]);
                       hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
  
                       fl = softLimit (hp[drum_sample_index].process (fl));
                      //fr = fl;
-                     }
+                     }*/
 
+
+               if (hp_on)
+               {
+                 // Используем мультипликативный множитель live-модуляции
+                 float target_cutoff = a_hp_cutoff[drum_sample_index] * s->live_cutoff_multiplier;
+                 target_cutoff = juce::jlimit (0.0f, 0.999f, target_cutoff); // защита от выхода за границы
+
+                 hp[drum_sample_index].set_cutoff (target_cutoff);
+                 hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
+
+                 fl = softLimit (hp[drum_sample_index].process (fl));
+               }
                  //AFTER DSP
 
 //                 float vol = juce::Decibels::decibelsToGain ((float)*(vols[drum_sample_index]));
