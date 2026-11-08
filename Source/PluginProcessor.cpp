@@ -752,6 +752,20 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
              
            if (! s)
                continue;
+
+
+            // --- ДОБАВЛЯЕМ РАСЧЕТ LIVE СЮДА (на каждый удар) ---
+            if (a_live_amount[nn] > 0.0f)
+            {
+              long long rnd_val = s->rnd_generator.next (-1000, 1000);
+              float rnd_normalized = (float) rnd_val / 1000.0f; // от -1.0 до 1.0
+              float depth = 0.7f * a_live_amount[nn];
+              s->live_cutoff_multiplier = 1.0f + (rnd_normalized * depth);
+            }
+            else
+            {
+              s->live_cutoff_multiplier = 1.0f;
+            }
   
            if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
                s->trigger_sample (velocity);
@@ -820,28 +834,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
                if (! s->active)
                   continue;
-
-
-
-                // --- НОВОЕ: ДЕТЕРМИНИРОВАННЫЙ ЛАЙВ-ОЖИВЛЯЖ НА УДАР ---
-                if (a_live_amount[ drum_sample_index ] > 0.0f)
-                {
-                  long long rnd_val = s->rnd_generator.next (-1000, 1000);
-                  float rnd_normalized = (float) rnd_val / 1000.0f; // от -1.0 до 1.0
-
-                  // Максимальный размах отклонения (например, ±30% от текущего значения, масштабированный ручкой live)
-                  float depth = 0.7f * a_live_amount[drum_sample_index ];
-
-                  // Сохраняем мультипликативный множитель (вокруг 1.0, например от 0.7 до 1.3)
-                  s->live_cutoff_multiplier = 1.0f + (rnd_normalized * depth);
-                }
-                else
-                {
-                  s->live_cutoff_multiplier = 1.0f; // нейтральный множитель (без изменений)
-                }
-                // -----------------------------------------------------
-
-
 
               //std::cout << "s->current_layer:" << s->current_layer << std::endl;
 
