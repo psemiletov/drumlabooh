@@ -1228,7 +1228,6 @@ void CAudioProcessorEditor::adapt_drumlabooh()
       return;
    
    
-   
   std::string new_path = get_home_dir() + "/drum_sklad/";
    
   std::string srate = std::to_string (audioProcessor.session_samplerate);
@@ -1241,10 +1240,10 @@ void CAudioProcessorEditor::adapt_drumlabooh()
   File dest_dir (new_path);
 
   if (! source_dir.copyDirectoryTo (dest_dir)) 
-      {
-       log ("CANNOT COPY KIT TO: " + new_path + "\n"); 
-       return;
-      }  
+     {
+      log ("CANNOT COPY KIT TO: " + new_path + "\n");
+      return;
+     }
   
   std::string kitfname;    
   

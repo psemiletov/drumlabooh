@@ -72,6 +72,7 @@ public:
         return minVal + static_cast<long long>(raw % (range + 1));
     }
 
+
 private:
     uint64_t state;
 };
