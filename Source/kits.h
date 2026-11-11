@@ -121,6 +121,8 @@ public:
   int layer_index_mode; //0 - velocity, 1 - rnd, 2 - round robin
 
   FastDeterministicRNG rnd_generator;
+  FastDeterministicRNG dsp_rnd_generator;
+
   //float live_cutoff_offset = 0.0f; //для live
   float live_cutoff_multiplier = 1.0f;
 

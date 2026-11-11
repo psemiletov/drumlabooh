@@ -3250,6 +3250,7 @@ void CDrumKit::rnd_set_rnd_seed (uint64_t seed)
           continue;
          
        s->rnd_generator.setSeed (seed);  
+       s->dsp_rnd_generator.setSeed(seed + 0x9e3779b97f4a7c15ULL);
       }   
 }
   

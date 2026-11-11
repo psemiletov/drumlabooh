@@ -757,7 +757,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             // --- ДОБАВЛЯЕМ РАСЧЕТ LIVE СЮДА (на каждый удар) ---
             if (a_live_amount[nn] > 0.0f)
             {
-              long long rnd_val = s->rnd_generator.next (-1000, 1000);
+              long long rnd_val = s->dsp_rnd_generator.next (-1000, 1000);
               float rnd_normalized = (float) rnd_val / 1000.0f; // от -1.0 до 1.0
               float depth = 0.7f * a_live_amount[nn];
               s->live_cutoff_multiplier = 1.0f + (rnd_normalized * depth);
@@ -1104,7 +1104,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
             // --- НОВОЕ: ДЕТЕРМИНИРОВАННЫЙ ЛАЙВ-ОЖИВЛЯЖ НА УДАР ---
             if (a_live_amount[nn] > 0.0f)
             {
-              long long rnd_val = s->rnd_generator.next (-1000, 1000);
+              long long rnd_val = s->dsp_rnd_generator.next (-1000, 1000);
               float rnd_normalized = (float) rnd_val / 1000.0f; // от -1.0 до 1.0
 
               // Максимальный размах отклонения (например, ±30% от текущего значения, масштабированный ручкой live)
