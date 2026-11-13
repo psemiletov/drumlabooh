@@ -1510,7 +1510,7 @@ valueTreeState (vts)
     {
       juce::File info_file (juce::File (kit_dir).getChildFile ("info.txt"));
       if (info_file.existsAsFile())
-        info_text = info_file.loadFileAsString();
+         info_text = info_file.loadFileAsString();
     }
 
     const int W = 520;

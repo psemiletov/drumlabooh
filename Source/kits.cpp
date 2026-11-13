@@ -3213,11 +3213,11 @@ void CDrumKit::setup_auto_mute()
           continue;
          
         // ПРЕДОХРАНИТЕЛЬ: если слоев нет вообще, даже не смотрим сигнатуры
-        if (s->v_layers.empty())
-        {
-          std::cout << "[setup_auto_mute] sample " << i << " ('" << s->name << "') has EMPTY v_layers" << std::endl;
-          continue; // переходим к следующему сэмплу
-        }
+       if (s->v_layers.empty())
+          {
+           std::cout << "[setup_auto_mute] sample " << i << " ('" << s->name << "') has EMPTY v_layers" << std::endl;
+           continue; // переходим к следующему сэмплу
+          }
 
 
        for (auto signature: v_auto_mute_signatures)
@@ -3264,11 +3264,11 @@ void  CDrumKit::load_actually()
      {
       CDrumSample *s = a_samples[i];
       if (! s)
-        continue;
+         continue;
 
   //     std::cout << "Sample name:" << s->get_name() << "\n";
 
-       s->load_actually();
+      s->load_actually();
      }
      //std::cout << "CDrumKit::load_actually()  - 2 \n";
 }
