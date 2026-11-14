@@ -4,8 +4,12 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Drumlabooh: User's Manual</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<title>Drumlabooh: User's Manual</title>
+
+<link rel="alternate" hreflang="en" href="https://psemiletov.github.io/drumlabooh/manual.html" />
+<link rel="alternate" hreflang="ru" href="https://psemiletov.github.io/drumlabooh/ru/manual.html" />
+<link rel="alternate" hreflang="x-default" href="https://psemiletov.github.io/drumlabooh/manual.html" />
 
 <link rel="stylesheet" href="styles.css">
 
@@ -216,71 +220,111 @@ If your sample still sounds weak or thin, try the <b>Analog</b> slider to add so
 <p>6. <b>Mute switch</b> - mutes the instrument.</p>
 
 <p>Under the <b>Options</b>, you will find the "global" Analog switch and slider, which affect the entire mix at the end of the signal chain. Useful for live but quiet drums.</p>
-  </section>
 
-  <section id="mni_options">
-    <h3>4. Options section</h3>
-    <p>At the lower right part of the plugin window, you can see <b>Options</b>.</p>
-    <p><b>MIDI map mode</b> – there are two modes, <b>Auto</b> and <b>Kit</b>. With <b>Auto</b>, Drumlabooh assigns MIDI notes to samples starting from the numerical value of another option, <b>Base MIDI note</b> (default: 36), which specifies the MIDI note number to map the first instrument in the kit. MIDI note 36 = C in the 2nd octave. This mode is the default and works well for playing from a MIDI keyboard. When <b>Kit</b> is selected, Drumlabooh uses MIDI note assignments from the drumkit file; usually, this is <a href="https://computermusicresource.com/GM.Percussion.KeyMap.html">General MIDI mapping</a>, compatible with e-drums and drum pads. It is also the proper mode for Ardour's drum grooves.</p>
+</section>
+
+<section id="mni_options">
+
+<h3>4. Options section</h3>
+
+<p>At the lower right part of the plugin window, you can see <b>Options</b>.</p>
+
+<p><b>MIDI map mode</b> - there are two modes, <b>Auto</b> and <b>Kit</b>. With <b>Auto</b>, Drumlabooh assigns MIDI notes to slots/cells with instruments starting from the numerical value of another option, <b>Base MIDI note</b> (default: 36), which specifies the MIDI note number to map the first instrument in the kit. MIDI note 36 = C (C1 or C2, depending on your DAW). This mode is the default and works well for playing from a MIDI keyboard. When <b>Kit</b> is selected, Drumlabooh uses MIDI note assignments from the drumkit file; usually, this is <a href="https://computermusicresource.com/GM.Percussion.KeyMap.html">General MIDI mapping</a>, compatible with e-drums and drum pads. It is also the proper mode for Ardour's drum grooves.</p>
 
     <p>So, MIDI mapping is the assignment of MIDI note numbers to drum instruments (Drumlabooh cells/slots) from the kit. The mapping data is included in many Drumlabooh and SFZ kits.  However, some drums or percussion instruments are not covered by General MIDI, so in these cases, <b>Auto</b> mode is more useful and gives you access to all instruments in the kit.</p>
 
 <p>If the drumkit has no MIDI mapping defined, and you've selected the "Kit" mode, Drumlabooh will use "Auto" mode instead.</p>
 
-    <p>For more complex MIDI mapping, use the power of your DAW, e-drum/pad options, or plugins such as, in Reaper, "JS MIDI map to key v2" – just place it before Drumlabooh and create or select a mapping file, for example:</p>
+    <p>For more complex MIDI mapping, use the power of your DAW, e-drum/pad options, or plugins such as, in Reaper, "JS MIDI map to key v2" - just place it before Drumlabooh and create or select a mapping file, for example:</p>
+
     <pre>A3 -> E5
 C4 -> C5</pre>
-    <p><b>Fixed MIDI velocity</b> - turn on to play samples at maximum velocity; useful for electronic music.</p>
-    <p><b>Rnd seed tweak</b> - "seed" for the pseudorandom number generator, ranging from 1 to 16777216. Drumlabooh uses a deterministic pseudorandom number generator, ensuring that with the same Rnd seed tweak value and the current playback position, the sequence of numbers will always be identical each time.</p>
-    <p>For some samples in the drum kits, there are variations that are selected based on the values from this generator, which adds a sense of live performance to the drum part. With a regular random generator, each new playback would produce different-sounding parts, and sample variations would be unpredictable, making mixing and mastering more difficult.</p>
-    <p>In Drumlabooh, however, you will always get the same sequence of such numbers every time, but it depends on the Rnd seed tweak. Change its value - and you get a completely new sequence. You have 16777216 possible sequence variations.</p>
-    <p><b>Pan mode</b> – allows you to select the pan mode for Drumlabooh's internal mixer. See the <a href="https://en.wikipedia.org/wiki/Panning_law">article</a>. The default panner is equal power panning, law: -3 dB (sin/cos taper).<br>
+
+<p><b>Fixed MIDI velocity</b> - turn on to play samples at maximum velocity; useful for electronic music.</p>
+
+<p><b>Rnd seed tweak</b> - "seed" for the pseudorandom number generator, ranging from 1 to 16777216. Drumlabooh uses a deterministic pseudorandom number generator, ensuring that with the same Rnd seed tweak value and the current playback position, the sequence of numbers will always be identical each time.</p>
+
+<p>For some samples in the drum kits, there are variations that are selected based on the values from this generator, which adds a sense of live performance to the drum part. With a regular random generator, each new playback would produce different-sounding parts, and sample variations would be unpredictable, making mixing and mastering more difficult.</p>
+
+<p>In Drumlabooh, however, you will always get the same sequence of such numbers every time, but it depends on the Rnd seed tweak. Change its value - and you get a completely new sequence. You have 16777216 possible sequence variations.</p>
+ 
+<p><b>Pan mode</b> - allows you to select the pan mode for Drumlabooh's internal mixer. See the <a href="https://en.wikipedia.org/wiki/Panning_law">article</a>. The default panner is equal power panning, law: -3 dB (sin/cos taper).<br>
 By the way, pan mode is a significant factor in how a DAW "sounds." The pan mode, or panning law, is the algorithm that controls the total acoustic power output of two channels, reducing their level when the pan position moves to the center. Otherwise, the sound at the center would be louder, because both channels play at full power, making it louder than the same mono sound. Therefore, any stereo output must be reduced to some degree when the pan position approaches the center to prevent a loudness increase.</p>
-    <p>It may be better to set the pan mode in Drumlabooh to match your DAW's pan mode, so that all drum samples are panned consistently. Experiment to find what sounds best in your mix.</p>
-    <p><b>Analog</b> – the global saturation on/off and its level. Useful for quiet drum kits.</p>
-  </section>
 
-  <section id="multi">
-    <h3>5. Multi-channel explained</h3>
-    <p>In the Multi-channel version (Drumlabooh-multi), the plugin's pan, volume, and mute controls <b>are disabled</b>, because you can control them via tracks or buses in your DAW.</p>
-    <p>Drumlabooh provides 36 mono output channels, one per sample of the drumkit.</p>
-  </section>
+<p>It may be better to set the pan mode in Drumlabooh to match your DAW's pan mode, so that all drum samples are panned consistently. Experiment to find what sounds best in your mix.</p>
 
-  <section id="mltiard">
-    <h3>5.1 How to use Multi-out with Ardour?</h3>
-    <p>0. You can manually route the plugin's outputs to tracks or buses, but read further to learn how to do it automatically.</p>
+<p><b>Analog</b> - the global saturation on/off and its level. Useful for quiet drum kits.</p>
+
+</section>
+
+<section id="multi">
+ 
+<h3>5. Multi-channel explained</h3>
+
+<p>In the Multi-channel version (Drumlabooh-multi), the plugin's pan, volume, and mute controls <b>are disabled</b>, because you can control them via tracks or buses in your DAW.</p>
+
+<p>Drumlabooh provides 36 mono output channels, one per sample of the drumkit.</p>
+
+</section>
+
+<section id="mltiard">
+
+<h3>5.1 How to use Multi-out with Ardour?</h3>
+
+<p>0. You can manually route the plugin's outputs to tracks or buses, but read further to learn how to do it automatically.</p>
+
     <p>1. Create a MIDI track with Drumlabooh-multi as the instrument.</p>
+
     <p>2. You'll see this window:</p>
+
     <div class="image-center">
       <img src="ard-mult.png" alt="Ardour multi-out setup">
     </div>
-    <p>Select "36 channels" and "Fan out," then press Add. That's all! Now you have 36 tracks as outputs, already routed from Drumlabooh-multi's track.</p>
-    <p>3. Load the drumkit into Drumlabooh-multi. For example, Ludwig Sixties. It has 19 instruments. Thus, we need only 19 output channels from the 36 available. Remove the unused ones.</p>
-    <p><b>The alternative way:</b></p>
-    <p>If you put Drumlabooh-multi on an already created track (for example, previously used with Drumlabooh-stereo), you can route channels manually or semi-manually. In the latter case:</p>
-    <p>1. By default, Drumlabooh-multi will play to the stereo output. We don't need that. Let's create individual channels or buses for each drum/percussion sample.</p>
-    <p>2. Right-click <b>on the top of the channel strip</b> and select <b>Fan out to tracks</b> or <b>Fan out to buses</b>. Now you have one track or bus per channel to control each of the 36 drumkit channels. Please note that these tracks and buses are mono, so to use stereo FX on them, right-click on the effect, select <b>Pin connection</b>, and connect the pins to create stereo:</p>
-    <div class="image-center">
-      <a href="./mono2stereo.png"><img src="mono2stereo-small.jpg" alt="Mono to stereo pin connection"></a>
-    </div>
-    <p>3. All new tracks/channels are now in a group. To ensure they can be muted, soloed, etc., properly, right-click on the group header and select <b>Remove group</b>:</p>
-    <div class="image-center">
-      <a href="./remove-group.png"><img src="remove-group-small.jpg" alt="Remove group in Ardour"></a>
-    </div>
-    <p>4. Now, remove the unneeded tracks (for example, if the kit has only 8 instruments, but you have 36 tracks from Drumlabooh!)</p>
-  </section>
 
-  <section id="mltirea">
-    <h3>5.2 How to use Multi-out with Reaper?</h3>
-    <p>0. You can manually route the plugin's outputs to tracks or buses, but read further to see how to do that automatically.</p>
+    <p>Select "36 channels" and "Fan out," then press Add. That's all! Now you have 36 tracks as outputs, already routed from Drumlabooh-multi's track.</p>
+
+    <p>3. Load the drumkit into Drumlabooh-multi. For example, Ludwig Sixties. It has 19 instruments. Thus, we need only 19 output channels from the 36 available. Remove the unused ones.</p>
+ 
+    <p><b>The alternative way:</b></p>
+
+    <p>If you put Drumlabooh-multi on an already created track (for example, previously used with Drumlabooh-stereo), you can route channels manually or semi-manually. In the latter case:</p>
+
+    <p>1. By default, Drumlabooh-multi will play to the stereo output. We don't need that. Let's create individual channels or buses for each drum/percussion sample.</p>
+
+    <p>2. Right-click <b>on the top of the channel strip</b> and select <b>Fan out to tracks</b> or <b>Fan out to buses</b>. Now you have one track or bus per channel to control each of the 36 drumkit channels. Please note that these tracks and buses are mono, so to use stereo FX on them, right-click on the effect, select <b>Pin connection</b>, and connect the pins to create stereo:</p>
+
+<div class="image-center">
+<a href="./mono2stereo.png"><img src="mono2stereo-small.jpg" alt="Mono to stereo pin connection"></a>
+</div>
+
+<p>3. All new tracks/channels are now in a group. To ensure they can be muted, soloed, etc., properly, right-click on the group header and select <b>Remove group</b>:</p>
+
+<div class="image-center">
+<a href="./remove-group.png"><img src="remove-group-small.jpg" alt="Remove group in Ardour"></a>
+</div>
+
+<p>4. Now, remove the unneeded tracks (for example, if the kit has only 8 instruments, but you have 36 tracks from Drumlabooh!)</p>
+
+</section>
+
+<section id="mltirea">
+
+<h3>5.2 How to use Multi-out with Reaper?</h3>
+
+<p>0. You can manually route the plugin's outputs to tracks or buses, but read further to see how to do that automatically.</p>
+
     <p>1. <b>Insert</b> → <b>Virtual Instrument on track</b>, and add <b>Drumlabooh-multi (LV2i or VST3i)</b>.</p>
+
     <p>2. Confirm in the <b>Build routing confirmation window</b>.</p>
+
     <p>3. Voila!</p>
+
   </section>
 
 
 <section id="mlticub">
-  <h3>5.3 How to use Multi-out with Cubase?</h3>
+<h3>5.3 How to use Multi-out with Cubase?</h3>
+
   <div class="image-center steps">
     <div class="step">
       <p class="step-number">1</p>
@@ -323,7 +367,6 @@ By the way, pan mode is a significant factor in how a DAW "sounds." The pan mode
 </div>
 
 
-
 <footer style="
   margin-top: 60px;
   padding: 40px 20px;
@@ -335,6 +378,7 @@ By the way, pan mode is a significant factor in how a DAW "sounds." The pan mode
   font-size: 0.95rem;
   line-height: 1.5;
 ">
+
   <p style="margin: 0 0 12px; font-weight: 500;">
     Drumlabooh is created by
     <a href="https://github.com/psemiletov" style="
@@ -364,7 +408,6 @@ By the way, pan mode is a significant factor in how a DAW "sounds." The pan mode
     ">push.fm/fl/semiletov</a>
   </p>
 </footer>
-
 
 </body>
 </html>
