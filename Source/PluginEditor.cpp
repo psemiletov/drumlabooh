@@ -314,7 +314,7 @@ CFx::CFx()
 
   sl_live_amount.setSliderStyle (juce::Slider::Rotary);
   sl_live_amount.setTextBoxStyle (juce::Slider::NoTextBox, false, 80, 20);
-  sl_live_amount.setTooltip ("Live micro-variation amount");
+  sl_live_amount.setTooltip ("Adds subtle micro-variations to the sound. Active when Filters are enabled.");
   sl_live_amount.setColour (juce::Slider::thumbColourId, juce::Colours::lightgreen);
 
 

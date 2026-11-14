@@ -48,14 +48,14 @@
 
 <section>
 
-<p>Drumlabooh is designed not to interfere with creativity. All you need to write a drum part is to create a new MIDI track in your favorite DAW, load the Drumlabooh plugin onto it, then select one of the installed drum kits in it, or load samples from folders, and start playing from the keyboard, drum pads, or drawing notes in the sequencer. Drumlabooh uses existing sampled drumkits (Drumlabooh, Hydrogen, SFZ), samples from sample packs, or synthesizer presets.</p>
+<p>Drumlabooh is designed not to interfere with creativity. All you need to write a drum part is to create a new MIDI track in your favorite DAW, load the Drumlabooh plugin onto it, then select one of the installed drum kits in it, or load samples from folders, and start playing from the keyboard, drum pads, or drawing notes in the piano roll. Drumlabooh uses existing sampled drumkits (Drumlabooh, Hydrogen, SFZ), samples from sample packs, or synthesizer presets.</p>
 </section>
 
 <section id="mni_modes">
 
 <h3>1. Stereo vs Multi-channel modes</h3>
 
-<p>The first thing you need to know is that there are two versions of Drumlabooh — <b>Stereo</b> and <b>Multi</b> (Multi-channel or Multi-output). The latter provides a separate mono output channel for each instrument in the drum kit — 36 channels in total. To use the Stereo version, add the <i>Drumlabooh</i> plugin to a track. To use the Multi-channel version, add <i>Drumlabooh-multi</i>.</p>
+<p>The first thing you need to know is that there are two versions of Drumlabooh - <b>Stereo</b> and <b>Multi</b> (Multi-channel or Multi-output). The latter provides a separate mono output channel for each instrument in the drum kit - 36 channels in total. To use the Stereo version, add the <i>Drumlabooh</i> plugin to a track. To use the Multi-channel version, add <i>Drumlabooh-multi</i>.</p>
 
 <p>In the Multi-channel version, the plugin's pan, volume, and mute controls <b>are disabled</b> because you can control them via tracks or buses in your DAW. Read the <a href="#multi">DETAILS</a> section to learn how to use Multi mode in your DAW and how to route each drum to an individual track or bus.</p>
 
@@ -65,7 +65,7 @@
 
 <h3>2.0 Kits</h3>
 
-<p>When Drumlabooh starts, it scans all available kits and <b>displays a list of them</b> for you to choose from. You can also click the <b>Open</b> button below the kit information section to manually select a drumkit file from any location. Choose an <code>.xml</code> (Hydrogen format), <code>.sfz</code> (SFZ), or <code>drumkit.txt</code> or <code>drumkit.labooh</code> (Drumlabooh format) file in the drumkit’s folder.</p>
+<p>When Drumlabooh starts, it scans all available kits and <b>displays a list of them</b> for you to choose from. You can also click the <b>Open</b> button below the kit information section to manually select a drumkit file from any location. Choose an <code>.xml</code> (Hydrogen format), <code>.sfz</code> (SFZ), or <code>drumkit.txt</code> or <code>drumkit.labooh</code> (Drumlabooh format) file in the drumkit’s folder. However, this method is inconvenient and you will rarely need it - it is much easier to select kits from the scanned list. If the drum kit is located somewhere inside your home directory, Drumlabooh saves a relative path to it, so when transferring your DAW project to another computer (provided the same drum kit is installed there), the plugin will pick it up.</p>
 
 <h3>Full list of directories where Drumlabooh searches SFZ, Drumlabooh and Hydrogen kits</h3>
 
@@ -94,7 +94,7 @@ You can add your own custom folders to this list. To do this, create a text file
 /home/test/drumlabooh
 </pre>
 
-<p><b>Important note:</b> when loading a drumkit, Drumlabooh converts the samples (in RAM) to match the DAW session’s sample rate. Large kits may take longer to load if, for example, the samples are at 48 kHz but the session rate is 44.1 kHz. The same applies to FLAC-compressed samples. If you try to load a large drumkit, please wait — do not assume that the plugin or DAW has frozen.</p>
+<p><b>Important note:</b> when loading a drumkit, Drumlabooh converts the samples (in RAM) to match the DAW session’s sample rate. Large kits may take longer to load if, for example, the samples are at 48 kHz but the session rate is 44.1 kHz. The same applies to FLAC-compressed samples. If you try to load a large drumkit, please wait - do not assume that the plugin or DAW has frozen.</p>
 
 <p>The best way to handle this is to use the <b>Adapt</b> button, which saves a copy of the current drumkit using the <b>session’s</b> sample rate and 32-bit float data format (24-bit for FLAC) in the <i>drum_sklad</i> directory. This copy will then be used as the active drumkit, and the next time it will load faster than the original kit.</p>
 
@@ -146,7 +146,7 @@ You can add your own custom folders to this list. To do this, create a text file
 
 <section id="mni_kits_dir">
 
-<h3>2.5 Folder Kits</h3>
+<h3>2.4 Folder Kits</h3>
 
 <p>Drumlabooh can use directories placed at <i>$HOME/drum_dirs</i>, <i>C:\drum_dirs</i>, or <i>D:\drum_dirs</i> as ready-to-use Alternate Sample kits. Just create a <i>drum_dirs</i> directory and put, for example, a <i>My Drumkit</i> folder inside, where you place the samples in subdirectories as follows (names can vary):</p>
 
@@ -165,7 +165,6 @@ You can add your own custom folders to this list. To do this, create a text file
 
 <p>There are some limits for Folder Kits: a maximum of 36 instrument folders per kit and up to 128 samples in each directory/folder.</p>
 
-<br>
 
 <h3>Supported sample formats</h3>
 
@@ -183,26 +182,26 @@ You can add your own custom folders to this list. To do this, create a text file
 <img src="cell.png" alt="Drum cell layout">
 </div>
 
-<p>1. <b>LED</b> – lights up when a note is played.</p>
+<p>1. <b>LED</b> - lights up when a note is played.</p>
 
-<p>2. <b>Instrument name</b> – defined in the kit; otherwise, the file name is used.
+<p>2. <b>Instrument name</b> - defined in the kit; otherwise, the file name is used.
 <br>
-The sample number is also displayed if aleternative samples are available for iterating through.
+The sample number is also displayed if alternative samples are available for iterating through.
 <br>
-The background color changes depending on the sample type — <span style="background-color:#8398a0; color:#000000;">empty slot</span>, <span style="background-color:#73da9e; color:#000000;">sample with a single layer</span>, <span style="background-color:#85da78; color:#000000;">sample with multiple layers</span>, <span style="background-color:#87ca0c; color:#000000;">sample with variants</span>. The latter can be selected using the + and - buttons located to the left.<br>
+The background color changes depending on the sample type: <span style="background-color:#8398a0; color:#000000;">empty slot</span>, <span style="background-color:#73da9e; color:#000000;">sample with a single layer</span>, <span style="background-color:#85da78; color:#000000;">sample with multiple layers</span>, <span style="background-color:#87ca0c; color:#000000;">sample with variants</span>. The latter can be selected using the + and - buttons located to the left.<br>
 You can also quickly select a specific sample by its number by clicking on the sample name field and entering a three-digit number - for example, 001 for the first sample or synth sound, 020 for the twentieth, or 101 for the one hundred and first.
 <br>
 The tooltip over the instrument name shows the current MIDI mapping settings for this slot and other info.
 </p>
 
-<p>3. <b>FX</b> – button to open the FX window for this instrument. You can close the window using the "close" button or the Escape key. All effects in that window can be turned on or off, so they work only when enabled.</p>
+<p>3. <b>FX</b> - button to open the FX window for this instrument. You can close the window using the "close" button or the Escape key. All effects in that window can be turned on or off, so they work only when enabled.</p>
 
 <p>
 There are <b>LP</b> (Low-pass filter, allows only frequencies below the <b>cutoff</b> value) and <b>HP</b> (High-pass filter, allows only frequencies above the <b>cutoff</b> value). To simplify the code and improve performance, the cutoff parameter is not in Hz but a floating-point number within the range 0..1.</p>
 
 <p>Both filters are resonant and have the <b>resonance</b> parameter. Experiment with the sliders to create new and interesting sounds. The HP filter works best for hi-hats, the LP for kicks; either HP or LP can produce cool effects on the snare. 
-<br>
-The <b>Live</b> knob only works when one or both filters are enabled. The further clockwise the knob is turned, the more varied the instrument sounds; with certain filter settings, you may need to tweak their parameters to achieve an audible effect. This variation is based on a deterministic pseudo-random number generator, meaning the sound will be identical across song-mixing sessions while still remaining varied.
+</p>
+<p>The <b>Live</b> knob only works when one or both filters are enabled. The further clockwise the knob is turned, the more varied the instrument sounds; with certain filter settings, you may need to tweak their parameters to achieve an audible effect. This variation is based on a deterministic pseudo-random number generator, meaning the sound will be identical across song-mixing sessions while still remaining varied.
 <b>Using filters and <b>Live</b> is a great way to turn any one-shot sample into a lively-sounding instrument - an approach especially well-suited for snares and hi-hats.</b>
 <br>
 If your sample still sounds weak or thin, try the <b>Analog</b> slider to add some warmth.
@@ -210,11 +209,11 @@ If your sample still sounds weak or thin, try the <b>Analog</b> slider to add so
 
 <p><i>The following interface elements are not available in the Multi-channel version of the plugin, as they would duplicate the DAW's elements for the tracks associated with the plugin.</i></p>
 
-<p>4. <b>Pan control</b> – values range from 0 (full left) to 1 (full right), with 0.5 being the center. See the <b>Pan mode</b> option to understand the panning algorithm. It is important to note that different DAWs have different pan modes for mixing; sometimes the DAW provides an option to select it. Drumlabooh internally behaves like the DAW mixer and offers the same flexibility.</p>
+<p>4. <b>Pan control</b> - values range from 0 (full left) to 1 (full right), with 0.5 being the center. See the <b>Pan mode</b> option to understand the panning algorithm. It is important to note that different DAWs have different pan modes for mixing; sometimes the DAW provides an option to select it. Drumlabooh internally behaves like the DAW mixer and offers the same flexibility.</p>
 
-<p>5. <b>Volume slider</b> – non-linear, with values ranging from -96 to +6 dB.</p>
+<p>5. <b>Volume slider</b> - non-linear, with values ranging from -96 to +6 dB.</p>
 
-<p>6. <b>Mute switch</b> – mutes the instrument.</p>
+<p>6. <b>Mute switch</b> - mutes the instrument.</p>
 
 <p>Under the <b>Options</b>, you will find the "global" Analog switch and slider, which affect the entire mix at the end of the signal chain. Useful for live but quiet drums.</p>
   </section>

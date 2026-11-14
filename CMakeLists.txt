@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 include(FetchContent)
 
 
-project(DRUMLABOOH LANGUAGES CXX C VERSION 13.0.0)
+project(DRUMLABOOH LANGUAGES CXX C VERSION 14.0.0)
 
 #add_definitions(-DVERSION_NUMBER="\\"${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}\\"")
 
@@ -38,7 +38,7 @@ set(VST3_INSTALL_DIR lib/vst3 CACHE PATH "Specifies where the VST3 libraries sho
 endif()
 
 
-set (DRUMSKLADTAG 4.0.0)
+set (DRUMSKLADTAG 7.0.0)
 
 IF (WIN32)
 set (JUCETAG 7.0.10)
@@ -71,10 +71,6 @@ FetchContent_Declare(
 #  URL https://github.com/psemiletov/drum_sklad/archive/refs/heads/main.zip
 #  URL https://github.com/psemiletov/drum_sklad/archive/refs/tags/3.0.1.zip
   URL https://github.com/psemiletov/drum_sklad/archive/refs/tags/${DRUMSKLADTAG}.zip
-
-
-
-
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
   EXCLUDE_FROM_ALL
 )

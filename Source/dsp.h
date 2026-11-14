@@ -20,6 +20,10 @@ Peter Semiletov, 2023-25
 #endif
 
 
+#define LUT_SIZE 1024
+extern float sin_lut[LUT_SIZE];
+void init_lut();
+
 extern float db_scale;
 
 inline float db2lin (float db)
@@ -191,7 +195,6 @@ inline void pan_sin_1_3 (float &l, float &r, float p)
        r = right * norm_factor;
      }
 }
-
 
 float warmify(float x, float warmth);
 float softLimit(float input);

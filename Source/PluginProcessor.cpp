@@ -898,8 +898,6 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
                       fl = warmify (fl, a_analog_amount[drum_sample_index]);
 
 
-
-
                     if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
                        fl *= s->velocity;
                   
@@ -1268,7 +1266,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
                if (a_analog_on [drum_sample_index])
                  fl = warmify (fl, a_analog_amount[drum_sample_index]);
-
+                 //fl = warmify_lut (fl, a_analog_amount[drum_sample_index]);
 
                  //AFTER DSP
 

@@ -121,97 +121,76 @@ nav a:hover {
   margin-right: auto;
 }
 
+/* Сетка компактных карточек драмкитов (по одному на строку) */
 .drumkits-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 30px;
-  margin-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 800px;
+  margin: 0 auto 60px auto;
 }
 
 .drum-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
   background: var(--card-bg);
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
+  padding: 16px 28px;
+  border-radius: 14px;
+  border-left: 5px solid var(--green-accent);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .drum-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-  border-left: 5px solid var(--green-accent);
-}
-
-.drum-card img {
-  width: 100%;
-  height: 220px;
-  object-fit: contain;
-  background: var(--card-bg);
-  padding: 20px;
-}
-
-.card-body {
-  padding: 24px;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
 }
 
 .card-title {
-  text-align: center;
-  font-size: 1.5rem;
-  color: var(--green-bright);
-  margin: 2px 0 6px;
-}
-
-.sample {
-  margin-bottom: 16px;
-  padding: 16px;
-  background: var(--main-light);
-  border-radius: 12px;
-  border-left: 5px solid var(--green-accent);
-}
-
-.sample-title {
+  font-size: 1.3rem;
   font-weight: 600;
-  color: var(--orange-accent);
-  margin-bottom: 8px;
-  font-size: 1.05rem;
+  color: var(--green-bright);
+  margin: 0;
+  white-space: nowrap;
 }
 
-/* Аудиоплеер */
-.sample audio {
-  width: 95%;
-  max-width: 400px;
+/* Аудиоплеер внутри компактной карточки */
+.drum-card audio {
+  flex: 1;
+  max-width: 450px;
+  min-width: 250px;
   height: 38px;
-  display: block;
-  margin: 10px auto 0;
   border: 2px solid var(--main-medium);
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-.sample audio::-webkit-media-controls-panel {
+.drum-card audio::-webkit-media-controls-panel {
   background: var(--player-bg);
   border-radius: 10px;
   padding: 0 2px;
   height: 38px;
 }
 
-.sample audio::-webkit-media-controls-timeline-container {
+.drum-card audio::-webkit-media-controls-timeline-container {
   padding: 0 4px;
 }
 
-.sample audio::-webkit-media-controls-timeline {
+.drum-card audio::-webkit-media-controls-timeline {
   margin: 0 4px;
   height: 6px;
 }
 
-.sample audio::-webkit-media-controls-current-time-display,
-.sample audio::-webkit-media-controls-time-remaining-display {
+.drum-card audio::-webkit-media-controls-current-time-display,
+.drum-card audio::-webkit-media-controls-time-remaining-display {
   margin: 0 4px;
   padding: 0;
   font-size: 11px;
 }
 
-.sample audio::-webkit-media-controls-play-button {
+.drum-card audio::-webkit-media-controls-play-button {
   background-color: var(--play-button-bg);
   border: none;
   border-radius: 50%;
@@ -222,40 +201,33 @@ nav a:hover {
   opacity: 0.95;
 }
 
-.sample audio::-webkit-media-controls-play-button,
-.sample audio::-webkit-media-controls-pause-button {
+.drum-card audio::-webkit-media-controls-play-button,
+.drum-card audio::-webkit-media-controls-pause-button {
   filter: invert(0.2) brightness(2);
 }
 
-.sample audio::-moz-media-controls-panel {
+.drum-card audio::-moz-media-controls-panel {
   background: var(--player-bg);
   padding: 0 2px;
   height: 38px;
 }
 
-.sample audio::-webkit-media-controls-volume-slider,
-.sample audio::-webkit-media-controls-current-time-display,
-.sample audio::-webkit-media-controls-time-remaining-display {
+.drum-card audio::-webkit-media-controls-volume-slider,
+.drum-card audio::-webkit-media-controls-current-time-display,
+.drum-card audio::-webkit-media-controls-time-remaining-display {
   filter: brightness(1.5);
-}
-
-.sample {
-  position: relative;
-  height: 120px;
-}
-
-.sample audio {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 35%;
-  min-height: 36px;
-  max-height: 50px;
 }
 
 section {
   margin-bottom: 16px;
+}
+
+.features-section {
+  background: var(--main-light);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  margin-bottom: 40px;
 }
 
 h2 {
@@ -389,14 +361,6 @@ ul.features li::before {
   color: var(--orange-hover);
 }
 
-section {
-  background: var(--main-light);
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  margin-bottom: 40px;
-}
-
 h3 {
   font-size: 1.6rem;
   color: var(--green-bright);
@@ -513,19 +477,25 @@ code {
   h1 { font-size: 1.9rem; }
   .tagline { font-size: 0.95rem; padding: 0 16px; }
   nav a { display: block; margin: 10px auto; width: fit-content; }
-  .drumkits-grid { grid-template-columns: 1fr; }
-  .card-body { padding: 20px; }
-  .sample audio {
+  
+  .drumkits-grid { 
+    max-width: 100%;
+  }
+  .drum-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px 20px;
+  }
+  .card-title {
+    text-align: center;
+  }
+  .drum-card audio {
     width: 100%;
     max-width: none;
-    height: 40px;
-    position: static;
-    transform: none;
   }
-  .sample {
-    height: auto;
-  }
-  section, .toc {
+
+  .features-section, .toc {
     padding: 30px;
   }
   pre {
