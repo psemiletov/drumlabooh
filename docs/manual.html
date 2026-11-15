@@ -37,11 +37,11 @@
     <ul>
       <li><a href="#mni_modes">1. Stereo vs Multi-channel modes</a></li>
       <li><a href="#mni_kits">2.0 Kits</a></li>
-      <li><a href="#mni_kits_hydrogen">2.1 Hydrogen Kits</a></li>
-      <li><a href="#mni_kits_sfz">2.2 SFZ Kits</a></li>
-      <li><a href="#mni_kits_labooh">2.3 Drumlabooh kits</a></li>
-      <li><a href="#mni_kits_dir">2.4 Folder Kits</a></li>
-      <li><a href="#mni_mixer">3. Mixer</a></li>
+      <li><a href="#mni_kits_labooh">2.1 Drumlabooh kits</a></li>
+      <li><a href="#mni_kits_dir">2.2 Folder Kits</a></li>
+      <li><a href="#mni_kits_hydrogen">2.3 Hydrogen Kits</a></li>
+      <li><a href="#mni_kits_sfz">2.4 SFZ Kits</a></li>
+     <li><a href="#mni_mixer">3. Mixer</a></li>
       <li><a href="#mni_options">4. Options</a></li>
       <li><a href="#multi">5. Multi-channel explained</a></li>
       <li><a href="#mltiard">5.1 Ardour</a></li>
@@ -110,30 +110,9 @@ You can add your own custom folders to this list. To do this, create a text file
 
 </section>
 
-<section id="mni_kits_hydrogen">
-
-<h3>2.1 Hydrogen Drum Kits</h3>
-
-<p>When Drumlabooh starts, it searches for all installed <a href="http://hydrogen-music.org">Hydrogen Drum Machine</a> kits in their default locations. Dozens of great kits have been created for <b>Hydrogen</b>. To install them you need to run <b>Hydrogen</b> and go to the <b>Drumkits → Online Import</b> menu, where you can select and download kits from the Hydrogen or Musical Artifacts repositories.</p>
-
-<p>Some Hydrogen kits may already be installed on your Linux system. Currently, for both Linux and Windows, the best way to get new Hydrogen kits is through the <b>Online Import</b> feature, since public download links are generally not available.</p>
-
-</section>
-
-<section id="mni_kits_sfz">
-
-<h3>2.2 SFZ Drum Kits</h3>
-
-<p>Drumlabooh scans for installed SFZ kits (as directories) in the pre-defined or user-defined locations.</p>
-
-<p>High-quality <b>AVL Drumkits</b> can be downloaded in SFZ format from <a href="http://www.bandshed.net/sounds/AVLDrumkits_SFZ/">AVLDrumkits_SFZ</a>.</p>
-
-<p>Drumlabooh supports a limited set of SFZ opcodes and parameters: <code>group</code>, <code>off_by</code>, <code>region</code>, <code>key</code>, <code>sample</code>, <code>default_path</code>, <code>offset</code>, <code>lovel</code>, and <code>hivel</code>. Drumlabooh does not support sample file names that contain spaces (because they are difficult to parse correctly from the SFZ file). Also, drum kits with "horizontal" sample layers are not supported.</p>
-</section>
-
 <section id="mni_kits_labooh">
 
-<h3>2.3 Drumlabooh Drum Kits</h3>
+<h3>2.1 Drumlabooh Drum Kits</h3>
 
 <p>Drumlabooh uses its own kit formats (there are two formats: legacy text-based and XML). One kit equals one directory, which should be placed in user-defined or pre-defined locations such as <i>$HOME/drumlabooh-kits</i>, <i>$HOME/drum_sklad</i>, or <i>/usr/share/drumlabooh-kits</i> on Linux, and in <i>C:\drumlabooh-kits</i>, <i>D:\drumlabooh-kits</i>, <i>C:\drum_sklad</i>, or <i>D:\drum_sklad</i> on Windows.</p>
 
@@ -150,7 +129,7 @@ You can add your own custom folders to this list. To do this, create a text file
 
 <section id="mni_kits_dir">
 
-<h3>2.4 Folder Kits</h3>
+<h3>2.2 Folder Kits</h3>
 
 <p>Drumlabooh can use directories placed at <i>$HOME/drum_dirs</i>, <i>C:\drum_dirs</i>, or <i>D:\drum_dirs</i> as ready-to-use Alternate Sample kits. Just create a <i>drum_dirs</i> directory and put, for example, a <i>My Drumkit</i> folder inside, where you place the samples in subdirectories as follows (names can vary):</p>
 
@@ -168,6 +147,28 @@ You can add your own custom folders to this list. To do this, create a text file
 <p>This is a simple way to use many sample packs by just unpacking them into the <i>drum_dirs</i> directory. Many such kits are available from <a href="https://www.reddit.com/r/Drumkits/">https://www.reddit.com/r/Drumkits/</a>.</p>
 
 <p>There are some limits for Folder Kits: a maximum of 36 instrument folders per kit and up to 128 samples in each directory/folder.</p>
+
+
+<section id="mni_kits_hydrogen">
+
+<h3>2.3 Hydrogen Drum Kits</h3>
+
+<p>When Drumlabooh starts, it searches for all installed <a href="http://hydrogen-music.org">Hydrogen Drum Machine</a> kits in their default locations. Dozens of great kits have been created for <b>Hydrogen</b>. To install them you need to run <b>Hydrogen</b> and go to the <b>Drumkits → Online Import</b> menu, where you can select and download kits from the Hydrogen or Musical Artifacts repositories.</p>
+
+<p>Some Hydrogen kits may already be installed on your Linux system. Currently, for both Linux and Windows, the best way to get new Hydrogen kits is through the <b>Online Import</b> feature, since public download links are generally not available.</p>
+
+</section>
+
+<section id="mni_kits_sfz">
+
+<h3>2.4 SFZ Drum Kits</h3>
+
+<p>Drumlabooh scans for installed SFZ kits (as directories) in the pre-defined or user-defined locations.</p>
+
+<p>High-quality <b>AVL Drumkits</b> can be downloaded in SFZ format from <a href="http://www.bandshed.net/sounds/AVLDrumkits_SFZ/">AVLDrumkits_SFZ</a>.</p>
+
+<p>Drumlabooh supports a limited set of SFZ opcodes and parameters: <code>group</code>, <code>off_by</code>, <code>region</code>, <code>key</code>, <code>sample</code>, <code>default_path</code>, <code>offset</code>, <code>lovel</code>, and <code>hivel</code>. Drumlabooh does not support sample file names that contain spaces (because they are difficult to parse correctly from the SFZ file). Also, drum kits with "horizontal" sample layers are not supported.</p>
+</section>
 
 
 <h3>Supported sample formats</h3>
@@ -192,7 +193,7 @@ You can add your own custom folders to this list. To do this, create a text file
 <br>
 The sample number is also displayed if alternative samples are available for iterating through.
 <br>
-The background color changes depending on the sample type: <span style="background-color:#8398a0; color:#000000;">empty slot</span>, <span style="background-color:#73da9e; color:#000000;">sample with a single layer</span>, <span style="background-color:#85da78; color:#000000;">sample with multiple layers</span>, <span style="background-color:#87ca0c; color:#000000;">sample with variants</span>. The latter can be selected using the + and - buttons located to the left.<br>
+The background color changes depending on the sample type: <span style="background-color:#8398a0; color:#000000;">empty slot</span>, <span style="background-color:#73da9e; color:#000000;">sample with a single layer</span>, <span style="background-color:#85da78; color:#000000;">sample with multiple layers</span>, <span style="background-color:#87ca0c; color:#000000;">sample with variants (one-shots)</span>. The latter can be selected using the + and - buttons located to the left.<br>
 You can also quickly select a specific sample by its number by clicking on the sample name field and entering a three-digit number - for example, 001 for the first sample or synth sound, 020 for the twentieth, or 101 for the one hundred and first.
 <br>
 The tooltip over the instrument name shows the current MIDI mapping settings for this slot and other info.

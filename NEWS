@@ -1,7 +1,33 @@
-**Drumlabooh 14.0.0**
+   Drumlabooh 14.0.0
 
-   Внимание! Эта версия меняет звук микса, если вы использовали встроенные секции FX с фильтрами и сатуратором.
+  A synthesizer engine has been added alongside the sampler engine. Drum kits can now consist of "formula" sets for the built-in generator modules. This feature is utilized by the new drum kits: OM Kit (for old-school Goa Trance), RITM (for 1980s-style electro), and a true sound producer's secret weapon - the Golden Farthing kit.
+  As the new drum kits are getting heavier, I rewrote the kit loading routine (affecting all formats) to use multi-threaded reading, which significantly speeds things up. It utilizes exactly half of the CPU threads to avoid overheating.
+  Attention! This new version alters the mix sound if you previously used the built-in FX sections with filters and a saturator. The new DSP section processing order is: filters, Live control, Analog saturator.
+  An important new Live knob has been introduced. It works only when filters are enabled and turns any monotonous one-shot into a dynamic, live-sounding performance - simply tweak the Live knob and filter parameters.
+  A UI scaling option (zoom in/out) has been added to the interface.
+   Instrument slots can now display the preset/one-shot number. To quickly select a preset, simply click on the slot name and type a three-digit preset number.
+  A new "Info" button opens a window with a description of the current drum kit (its history, who used it, etc.).
+   The continuous development of Drumlabooh's capabilities has led to an expansion of its drum kit format, giving birth to the version 2 specification (https://github.com/psemiletov/drum_sklad).
+  Simultaneously with Drumlabooh 14, I am releasing the 7th drum kit update (bundled with Drumlabooh). One drum kit has been removed (it will remain on your local machine if installed previously); all other kits now feature standardized cover art, several drum kit definition files (which I forgot to update following engine changes) have been fixed, and building from source now properly pulls the freshest drum kit release.
+   Development is taking place amid ongoing blackouts in my city, which is why I sometimes forget or don't have time to finish everything I planned. For instance, out of the new synthesizer kits I envisioned, I've only managed to complete three so far. I also haven't had enough time to update the sound gallery on the website to the extent I would like.
+
+Stay tuned,
+
+Peter Semiletov
 
 
+Drumlabooh 14.0.0
 
+   К сэмплерному движку добавлен синтезаторный, теперь драмкиты могут состоять из наборов "формул" для встроенных модулей-генераторов. Эту фишку используют новые драмкиты: OM Kit (заточен под олдскульный Goa Trance), RITM (для electro в духе 1980х) и секретный соус настоящего саунд-продюсера - кит Golden Farthing.
+   Поскольку новые драмкиты становятся всё тяжелее, я переписал загрузку китов (это коснулось всех форматов) под многопоточное чтение, что существенно ускорило дело. При этом используется ровно половина потоков процессора, дабы не перегревать его.
+   Внимание! Новая версия меняет звук микса, если вы ранее использовали встроенные секции FX с фильтрами и сатуратором. Новый порядок этой секции DSP: фильтры, регулятор Live, сатуратор Analog.
+   Да, появился важный кноб Live, он действует только при включенных фильтрах и превращает любой монотонный ван-шот в живую игру, надо лишь покрутить Live и параметры фильтров.
+  В интерфейс добавлена опция масштабирования - увеличение и уменьшение.
+   Слоты инструментов теперь могут показывать номер пресета/ван-шота, а для быстрого выбора пресета надо щелкнуть на названии слота и набрать трехзначный номер пресета.
+   Новая кнопка "Info" вызывает окно с описанием текущего драмкита (история, кто его использовал и так далее).
+   Постоянное развитие возможностей Drumlabooh привело к расширению формата его драмкитов, таким образом родилась спецификация версии 2 (https://github.com/psemiletov/drum_sklad).
+   Одновременно с Drumlabooh 14 я выпускаю 7-й релиз драмкитов. Убран один драмкит (он остается у вас локально, если был установлен ранее), во всех остальных обложки приведены к общему стилю, исправлены некоторые файлы определений драмкитов (которые я забыл обновить к изменениям в движке), наконец при сборке из исходников наконец подтягивается самый свежий релиз драмкитов.
+   Разработка ведется в условиях постоянных блэкаутов в моем городе, поэтому я забываю или не успеваю доделать то одно, то другое. Так, из новых синтезаторных китов, которые я задумал, покамест успел сделать только три. Галерею звуков на сайте тоже пока не успеваю в той мере, как хотел бы.
+
+  
   На связи, Петр Семилетов

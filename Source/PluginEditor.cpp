@@ -1760,13 +1760,13 @@ valueTreeState (vts)
   cmb_ui_zoom.setColour (juce::ComboBox::backgroundColourId, juce::Colour (87, 110, 113));
   cmb_ui_zoom.setColour (juce::ComboBox::textColourId, Colours::white);
 
-  cmb_ui_zoom.addItem ("50% (0.5x)", 1);
+  cmb_ui_zoom.addItem ("75% (0.75x)", 1);
   cmb_ui_zoom.addItem ("100% (1.0x)", 2);
   cmb_ui_zoom.addItem ("150% (1.5x)", 3);
   cmb_ui_zoom.addItem ("200% (2.0x)", 4);
 
   float current_gui_scale = options.get_float ("gui_scale_factor", 1.0f);
-  if (current_gui_scale <= 0.5f)      cmb_ui_zoom.setSelectedId (1, juce::dontSendNotification);
+  if (current_gui_scale <= 0.75f)      cmb_ui_zoom.setSelectedId (1, juce::dontSendNotification);
   else if (current_gui_scale <= 1.0f) cmb_ui_zoom.setSelectedId (2, juce::dontSendNotification);
   else if (current_gui_scale <= 1.5f) cmb_ui_zoom.setSelectedId (3, juce::dontSendNotification);
   else                                cmb_ui_zoom.setSelectedId (4, juce::dontSendNotification);
@@ -1774,7 +1774,7 @@ valueTreeState (vts)
   cmb_ui_zoom.onChange = [this] {
     float new_scale = 1.0f;
     int id = cmb_ui_zoom.getSelectedId();
-    if (id == 1) new_scale = 0.5f;
+    if (id == 1) new_scale = 0.75f;
     else if (id == 2) new_scale = 1.0f;
     else if (id == 3) new_scale = 1.5f;
     else if (id == 4) new_scale = 2.0f;

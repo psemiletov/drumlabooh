@@ -34,35 +34,34 @@
     <h2>NEWS</h2>
 
     <div class="news-entry">
-      <div class="news-date">October 08 2026 — <a href="https://github.com/psemiletov/drumlabooh/releases/tag/13.0.0">Drumlabooh 13.0.0</a></div>
+      <div class="news-date">November 15 2026 — <a href="https://github.com/psemiletov/drumlabooh/releases/tag/14.0.0">Drumlabooh 14</a></div>
 
+<p>  A synthesizer engine has been added alongside the sampler engine. Drum kits can now consist of "formula" sets for the built-in generator modules. This feature is utilized by the new drum kits: OM Kit (for old-school Goa Trance), RITM (for 1980s-style electro), and a true sound producer's secret weapon - the Golden Farthing kit.</p>
 
-<p>Every release of Drumlabooh aims to be interesting and useful. The new version includes a big drumkit called Diskach (a word used in the USSR and post-Soviet countries in the 1990s to refer to a disco), with samples evoking nostalgia for the nineties. 7 instruments with 128 sample variations each!</p>
+<p>  As the new drum kits are getting heavier, I rewrote the kit loading routine (affecting all formats) to use multi-threaded reading, which significantly speeds things up. It utilizes exactly half of the CPU threads to avoid overheating.</p>
 
-<p>This drumkit uses features of the new version of the Drumlabooh drumkit format - 1.1 (see the specification here: https://github.com/psemiletov/drum_sklad), where a directory can be specified as a file list, and the sample order can be reversed with a separate parameter.
+<p>  Attention! This new version alters the mix sound if you previously used the built-in FX sections with filters and a saturator. The new DSP section processing order is: filters, Live control, Analog saturator.
 </p>
 
-<p>This is the main engine innovation. The following changes have also taken place in the engine.</p>
-
-
-<p>It's no secret that Drumlabooh does not support SFZ drumkits where a "horizontal" layer architecture is implied. On the other hand, Drumlabooh supports "vertical" velocity layers, so Drumlabooh is perfectly compatible, for example, with AVL drumkits. Previously, if Drumlabooh tried to load drumkits with a different architecture, the plugin crashed and brought down the DAW. Now Drumlabooh simply does not load such a drumkit, scanning it for unsupported opcodes.</p>
-
-<p>As for Hydrogen drumkit support, as far as I know, Drumlabooh loads all of them except Audiophob, in which one WAV file is a renamed AIFF, and this causes a crash at the JUCE level that cannot be bypassed, so I simply blocked Audiophob from loading.</p>
-
-<p>About reading samples. Inside Drumlabooh, sounds are stored in mono. It is simpler to mix this way. Stereo samples are converted to mono at input. And then, at the level of the built-in Drumlabooh mixer or DAW, you pan them. So, the Drumlabooh engine has returned to reading only the left channel from a stereo file. Previously, both channels were read and mixed into mono, with 50% volume for each channel. To simplify the code, I returned to how it was originally.</p>
-
-<p>By version 13, many native Drumlabooh drumkits have been thoroughly edited - unnecessary silence or overly quiet tails were trimmed, manual fades were applied to sharp signal cutoffs, and some kit cover artwork was remade. The sound of all drumkits remains the same, do not worry about existing mixes! The changes affected only the length of some samples and non-zero fades that caused a click at the end.
+<p>  An important new Live knob has been introduced. It works only when filters are enabled and turns any monotonous one-shot into a dynamic, live-sounding performance - simply tweak the Live knob and filter parameters.
+</p>
+<p>  A UI scaling option (zoom in/out) has been added to the interface.
+</p>
+<p>   Instrument slots can now display the preset/one-shot number. To quickly select a preset, simply click on the slot name and type a three-digit preset number.
+</p>
+<p>  A new "Info" button opens a window with a description of the current drum kit (its history, who used it, etc.).
 </p>
 
-<p>In total, since 2023, Drumlabooh has accumulated a decent set of drumkits for all occasions and all times — I say "times" for a reason, because Drumlabooh comes bundled with samples of many legendary or rare hardware drum machines of past decades. And so we have:</p>
+<p>   The continuous development of Drumlabooh's capabilities has led to an expansion of its drum kit format, giving birth to the version 2 specification (https://github.com/psemiletov/drum_sklad).
+</p>
 
-<p>Diskach, Avangard, Sopromat - universal large (but fast) drumkits with hundreds of samples on board; perhaps this is currently the core of Drumlabooh drumkits.</p>
+<p>  Simultaneously with Drumlabooh 14, I am releasing the 7th drum kit update (bundled with Drumlabooh). One drum kit has been removed (it will remain on your local machine if installed previously); all other kits now feature standardized cover art, several drum kit definition files (which I forgot to update following engine changes) have been fixed, and building from source now properly pulls the freshest drum kit release.
+</p>
 
-<p>Sixties Basic, Sixties Rock, JazzKit - "live" multi-layered drumkits tailored for jazz and rock music in the genres stated in the drumkit names.</p>
+<p>   Development is taking place amid ongoing blackouts in my city, which is why I sometimes forget or don't have time to finish everything I planned. For instance, out of the new synthesizer kits I envisioned, I've only managed to complete three so far. I also haven't had enough time to update the sound gallery on the website to the extent I would like.
+</p>
 
-<p>The remaining drumkits are sample sets either from old legendary drum machines - LEL, Cheetah SpecDrum, Klone Dual, or small experimental kits - Tamil, wooden, etc.</p>
-
-<p>Stay tuned, Petr Semiletov
+<p>Stay tuned, Peter Semiletov
 </p>
 
 
