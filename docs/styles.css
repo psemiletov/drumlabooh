@@ -63,7 +63,7 @@ nav a {
   color: var(--orange-accent);   /* яркий оранжевый в обычном состоянии */
   text-decoration: none;
   font-weight: 600;
-  margin: 0 10px;
+  margin: 5px 8px;
   padding: 10px 20px;
   border-radius: 30px;
   transition: all 0.3s ease;
@@ -167,55 +167,59 @@ nav a:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-.drum-card audio::-webkit-media-controls-panel {
-  background: var(--player-bg);
-  border-radius: 10px;
-  padding: 0 2px;
-  height: 38px;
-}
+/* Глубокую кастомизацию контролов оставляем только для десктопов,
+ *  чтобы не ломать рендеринг в мобильном Chrome */
+@media (min-width: 641px) {
+  .drum-card audio::-webkit-media-controls-panel {
+    background: var(--player-bg);
+    border-radius: 10px;
+    padding: 0 2px;
+    height: 38px;
+  }
 
-.drum-card audio::-webkit-media-controls-timeline-container {
-  padding: 0 4px;
-}
+  .drum-card audio::-webkit-media-controls-timeline-container {
+    padding: 0 4px;
+  }
 
-.drum-card audio::-webkit-media-controls-timeline {
-  margin: 0 4px;
-  height: 6px;
-}
+  .drum-card audio::-webkit-media-controls-timeline {
+    margin: 0 4px;
+    height: 6px;
+  }
 
-.drum-card audio::-webkit-media-controls-current-time-display,
-.drum-card audio::-webkit-media-controls-time-remaining-display {
-  margin: 0 4px;
-  padding: 0;
-  font-size: 11px;
-}
+  .drum-card audio::-webkit-media-controls-current-time-display,
+  .drum-card audio::-webkit-media-controls-time-remaining-display {
+    margin: 0 4px;
+    padding: 0;
+    font-size: 11px;
+  }
 
-.drum-card audio::-webkit-media-controls-play-button {
-  background-color: var(--play-button-bg);
-  border: none;
-  border-radius: 50%;
-  margin: 0 2px;
-  width: 28px;
-  height: 28px;
-  filter: brightness(1.1);
-  opacity: 0.95;
-}
+  .drum-card audio::-webkit-media-controls-play-button {
+    background-color: var(--play-button-bg);
+    border: none;
+    border-radius: 50%;
+    margin: 0 2px;
+    width: 28px;
+    height: 28px;
+    filter: brightness(1.1);
+    opacity: 0.95;
+  }
 
-.drum-card audio::-webkit-media-controls-play-button,
-.drum-card audio::-webkit-media-controls-pause-button {
-  filter: invert(0.2) brightness(2);
-}
+  .drum-card audio::-webkit-media-controls-play-button,
+  .drum-card audio::-webkit-media-controls-pause-button {
+    filter: invert(0.2) brightness(2);
+  }
 
-.drum-card audio::-moz-media-controls-panel {
-  background: var(--player-bg);
-  padding: 0 2px;
-  height: 38px;
-}
+  .drum-card audio::-moz-media-controls-panel {
+    background: var(--player-bg);
+    padding: 0 2px;
+    height: 38px;
+  }
 
-.drum-card audio::-webkit-media-controls-volume-slider,
-.drum-card audio::-webkit-media-controls-current-time-display,
-.drum-card audio::-webkit-media-controls-time-remaining-display {
-  filter: brightness(1.5);
+  .drum-card audio::-webkit-media-controls-volume-slider,
+  .drum-card audio::-webkit-media-controls-current-time-display,
+  .drum-card audio::-webkit-media-controls-time-remaining-display {
+    filter: brightness(1.5);
+  }
 }
 
 section {
@@ -476,9 +480,25 @@ code {
 @media (max-width: 640px) {
   h1 { font-size: 1.9rem; }
   .tagline { font-size: 0.95rem; padding: 0 16px; }
-  nav a { display: block; margin: 10px auto; width: fit-content; }
-  
-  .drumkits-grid { 
+
+  /* Компактное горизонтальное меню с переносом строк вместо вертикального столбика */
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 12px;
+    margin: 20px auto;
+  }
+  nav a {
+    display: inline-block;
+    margin: 0;
+    padding: 8px 14px;
+    font-size: 0.95rem;
+    width: auto;
+  }
+
+  .drumkits-grid {
     max-width: 100%;
   }
   .drum-card {
@@ -489,14 +509,19 @@ code {
   }
   .card-title {
     text-align: center;
+    white-space: normal; /* Чтобы длинные названия китов не обрезались на узких экранах */
   }
   .drum-card audio {
+    flex: none;
     width: 100%;
+    min-width: 0;
     max-width: none;
+    height: 44px;
+    border-radius: 22px;
   }
 
   .features-section, .toc {
-    padding: 30px;
+    padding: 30px 20px;
   }
   pre {
     font-size: 0.9rem;
