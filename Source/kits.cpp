@@ -952,12 +952,12 @@ void CDrumKit::load_labooh_xml (const std::string &data)
         //формируем полный путь
         std::string filename = kit_dir + "/" + f;
 
-        std::cout << "HERE WE ARE: " << filename << "\n";
+       // std::cout << "HERE WE ARE: " << filename << "\n";
 
 
         if (file_exists (filename))
         {
-          std::cout << "YEAH\n";
+          //std::cout << "YEAH\n";
 
           temp_sample->add_layer();
           temp_sample->v_layers.back()->load (filename.c_str());
