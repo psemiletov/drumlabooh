@@ -18,63 +18,66 @@ by Paul Kellett http://www.musicdsp.org/showone.php?id=29
 
 enum filter_mode
 {
-    FILTER_MODE_LOWPASS = 0,
-    FILTER_MODE_HIGHPASS,
-    FILTER_MODE_BANDPASS
+  FILTER_MODE_LOWPASS = 0,
+  FILTER_MODE_HIGHPASS,
+  FILTER_MODE_BANDPASS
 };
 
 class CResoFilter
 {
 public:
-    float resonance;
-    int mode;
-    float feedback_amount;
-    float cutoff;
+
+  float resonance;
+  int mode;
+  float feedback_amount;
+  float cutoff;
     
-    float bufl0;
-    float bufl1;
-    float bufl2;
-    float bufl3;
+  float bufl0;
+  float bufl1;
+  float bufl2;
+  float bufl3;
     
-    CResoFilter();
+  CResoFilter();
     
-    void reset();
-    float process (float sample);
+  void reset();
+
+  float process (float sample);
     
-    inline void set_cutoff (float v)
-    {
-        // Ограничиваем cutoff, чтобы избежать деления на ноль
-        v = std::max (0.01f, std::min (0.99f, v));
+  inline void set_cutoff (float v)
+         {
+          // Ограничиваем cutoff, чтобы избежать деления на ноль
+          v = std::max (0.01f, std::min (0.99f, v));
         
-        if (cutoff == v)
-            return;
+         if (cutoff == v)
+             return;
         
-        cutoff = v;
-        calc_feedback_amount();
-    }
+         cutoff = v;
+         calc_feedback_amount();
+        }
     
-    inline void set_resonance (float v)
-    {
-        v = std::max (0.0f, std::min (0.99f, v));
+  inline void set_resonance (float v)
+         {
+          v = std::max (0.0f, std::min (0.99f, v));
         
-        if (resonance == v)
-            return;
+          if (resonance == v)
+             return;
         
-        resonance = v;
-        calc_feedback_amount();
-    }
+          resonance = v;
+          calc_feedback_amount();
+         }
     
-    inline void calc_feedback_amount()
-    {
-        float divisor = 1.0f - cutoff;
-        if (divisor < 0.0001f)
-            divisor = 0.0001f;
+  inline void calc_feedback_amount()
+         {
+          float divisor = 1.0f - cutoff;
+
+          if (divisor < 0.0001f)
+              divisor = 0.0001f;
         
-        feedback_amount = resonance + resonance / divisor;
+          feedback_amount = resonance + resonance / divisor;
         
-        // Ограничиваем, чтобы избежать взрыва фильтра
-        feedback_amount = std::min (feedback_amount, 1.5f);
-    }
+          // Ограничиваем, чтобы избежать взрыва фильтра
+          feedback_amount = std::min (feedback_amount, 1.5f);
+         }
 };
 
 #endif // FXRESOFILTER_H

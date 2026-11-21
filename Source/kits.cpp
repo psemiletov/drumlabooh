@@ -284,9 +284,7 @@ void CDrumLayer::load_formula (const std::string &formula)
      channel_data = audio_buffer->getReadPointer (0);
 
 
-  std::cout << "void CDrumLayer::load_formual END \n";
  //std::cout << "22222\n";
-
 
 }
 

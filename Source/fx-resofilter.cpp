@@ -20,36 +20,41 @@ CResoFilter::CResoFilter()
     , bufl2 (0.0f)
     , bufl3 (0.0f)
 {
-    calc_feedback_amount();
+  calc_feedback_amount();
 }
+
 
 void CResoFilter::reset()
 {
-    bufl0 = 0.0f;
-    bufl1 = 0.0f;
-    bufl2 = 0.0f;
-    bufl3 = 0.0f;
+  bufl0 = 0.0f;
+  bufl1 = 0.0f;
+  bufl2 = 0.0f;
+  bufl3 = 0.0f;
     
-    calc_feedback_amount();
+  calc_feedback_amount();
 }
+
 
 float CResoFilter::process (float sample)
 {
-    // 4-полюсный резонансный фильтр
-    bufl0 += cutoff * (sample - bufl0 + feedback_amount * (bufl0 - bufl1));
-    bufl1 += cutoff * (bufl0 - bufl1);
-    bufl2 += cutoff * (bufl1 - bufl2);
-    bufl3 += cutoff * (bufl2 - bufl3);
+  // 4-полюсный резонансный фильтр
+  bufl0 += cutoff * (sample - bufl0 + feedback_amount * (bufl0 - bufl1));
+  bufl1 += cutoff * (bufl0 - bufl1);
+  bufl2 += cutoff * (bufl1 - bufl2);
+  bufl3 += cutoff * (bufl2 - bufl3);
     
-    switch (mode)
-    {
-        case FILTER_MODE_LOWPASS:
-            return bufl1;  // 2-полюсный (как в оригинале)
-        case FILTER_MODE_HIGHPASS:
-            return sample - bufl0;
-        case FILTER_MODE_BANDPASS:
-            return bufl0 - bufl3;
-        default:
-            return sample;
-    }
+  switch (mode)
+         {
+          case FILTER_MODE_LOWPASS:
+               return bufl1;  // 2-полюсный (как в оригинале)
+
+          case FILTER_MODE_HIGHPASS:
+               return sample - bufl0;
+
+          case FILTER_MODE_BANDPASS:
+               return bufl0 - bufl3;
+
+          default:
+                 return sample;
+        }
 }
