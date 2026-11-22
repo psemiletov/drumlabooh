@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="color-scheme" content="dark light">
+
   <title>Драмлабух: Руководство</title>
 
 
@@ -24,7 +26,7 @@
 <nav>
   <a href="index.html">Главная</a>
   <a href="news.html">Новости</a>
-  <a href="install.html">Скачать</a>
+  <a href="download.html">Скачать</a>
   <a href="manual.html">Руководство</a>
   <a href="donate.html">Донат</a>
   <a href="https://github.com/psemiletov/drumlabooh">Github</a>
@@ -115,7 +117,7 @@ FLAC как формат со сжатием тормознее, но Драма
 
 <p>Киты в формате Драмлабуха. Один кит = одна папка, помещённая в <i>$HOME/drumlabooh-kits</i>, <i>/usr/share/drumlabooh-kits</i>, <i>$HOME/drum_sklad</i> (в Linux), либо, для Windows, в <i>c:\drumlabooh-kits</i>, <i>d:\drumlabooh-kits</i>, <i>c:\drum_sklad</i> или <i>d:\drum_sklad</i>. Либо в пользовательские папки.</p>
 
-<p>При установке самого Драмлабуха в комплекте с ним идут киты из официального хранилища <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad on Github</a>. Там же вы можете узнать подробности о формате. Драмблабух сочетает в своем движке сэмплер и синтезатор. В одном ките могут быть и сэмплы, и "формулы" для встроенных в движок синтезаторов. Чисто синтезаторные киты, такие как "OM Kit" (заточен под goa trance 90-х) или "RITM" (ретро электро) занимают очень мало места на диске, а все звуки из формул-пресетов рендерятся в память при загрузке кита, с частотой оцифровки текущей сессии DAW.
+<p>При установке самого Драмлабуха в комплекте с ним идут киты из официального хранилища <a href="https://github.com/psemiletov/drum_sklad">Drum Sklad on Github</a>. Там же вы можете узнать подробности о формате. Драмлабух сочетает в своем движке сэмплер и синтезатор. В одном ките могут быть и сэмплы, и "формулы" для встроенных в движок синтезаторов. Чисто синтезаторные киты, такие как "OM Kit" (заточен под goa trance 90-х) или "RITM" (ретро электро) занимают очень мало места на диске, а все звуки из формул-пресетов рендерятся в память при загрузке кита, с частотой оцифровки текущей сессии DAW.
 </p>
 
 <p>Дополнительные киты, которых нет на Гитхабе, качайте с <a href="https://t.me/drum_sklad">Drum Sklad в Телеге</a>, но то что на Гитхабе это основное и все новые драмкиты именно там.</p>
@@ -147,6 +149,7 @@ FLAC как формат со сжатием тормознее, но Драма
 </p>
 
 <p>Ограничения следующие - максимум 36 папок внутри папки-драмкита, и максимум 128 сэмплов в каждой папке-инструменте.</p>
+</section>
 
 
 <section id="mni_kits_hydrogenru">
@@ -328,7 +331,7 @@ C4 -> C5</pre>
       <img src="../cub-02.png" alt="Cubase step 2">
     </div>
     <div class="step">
-      <p class="../step-number">3 - ЗАГРУЖАЕМ КИТ</p>
+      <p class="step-number">3 - ЗАГРУЖАЕМ КИТ</p>
       <img src="../cub-03.png" alt="Cubase step 3" style="width:320px;">
     </div>
     <div class="step">
@@ -367,7 +370,7 @@ C4 -> C5</pre>
   background: var(--main-dark);
   border-top: 4px solid var(--green-accent);
   color: var(--text-medium);
-  font-family: 'Inter', sans-serif;
+  font-family: sans-serif;
   font-size: 0.95rem;
   line-height: 1.5;
 ">

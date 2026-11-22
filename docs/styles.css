@@ -15,7 +15,7 @@
   --player-bg: #3a3a4a;          /* фон аудиоплеера */
   --play-button-bg: #88ff88;     /* яркий зелёный для кнопки play */
   --hover-text-dark: #222222;    /* тёмный текст при ховере на зелёном фоне */
-  --media-icon-filter: invert(0.2) brightness(2);
+  --media-icon-filter: brightness(0) invert(1);
 }
 
 @media (prefers-color-scheme: light) {
@@ -36,7 +36,7 @@
     --player-bg: #e6e8ef;          /* фон плеера */
     --play-button-bg: #1f8a2c;
     --hover-text-dark: #ffffff;    /* светлый текст при наведении на кнопку */
-    --media-icon-filter: brightness(0) invert(1);
+    --media-icon-filter: brightness(0);
   }
 }
 
