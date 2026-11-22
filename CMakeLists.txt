@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
+cmake_policy(SET CMP0135 NEW)
 include(FetchContent)
 
 
-project(DRUMLABOOH LANGUAGES CXX C VERSION 14.0.0)
+project(DRUMLABOOH LANGUAGES CXX C VERSION 14.0.1)
 
 #add_definitions(-DVERSION_NUMBER="\\"${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}\\"")
 
@@ -21,8 +22,8 @@ option(LOCALINSTALL "Install to the $HOME subdirs" OFF)
 
 if (LOCALINSTALL)
 
-set(LV2_INSTALL_DIR "$ENV{HOME}$ENV{USERNAME}/.lv2" CACHE PATH "Specifies where the LV2 libraries should be installed")
-set(VST3_INSTALL_DIR "$ENV{HOME}$ENV{USERNAME}/.vst3" CACHE PATH "Specifies where the VST3 libraries should be installed")
+set(LV2_INSTALL_DIR "$ENV{HOME}/.lv2" CACHE PATH "Specifies where the LV2 libraries should be installed")
+set(VST3_INSTALL_DIR "$ENV{HOME}/.vst3" CACHE PATH "Specifies where the VST3 libraries should be installed")
 
 
 message("LOCALINSTALL YES")
@@ -31,8 +32,8 @@ message(${LV2_INSTALL_DIR})
 
 else()
 
-set(LV2_INSTALL_DIR lib/lv2 CACHE PATH "Specifies where the LV2 libraries should be installed")
-set(VST3_INSTALL_DIR lib/vst3 CACHE PATH "Specifies where the VST3 libraries should be installed")
+set(LV2_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/lv2" CACHE PATH "Specifies where the LV2 libraries should be installed")
+set(VST3_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/vst3" CACHE PATH "Specifies where the VST3 libraries should be installed")
 
 
 endif()
@@ -81,10 +82,10 @@ endif()
 
 
 
-cmake_policy(SET CMP0135 NEW)
 FetchContent_Declare(
   juce
   URL https://github.com/juce-framework/JUCE/archive/refs/tags/${JUCETAG}.tar.gz
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
   EXCLUDE_FROM_ALL
 )
 
@@ -111,8 +112,8 @@ juce_add_plugin(drumlabooh
     # VERSION ...                                           # Set this if the plugin version is different to the project version
     # ICON_BIG ...                                          # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
     # ICON_SMALL ...
-     NEEDS_WEB_BROWSER=0
-     NEEDS_MIDI_INPUT=TRUE
+     NEEDS_WEB_BROWSER FALSE
+     NEEDS_MIDI_INPUT TRUE
      JUCE_DISPLAY_SPLASH_SCREEN=0
      LV2URI https://github.com/psemiletov/drumlabooh
      LV2_SHARED_LIBRARY_NAME drumlabooh
@@ -184,12 +185,12 @@ target_link_libraries(drumlabooh
         )
 
 
-install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/LV2/drumlabooh.lv2 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/lv2)
-install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/VST3/drumlabooh.vst3 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/vst3)
+install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/LV2/drumlabooh.lv2 DESTINATION ${LV2_INSTALL_DIR})
+install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh_artefacts/VST3/drumlabooh.vst3 DESTINATION ${VST3_INSTALL_DIR})
 
 if (INSTALLKITS)
 if (LOCALINSTALL)
-install (DIRECTORY ${drum_sklad_SOURCE_DIR}/ DESTINATION $ENV{HOME}$ENV{USERNAME}/drum_sklad)
+install (DIRECTORY ${drum_sklad_SOURCE_DIR}/ DESTINATION "$ENV{HOME}/drum_sklad")
 else()
 install (DIRECTORY ${drum_sklad_SOURCE_DIR}/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/drumlabooh-kits)
 endif()
@@ -202,7 +203,7 @@ if(MULTI)
 
   juce_add_plugin(drumlabooh-multi
      JUCE_DISPLAY_SPLASH_SCREEN=0
-     NEEDS_WEB_BROWSER=0
+     NEEDS_WEB_BROWSER FALSE
      NEEDS_MIDI_INPUT=TRUE
      LV2URI https://github.com/psemiletov/drumlabooh-multi
      LV2_SHARED_LIBRARY_NAME drumlabooh-multi
@@ -240,7 +241,7 @@ target_sources(drumlabooh-multi
   target_compile_definitions(drumlabooh-multi
     PUBLIC
         # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
-        -DMULTICHANNEL=1
+        MULTICHANNEL=1
         NEEDS_MIDI_INPUT=TRUE
         JUCE_JACK=0
         NEEDS_WEBVIEW2=0
@@ -261,7 +262,7 @@ target_link_libraries(drumlabooh-multi
         )
 
 
-install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh-multi_artefacts/LV2/drumlabooh-multi.lv2 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/lv2)
-install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh-multi_artefacts/VST3/drumlabooh-multi.vst3 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/vst3)
+install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh-multi_artefacts/LV2/drumlabooh-multi.lv2 DESTINATION ${LV2_INSTALL_DIR})
+install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/drumlabooh-multi_artefacts/VST3/drumlabooh-multi.vst3 DESTINATION ${VST3_INSTALL_DIR})
 
 endif(MULTI)
