@@ -15,6 +15,29 @@
   --player-bg: #3a3a4a;          /* фон аудиоплеера */
   --play-button-bg: #88ff88;     /* яркий зелёный для кнопки play */
   --hover-text-dark: #222222;    /* тёмный текст при ховере на зелёном фоне */
+  --media-icon-filter: invert(0.2) brightness(2);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --main-color: #2563eb;
+    --main-dark: #e6e8ef;          /* светлая шапка */
+    --main-light: #f4f5f8;         /* светлые блоки и кнопки меню */
+    --main-medium: #cfd4e0;        /* границы и разделители */
+    --green-muted: #4b7a4b;
+    --green-accent: #1f8a2c;       /* контрастный зелёный на светлом фоне */
+    --green-bright: #166520;       /* тёмно-зелёный для заголовков */
+    --orange-accent: #c45a00;      /* контрастный оранжевый для ссылок */
+    --orange-hover: #9e4700;
+    --text-dark: #1c1e26;          /* основной тёмный текст */
+    --text-medium: #444857;        /* второстепенный текст */
+    --bg-dark: #ffffff;            /* светлый фон страницы */
+    --card-bg: #f4f5f8;            /* светлый фон карточек */
+    --player-bg: #e6e8ef;          /* фон плеера */
+    --play-button-bg: #1f8a2c;
+    --hover-text-dark: #ffffff;    /* светлый текст при наведении на кнопку */
+    --media-icon-filter: brightness(0) invert(1);
+  }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,9 +52,9 @@ body {
 
 header {
   background: var(--main-dark);
-  color: white;
+  color: var(--text-dark);
   padding: 28px 0;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 h1 {
@@ -74,7 +97,7 @@ nav a {
 
 nav a:hover {
   background: var(--green-accent);
-  color: var(--hover-text-dark); /* тёмный текст на зелёном фоне */
+  color: var(--hover-text-dark); /* контрастный текст на акцентном фоне */
   transform: translateY(-2px);
 }
 
@@ -95,7 +118,7 @@ nav a:hover {
   max-height: 600px;
   object-fit: contain;
   border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   transition: transform 0.3s ease;
 }
 
@@ -139,13 +162,13 @@ nav a:hover {
   padding: 16px 28px;
   border-radius: 14px;
   border-left: 5px solid var(--green-accent);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .drum-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
 }
 
 .card-title {
@@ -164,7 +187,7 @@ nav a:hover {
   height: 38px;
   border: 2px solid var(--main-medium);
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Глубокую кастомизацию контролов оставляем только для десктопов,
@@ -200,13 +223,12 @@ nav a:hover {
     margin: 0 2px;
     width: 28px;
     height: 28px;
-    filter: brightness(1.1);
     opacity: 0.95;
   }
 
   .drum-card audio::-webkit-media-controls-play-button,
   .drum-card audio::-webkit-media-controls-pause-button {
-    filter: invert(0.2) brightness(2);
+    filter: var(--media-icon-filter);
   }
 
   .drum-card audio::-moz-media-controls-panel {
@@ -218,7 +240,7 @@ nav a:hover {
   .drum-card audio::-webkit-media-controls-volume-slider,
   .drum-card audio::-webkit-media-controls-current-time-display,
   .drum-card audio::-webkit-media-controls-time-remaining-display {
-    filter: brightness(1.5);
+    filter: var(--media-icon-filter);
   }
 }
 
@@ -230,7 +252,7 @@ section {
   background: var(--main-light);
   padding: 40px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
   margin-bottom: 40px;
 }
 
@@ -334,7 +356,7 @@ ul.features li::before {
   background: var(--main-light);
   padding: 30px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
   margin-bottom: 50px;
 }
 
@@ -398,7 +420,7 @@ pre {
 }
 
 code {
-  background: var(--main-light);
+  background: var(--main-medium);
   padding: 2px 6px;
   border-radius: 4px;
   font-family: monospace;
@@ -413,14 +435,14 @@ code {
   max-width: 100%;
   height: auto;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
 }
 
 .donate-section {
   background: var(--main-light);
   padding: 60px 40px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
   text-align: center;
 }
 

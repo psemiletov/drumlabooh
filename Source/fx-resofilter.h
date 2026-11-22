@@ -12,7 +12,7 @@ where the filter itself based on the resonant filter
 by Paul Kellett http://www.musicdsp.org/showone.php?id=29
 */
 
-#include <cstring>
+//#include <cstring>
 #include <cmath>
 #include <algorithm>
 

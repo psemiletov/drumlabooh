@@ -956,15 +956,14 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       auto positionInfo = play_head->getPosition();
       if (positionInfo)
          {
-        auto timeInSamples = positionInfo->getTimeInSamples();
-        // Безопасно получить значение, если оно есть, иначе оставить currentSamplePosition как 0:
+          auto timeInSamples = positionInfo->getTimeInSamples();
+          // Безопасно получить значение, если оно есть, иначе оставить currentSamplePosition как 0:
         
-        if (timeInSamples.hasValue())
-            currentSamplePosition = *timeInSamples; // Используем оператор * для получения значения
-        else
-             currentSamplePosition = get_rnd (1, RND_MAX_TWEAK);
-            
-       }
+          if (timeInSamples.hasValue())
+              currentSamplePosition = *timeInSamples; // Используем оператор * для получения значения
+          else
+              currentSamplePosition = get_rnd (1, RND_MAX_TWEAK);
+        }
     }
     
     
@@ -1112,9 +1111,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
               s->live_cutoff_multiplier = 1.0f + (rnd_normalized * depth);
             }
             else
-            {
               s->live_cutoff_multiplier = 1.0f; // нейтральный множитель (без изменений)
-            }
             // -----------------------------------------------------
 
 
