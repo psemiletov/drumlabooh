@@ -630,285 +630,280 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 #if defined(MULTICHANNEL)
 
 
+
 void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
   //the code block below allows Ardour load kit properly when session rate is ready
   if (fresh_start)
-     {
-      session_samplerate = getSampleRate();
+  {
+    session_samplerate = getSampleRate();
 
-      if (! drumkit_path.empty())
-         {
-          load_kit (drumkit_path);
-          fresh_start = false;
-         }
-     }
+    if (! drumkit_path.empty())
+    {
+      load_kit (drumkit_path);
+      fresh_start = false;
+    }
+  }
 
   int num_channels = buffer.getNumChannels();
 
   if (num_channels < 1)
-     return;
+    return;
 
   int out_buf_length = buffer.getNumSamples();
-   
+
   for (size_t i = 0; i < num_channels; i++)
-      buffer.clear (i, 0, out_buf_length);
-   //  buffer.clear(); 
+    buffer.clear (i, 0, out_buf_length);
 
   if (! drumkit)
-      return;
-   
-  if (drumkit->sample_counter == 0)
-      return;
+    return;
 
-  
+  if (drumkit->sample_counter == 0)
+    return;
+
+
   AudioPlayHead *play_head = getPlayHead();
   int64_t currentSamplePosition = 0;
-  
+
   if (play_head)
-     {
-      auto positionInfo = play_head->getPosition();
-      if (positionInfo)
-         {
-          auto timeInSamples = positionInfo->getTimeInSamples();
-          // Безопасно получить значение, если оно есть, иначе оставить currentSamplePosition как 0:
-          if (timeInSamples.hasValue())
-             currentSamplePosition = *timeInSamples; // Используем оператор * для получения значения
-          else
-              currentSamplePosition = get_rnd (1, RND_MAX_TWEAK);
-        }
-     }
+  {
+    auto positionInfo = play_head->getPosition();
+    if (positionInfo)
+    {
+      auto timeInSamples = positionInfo->getTimeInSamples();
+      // Безопасно получить значение, если оно есть, иначе оставить currentSamplePosition как 0:
+      if (timeInSamples.hasValue())
+        currentSamplePosition = *timeInSamples; // Используем оператор * для получения значения
+        else
+          currentSamplePosition = get_rnd (1, RND_MAX_TWEAK);
+    }
+  }
 
   if (currentSamplePosition == 0)
-     currentSamplePosition = get_rnd (1, RND_MAX_TWEAK); 
-   
-   
-  drumkit->rnd_set_rnd_seed (currentSamplePosition + randomizer_seed);
+    currentSamplePosition = get_rnd (1, RND_MAX_TWEAK);
+
+  if (currentSamplePosition < 0)
+    currentSamplePosition = 0;
 
   //////////////////////
   // CACHE ALL ATOMIC PARAMETERS
- 
- 
+
+
   for (size_t i = 0; i < 36; i++)
-     {
-      //a_mutes [i] = *(mutes[i]) > 0.5f;
-      a_lps [i] = *(lps[i]) > 0.5f;
-      a_hps [i] = *(hps[i]) > 0.5f;
+  {
+    a_lps [i] = *(lps[i]) > 0.5f;
+    a_hps [i] = *(hps[i]) > 0.5f;
 
-      a_live_amount [i] = *(live_amount[i]);
+    a_live_amount [i] = *(live_amount[i]);
+
+    a_analog_amount [i] = *(analog_amount[i]);
+    a_analog_on [i] = *(analog[i]);
+
+    a_lp_cutoff [i] = *(lp_cutoff[i]);
+    a_lp_reso [i] = *(lp_reso[i]);
+
+    a_hp_cutoff [i] = *(hp_cutoff[i]);
+    a_hp_reso [i] = *(hp_reso[i]);
+  }
 
 
-      a_analog_amount [i] = *(analog_amount[i]);
-      a_analog_on [i] = *(analog[i]);
-      
-      a_lp_cutoff [i] = *(lp_cutoff[i]); 
-      a_lp_reso [i] = *(lp_reso[i]);
-      
-      a_hp_cutoff [i] = *(hp_cutoff[i]); 
-      a_hp_reso [i] = *(hp_reso[i]);
-
-
-     } 
-  
-  
   int int_midimap_mode = (int) *midimap_mode;
 
   //END OF CACHING
-  
-  
+
+
   for (const juce::MidiMessageMetadata metadata: midiMessages)
+  {
+    juce::MidiMessage msg = metadata.getMessage();
+
+    bool isNoteOn = msg.isNoteOn();
+    bool isNoteOff = msg.isNoteOff();
+
+    int uvelocity = msg.getVelocity();
+    float velocity = VelocityToLevel (uvelocity);
+
+    if (*ignore_midi_velocity > 0.5)
+      velocity = 1;
+
+    int note_number = msg.getNoteNumber();
+
+    if (isNoteOn)
+    {
+      int nn = note_number - base_note_number; //base_note_number = 36 by default
+      // nn is index for drumkit->a_samples[nn]
+
+      if (int_midimap_mode == MIDIMAPMODE_LABOOH)
+        if (nn < 0 || nn > 36) // MAX_SAMPLES = 36
+          continue;
+
+      CDrumSample *s = 0;
+
+      if (int_midimap_mode == MIDIMAPMODE_FROMKIT && drumkit->has_mapping)
+        s = drumkit->map_samples[note_number];
+      else
+        s = drumkit->a_samples[nn];
+
+      if (! s)
+        continue;
+
+      int safe_sample_pos = metadata.samplePosition > 0 ? metadata.samplePosition : 0;
+      uint64_t event_pos = static_cast<uint64_t>(currentSamplePosition) + static_cast<uint64_t>(safe_sample_pos);
+
+      // Гоняем сидирование по всем 36 слотам на точной позиции события
+      for (size_t i = 0; i < MAX_SAMPLES; i++)
       {
-       juce::MidiMessage msg = metadata.getMessage();
+        CDrumSample *slot = drumkit->a_samples[i];
+        if (! slot)
+          continue;
 
-       bool isNoteOn = msg.isNoteOn();
-       bool isNoteOff = msg.isNoteOff();
+        uint64_t slot_seed = event_pos + static_cast<uint64_t>(randomizer_seed) + static_cast<uint64_t>(i) * 0x9e3779b97f4a7c15ULL;
+        slot->rnd_generator.setSeed (slot_seed);
+        slot->dsp_rnd_generator.setSeed (slot_seed + 0x9e3779b97f4a7c15ULL);
+      }
 
-       //float velocity = msg.getFloatVelocity();
-       int uvelocity = msg.getVelocity();
-       float velocity = VelocityToLevel (uvelocity);
-       
-       if (*ignore_midi_velocity > 0.5)
-           velocity = 1;
+      // --- ДОБАВЛЯЕМ РАСЧЕТ LIVE СЮДА (на каждый удар) ---
+      if (nn >= 0 && nn < 36 && a_live_amount[nn] > 0.0f)
+      {
+        long long rnd_val = s->dsp_rnd_generator.next (-1000, 1000);
+        float rnd_normalized = (float) rnd_val / 1000.0f; // от -1.0 до 1.0
+        float depth = 0.7f * a_live_amount[nn];
+        s->live_cutoff_multiplier = 1.0f + (rnd_normalized * depth);
+      }
+      else
+      {
+        s->live_cutoff_multiplier = 1.0f;
+      }
 
-       int note_number = msg.getNoteNumber();
-       
-       if (isNoteOn)
+      if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
+        s->trigger_sample (velocity);
+      else //new
+        if (s->layer_index_mode == LAYER_INDEX_MODE_ALT)
+          s->trigger_sample_uint_by_index (uvelocity, velocity);
+      else
+        s->trigger_sample_uint (uvelocity, velocity);
+
+      //AUTOMUTE START
+
+      if (s->mute_group != -1)
+      {
+        for (size_t i = 0; i < MAX_SAMPLES; i++)
+        {
+          CDrumSample *s2 = drumkit->a_samples[i]; //point to the sample
+          if (! s2 || s == s2)
+            continue;
+
+          if (s2->mute_group == s->mute_group)
           {
-           int nn = note_number - base_note_number; //base_note_number = 36 by default
-                                                    // nn is index for drumkit->a_samples[nn]
-           
-           if (int_midimap_mode == MIDIMAPMODE_LABOOH)
-               if (nn < 0 || nn > 36) // MAX_SAMPLES = 36
-                   continue;
-
-           CDrumSample *s = 0;
-
-           
-           if (int_midimap_mode == MIDIMAPMODE_FROMKIT && drumkit->has_mapping)
-               s = drumkit->map_samples[note_number];
-           else           
-               s = drumkit->a_samples[nn];
-           
-             
-           if (! s)
-               continue;
-
-
-            // --- ДОБАВЛЯЕМ РАСЧЕТ LIVE СЮДА (на каждый удар) ---
-            if (a_live_amount[nn] > 0.0f)
-            {
-              long long rnd_val = s->dsp_rnd_generator.next (-1000, 1000);
-              float rnd_normalized = (float) rnd_val / 1000.0f; // от -1.0 до 1.0
-              float depth = 0.7f * a_live_amount[nn];
-              s->live_cutoff_multiplier = 1.0f + (rnd_normalized * depth);
-            }
+            if (s2->layer_index_mode == LAYER_INDEX_MODE_ALT)
+              s2->untrigger_sample (true);
             else
-            {
-              s->live_cutoff_multiplier = 1.0f;
-            }
-  
-           if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
-               s->trigger_sample (velocity);
-           else //new
-               if (s->layer_index_mode == LAYER_INDEX_MODE_ALT)
-                  s->trigger_sample_uint_by_index (uvelocity, velocity);
-               else
-                   s->trigger_sample_uint (uvelocity, velocity);
-            
-//            std::cout << "s->current_layer:" << s->current_layer << std::endl;
-  //          std::cout << "s->>v_layers.size():" << s->v_layers.size() << std::endl;
+              s2->untrigger_sample (false);
 
-
-           //also untrigger open hihat if closed hihat triggering
-           // so find the open hihat
-             
-          //AUTOMUTE START
-             
-           if (s->mute_group != -1)
-              {
-               for (size_t i = 0; i < MAX_SAMPLES; i++)
-                   {
-                    CDrumSample *s2 = drumkit->a_samples[i]; //point to the sample
-                    if (! s2 || s == s2)
-                       continue;
-                      
-                    if (s2->mute_group == s->mute_group)
-                       {
-                       if (s2->layer_index_mode == LAYER_INDEX_MODE_ALT)
-                           s2->untrigger_sample (true);
-                        else
-                           s2->untrigger_sample (false);
-                          
-                       }
-                   }
-              }
-           
-           //AUTOMUTE END   
-              
           }
+        }
+      }
 
-     } //end of cycle for juce::MidiMessageMetadata metadata: midiMessages
+      //AUTOMUTE END
 
+    }
 
-     if (drumkit->sample_counter > num_channels) //YES????????????????????????????????????
-        return;
-
-       
-     float *channel_data [MAX_SAMPLES]; //output channels
-    
-
-     for (size_t i = 0; i < num_channels; i++)
-         channel_data[i] = buffer.getWritePointer(i);
+  } //end of cycle for juce::MidiMessageMetadata metadata: midiMessages
 
 
-    //for each drum instrument
-     for (int drum_sample_index = 0; drum_sample_index < MAX_SAMPLES; drum_sample_index++)
-         {
-         //for each sample out_buf_offs
-          for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
-              {
-               CDrumSample *s = drumkit->a_samples[drum_sample_index];
-               if (! s)
-                 // std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
-                  continue;
-
-               if (! s->active)
-                  continue;
-
-              //std::cout << "s->current_layer:" << s->current_layer << std::endl;
-
-               CDrumLayer *l = s->v_layers.at (s->current_layer);
-
-               if (! l)
-                 {
-                  std::cout << "!l at s->current_layer:" << s->current_layer << "\n";
-                  break;
-                 }
+  if (drumkit->sample_counter > num_channels)
+    return;
 
 
-              if (l->sample_offset + 1 == l->length_in_samples)
-                 {
-                  if (s->layer_index_mode == LAYER_INDEX_MODE_ALT)  
-                     s->untrigger_sample (true);
-                  else 
-                      s->untrigger_sample (false);
-                  
-                  continue;
-                 }
-
-               if (l->channel_data)
-                   {
-                    float fl = l->channel_data[l->sample_offset++];
-
-                 //DSP
-
-                    bool lp_on = a_lps[drum_sample_index];
-
-                    if (lp_on)
-                    {
-                      // Умножаем базовый срез на наш коэффициент
-                      float target_cutoff = a_lp_cutoff[drum_sample_index] * s->live_cutoff_multiplier;
-                      target_cutoff = juce::jlimit (0.0f, 0.999f, target_cutoff); // защита от выхода за границы
-
-                      lp[drum_sample_index].set_cutoff (target_cutoff);
-                      lp[drum_sample_index].set_resonance (a_lp_reso[drum_sample_index]);
-
-                      fl = softLimit (lp[drum_sample_index].process (fl));
-                    }
-
-                    bool hp_on = a_hps[drum_sample_index];
+  float *channel_data [MAX_SAMPLES]; //output channels
 
 
-                    if (hp_on)
-                    {
-                      // Используем мультипликативный множитель live-модуляции
-                      float target_cutoff = a_hp_cutoff[drum_sample_index] * s->live_cutoff_multiplier;
-                      target_cutoff = juce::jlimit (0.0f, 0.999f, target_cutoff); // защита от выхода за границы
-
-                      hp[drum_sample_index].set_cutoff (target_cutoff);
-                      hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
-
-                      fl = softLimit (hp[drum_sample_index].process (fl));
-                    }
-                    //////
-
-                    bool analog_on = a_analog_on [drum_sample_index];
-
-                    if (analog_on)
-                      fl = warmify (fl, a_analog_amount[drum_sample_index]);
+  for (size_t i = 0; i < num_channels; i++)
+    channel_data[i] = buffer.getWritePointer(i);
 
 
-                    if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
-                       fl *= s->velocity;
-                  
-                    channel_data[drum_sample_index][out_buf_offs] = fl;
-                   }
+  //for each drum instrument
+  for (int drum_sample_index = 0; drum_sample_index < MAX_SAMPLES; drum_sample_index++)
+  {
+    //for each sample out_buf_offs
+    for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
+    {
+      CDrumSample *s = drumkit->a_samples[drum_sample_index];
+      if (! s)
+        continue;
+
+      if (! s->active)
+        continue;
+
+      CDrumLayer *l = s->v_layers.at (s->current_layer);
+
+      if (! l)
+      {
+        std::cout << "!l at s->current_layer:" << s->current_layer << "\n";
+        break;
+      }
 
 
-             }
-        } 
- //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
-  //}
+      if (l->sample_offset + 1 == l->length_in_samples)
+      {
+        if (s->layer_index_mode == LAYER_INDEX_MODE_ALT)
+          s->untrigger_sample (true);
+        else
+          s->untrigger_sample (false);
+
+        continue;
+      }
+
+      if (l->channel_data)
+      {
+        float fl = l->channel_data[l->sample_offset++];
+
+        //DSP
+
+        bool lp_on = a_lps[drum_sample_index];
+
+        if (lp_on)
+        {
+          // Умножаем базовый срез на наш коэффициент
+          float target_cutoff = a_lp_cutoff[drum_sample_index] * s->live_cutoff_multiplier;
+          target_cutoff = juce::jlimit (0.0f, 0.999f, target_cutoff); // защита от выхода за границы
+
+          lp[drum_sample_index].set_cutoff (target_cutoff);
+          lp[drum_sample_index].set_resonance (a_lp_reso[drum_sample_index]);
+
+          fl = softLimit (lp[drum_sample_index].process (fl));
+        }
+
+        bool hp_on = a_hps[drum_sample_index];
+
+
+        if (hp_on)
+        {
+          // Используем мультипликативный множитель live-модуляции
+          float target_cutoff = a_hp_cutoff[drum_sample_index] * s->live_cutoff_multiplier;
+          target_cutoff = juce::jlimit (0.0f, 0.999f, target_cutoff); // защита от выхода за границы
+
+          hp[drum_sample_index].set_cutoff (target_cutoff);
+          hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
+
+          fl = softLimit (hp[drum_sample_index].process (fl));
+        }
+        //////
+
+        bool analog_on = a_analog_on [drum_sample_index];
+
+        if (analog_on)
+          fl = warmify (fl, a_analog_amount[drum_sample_index]);
+
+
+        if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
+          fl *= s->velocity;
+
+        channel_data[drum_sample_index][out_buf_offs] = fl;
+      }
+
+
+    }
+  }
 }
 
 
@@ -920,384 +915,343 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 {
   //this code allow Ardour load kit properly when session rate is ready
   if (fresh_start)
-     {
-      session_samplerate = getSampleRate();
+  {
+    session_samplerate = getSampleRate();
 
-      if (! drumkit_path.empty())
-         {
-          load_kit (drumkit_path);
-          fresh_start = false;
-         }
-     }
+    if (! drumkit_path.empty())
+    {
+      load_kit (drumkit_path);
+      fresh_start = false;
+    }
+  }
 
 
   int num_channels = buffer.getNumChannels();
   int out_buf_length = buffer.getNumSamples();
-  
-  
+
+
   //clearing input buffer, good for Reaper
   for (int i = 0; i < num_channels; ++i)
-      buffer.clear (i, 0, out_buf_length);
+    buffer.clear (i, 0, out_buf_length);
 
   if (! drumkit)
-      return;
+    return;
 
-//  size_t v_samples_size = drumkit->v_samples.size();
+  //  size_t v_samples_size = drumkit->v_samples.size();
 
   if (drumkit->sample_counter == 0)
-      return;
+    return;
 
-  
+
   AudioPlayHead* play_head = getPlayHead();
   int64_t currentSamplePosition = 0;
-  
-  if (play_head)
-     {
-      auto positionInfo = play_head->getPosition();
-      if (positionInfo)
-         {
-          auto timeInSamples = positionInfo->getTimeInSamples();
-          // Безопасно получить значение, если оно есть, иначе оставить currentSamplePosition как 0:
-        
-          if (timeInSamples.hasValue())
-              currentSamplePosition = *timeInSamples; // Используем оператор * для получения значения
-          else
-              currentSamplePosition = get_rnd (1, RND_MAX_TWEAK);
-        }
-    }
-    
-    
-    
-  if (currentSamplePosition == 0)
-     currentSamplePosition = get_rnd (1, RND_MAX_TWEAK); 
-  
-  drumkit->rnd_set_rnd_seed (currentSamplePosition + randomizer_seed);
 
-   //////////////////////
+  if (play_head)
+  {
+    auto positionInfo = play_head->getPosition();
+    if (positionInfo)
+    {
+      auto timeInSamples = positionInfo->getTimeInSamples();
+      // Безопасно получить значение, если оно есть, иначе оставить currentSamplePosition как 0:
+
+      if (timeInSamples.hasValue())
+        currentSamplePosition = *timeInSamples; // Используем оператор * для получения значения
+        else
+          currentSamplePosition = get_rnd (1, RND_MAX_TWEAK);
+    }
+  }
+
+
+
+  if (currentSamplePosition == 0)
+    currentSamplePosition = get_rnd (1, RND_MAX_TWEAK);
+
+  if (currentSamplePosition < 0)
+    currentSamplePosition = 0;
+
+  //////////////////////
   // CACHE ALL ATOMIC PARAMETERS
 
   int int_midimap_mode = (int) *midimap_mode;
-  
+
   mix_analog_amount = *(global_analog_amount);
   mix_analog_amount_on = *global_analog_on > 0.5f;
-   
+
   float pan_sum = 0.0f;
   float vol_sum = 0.0f;
-   
- 
+
+
   for (size_t i = 0; i < 36; i++)
-      {
-       a_vols [i] = db2lin(*(vols[i]));
-       a_mutes [i] = *(mutes[i]) > 0.5f;
+  {
+    a_vols [i] = db2lin(*(vols[i]));
+    a_mutes [i] = *(mutes[i]) > 0.5f;
 
-       a_lps [i] = *(lps[i]) > 0.5f;
-       a_lp_cutoff [i] = *(lp_cutoff[i]); 
-       a_lp_reso [i] = *(lp_reso[i]);
+    a_lps [i] = *(lps[i]) > 0.5f;
+    a_lp_cutoff [i] = *(lp_cutoff[i]);
+    a_lp_reso [i] = *(lp_reso[i]);
 
-       a_hps [i] = *(hps[i]) > 0.5f;
-       a_hp_cutoff [i] = *(hp_cutoff[i]); 
-       a_hp_reso [i] = *(hp_reso[i]);
+    a_hps [i] = *(hps[i]) > 0.5f;
+    a_hp_cutoff [i] = *(hp_cutoff[i]);
+    a_hp_reso [i] = *(hp_reso[i]);
 
-       a_analog_on [i] = *(analog[i]);
-       a_analog_amount [i] = *(analog_amount[i]);
+    a_analog_on [i] = *(analog[i]);
+    a_analog_amount [i] = *(analog_amount[i]);
 
-       a_live_amount [i] = *(live_amount[i]);
- 
-       float pan = *(pans[i]); //float pan = *(pans[drum_sample_index]);
-      
-       vol_sum += a_vols[i];
-       pan_sum += pan;
-      
-       int int_panner_mode = *panner_mode;
-      
-       if (int_panner_mode == PANMODE01)
-          pan_sincos (a_pan_left[i], a_pan_right[i], pan);
-       else
-       if (int_panner_mode == PANMODE02)
-           pan_sqrt (a_pan_left[i], a_pan_right[i], pan);
-       else
-       if (int_panner_mode == PANMODE03)
-          pan_linear0 (a_pan_left[i], a_pan_right[i], pan);
-       else
-       if (int_panner_mode == PANMODE04)
-          pan_linear6 (a_pan_left[i], a_pan_right[i], pan);
-       else
-       if (int_panner_mode == PANMODE05)
-          pan_powsin_45 (a_pan_left[i], a_pan_right[i], pan); //ok
-       else
-       if (int_panner_mode == PANMODE06) // на деле - -4.5
-          pan_powsin_6 (a_pan_left[i], a_pan_right[i], pan);
-       else
-       if (int_panner_mode == PANMODE07) //на деле -4.3
-          pan_sin_1_3 (a_pan_left[i], a_pan_right[i], pan);
-             
-     } 
-   
+    a_live_amount [i] = *(live_amount[i]);
+
+    float pan = *(pans[i]); //float pan = *(pans[drum_sample_index]);
+
+    vol_sum += a_vols[i];
+    pan_sum += pan;
+
+    int int_panner_mode = *panner_mode;
+
+    if (int_panner_mode == PANMODE01)
+      pan_sincos (a_pan_left[i], a_pan_right[i], pan);
+    else
+      if (int_panner_mode == PANMODE02)
+        pan_sqrt (a_pan_left[i], a_pan_right[i], pan);
+    else
+      if (int_panner_mode == PANMODE03)
+        pan_linear0 (a_pan_left[i], a_pan_right[i], pan);
+    else
+      if (int_panner_mode == PANMODE04)
+        pan_linear6 (a_pan_left[i], a_pan_right[i], pan);
+    else
+      if (int_panner_mode == PANMODE05)
+        pan_powsin_45 (a_pan_left[i], a_pan_right[i], pan); //ok
+        else
+          if (int_panner_mode == PANMODE06) // на деле - -4.5
+            pan_powsin_6 (a_pan_left[i], a_pan_right[i], pan);
+    else
+      if (int_panner_mode == PANMODE07) //на деле -4.3
+        pan_sin_1_3 (a_pan_left[i], a_pan_right[i], pan);
+
+  }
+
   ///////////////////
-      
-      
+
+
   for (const juce::MidiMessageMetadata metadata: midiMessages)
+  {
+    juce::MidiMessage msg = metadata.getMessage();
+
+    bool isNoteOn = msg.isNoteOn();
+    bool isNoteOff = msg.isNoteOff();
+
+    //float velocity = msg.getFloatVelocity();
+    int uvelocity = msg.getVelocity();
+    float velocity = VelocityToLevel (uvelocity);
+
+    if (*ignore_midi_velocity > 0.5)
+      velocity = 1;
+
+    int note_number = msg.getNoteNumber(); //36 starting note
+
+    if (isNoteOn)
+    {
+      int nn = note_number - base_note_number;
+
+      if (int_midimap_mode == MIDIMAPMODE_LABOOH)
+        if (nn < 0 || nn > 35)
+          continue;
+
+      float gn = db2lin (a_vols[nn]);
+
+      CDrumSample *s = 0;
+
+      if (int_midimap_mode == MIDIMAPMODE_FROMKIT && drumkit->has_mapping)
+        s = drumkit->map_samples[note_number];
+      else
+        s = drumkit->a_samples[nn];
+
+      if (! s)
+        continue;
+
+      int safe_sample_pos = metadata.samplePosition > 0 ? metadata.samplePosition : 0;
+      uint64_t event_pos = static_cast<uint64_t>(currentSamplePosition) + static_cast<uint64_t>(safe_sample_pos);
+
+      // Гоняем сидирование по всем 36 слотам на точной позиции события
+      for (size_t i = 0; i < MAX_SAMPLES; i++)
       {
-        //  if (metadata.numBytes == 3)
-            //Logger::writeToLog (metadata.getMessage().getDescription());
-          // std::cout << metadata.getMessage().getDescription() << std::endl;
+        CDrumSample *slot = drumkit->a_samples[i];
+        if (! slot)
+          continue;
 
-       juce::MidiMessage msg = metadata.getMessage();
+        uint64_t slot_seed = event_pos + static_cast<uint64_t>(randomizer_seed) + static_cast<uint64_t>(i) * 0x9e3779b97f4a7c15ULL;
+        slot->rnd_generator.setSeed (slot_seed);
+        slot->dsp_rnd_generator.setSeed (slot_seed + 0x9e3779b97f4a7c15ULL);
+      }
 
-       bool isNoteOn = msg.isNoteOn();
-       bool isNoteOff = msg.isNoteOff();
+      // --- ДЕТЕРМИНИРОВАННЫЙ ЛАЙВ-ОЖИВЛЯЖ НА УДАР ---
+      if (a_live_amount[nn] > 0.0f)
+      {
+        long long rnd_val = s->dsp_rnd_generator.next (-1000, 1000);
+        float rnd_normalized = (float) rnd_val / 1000.0f; // от -1.0 до 1.0
 
-       //float velocity = msg.getFloatVelocity();
-       int uvelocity = msg.getVelocity();
-       float velocity = VelocityToLevel (uvelocity);
-       
-       if (*ignore_midi_velocity > 0.5)
-           velocity = 1;
+        // Максимальный размах отклонения (например, ±30% от текущего значения, масштабированный ручкой live)
+        float depth = 0.7f * a_live_amount[nn];
 
-       int note_number = msg.getNoteNumber(); //36 starting note
+        // Сохраняем мультипликативный множитель (вокруг 1.0, например от 0.7 до 1.3)
+        s->live_cutoff_multiplier = 1.0f + (rnd_normalized * depth);
+      }
+      else
+        s->live_cutoff_multiplier = 1.0f; // нейтральный множитель (без изменений)
+        // -----------------------------------------------------
 
-       if (isNoteOn)
+        if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
+          s->trigger_sample (velocity);
+      else //new
+        if (s->layer_index_mode == LAYER_INDEX_MODE_ALT)
+          s->trigger_sample_uint_by_index (uvelocity, velocity);
+      else
+        s->trigger_sample_uint (uvelocity, velocity);
+
+      //AUTOMUTE START
+
+      if (s->mute_group != -1)
+      {
+        for (size_t i = 0; i < MAX_SAMPLES; i++)
+        {
+          CDrumSample *s2 = drumkit->a_samples[i]; //point to the sample
+          if (! s2 || s == s2)
+            continue;
+
+          if (s2->mute_group == s->mute_group)
           {
-            //std::cout << "note_number: " << note_number << std::endl;
-            //std::cout << "velocity: " << velocity << std::endl;
-
-//          int nn = note_number - (int) *base_note_number;
-            int nn = note_number - base_note_number;
-
-
-            if (int_midimap_mode == MIDIMAPMODE_LABOOH)
-            if (nn < 0 || nn > 35)
-                continue;
-
-
-                    //std::cout << "nn < 0 || nn > 35: " << nn << std::endl; 
-//             std::cout << "GO ON with n: " << nn << std::endl;
-
-            float gn = db2lin (a_vols[nn]);
-            // std::cout << "gn: " << gn << std::endl;
-
-            CDrumSample *s = 0;
-
-         //   if (int_midimap_mode == MIDIMAPMODE_LABOOH)
-           //     s = drumkit->a_samples[nn];
-//            else
-  //              if (drumkit->map_samples.count (note_number) > 0) 
-    //               s = drumkit->map_samples[note_number];
-//                   std::cout << "play mapped note: " << note_number << std::endl;
-             
-
-         
-           if (int_midimap_mode == MIDIMAPMODE_FROMKIT && drumkit->has_mapping)
-               s = drumkit->map_samples[note_number];
-           else           
-               s = drumkit->a_samples[nn];
-
-         
-            if (! s)
-               continue;
-  
-
-
-            // --- НОВОЕ: ДЕТЕРМИНИРОВАННЫЙ ЛАЙВ-ОЖИВЛЯЖ НА УДАР ---
-            if (a_live_amount[nn] > 0.0f)
-            {
-              long long rnd_val = s->dsp_rnd_generator.next (-1000, 1000);
-              float rnd_normalized = (float) rnd_val / 1000.0f; // от -1.0 до 1.0
-
-              // Максимальный размах отклонения (например, ±30% от текущего значения, масштабированный ручкой live)
-              float depth = 0.7f * a_live_amount[nn];
-
-              // Сохраняем мультипликативный множитель (вокруг 1.0, например от 0.7 до 1.3)
-              s->live_cutoff_multiplier = 1.0f + (rnd_normalized * depth);
-            }
+            if (s2->layer_index_mode == LAYER_INDEX_MODE_ALT)
+              s2->untrigger_sample (true);
             else
-              s->live_cutoff_multiplier = 1.0f; // нейтральный множитель (без изменений)
-            // -----------------------------------------------------
+              s2->untrigger_sample (false);
+
+          }
+        }
+      }
+
+      //automute end
+
+    }
+
+  }
 
 
+  float *channel_data[2]; //output channels
 
-            
-           if (drumkit->kit_type == KIT_TYPE_HYDROGEN)
-               s->trigger_sample (velocity);
-           else //new
-               if (s->layer_index_mode == LAYER_INDEX_MODE_ALT)
-                  s->trigger_sample_uint_by_index (uvelocity, velocity); 
-               else            
-                   s->trigger_sample_uint (uvelocity, velocity);
-                     
 
-             //also untrigger open hihat if closed hihat triggering
-             // so find the open hihat
-             
-            //AUTOMUTE START
-  
-           if (s->mute_group != -1)
-              {
-               for (size_t i = 0; i < MAX_SAMPLES; i++)
-                   {
-                    CDrumSample *s2 = drumkit->a_samples[i]; //point to the sample
-                    if (! s2 || s == s2)
-                       continue;
-                      
-                    if (s2->mute_group == s->mute_group)
-                       {
-                        if (s2->layer_index_mode == LAYER_INDEX_MODE_ALT) 
-                           s2->untrigger_sample (true);
-                        else
-                           s2->untrigger_sample (false);
-                          
-                       }
-                   }
-              }
-          
-             //automute end
+  if (num_channels > 0)
+    channel_data [0] = buffer.getWritePointer (0);
 
-           }
+  if (num_channels > 1)
+    channel_data [1] = buffer.getWritePointer (1);
 
+
+  //for each sample out_buf_offs
+  for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
+    //for each drum instrument
+  {
+    for (int drum_sample_index = 0; drum_sample_index < 36; drum_sample_index++)
+    {
+      CDrumSample *s = drumkit->a_samples[drum_sample_index];
+
+      if (! s)
+        continue;
+
+      if (! s->active)
+        continue;
+
+      CDrumLayer *l = s->v_layers[s->current_layer];
+
+      if (! l)
+      {
+        std::cout << "!l at s->current_layer:" << s->current_layer << "\n";
+        break;
       }
 
 
-    float *channel_data[2]; //output channels
+      if (l->sample_offset + 1 == l->length_in_samples)
+      {
+        if (s-> layer_index_mode == LAYER_INDEX_MODE_ALT)
+          s->untrigger_sample (true);
+        else
+          s->untrigger_sample (false);
 
-    
-    if (num_channels > 0)
-       channel_data [0] = buffer.getWritePointer (0);
+        continue;
+      }
 
-    if (num_channels > 1)
-       channel_data [1] = buffer.getWritePointer (1);
+      if (a_mutes[drum_sample_index]) //просто не идем дальше, не играем
+      {
+        l->sample_offset++;
+        continue;
+      }
 
- 
-   //for each sample out_buf_offs
-    for (int out_buf_offs = 0; out_buf_offs < out_buf_length; out_buf_offs++)
-        //for each drum instrument
+      if (l->channel_data)
+      {
+        float fl = l->channel_data[l->sample_offset++];
+
+        //DSP
+        bool lp_on = a_lps[drum_sample_index];
+
+        if (lp_on)
         {
-         for (int drum_sample_index = 0; drum_sample_index < 36; drum_sample_index++)
-             {
-              CDrumSample *s = drumkit->a_samples[drum_sample_index];
+          // Умножаем базовый срез на наш коэффициент
+          float target_cutoff = a_lp_cutoff[drum_sample_index] * s->live_cutoff_multiplier;
+          target_cutoff = juce::jlimit (0.0f, 0.999f, target_cutoff); // защита от выхода за границы
 
-              if (! s)
-                 // std::cout << "!s at drum_sample_index:" << drum_sample_index << std::endl;
-                  continue;
+          lp[drum_sample_index].set_cutoff (target_cutoff);
+          lp[drum_sample_index].set_resonance (a_lp_reso[drum_sample_index]);
 
-              if (! s->active)
-                 continue;
+          fl = softLimit (lp[drum_sample_index].process (fl));
+        }
 
-               
-//             CDrumLayer *l = s->v_layers.at(s->current_layer);
-              CDrumLayer *l = s->v_layers[s->current_layer];
-  
-              if (! l)
-                 {
-                  std::cout << "!l at s->current_layer:" << s->current_layer << "\n";
-                  break;
-                 }
+        bool hp_on = a_hps[drum_sample_index];
 
 
-              if (l->sample_offset + 1 == l->length_in_samples)
-                 {
-                  if (s-> layer_index_mode == LAYER_INDEX_MODE_ALT)  
-                     s->untrigger_sample (true);
-                  else
-                      s->untrigger_sample (false);
-                  
-                  continue;
-                 }
+        if (hp_on)
+        {
+          // Используем мультипликативный множитель live-модуляции
+          float target_cutoff = a_hp_cutoff[drum_sample_index] * s->live_cutoff_multiplier;
+          target_cutoff = juce::jlimit (0.0f, 0.999f, target_cutoff); // защита от выхода за границы
 
-             //bool mute = *(mutes[drum_sample_index]) > 0.5f;
+          hp[drum_sample_index].set_cutoff (target_cutoff);
+          hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
 
-              if (a_mutes[drum_sample_index]) //просто не идем дальше, не играем
-                 {
-                  l->sample_offset++;
-                  continue;
-                 }
-
-              if (l->channel_data)
-                 {
-                 //take mono audio data from the current layer with incremented offset
-              //   float fl = l->channel_data[0][l->sample_offset++];
-                  float fl = l->channel_data[l->sample_offset++];
-                  
-                 //DSP
+          fl = softLimit (hp[drum_sample_index].process (fl));
+        }
 
 
-                // bool lp_on = *(lps[drum_sample_index]) > 0.5f;
-                  //bool lp_on = a_lps[drum_sample_index];
+        if (a_analog_on [drum_sample_index])
+          fl = warmify (fl, a_analog_amount[drum_sample_index]);
 
-                   
-                /* if (lp_on)
-                     {
-                      lp[drum_sample_index].set_cutoff (a_lp_cutoff[drum_sample_index]);
-                      lp[drum_sample_index].set_resonance (a_lp_reso[drum_sample_index]);
+        //AFTER DSP
 
-                      fl = softLimit (lp[drum_sample_index].process (fl));
-                     }*/
-                bool lp_on = a_lps[drum_sample_index];
+        float vol = a_vols [drum_sample_index];
 
-                if (lp_on)
-                {
-                  // Умножаем базовый срез на наш коэффициент
-                  float target_cutoff = a_lp_cutoff[drum_sample_index] * s->live_cutoff_multiplier;
-                  target_cutoff = juce::jlimit (0.0f, 0.999f, target_cutoff); // защита от выхода за границы
+        float coef_right = 0.000f;
+        float coef_left = 0.000f;
 
-                  lp[drum_sample_index].set_cutoff (target_cutoff);
-                  lp[drum_sample_index].set_resonance (a_lp_reso[drum_sample_index]);
+        if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
+        {
+          coef_right = a_pan_right[drum_sample_index] * vol * s->velocity;
+          coef_left = a_pan_left[drum_sample_index] * vol * s->velocity;
+        }
+        else
+        {
+          coef_right = a_pan_right[drum_sample_index] * vol;
+          coef_left = a_pan_left[drum_sample_index] * vol;
+        }
 
-                  fl = softLimit (lp[drum_sample_index].process (fl));
-                }
-
-                  bool hp_on = a_hps[drum_sample_index];
-
-
-               if (hp_on)
-               {
-                 // Используем мультипликативный множитель live-модуляции
-                 float target_cutoff = a_hp_cutoff[drum_sample_index] * s->live_cutoff_multiplier;
-                 target_cutoff = juce::jlimit (0.0f, 0.999f, target_cutoff); // защита от выхода за границы
-
-                 hp[drum_sample_index].set_cutoff (target_cutoff);
-                 hp[drum_sample_index].set_resonance (a_hp_reso[drum_sample_index]);
-
-                 fl = softLimit (hp[drum_sample_index].process (fl));
-               }
-
-
-               if (a_analog_on [drum_sample_index])
-                 fl = warmify (fl, a_analog_amount[drum_sample_index]);
-                 //fl = warmify_lut (fl, a_analog_amount[drum_sample_index]);
-
-                 //AFTER DSP
-
-//                 float vol = juce::Decibels::decibelsToGain ((float)*(vols[drum_sample_index]));
-                  float vol = a_vols [drum_sample_index];
-
-                  float coef_right = 0.000f;                    
-                  float coef_left = 0.000f;  
-
-                  if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
-                     {
-                      coef_right = a_pan_right[drum_sample_index] * vol * s->velocity;
-                      coef_left = a_pan_left[drum_sample_index] * vol * s->velocity;
-                     }
-                  else
-                      {
-                       coef_right = a_pan_right[drum_sample_index] * vol;
-                       coef_left = a_pan_left[drum_sample_index] * vol;
-                      }
-                 
-                  channel_data[0][out_buf_offs] += fl * coef_left;
-                 //channel_data[1][out_buf_offs] += fr * coef_right;
-                  channel_data[1][out_buf_offs] += fl * coef_right;
-                 }
-              }
-              
-              if (mix_analog_amount_on)
-                 {
-                  channel_data[0][out_buf_offs] = warmify (channel_data[0][out_buf_offs], mix_analog_amount);
-                  channel_data[1][out_buf_offs] = warmify (channel_data[1][out_buf_offs], mix_analog_amount);
-                 }
-      
+        channel_data[0][out_buf_offs] += fl * coef_left;
+        channel_data[1][out_buf_offs] += fl * coef_right;
+      }
     }
- //std::cout << "CAudioProcessor::processBlock -6 " << std::endl;
+
+    if (mix_analog_amount_on)
+    {
+      channel_data[0][out_buf_offs] = warmify (channel_data[0][out_buf_offs], mix_analog_amount);
+      channel_data[1][out_buf_offs] = warmify (channel_data[1][out_buf_offs], mix_analog_amount);
+    }
+
+  }
 }
 
 #endif
