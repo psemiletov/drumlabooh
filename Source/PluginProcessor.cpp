@@ -733,7 +733,7 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
       // nn is index for drumkit->a_samples[nn]
 
       if (int_midimap_mode == MIDIMAPMODE_LABOOH)
-        if (nn < 0 || nn > 36) // MAX_SAMPLES = 36
+        if (nn < 0 || nn >= 36) // MAX_SAMPLES = 36
           continue;
 
       CDrumSample *s = 0;
@@ -810,8 +810,9 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
   } //end of cycle for juce::MidiMessageMetadata metadata: midiMessages
 
 
-  if (drumkit->sample_counter > num_channels)
-    return;
+  //if (drumkit->sample_counter >= num_channels)
+      //return;
+
 
 
   float *channel_data [MAX_SAMPLES]; //output channels
@@ -833,6 +834,14 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
       if (! s->active)
         continue;
+
+      if (s->current_layer < 0 || static_cast<size_t>(s->current_layer) >= s->v_layers.size())
+      {
+        //std::cout << "bad s->current_layer:" << s->current_layer << "\n";
+        //break;
+        continue;
+      }
+
 
       CDrumLayer *l = s->v_layers.at (s->current_layer);
 
@@ -898,7 +907,8 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
         if (s->layer_index_mode != LAYER_INDEX_MODE_NOVELOCITY)
           fl *= s->velocity;
 
-        channel_data[drum_sample_index][out_buf_offs] = fl;
+        if (drum_sample_index < num_channels)  //новое
+           channel_data[drum_sample_index][out_buf_offs] = fl;
       }
 
 
@@ -1158,6 +1168,15 @@ void CAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
 
       if (! s->active)
         continue;
+
+      if (s->current_layer < 0 || static_cast<size_t>(s->current_layer) >= s->v_layers.size())
+      {
+        //std::cout << "bad s->current_layer:" << s->current_layer << "\n";
+        //break;
+        continue;
+      }
+
+
 
       CDrumLayer *l = s->v_layers[s->current_layer];
 
