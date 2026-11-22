@@ -93,14 +93,14 @@ SectionEnd
 
 Section "Uninstall"
 
-          Delete $INSTDIR\nsUninst.exe
-          Delete $INSTDIR\*.*
-          Delete "C:\drumlabooh-kits\*.*"
-          Delete "$PROGRAMFILES64\Common Files\VST3\drumlabooh-multi.vst3\*.*"
+  Delete "$INSTDIR\nsUninst.exe"
+  RMDir /r "$INSTDIR"
+  RMDir /r "$PROGRAMFILES64\Common Files\VST3\drumlabooh-multi.vst3"
+  RMDir /r "C:\drumlabooh-kits"
 
-          RMDir /r $INSTDIR
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Drumlabooh"
+  DeleteRegKey HKLM "SOFTWARE\Drumlabooh"
 
 SectionEnd
-
 
 ; eof
