@@ -36,31 +36,14 @@
     <h2>NEWS</h2>
 
     <div class="news-entry">
-      <div class="news-date">November 15 2026 — <a href="https://github.com/psemiletov/drumlabooh/releases/tag/14.0.0">Drumlabooh 14</a></div>
+      <div class="news-date">November 23 2026 — <a href="https://github.com/psemiletov/drumlabooh/releases/tag/14.1.0">Drumlabooh 14.1</a></div>
 
-<p>  A synthesizer engine has been added alongside the sampler engine. Drum kits can now consist of "formula" sets for the built-in generator modules. This feature is utilized by the new drum kits: OM Kit (for old-school Goa Trance), RITM (for 1980s-style electro), and a true sound producer's secret weapon - the Golden Farthing kit.</p>
-
-<p>  As the new drum kits are getting heavier, I rewrote the kit loading routine (affecting all formats) to use multi-threaded reading, which significantly speeds things up. It utilizes exactly half of the CPU threads to avoid overheating.</p>
-
-<p>  Attention! This new version alters the mix sound if you previously used the built-in FX sections with filters and a saturator. The new DSP section processing order is: filters, Live control, Analog saturator.
+<p>This is a bugfix release for something I praised in the previous version and ended up messing up - namely, the deterministic randomizer. Well, I have fixed it.
+</p>
+<p>Also fixed large (> 36 instruments) Hydrogen drumkits in the multi-channel version of the plugin.
 </p>
 
-<p>  An important new Live knob has been introduced. It works only when filters are enabled and turns any monotonous one-shot into a dynamic, live-sounding performance - simply tweak the Live knob and filter parameters.
-</p>
-<p>  A UI scaling option (zoom in/out) has been added to the interface.
-</p>
-<p>   Instrument slots can now display the preset/one-shot number. To quickly select a preset, simply click on the slot name and type a three-digit preset number.
-</p>
-<p>  A new "Info" button opens a window with a description of the current drum kit (its history, who used it, etc.).
-</p>
-
-<p>   The continuous development of Drumlabooh's capabilities has led to an expansion of its drum kit format, giving birth to the version 2 specification (https://github.com/psemiletov/drum_sklad).
-</p>
-
-<p>  Simultaneously with Drumlabooh 14, I am releasing the 7th drum kit update (bundled with Drumlabooh). One drum kit has been removed (it will remain on your local machine if installed previously); all other kits now feature standardized cover art, several drum kit definition files (which I forgot to update following engine changes) have been fixed, and building from source now properly pulls the freshest drum kit release.
-</p>
-
-<p>   Development is taking place amid ongoing blackouts in my city, which is why I sometimes forget or don't have time to finish everything I planned. For instance, out of the new synthesizer kits I envisioned, I've only managed to complete three so far. I also haven't had enough time to update the sound gallery on the website to the extent I would like.
+<p>Polished the website and documentation.
 </p>
 
 <p>Stay tuned, Peter Semiletov
